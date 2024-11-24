@@ -1,5 +1,0 @@
-C:\Users\Binggi\source\repos\TSqlScriptAnalyzer\src\DatabaseAnalyzer.Core\obj\Debug\netstandard2.1\DatabaseAnalyzer.Core.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\Binggi\source\repos\TSqlScriptAnalyzer\src\DatabaseAnalyzer.Core\obj\Debug\netstandard2.1\DatabaseAnalyzer.Core.AssemblyInfoInputs.cache
-C:\Users\Binggi\source\repos\TSqlScriptAnalyzer\src\DatabaseAnalyzer.Core\obj\Debug\netstandard2.1\DatabaseAnalyzer.Core.AssemblyInfo.cs
-C:\Users\Binggi\source\repos\TSqlScriptAnalyzer\src\DatabaseAnalyzer.Core\obj\Debug\netstandard2.1\DatabaseAnalyzer.Core.csproj.CoreCompileInputs.cache
-C:\Users\Binggi\source\repos\TSqlScriptAnalyzer\src\DatabaseAnalyzer.Core\obj\Debug\netstandard2.1\DatabaseAnalyzer.Core.sourcelink.json

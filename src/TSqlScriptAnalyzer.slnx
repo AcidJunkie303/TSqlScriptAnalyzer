@@ -2,6 +2,7 @@
   <Folder Name="/Solution Files/">
     <File Path=".editorconfig" />
     <File Path="Directory.Build.props" />
+    <File Path=".gitignore" />
   </Folder>
   <Project Path="DatabaseAnalyzer.Core\DatabaseAnalyzer.Core.csproj" Type="Classic C#" />
   <Project Path="TSqlScriptAnalyzer.App\TSqlScriptAnalyzer.App.csproj" Type="Classic C#" />
