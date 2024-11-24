@@ -1,4 +1,4 @@
-namespace TSqlScriptAnalyzer.App;
+namespace DatabaseAnalyzer.App;
 
 internal enum CommandType
 {

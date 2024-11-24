@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
 using DatabaseAnalyzer.Core;
 
-namespace TSqlScriptAnalyzer.App;
+namespace DatabaseAnalyzer.App;
 
 internal sealed partial class ProgressCallbackConsoleWriter : IProgressCallback
 {

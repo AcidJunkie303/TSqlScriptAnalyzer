@@ -1,7 +1,7 @@
 ﻿using DatabaseAnalyzer.Core;
 using DatabaseAnalyzer.Core.Configuration;
 
-namespace TSqlScriptAnalyzer.App;
+namespace DatabaseAnalyzer.App;
 
 internal static class Program
 {
