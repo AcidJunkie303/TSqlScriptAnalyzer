@@ -1,0 +1,19 @@
+{
+  "Inherit": "common.jsonc",
+  "ScriptSource": {
+    "ExclusionFilters":[],
+    "DatabaseScriptsRootPathByDatabaseName":{
+      "database 1": "..\\..\\..\\..\\..\\tests\\script sources\\database 1",
+      "database 2": "..\\..\\..\\..\\..\\tests\\script sources\\database 2",
+      "database 3": "..\\..\\..\\..\\..\\tests\\script sources\\database 3"
+    }
+  },
+  "Diagnostics": {
+    "DisabledDiagnostics": []
+  },
+  "DatabaseToAnalyze": "database 1",
+  "DatabasesToLoad": [
+    "database 2",
+    "database 3"
+  ]
+}

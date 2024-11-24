@@ -1,0 +1,8 @@
+{
+  "ScriptSource": {
+    "ExclusionFilters": [],
+    "DatabaseScriptsRootPathByDatabaseName": {
+      "database1": "..\\..\\..\\..\\..\\..\\tests\\script sources\\database 1"
+    }
+  }
+}

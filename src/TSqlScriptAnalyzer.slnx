@@ -1,0 +1,8 @@
+﻿<Solution>
+  <Folder Name="/Solution Files/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+  </Folder>
+  <Project Path="DatabaseAnalyzer.Core\DatabaseAnalyzer.Core.csproj" Type="Classic C#" />
+  <Project Path="TSqlScriptAnalyzer.App\TSqlScriptAnalyzer.App.csproj" Type="Classic C#" />
+</Solution>

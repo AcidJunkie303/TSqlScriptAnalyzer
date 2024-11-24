@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "TSqlScriptAnalyzer.App": {
+      "commandName": "Project",
+      "environmentVariables": {
+      },
+      "commandLineArgs": "\"..\\..\\..\\..\\..\\tests\\script sources\\settings\\database1.jsonc\""
+    }
+  }
+}
