@@ -5,5 +5,8 @@
     <File Path=".gitignore" />
   </Folder>
   <Project Path="DatabaseAnalyzer.App\DatabaseAnalyzer.App.csproj" Type="Classic C#" />
+  <Project Path="DatabaseAnalyzer.Contracts\DatabaseAnalyzer.Contracts.csproj" Type="Classic C#" />
   <Project Path="DatabaseAnalyzer.Core\DatabaseAnalyzer.Core.csproj" Type="Classic C#" />
+  <Project Path="DatabaseAnalyzer.DefaultAnalyzers\DatabaseAnalyzer.DefaultAnalyzers.csproj" Type="Classic C#" />
+  <Project Path="DatabaseAnalyzer.Testing\DatabaseAnalyzer.Testing.csproj" Type="Classic C#" />
 </Solution>

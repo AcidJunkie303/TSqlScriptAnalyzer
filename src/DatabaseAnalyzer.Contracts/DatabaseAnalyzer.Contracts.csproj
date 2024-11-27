@@ -1,0 +1,5 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <ItemGroup>
+        <PackageReference Include="Microsoft.SqlServer.Management.SqlParser" Version="172.1.1"/>
+    </ItemGroup>
+</Project>

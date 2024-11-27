@@ -50,23 +50,19 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/061c53385e3d498f9c55cffa1b990c5c8400/39/e3a5f07d/02000005pdb12.il" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/061c53385e3d498f9c55cffa1b990c5c8400/44/5172a2c1/0200001Apdb8.il" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/061c53385e3d498f9c55cffa1b990c5c8400/73/13a671cf/02000014pdb4.il" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/061c53385e3d498f9c55cffa1b990c5c8400/77/12c6651a/02000006pdb12.il" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/061c53385e3d498f9c55cffa1b990c5c8400/7a/a184f8bb/02000002pdb1.il" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/061c53385e3d498f9c55cffa1b990c5c8400/7e/7f5197f9/02000003pdb2.il" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/061c53385e3d498f9c55cffa1b990c5c8400/88/1ef0c32c/0200001Bpdb8.il" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/061c53385e3d498f9c55cffa1b990c5c8400/c9/9b9777e6/02000004pdb3.il" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/061c53385e3d498f9c55cffa1b990c5c8400/ca/512741a4/02000010pdb16.il" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/061c53385e3d498f9c55cffa1b990c5c8400/cf/7549a752/0200000Fpdb15.il" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/061c53385e3d498f9c55cffa1b990c5c8400/e5/f45d89b6/02000016pdb5.il" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/061c53385e3d498f9c55cffa1b990c5c8400/f1/0551fff5/0200000Epdb14.il" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/6a0c636351f6448fa8cde9eba77e636e4400/c8/6ffd71a1/02000005pdb3.il" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/97284b78ea5f4316a007747e4666a5447c00/c7/86ad1768/02000004pdb3.il" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/97284b78ea5f4316a007747e4666a5447c00/e1/5f9b6fdd/02000006pdb12.il" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/1d/837ac191/020004A1.il" root0="FORCE_HIGHLIGHTING" />
@@ -88,32 +84,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    ".NET Launch Settings Profile.TSqlScriptAnalyzer.App.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "XThreadsFramesViewSplitterKey": "0.9572072",
-    "git-widget-placeholder": "Initial",
-    "ignore.virus.scanning.warn.message": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "rider.code.cleanup.on.save": "true",
-    "rider.code.cleanup.on.save.profile": "Built-in: Full Cleanup2",
-    "settings.editor.selected.configurable": "CodeCleanupOptionsPage",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET Launch Settings Profile.TSqlScriptAnalyzer.App.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;XThreadsFramesViewSplitterKey&quot;: &quot;1.831081&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Initial&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;rider.code.cleanup.on.save&quot;: &quot;true&quot;,
+    &quot;rider.code.cleanup.on.save.profile&quot;: &quot;Built-in: Full Cleanup2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;CodeCleanupOptionsPage&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "GitStage.ChangesTree.GroupingKeys": [
-      "directory",
-      "module",
-      "repository"
+  &quot;keyToStringList&quot;: {
+    &quot;GitStage.ChangesTree.GroupingKeys&quot;: [
+      &quot;directory&quot;,
+      &quot;module&quot;,
+      &quot;repository&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="TSqlScriptAnalyzer.App" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/DatabaseAnalyzer.App/DatabaseAnalyzer.App.csproj" />
@@ -144,7 +140,8 @@
       <workItem from="1732442323324" duration="180000" />
       <workItem from="1732442534225" duration="1774000" />
       <workItem from="1732444776958" duration="6889000" />
-      <workItem from="1732455366865" duration="5832000" />
+      <workItem from="1732455366865" duration="6117000" />
+      <workItem from="1732740971702" duration="1993000" />
     </task>
     <task id="LOCAL-00001" summary="daily commit">
       <option name="closed" value="true" />
@@ -170,7 +167,15 @@
       <option name="project" value="LOCAL" />
       <updated>1732461866067</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="some renaming done">
+      <option name="closed" value="true" />
+      <created>1732462010666</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1732462010666</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -190,11 +195,13 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="CHECK_NEW_TODO" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="daily commit" />
     <MESSAGE value="..." />
     <MESSAGE value="---" />
-    <option name="LAST_COMMIT_MESSAGE" value="---" />
+    <MESSAGE value="some renaming done" />
+    <option name="LAST_COMMIT_MESSAGE" value="" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -204,10 +211,10 @@
           <line>60</line>
           <properties documentPath="C:\Users\Binggi\source\repos\TSqlScriptAnalyzer\src\TSqlScriptAnalyzer.App\Program.cs" containingFunctionPresentation="Method 'Analyze'">
             <startOffsets>
-              <option value="2133" />
+              <option value="2131" />
             </startOffsets>
             <endOffsets>
-              <option value="2178" />
+              <option value="2176" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="9" />
@@ -217,10 +224,10 @@
           <line>14</line>
           <properties documentPath="C:\Users\Binggi\source\repos\TSqlScriptAnalyzer\src\TSqlScriptAnalyzer.App\ProgressCallbackConsoleWriter.cs" containingFunctionPresentation="Method 'OnProgress'">
             <startOffsets>
-              <option value="435" />
+              <option value="433" />
             </startOffsets>
             <endOffsets>
-              <option value="461" />
+              <option value="459" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="11" />

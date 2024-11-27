@@ -9,4 +9,12 @@
         <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="172.52.0"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <Folder Include="Analysis\"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\DatabaseAnalyzer.Contracts\DatabaseAnalyzer.Contracts.csproj"/>
+    </ItemGroup>
+
 </Project>
