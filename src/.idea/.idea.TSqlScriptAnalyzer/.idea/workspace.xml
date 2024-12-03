@@ -52,6 +52,7 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/061c53385e3d498f9c55cffa1b990c5c8400/39/e3a5f07d/02000005pdb12.il" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/061c53385e3d498f9c55cffa1b990c5c8400/44/5172a2c1/0200001Apdb8.il" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/061c53385e3d498f9c55cffa1b990c5c8400/63/a67ba3c4/02000018pdb7.il" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/061c53385e3d498f9c55cffa1b990c5c8400/73/13a671cf/02000014pdb4.il" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/061c53385e3d498f9c55cffa1b990c5c8400/77/12c6651a/02000006pdb12.il" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/061c53385e3d498f9c55cffa1b990c5c8400/7a/a184f8bb/02000002pdb1.il" root0="FORCE_HIGHLIGHTING" />
@@ -67,9 +68,13 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/97284b78ea5f4316a007747e4666a5447c00/e1/5f9b6fdd/02000006pdb12.il" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/1d/837ac191/020004A1.il" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/ILViewer/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/46/f155df04/0200049F.il" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/c73b3c6c598640c592fd3c6fa226c286e90908/62/1fb63ed0/IDisposable.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/3e/805e3cd2/ParseResult.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/5d/14a15217/Parser.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2141dcd6a142c9c1eeb8aa8ec988ea6ace78796992883a4e8c484724bcfcbb6/AnyAll.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/47e646b7b981834f2b1298e9ba8543fc4994cc50e15f81d515ec883b6e3797b/AssemblyLoadContext.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/543518303967b352e70537af9e14ff53294389/LibraryImports.g.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/99b58e5049c4c1b08628baf3843f62e765df3a131566566b5bcf4a2c47fb4bd/AssemblyLoadContext.CoreCLR.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProjectColorInfo">{
@@ -141,7 +146,9 @@
       <workItem from="1732442534225" duration="1774000" />
       <workItem from="1732444776958" duration="6889000" />
       <workItem from="1732455366865" duration="6117000" />
-      <workItem from="1732740971702" duration="1993000" />
+      <workItem from="1732740971702" duration="2041000" />
+      <workItem from="1732951753622" duration="2144000" />
+      <workItem from="1733058337961" duration="7702000" />
     </task>
     <task id="LOCAL-00001" summary="daily commit">
       <option name="closed" value="true" />
@@ -175,7 +182,15 @@
       <option name="project" value="LOCAL" />
       <updated>1732462010666</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="nightly commit">
+      <option name="closed" value="true" />
+      <created>1732743016773</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1732743016773</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -201,7 +216,8 @@
     <MESSAGE value="..." />
     <MESSAGE value="---" />
     <MESSAGE value="some renaming done" />
-    <option name="LAST_COMMIT_MESSAGE" value="" />
+    <MESSAGE value="nightly commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="nightly commit" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
