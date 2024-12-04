@@ -72,6 +72,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/3e/805e3cd2/ParseResult.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/5d/14a15217/Parser.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2141dcd6a142c9c1eeb8aa8ec988ea6ace78796992883a4e8c484724bcfcbb6/AnyAll.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/24c42e8075f5cf67cafc4c1ea68ec67b4c1aa450d864d67882fb7c5ff0b8e73/Tuple.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/47e646b7b981834f2b1298e9ba8543fc4994cc50e15f81d515ec883b6e3797b/AssemblyLoadContext.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/543518303967b352e70537af9e14ff53294389/LibraryImports.g.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/99b58e5049c4c1b08628baf3843f62e765df3a131566566b5bcf4a2c47fb4bd/AssemblyLoadContext.CoreCLR.cs" root0="FORCE_HIGHLIGHTING" />
@@ -148,7 +149,8 @@
       <workItem from="1732455366865" duration="6117000" />
       <workItem from="1732740971702" duration="2041000" />
       <workItem from="1732951753622" duration="2144000" />
-      <workItem from="1733058337961" duration="7702000" />
+      <workItem from="1733058337961" duration="8713000" />
+      <workItem from="1733339852953" duration="2765000" />
     </task>
     <task id="LOCAL-00001" summary="daily commit">
       <option name="closed" value="true" />
@@ -190,7 +192,15 @@
       <option name="project" value="LOCAL" />
       <updated>1732743016773</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="nightly commit">
+      <option name="closed" value="true" />
+      <created>1733257347529</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1733257347529</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
