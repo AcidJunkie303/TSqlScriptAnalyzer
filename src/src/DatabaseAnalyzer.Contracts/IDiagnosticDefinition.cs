@@ -11,8 +11,6 @@ public interface IDiagnosticDefinition
 public sealed record DiagnosticDefinition(
     string DiagnosticId,
     string MessageTemplate,
-    IssueType IssueType
-) : IDiagnosticDefinition
-{
-    public int RequiredInsertionStringCount { get; } =
-}
+    IssueType IssueType,
+    int RequiredInsertionStringCount
+) : IDiagnosticDefinition;

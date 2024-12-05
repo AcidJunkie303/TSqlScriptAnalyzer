@@ -14,12 +14,12 @@ public sealed partial class TestCodeProcessor
     }
 
     // examples:
-    //  {{AJ5000¦file.sql¦object-name|Code here}}
-    //  {{AJ5000¦file.sql¦object-name¦insertion1|Code here}}
-    //  {{AJ5000¦file.sql¦object-name¦insertion1¦insertion2|Code here}}
-    //  {{AJ5000¦file.sql¦object-name¦insertion1¦insertion2¦insertion3|Code here}}
+    //  {{AJ5000¦file.sql¦object-name|||Code here}}
+    //  {{AJ5000¦file.sql¦object-name¦insertion1||Code here}}
+    //  {{AJ5000¦file.sql¦object-name¦insertion1¦insertion2||Code here}}
+    //  {{AJ5000¦file.sql¦object-name¦insertion1¦insertion2¦insertion3||Code here}}
     // please note that the object-name is optional and can be empty. E.g. when the code is not within a CREATE PROCEDURE statement for example
-    [GeneratedRegex(@"\{\{(?<id>[^¦]+)¦(?<parts>[^\|]+)\|(?<code>.*?)\}\}", RegexOptions.Compiled, 1000)]
+    [GeneratedRegex(@"\{\{(?<id>[^¦]+)¦(?<parts>[^\|]+)\|\|\|(?<code>.*?)\}\}", RegexOptions.Compiled | RegexOptions.Singleline, 1000)]
     private static partial Regex MarkupRegex();
 
     public TestCode ParseTestCode(string code)
@@ -44,25 +44,17 @@ public sealed partial class TestCodeProcessor
 
             var fileName = parts[0];
             var objectName = parts[1];
-            var insertions = parts[..2];
+            var insertions = parts[2..];
 
             // tricky part: the code can span across multiple lines
             var (startLineNumber, startColumnNumber) = code.GetLineAndColumnNumber(match.Index);
             var (endLineNumberOffset, endColumnOffset) = inner.GetLineAndColumnIndex(inner.Length - 1);
 
-            int endLineNumber;
-            int endColumnNumber;
+            var endLineNumber = startLineNumber + endLineNumberOffset;
 
-            if (endLineNumberOffset == 0) // we have no new-line chars in 'inner'
-            {
-                endLineNumber = startLineNumber;
-                endColumnNumber = startColumnNumber + endColumnOffset;
-            }
-            else
-            {
-                endLineNumber = startLineNumber + endLineNumberOffset;
-                endColumnNumber = endLineNumberOffset + 1;
-            }
+            var endColumnNumber = endLineNumberOffset == 0
+                ? startColumnNumber + endColumnOffset + 1
+                : endColumnOffset + 1 + 1;
 
             var location = Location.Create(startLineNumber, startColumnNumber, endLineNumber, endColumnNumber);
             var issue = Issue.Create(_diagnosticRegistry.GetDefinition(id), fileName, objectName, location, insertions);

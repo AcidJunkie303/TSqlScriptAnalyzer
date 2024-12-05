@@ -4,10 +4,10 @@
     <File Path="Directory.Build.props" />
     <File Path=".gitignore" />
   </Folder>
-  <Project Path="tests\unit tests\DatabaseAnalyzer.Testing.Tests\DatabaseAnalyzer.Testing.Tests.csproj" Type="Classic C#" />
-  <Project Path="DatabaseAnalyzer.App\DatabaseAnalyzer.App.csproj" Type="Classic C#" />
-  <Project Path="DatabaseAnalyzer.Contracts\DatabaseAnalyzer.Contracts.csproj" Type="Classic C#" />
-  <Project Path="DatabaseAnalyzer.Core\DatabaseAnalyzer.Core.csproj" Type="Classic C#" />
-  <Project Path="DatabaseAnalyzer.DefaultAnalyzers\DatabaseAnalyzer.DefaultAnalyzers.csproj" Type="Classic C#" />
-  <Project Path="DatabaseAnalyzer.Testing\DatabaseAnalyzer.Testing.csproj" Type="Classic C#" />
+  <Project Path="tests\DatabaseAnalyzer.Testing.Tests\DatabaseAnalyzer.Testing.Tests.csproj" Type="Classic C#" />
+  <Project Path="src\DatabaseAnalyzer.App\DatabaseAnalyzer.App.csproj" Type="Classic C#" />
+  <Project Path="src\DatabaseAnalyzer.Contracts\DatabaseAnalyzer.Contracts.csproj" Type="Classic C#" />
+  <Project Path="src\DatabaseAnalyzer.Core\DatabaseAnalyzer.Core.csproj" Type="Classic C#" />
+  <Project Path="src\DatabaseAnalyzer.DefaultAnalyzers\DatabaseAnalyzer.DefaultAnalyzers.csproj" Type="Classic C#" />
+  <Project Path="src\DatabaseAnalyzer.Testing\DatabaseAnalyzer.Testing.csproj" Type="Classic C#" />
 </Solution>
