@@ -78,9 +78,13 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/dd/d8998577/SqlIdentifier.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/2141dcd6a142c9c1eeb8aa8ec988ea6ace78796992883a4e8c484724bcfcbb6/AnyAll.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/24c42e8075f5cf67cafc4c1ea68ec67b4c1aa450d864d67882fb7c5ff0b8e73/Tuple.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/439c4ee753b23e743cc14119593bc889751f9eb0b38997577d8e4c47c4fed/ToCollection.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/47e646b7b981834f2b1298e9ba8543fc4994cc50e15f81d515ec883b6e3797b/AssemblyLoadContext.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/4c38112676b82651f48df265c80acbd883522b6ae8de1e6e629d5b599197c/ConfigurationBinder.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/543518303967b352e70537af9e14ff53294389/LibraryImports.g.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/69ba5438e03a0e3a5d2f133f37405f9e32f9e0abb1fbe0a8cb7145514ff85f/MethodBaseInvoker.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/876cd892fc66a9dc8f6afd3704c264acebdfc46aed08089463e8117c21a532/String.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/89dff9063ddb01ff8125b579122b88bf4de94526490d77bcbbef7d0ee662a/FrozenDictionary.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/99b58e5049c4c1b08628baf3843f62e765df3a131566566b5bcf4a2c47fb4bd/AssemblyLoadContext.CoreCLR.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/9f957a1df24c3fbfeddd1df424c3aee2279936735de321be8be3fb4fc267aaf6/MemoryCache.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/c62dbcc4ba2718769223d2edcbb462defa1d97c8f2ef066639d41ddd521e/XUnit2TestFramework.cs" root0="FORCE_HIGHLIGHTING" />
@@ -101,35 +105,35 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    ".NET Launch Settings Profile.DatabaseAnalyzer.App.executor": "Debug",
-    ".NET Launch Settings Profile.TSqlScriptAnalyzer.App.executor": "Run",
-    ".NET Project.DatabaseAnalyzer.App.executor": "Debug",
-    "2238f1ec-19dd-4aa1-9b94-b3b5f7d1a21a.executor": "Debug",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "XThreadsFramesViewSplitterKey": "0.9572072",
-    "git-widget-placeholder": "Initial",
-    "ignore.virus.scanning.warn.message": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "rider.code.cleanup.on.save": "true",
-    "rider.code.cleanup.on.save.profile": "Built-in: Full Cleanup2",
-    "settings.editor.selected.configurable": "CodeCleanupOptionsPage",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET Launch Settings Profile.DatabaseAnalyzer.App.executor&quot;: &quot;Debug&quot;,
+    &quot;.NET Launch Settings Profile.TSqlScriptAnalyzer.App.executor&quot;: &quot;Run&quot;,
+    &quot;.NET Project.DatabaseAnalyzer.App.executor&quot;: &quot;Debug&quot;,
+    &quot;2238f1ec-19dd-4aa1-9b94-b3b5f7d1a21a.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;XThreadsFramesViewSplitterKey&quot;: &quot;0.9572072&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Initial&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;rider.code.cleanup.on.save&quot;: &quot;true&quot;,
+    &quot;rider.code.cleanup.on.save.profile&quot;: &quot;Built-in: Full Cleanup2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;CodeCleanupOptionsPage&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "GitStage.ChangesTree.GroupingKeys": [
-      "directory",
-      "module",
-      "repository"
+  &quot;keyToStringList&quot;: {
+    &quot;GitStage.ChangesTree.GroupingKeys&quot;: [
+      &quot;directory&quot;,
+      &quot;module&quot;,
+      &quot;repository&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="DatabaseAnalyzer.App" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/src/DatabaseAnalyzer.App/DatabaseAnalyzer.App.csproj" />
@@ -170,7 +174,7 @@
       <workItem from="1733426297406" duration="3890000" />
       <workItem from="1733501805592" duration="11593000" />
       <workItem from="1733580133077" duration="317000" />
-      <workItem from="1733580475560" duration="4677000" />
+      <workItem from="1733580475560" duration="10729000" />
     </task>
     <task id="LOCAL-00001" summary="daily commit">
       <option name="closed" value="true" />
@@ -236,7 +240,15 @@
       <option name="project" value="LOCAL" />
       <updated>1733429990808</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="nightly check-in">
+      <option name="closed" value="true" />
+      <created>1733594174255</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1733594174255</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -263,7 +275,8 @@
     <MESSAGE value="---" />
     <MESSAGE value="some renaming done" />
     <MESSAGE value="nightly commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="nightly commit" />
+    <MESSAGE value="nightly check-in" />
+    <option name="LAST_COMMIT_MESSAGE" value="nightly check-in" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -346,56 +359,82 @@
           <option name="timeStamp" value="32" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Core/AnalyzerFactory.cs</url>
-          <line>53</line>
-          <properties documentPath="C:\Users\Binggi\source\repos\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Core\AnalyzerFactory.cs" containingFunctionPresentation="Method 'RegisterPlugins'">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.App/Program.cs</url>
+          <line>18</line>
+          <properties documentPath="C:\Users\Binggi\source\repos\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.App\Program.cs" containingFunctionPresentation="Method 'Main'">
             <startOffsets>
-              <option value="2110" />
+              <option value="460" />
             </startOffsets>
             <endOffsets>
-              <option value="2163" />
+              <option value="482" />
             </endOffsets>
           </properties>
-          <option name="timeStamp" value="41" />
+          <option name="timeStamp" value="46" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Core/AnalyzerFactory.cs</url>
-          <line>58</line>
-          <properties documentPath="C:\Users\Binggi\source\repos\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Core\AnalyzerFactory.cs" containingFunctionPresentation="Method 'RegisterPlugins'">
-            <startOffsets>
-              <option value="2306" />
-            </startOffsets>
-            <endOffsets>
-              <option value="2371" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="42" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Core/AnalyzerFactory.cs</url>
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.App/Program.cs</url>
           <line>60</line>
-          <properties documentPath="C:\Users\Binggi\source\repos\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Core\AnalyzerFactory.cs" containingFunctionPresentation="Method 'RegisterPlugins'">
+          <properties documentPath="C:\Users\Binggi\source\repos\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.App\Program.cs" containingFunctionPresentation="Method 'Analyze'">
             <startOffsets>
-              <option value="2402" />
+              <option value="2163" />
             </startOffsets>
             <endOffsets>
-              <option value="2403" />
+              <option value="2208" />
             </endOffsets>
           </properties>
-          <option name="timeStamp" value="44" />
+          <option name="timeStamp" value="47" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Core/AnalyzerFactory.cs</url>
-          <line>48</line>
-          <properties documentPath="C:\Users\Binggi\source\repos\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Core\AnalyzerFactory.cs" containingFunctionPresentation="Method 'RegisterPlugins'">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Core/Analyzer.cs</url>
+          <line>52</line>
+          <properties documentPath="C:\Users\Binggi\source\repos\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Core\Analyzer.cs" containingFunctionPresentation="Lambda expression inside Method 'Analyze'">
             <startOffsets>
-              <option value="1926" />
+              <option value="2152" />
             </startOffsets>
             <endOffsets>
-              <option value="1979" />
+              <option value="2200" />
             </endOffsets>
           </properties>
-          <option name="timeStamp" value="45" />
+          <option name="timeStamp" value="51" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Core/Analyzer.cs</url>
+          <line>56</line>
+          <properties documentPath="C:\Users\Binggi\source\repos\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Core\Analyzer.cs" containingFunctionPresentation="Method 'Analyze'">
+            <startOffsets>
+              <option value="2236" />
+            </startOffsets>
+            <endOffsets>
+              <option value="2318" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="52" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.App/Program.cs</url>
+          <line>57</line>
+          <properties documentPath="C:\Users\Binggi\source\repos\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.App\Program.cs" containingFunctionPresentation="Method 'Analyze'">
+            <startOffsets>
+              <option value="2046" />
+            </startOffsets>
+            <endOffsets>
+              <option value="2086" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="56" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/DynamicSql/DynamicSqlAnalyzer.cs</url>
+          <line>10</line>
+          <properties documentPath="C:\Users\Binggi\source\repos\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\DynamicSql\DynamicSqlAnalyzer.cs" containingFunctionPresentation="Method 'AnalyzeScript'">
+            <startOffsets>
+              <option value="358" />
+            </startOffsets>
+            <endOffsets>
+              <option value="447" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="57" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

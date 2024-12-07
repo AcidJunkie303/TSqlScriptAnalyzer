@@ -17,6 +17,7 @@ dotnet_sort_system_directives_first = true
 csharp_style_namespace_declarations = file_scoped:error
 dotnet_diagnostic.ide0160.severity = none
 dotnet_diagnostic.ide0161.severity = error
+dotnet_diagnostic.IDE0305.severity = none # Use collection expression for fluent -> looks ugly tbh
 
 # Seal internal types
 dotnet_diagnostic.ca1852.severity = error

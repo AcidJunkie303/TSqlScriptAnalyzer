@@ -4,5 +4,8 @@
     "DatabaseScriptsRootPathByDatabaseName": {
       "database1": "..\\..\\..\\..\\..\\..\\tests\\script sources\\database 1"
     }
-  }
+  },
+  "Diagnostics": {
+    "DisabledDiagnostics": []
+  },
 }

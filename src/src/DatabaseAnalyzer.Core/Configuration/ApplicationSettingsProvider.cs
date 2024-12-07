@@ -4,11 +4,11 @@ namespace DatabaseAnalyzer.Core.Configuration;
 
 public static class ApplicationSettingsProvider
 {
-    public static ApplicationSettings GetSettings(string settingsFilePath)
+    public static (IConfiguration configuration, ApplicationSettings Settings) GetSettings(string settingsFilePath)
     {
         var configuration = GetConfiguration(settingsFilePath);
         var rawSettings = configuration.Get<ApplicationSettingsRaw>() ?? throw new ConfigurationException("Invalid settings file");
-        return rawSettings.ToSettings();
+        return (configuration, rawSettings.ToSettings());
     }
 
     private static IConfiguration GetConfiguration(string settingsFilePath)

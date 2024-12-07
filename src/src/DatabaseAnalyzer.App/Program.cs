@@ -53,8 +53,8 @@ internal static class Program
 
     private static void Analyze(string settingsFilePath)
     {
-        var settings = ApplicationSettingsProvider.GetSettings(settingsFilePath);
-        var analyzer = AnalyzerFactory.Create(settings, new ProgressCallbackConsoleWriter());
+        var (configuration, settings) = ApplicationSettingsProvider.GetSettings(settingsFilePath);
+        var analyzer = AnalyzerFactory.Create(configuration, settings, new ProgressCallbackConsoleWriter());
         var analysisResult = analyzer.Analyze();
 
         // TODO: add report type and render the report accordingly

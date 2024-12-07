@@ -9,7 +9,11 @@
     }
   },
   "Diagnostics": {
-    "DisabledDiagnostics": []
+    "CustomDiagnosticSettings":{
+      "Aj5000":{
+        "ExampleValue": "Hello from config"
+      }
+    }
   },
   "DatabaseToAnalyze": "database 1",
   "DatabasesToLoad": [

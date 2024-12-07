@@ -1,13 +1,17 @@
 using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Core.Extensions;
 
 namespace DatabaseAnalyzer.Core;
 
 internal sealed record AnalysisContext(
     string DatabaseName,
-    IReadOnlyList<IScriptModel> Scripts,
-    IReadOnlyDictionary<string, IScriptModel> ScriptsByDatabaseName,
-    IDiagnosticSettingsProviderFactory DiagnosticSettingsProviderFactory
+    IReadOnlyList<ScriptModel> Scripts,
+    IReadOnlyDictionary<string, ScriptModel> ScriptsByDatabaseName,
+    IDiagnosticSettingsRetriever DiagnosticSettingsRetriever,
+    IIssueReporter IssueReporter
 ) : IAnalysisContext
 {
-    public void ReportIssue(IDiagnosticDefinition rule, string fullScriptFilePath, string? fullObjectName, SourceSpan codeRegion, params IReadOnlyList<string> insertionStrings) => throw new NotImplementedException();
+    public IReadOnlyList<ScriptModel> CurrentDatabaseScripts { get; } = Scripts
+        .Where(a => a.DatabaseName.EqualsOrdinalIgnoreCase(DatabaseName))
+        .ToList();
 }
