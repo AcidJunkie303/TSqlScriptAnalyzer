@@ -52,12 +52,14 @@ internal sealed class PluginManager : IDisposable
         var assembly = assemblyLoadContext.LoadFromAssemblyPath(assemblyPath);
         var scriptAnalyzerTypes = GetPluginsOfType<IScriptAnalyzer>(assembly).ToImmutableArray();
         var globalAnalyzerTypes = GetPluginsOfType<IGlobalAnalyzer>(assembly).ToImmutableArray();
-        if (scriptAnalyzerTypes.Length == 0 && globalAnalyzerTypes.Length == 0)
+        var diagnosticSettingsProviderTypes = GetPluginsOfType<IDiagnosticSettingsProvider>(assembly).ToImmutableArray();
+
+        if (scriptAnalyzerTypes.Length == 0 && globalAnalyzerTypes.Length == 0 && diagnosticSettingsProviderTypes.Length == 0)
         {
             return;
         }
 
-        var pluginAssembly = new PluginAssembly(assemblyLoadContext, scriptAnalyzerTypes, globalAnalyzerTypes);
+        var pluginAssembly = new PluginAssembly(assemblyLoadContext, scriptAnalyzerTypes, globalAnalyzerTypes, diagnosticSettingsProviderTypes);
         _plugins.Add(pluginAssembly);
     }
 
@@ -74,7 +76,12 @@ internal sealed class PluginManager : IDisposable
                 } && a.GetInterfaces().Any(x => x == typeof(TPlugin));
             });
 
-    private static string[] GetPluginAssemblyPaths() => Directory.GetFiles(PluginsDirectoryPath, "*.dll", SearchOption.AllDirectories);
+    private static string[] GetPluginAssemblyPaths()
+    {
+        return Directory.Exists(PluginsDirectoryPath)
+            ? Directory.GetFiles(PluginsDirectoryPath, "*.dll", SearchOption.AllDirectories)
+            : [];
+    }
 
     private static string GetPluginsDirectoryPath()
     {

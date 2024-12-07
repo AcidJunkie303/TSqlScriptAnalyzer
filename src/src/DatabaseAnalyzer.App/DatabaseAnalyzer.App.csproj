@@ -13,4 +13,9 @@
         <ProjectReference Include="..\DatabaseAnalyzer.Core\DatabaseAnalyzer.Core.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <None Update="Settings\common.jsonc" CopyToOutputDirectory="Always" CopyToPublishDirectory="Never"/>
+        <None Update="Settings\DB1.jsonc" CopyToOutputDirectory="Always" CopyToPublishDirectory="Never"/>
+    </ItemGroup>
+
 </Project>

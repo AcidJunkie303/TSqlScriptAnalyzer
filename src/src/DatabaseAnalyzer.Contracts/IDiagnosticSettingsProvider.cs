@@ -5,5 +5,5 @@ namespace DatabaseAnalyzer.Contracts;
 public interface IDiagnosticSettingsProvider
 {
     string DiagnosticId { get; }
-    object? GetSettings(IConfiguration configuration);
+    object? GetSettings(IConfigurationSection configurationSection);
 }

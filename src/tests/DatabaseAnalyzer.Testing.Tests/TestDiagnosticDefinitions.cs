@@ -4,22 +4,24 @@ namespace DatabaseAnalyzer.Testing.Tests;
 
 internal static class TestDiagnosticDefinitions
 {
-    public static IDiagnosticDefinition TestDiagnostic0 { get; } = new InternalDiagnosticDefinition("TE0000", "Bla", IssueType.Error);
-    public static IDiagnosticDefinition TestDiagnostic1 { get; } = new InternalDiagnosticDefinition("TE0001", "Bla {0}", IssueType.Error);
-    public static IDiagnosticDefinition TestDiagnostic2 { get; } = new InternalDiagnosticDefinition("TE0002", "Bla {0} {1}", IssueType.Error);
+    public static IDiagnosticDefinition TestDiagnostic0 { get; } = new InternalDiagnosticDefinition("TE0000", IssueType.Info, "error 0", "Bla");
+    public static IDiagnosticDefinition TestDiagnostic1 { get; } = new InternalDiagnosticDefinition("TE0001", IssueType.Warning, "error 1", "Bla {0}");
+    public static IDiagnosticDefinition TestDiagnostic2 { get; } = new InternalDiagnosticDefinition("TE0002", IssueType.Error, "error 2", "Bla {0} {1}");
 
     private sealed class InternalDiagnosticDefinition : IDiagnosticDefinition, IEquatable<InternalDiagnosticDefinition>
     {
-        public int RequiredInsertionStringCount { get; }
         public string DiagnosticId { get; }
-        public string MessageTemplate { get; }
         public IssueType IssueType { get; }
+        public string Title { get; }
+        public string MessageTemplate { get; }
+        public int RequiredInsertionStringCount { get; }
 
-        public InternalDiagnosticDefinition(string diagnosticId, string messageTemplate, IssueType issueType)
+        public InternalDiagnosticDefinition(string diagnosticId, IssueType issueType, string title, string messageTemplate)
         {
             DiagnosticId = diagnosticId;
-            MessageTemplate = messageTemplate;
             IssueType = issueType;
+            Title = title;
+            MessageTemplate = messageTemplate;
             RequiredInsertionStringCount = InsertionStringHelpers.CountInsertionStrings(messageTemplate);
         }
 

@@ -15,6 +15,7 @@ dotnet_sort_system_directives_first = true
 
 # Enforce file-scoped namespaces
 csharp_style_namespace_declarations = file_scoped:error
+dotnet_diagnostic.ide0160.severity = none
 dotnet_diagnostic.ide0161.severity = error
 
 # Seal internal types

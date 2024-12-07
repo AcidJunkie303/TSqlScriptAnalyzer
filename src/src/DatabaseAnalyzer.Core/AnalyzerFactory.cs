@@ -51,7 +51,12 @@ public static class AnalyzerFactory
 
                 foreach (var type in pluginAssembly.GlobalAnalyzerTypes)
                 {
-                    services.AddSingleton(typeof(IScriptAnalyzer), type);
+                    services.AddSingleton(typeof(IGlobalAnalyzer), type);
+                }
+
+                foreach (var type in pluginAssembly.DiagnosticSettingsProviderTypes)
+                {
+                    services.AddSingleton(typeof(IDiagnosticSettingsProvider), type);
                 }
             }
         }

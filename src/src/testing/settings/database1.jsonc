@@ -3,9 +3,9 @@
   "ScriptSource": {
     "ExclusionFilters":[],
     "DatabaseScriptsRootPathByDatabaseName":{
-      "database 1": "..\\..\\..\\..\\..\\tests\\script sources\\database 1",
-      "database 2": "..\\..\\..\\..\\..\\tests\\script sources\\database 2",
-      "database 3": "..\\..\\..\\..\\..\\tests\\script sources\\database 3"
+      "database 1": "..\\..\\..\\..\\testing\\scripts\\database 1",
+      "database 2": "..\\..\\..\\..\\testing\\scripts\\database 2",
+      "database 3": "..\\..\\..\\..\\testing\\scripts\\database 3"
     }
   },
   "Diagnostics": {
