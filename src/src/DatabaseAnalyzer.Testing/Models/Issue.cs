@@ -1,8 +1,6 @@
-using DatabaseAnalyzer.Contracts;
+namespace DatabaseAnalyzer.Contracts;
 
-namespace DatabaseAnalyzer.Testing;
-
-public sealed record Issue(
+internal sealed record Issue(
     IDiagnosticDefinition DiagnosticDefinition,
     string FullFilePath,
     string? ObjectName,
@@ -10,7 +8,7 @@ public sealed record Issue(
     IReadOnlyList<string> MessageInsertionStrings
 ) : IIssue
 {
-    public static Issue Create(IDiagnosticDefinition diagnosticDefinition, string fullFilePath, string objectName, SourceSpan codeRegion, params IReadOnlyList<string> messageInsertionStrings)
+    public static Issue Create(IDiagnosticDefinition diagnosticDefinition, string fullFilePath, string? fullObjectName, SourceSpan codeRegion, params IReadOnlyList<string> messageInsertionStrings)
     {
         var expectedInsertionStringCount = InsertionStringHelpers.CountInsertionStrings(diagnosticDefinition.MessageTemplate);
         if (expectedInsertionStringCount != messageInsertionStrings.Count)
@@ -18,6 +16,6 @@ public sealed record Issue(
             throw new ArgumentException($"Expected {expectedInsertionStringCount} insertion strings, but got {messageInsertionStrings.Count}.", nameof(messageInsertionStrings));
         }
 
-        return new Issue(diagnosticDefinition, fullFilePath, objectName, codeRegion, messageInsertionStrings);
+        return new Issue(diagnosticDefinition, fullFilePath, fullObjectName, codeRegion, messageInsertionStrings);
     }
 }
