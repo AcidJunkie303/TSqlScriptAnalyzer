@@ -39,7 +39,7 @@ public sealed class TestCodeProcessorTests
         var result = sut.ParseTestCode(code);
 
         // assert
-        var expectedLocation = SourceSpan.Create(1, 4, 1, 7);
+        var expectedLocation = CodeRegion.Create(1, 4, 1, 7);
         var expectedIssue = Issue.Create(TestDiagnosticDefinitions.TestDiagnostic0, "file.sql", "dbo.p1", expectedLocation);
 
         result.ExpectedIssues.Should().ContainEquivalentOf(expectedIssue);
@@ -61,7 +61,7 @@ public sealed class TestCodeProcessorTests
         var result = sut.ParseTestCode(code);
 
         // assert
-        var expectedLocation = SourceSpan.Create(1, 4, 1, 7);
+        var expectedLocation = CodeRegion.Create(1, 4, 1, 7);
         var expectedIssue = Issue.Create(TestDiagnosticDefinitions.TestDiagnostic1, "file.sql", "dbo.p1", expectedLocation, "X");
 
         result.ExpectedIssues.Should().ContainEquivalentOf(expectedIssue);
@@ -83,7 +83,7 @@ public sealed class TestCodeProcessorTests
         var result = sut.ParseTestCode(code);
 
         // assert
-        var expectedLocation = SourceSpan.Create(1, 4, 1, 7);
+        var expectedLocation = CodeRegion.Create(1, 4, 1, 7);
         var expectedIssue = Issue.Create(TestDiagnosticDefinitions.TestDiagnostic2, "file.sql", "dbo.p1", expectedLocation, "X", "Y");
 
         result.ExpectedIssues.Should().ContainEquivalentOf(expectedIssue);
@@ -107,7 +107,7 @@ public sealed class TestCodeProcessorTests
         var result = sut.ParseTestCode(code);
 
         // assert
-        var expectedLocation = SourceSpan.Create(1, 4, 3, 7);
+        var expectedLocation = CodeRegion.Create(1, 4, 3, 7);
         var expectedIssue = Issue.Create(TestDiagnosticDefinitions.TestDiagnostic0, "file.sql", "dbo.p1", expectedLocation);
 
         result.ExpectedIssues.Should().ContainEquivalentOf(expectedIssue);

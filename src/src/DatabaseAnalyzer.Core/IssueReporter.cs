@@ -10,7 +10,7 @@ internal sealed class IssueReporter : IIssueReporter
 
     public IReadOnlyList<IIssue> GetReportedIssues() => [.. _reportedIssues];
 
-    public void Report(IDiagnosticDefinition rule, string fullScriptFilePath, string? fullObjectName, SourceSpan codeRegion, params IReadOnlyList<string> insertionStrings)
+    public void Report(IDiagnosticDefinition rule, string fullScriptFilePath, string? fullObjectName, CodeRegion codeRegion, params object[] insertionStrings)
     {
         var issue = Issue.Create(rule, fullScriptFilePath, fullObjectName, codeRegion, insertionStrings);
         _reportedIssues.Add(issue);

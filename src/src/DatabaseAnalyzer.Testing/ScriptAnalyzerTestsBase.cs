@@ -20,7 +20,7 @@ public abstract class ScriptAnalyzerTestsBase<TAnalyzer>
             .Create<TAnalyzer>()
             .WithMainScriptFile(sql);
 
-    protected void TestScript(ScriptAnalyzerTester tester)
+    protected void Verify(ScriptAnalyzerTester tester)
     {
         var syntaxTree = SyntaxTreeVisualizer.Visualize(tester.MainScript.Script);
         TestOutputHelper.WriteLine(syntaxTree);

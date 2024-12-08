@@ -1,11 +1,9 @@
-using System.Diagnostics.CodeAnalysis;
 using DatabaseAnalyzer.Testing;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.DynamicSql;
 using Xunit.Abstractions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.DynamicSql;
 
-[SuppressMessage("maintainability", "S2699:Tests should include assertions", Justification = "Done internally through ScriptAnalyzerTester.Test")]
 public class DynamicSqlAnalyzerTests(ITestOutputHelper testOutputHelper) : ScriptAnalyzerTestsBase<DynamicSqlAnalyzer>(testOutputHelper)
 {
     [Fact]
@@ -14,7 +12,7 @@ public class DynamicSqlAnalyzerTests(ITestOutputHelper testOutputHelper) : Scrip
         const string sql = """
                            EXEC dbo.P1
                            """;
-        TestScript(GetDefaultTesterBuilder(sql).Build());
+        Verify(GetDefaultTesterBuilder(sql).Build());
     }
 
     [Fact]
@@ -24,7 +22,7 @@ public class DynamicSqlAnalyzerTests(ITestOutputHelper testOutputHelper) : Scrip
                            {{AJ5000¦main.sql¦|||EXEC ('SELECT 1')}}
                            """;
 
-        TestScript(GetDefaultTesterBuilder(sql).Build());
+        Verify(GetDefaultTesterBuilder(sql).Build());
     }
 
     [Fact]
@@ -33,7 +31,8 @@ public class DynamicSqlAnalyzerTests(ITestOutputHelper testOutputHelper) : Scrip
         const string sql = """
                            {{AJ5000¦main.sql¦|||EXEC sp_executeSql 'dbo.P1'}}
                            """;
-        TestScript(GetDefaultTesterBuilder(sql).Build());
+
+        Verify(GetDefaultTesterBuilder(sql).Build());
     }
 
     [Fact]
@@ -43,7 +42,8 @@ public class DynamicSqlAnalyzerTests(ITestOutputHelper testOutputHelper) : Scrip
                            DECLARE @sql NVARCHAR = N'SELECT 1'
                            {{AJ5000¦main.sql¦|||EXEC sp_executeSql @sql}}
                            """;
-        TestScript(GetDefaultTesterBuilder(sql).Build());
+
+        Verify(GetDefaultTesterBuilder(sql).Build());
     }
 
     [Fact]
@@ -52,6 +52,7 @@ public class DynamicSqlAnalyzerTests(ITestOutputHelper testOutputHelper) : Scrip
         const string sql = """
                            dbo.P1 @param1 = 123
                            """;
-        TestScript(GetDefaultTesterBuilder(sql).Build());
+
+        Verify(GetDefaultTesterBuilder(sql).Build());
     }
 }

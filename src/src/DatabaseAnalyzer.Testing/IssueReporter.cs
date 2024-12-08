@@ -11,14 +11,14 @@ internal sealed class IssueReporter : IIssueReporter
 
     public IReadOnlyList<IIssue> GetReportedIssues() => [.. _reportedIssues];
 
-    public void Report(IDiagnosticDefinition rule, string fullScriptFilePath, string? fullObjectName, SourceSpan codeRegion, params IReadOnlyList<string> insertionStrings)
+    public void Report(IDiagnosticDefinition rule, string fullScriptFilePath, string? fullObjectName, CodeRegion codeRegion, params object[] insertionStrings)
     {
         AssertCorrectInsertionStringCount(rule.MessageTemplate, insertionStrings);
 
         var issue = Issue.Create(rule, fullScriptFilePath, fullObjectName, codeRegion, insertionStrings);
         _reportedIssues.Add(issue);
 
-        static void AssertCorrectInsertionStringCount(string messageTemplate, IReadOnlyList<string> messageInsertionStrings)
+        static void AssertCorrectInsertionStringCount(string messageTemplate, IReadOnlyList<object> messageInsertionStrings)
         {
             var expectedInsertionStringCount = InsertionStringHelpers.CountInsertionStrings(messageTemplate);
             if (expectedInsertionStringCount == messageInsertionStrings.Count)

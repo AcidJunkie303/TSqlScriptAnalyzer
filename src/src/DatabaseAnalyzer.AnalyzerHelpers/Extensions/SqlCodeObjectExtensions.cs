@@ -4,21 +4,45 @@ namespace DatabaseAnalyzer.AnalyzerHelpers.Extensions;
 
 public static class SqlCodeObjectExtensions
 {
+    public static IEnumerable<T> GetTopLevelDescendantsOfType<T>(this SqlCodeObject codeObject)
+        where T : SqlCodeObject
+    {
+        return Get(codeObject, isStartingNode: true);
+
+        static IEnumerable<T> Get(SqlCodeObject codeObject, bool isStartingNode)
+        {
+            if (!isStartingNode && codeObject is T t)
+            {
+                yield return t;
+            }
+            else
+            {
+                foreach (var child in codeObject.Children)
+                {
+                    foreach (var descendant in Get(child, isStartingNode: false))
+                    {
+                        yield return descendant;
+                    }
+                }
+            }
+        }
+    }
+
     public static IEnumerable<T> GetDescendantsOfType<T>(this SqlCodeObject codeObject)
         where T : SqlCodeObject
     {
-        return Get(codeObject, isTop: true);
+        return Get(codeObject, isStartingNode: true);
 
-        static IEnumerable<T> Get(SqlCodeObject codeObject, bool isTop)
+        static IEnumerable<T> Get(SqlCodeObject codeObject, bool isStartingNode)
         {
-            if (!isTop && codeObject is T t)
+            if (!isStartingNode && codeObject is T t)
             {
                 yield return t;
             }
 
             foreach (var child in codeObject.Children)
             {
-                foreach (var descendant in Get(child, isTop: false))
+                foreach (var descendant in Get(child, isStartingNode: false))
                 {
                     yield return descendant;
                 }
@@ -33,6 +57,52 @@ public static class SqlCodeObjectExtensions
         {
             yield return parent;
             parent = parent.Parent;
+        }
+    }
+
+    public static IEnumerable<SqlCodeObject> GetPrecedingSiblings(this SqlCodeObject codeObject)
+    {
+        var parent = codeObject.Parent;
+        if (parent is null)
+        {
+            yield break;
+        }
+
+        var hasPassedCurrentNode = false;
+
+        foreach (var sibling in parent.Children.Reverse())
+        {
+            if (hasPassedCurrentNode)
+            {
+                yield return sibling;
+            }
+            else if (ReferenceEquals(codeObject, sibling))
+            {
+                hasPassedCurrentNode = true;
+            }
+        }
+    }
+
+    public static IEnumerable<SqlCodeObject> GetSucceedingSiblings(this SqlCodeObject codeObject)
+    {
+        var parent = codeObject.Parent;
+        if (parent is null)
+        {
+            yield break;
+        }
+
+        var hasPassedCurrentNode = false;
+
+        foreach (var sibling in parent.Children)
+        {
+            if (hasPassedCurrentNode)
+            {
+                yield return sibling;
+            }
+            else if (ReferenceEquals(codeObject, sibling))
+            {
+                hasPassedCurrentNode = true;
+            }
         }
     }
 

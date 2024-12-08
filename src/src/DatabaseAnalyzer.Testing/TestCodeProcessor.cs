@@ -57,7 +57,7 @@ internal sealed partial class TestCodeProcessor
                 ? startColumnNumber + endColumnOffset + 1
                 : endColumnOffset + 1 + 1;
 
-            var location = SourceSpan.Create(startLineNumber, startColumnNumber, endLineNumber, endColumnNumber);
+            var location = CodeRegion.Create(startLineNumber, startColumnNumber, endLineNumber, endColumnNumber);
             var issue = Issue.Create(_diagnosticRegistry.GetDefinition(id), fileName, fullObjectName, location, insertions);
             issues.Add(issue);
 
