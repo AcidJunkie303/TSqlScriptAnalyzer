@@ -1,4 +1,4 @@
-namespace DatabaseAnalyzers.DefaultAnalyzers.Extensions;
+namespace DatabaseAnalyzer.AnalyzerHelpers.Extensions;
 
 public static class StringExtensions
 {

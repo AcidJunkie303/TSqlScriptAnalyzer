@@ -40,6 +40,7 @@ internal sealed class Analyzer : IAnalyzer
         var analysisContext = new AnalysisContext
         (
             _applicationSettings.DatabaseToAnalyze,
+            _applicationSettings.DefaultSchemaName,
             scripts,
             scripts.ToFrozenDictionary(a => a.DatabaseName, a => a, StringComparer.OrdinalIgnoreCase),
             _diagnosticSettingsProviderFactory,

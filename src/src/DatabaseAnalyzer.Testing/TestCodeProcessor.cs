@@ -1,10 +1,11 @@
 using System.Text.RegularExpressions;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Testing.Extensions;
+using DatabaseAnalyzer.Testing.Models;
 
 namespace DatabaseAnalyzer.Testing;
 
-public sealed partial class TestCodeProcessor
+internal sealed partial class TestCodeProcessor
 {
     private readonly IDiagnosticDefinitionRegistry _diagnosticRegistry;
 
@@ -43,7 +44,7 @@ public sealed partial class TestCodeProcessor
             }
 
             var fileName = parts[0];
-            var objectName = parts[1];
+            var fullObjectName = parts[1].Length == 0 ? null : parts[1];
             var insertions = parts[2..];
 
             // tricky part: the code can span across multiple lines
@@ -57,7 +58,7 @@ public sealed partial class TestCodeProcessor
                 : endColumnOffset + 1 + 1;
 
             var location = SourceSpan.Create(startLineNumber, startColumnNumber, endLineNumber, endColumnNumber);
-            var issue = Issue.Create(_diagnosticRegistry.GetDefinition(id), fileName, objectName, location, insertions);
+            var issue = Issue.Create(_diagnosticRegistry.GetDefinition(id), fileName, fullObjectName, location, insertions);
             issues.Add(issue);
 
             return inner;

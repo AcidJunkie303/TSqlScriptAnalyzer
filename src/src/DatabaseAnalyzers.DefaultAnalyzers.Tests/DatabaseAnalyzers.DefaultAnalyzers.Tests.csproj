@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <!-- CA1707     Identifiers should not contain underscores -> OK for Unit Tests  -->
+        <NoWarn>CA1707</NoWarn>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Using Include="Xunit"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\DatabaseAnalyzer.Contracts\DatabaseAnalyzer.Contracts.csproj"/>
+        <ProjectReference Include="..\DatabaseAnalyzer.Testing\DatabaseAnalyzer.Testing.csproj"/>
+        <ProjectReference Include="..\DatabaseAnalyzers.DefaultAnalyzers\DatabaseAnalyzers.DefaultAnalyzers.csproj"/>
+    </ItemGroup>
+
+</Project>

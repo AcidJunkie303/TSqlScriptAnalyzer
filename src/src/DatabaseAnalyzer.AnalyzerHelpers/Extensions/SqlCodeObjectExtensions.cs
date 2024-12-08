@@ -1,6 +1,6 @@
 using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
 
-namespace DatabaseAnalyzers.DefaultAnalyzers.Extensions;
+namespace DatabaseAnalyzer.AnalyzerHelpers.Extensions;
 
 public static class SqlCodeObjectExtensions
 {
@@ -34,6 +34,20 @@ public static class SqlCodeObjectExtensions
             yield return parent;
             parent = parent.Parent;
         }
+    }
+
+    public static string? TryGetFullObjectName(this SqlCodeObject codeObject, string defaultSchemaName)
+    {
+        var (schemaName, objectName) = codeObject.TryGetSchemaAndObjectName(defaultSchemaName);
+
+        if (schemaName is null && objectName is null)
+        {
+            return null;
+        }
+
+        return schemaName is null
+            ? objectName
+            : $"{schemaName}.{objectName}";
     }
 
     public static (string? SchemaName, string? ObjectName) TryGetSchemaAndObjectName(this SqlCodeObject codeObject, string defaultSchemaName)

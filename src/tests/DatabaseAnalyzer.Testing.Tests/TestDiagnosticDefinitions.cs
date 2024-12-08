@@ -1,4 +1,5 @@
 using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Testing.Services;
 
 namespace DatabaseAnalyzer.Testing.Tests;
 

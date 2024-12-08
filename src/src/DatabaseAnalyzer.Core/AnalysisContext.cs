@@ -5,6 +5,7 @@ namespace DatabaseAnalyzer.Core;
 
 internal sealed record AnalysisContext(
     string DatabaseName,
+    string DefaultSchemaName,
     IReadOnlyList<ScriptModel> Scripts,
     IReadOnlyDictionary<string, ScriptModel> ScriptsByDatabaseName,
     IDiagnosticSettingsRetriever DiagnosticSettingsRetriever,

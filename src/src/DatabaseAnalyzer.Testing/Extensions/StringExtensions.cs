@@ -1,6 +1,6 @@
 namespace DatabaseAnalyzer.Testing.Extensions;
 
-public static class StringExtensions
+internal static class StringExtensions
 {
     public static (int LineIndex, int ColumnIndex) GetLineAndColumnIndex(this string text, int index)
     {
@@ -27,4 +27,10 @@ public static class StringExtensions
         var (lineIndex, columnIndex) = text.GetLineAndColumnIndex(index);
         return (lineIndex + 1, columnIndex + 1);
     }
+
+    public static bool EqualsOrdinal(this string? value, string? other)
+        => string.Equals(value, other, StringComparison.Ordinal);
+
+    public static bool EqualsOrdinalIgnoreCase(this string? value, string? other)
+        => string.Equals(value, other, StringComparison.OrdinalIgnoreCase);
 }

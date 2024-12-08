@@ -1,4 +1,6 @@
-namespace DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Contracts;
+
+namespace DatabaseAnalyzer.Testing.Models;
 
 internal sealed record Issue(
     IDiagnosticDefinition DiagnosticDefinition,
@@ -8,14 +10,5 @@ internal sealed record Issue(
     IReadOnlyList<string> MessageInsertionStrings
 ) : IIssue
 {
-    public static Issue Create(IDiagnosticDefinition diagnosticDefinition, string fullFilePath, string? fullObjectName, SourceSpan codeRegion, params IReadOnlyList<string> messageInsertionStrings)
-    {
-        var expectedInsertionStringCount = InsertionStringHelpers.CountInsertionStrings(diagnosticDefinition.MessageTemplate);
-        if (expectedInsertionStringCount != messageInsertionStrings.Count)
-        {
-            throw new ArgumentException($"Expected {expectedInsertionStringCount} insertion strings, but got {messageInsertionStrings.Count}.", nameof(messageInsertionStrings));
-        }
-
-        return new Issue(diagnosticDefinition, fullFilePath, fullObjectName, codeRegion, messageInsertionStrings);
-    }
+    public static Issue Create(IDiagnosticDefinition diagnosticDefinition, string fullFilePath, string? fullObjectName, SourceSpan codeRegion, params IReadOnlyList<string> messageInsertionStrings) => new(diagnosticDefinition, fullFilePath, fullObjectName, codeRegion, messageInsertionStrings);
 }

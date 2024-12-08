@@ -2,7 +2,7 @@ using DatabaseAnalyzer.Contracts;
 
 namespace DatabaseAnalyzer.Testing;
 
-public sealed class DiagnosticDefinitionRegistry : IDiagnosticDefinitionRegistry
+internal sealed class DiagnosticDefinitionRegistry : IDiagnosticDefinitionRegistry
 {
     private readonly Dictionary<string, IDiagnosticDefinition> _definitions = new(StringComparer.OrdinalIgnoreCase);
 

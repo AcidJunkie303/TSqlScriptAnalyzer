@@ -1,4 +1,7 @@
+using DatabaseAnalyzer.AnalyzerHelpers.Extensions;
 using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzers.DefaultAnalyzers.Extensions;
+using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.DynamicSql;
 
@@ -8,10 +11,44 @@ public sealed class DynamicSqlAnalyzer : IScriptAnalyzer
 
     public void AnalyzeScript(IAnalysisContext context, ScriptModel script)
     {
-        var settings = context.DiagnosticSettingsRetriever.GetSettings<Aj5000Settings>("AJ5000");
-        Console.WriteLine(settings is null ? "No settings found" : $"Settings found: {settings.ExampleValue}");
+        foreach (var statement in script.Script.GetDescendantsOfType<SqlExecuteModuleStatement>())
+        {
+            Analyze(context, script, statement);
+        }
 
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, script.FullScriptFilePath, null, SourceSpan.Create(1, 1, 2, 2));
+        foreach (var statement in script.Script.GetDescendantsOfType<SqlExecuteStringStatement>())
+        {
+            Analyze(context, script, statement);
+        }
+    }
+
+    private static void Analyze(IAnalysisContext context, ScriptModel script, SqlExecuteModuleStatement statement)
+    {
+        var firstChild = statement.Children.FirstOrDefault();
+        if (firstChild is SqlObjectReference objectReference && !objectReference.ObjectIdentifier.ObjectName.Value.EqualsOrdinalIgnoreCase("sp_executeSql"))
+        {
+            return;
+        }
+
+        var argument = statement.Arguments?.FirstOrDefault();
+        if (argument is null)
+        {
+            return;
+        }
+
+        if (!argument.Children.Any(a => a is SqlScalarVariableRefExpression or SqlLiteralExpression))
+        {
+            return;
+        }
+
+        var fullObjectName = statement.TryGetFullObjectName(context.DefaultSchemaName);
+        context.IssueReporter.Report(DiagnosticDefinitions.Default, script.FullScriptFilePath, fullObjectName, statement);
+    }
+
+    private static void Analyze(IAnalysisContext context, ScriptModel script, SqlExecuteStringStatement statement)
+    {
+        var fullObjectName = statement.TryGetFullObjectName(context.DefaultSchemaName);
+        context.IssueReporter.Report(DiagnosticDefinitions.Default, script.FullScriptFilePath, fullObjectName, statement);
     }
 
     private static class DiagnosticDefinitions
