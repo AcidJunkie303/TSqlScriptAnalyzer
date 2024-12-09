@@ -187,7 +187,7 @@
       <workItem from="1733603215086" duration="194000" />
       <workItem from="1733641176694" duration="460000" />
       <workItem from="1733641660324" duration="14529000" />
-      <workItem from="1733663914117" duration="8268000" />
+      <workItem from="1733663914117" duration="8573000" />
     </task>
     <task id="LOCAL-00001" summary="daily commit">
       <option name="closed" value="true" />
@@ -285,7 +285,15 @@
       <option name="project" value="LOCAL" />
       <updated>1733665736391</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="nightly commit">
+      <option name="closed" value="true" />
+      <created>1733686620912</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1733686620912</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -312,10 +320,10 @@
     <MESSAGE value="---" />
     <MESSAGE value="some renaming done" />
     <MESSAGE value="nightly check-in" />
-    <MESSAGE value="nightly commit" />
     <MESSAGE value="implemented first analyzer with unit tests. hoorraaaayyyyy :)" />
     <MESSAGE value="additional files" />
-    <option name="LAST_COMMIT_MESSAGE" value="additional files" />
+    <MESSAGE value="nightly commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="nightly commit" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
