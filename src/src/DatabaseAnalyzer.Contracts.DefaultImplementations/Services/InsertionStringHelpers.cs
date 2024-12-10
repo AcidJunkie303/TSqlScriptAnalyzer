@@ -1,8 +1,8 @@
 using System.Text.RegularExpressions;
 
-namespace DatabaseAnalyzer.Testing.Services;
+namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Services;
 
-internal static partial class InsertionStringHelpers
+public static partial class InsertionStringHelpers
 {
     [GeneratedRegex(@"\{\s*\d+\s*\}", RegexOptions.None, 100)]
     private static partial Regex InsertionStringsFinder();

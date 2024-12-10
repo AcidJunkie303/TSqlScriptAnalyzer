@@ -1,9 +1,9 @@
 using System.Collections.Immutable;
-using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Services;
 
-namespace DatabaseAnalyzer.Core.Models;
+namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 
-internal sealed record Issue(
+public sealed record Issue(
     IDiagnosticDefinition DiagnosticDefinition,
     string FullFilePath,
     string? ObjectName,

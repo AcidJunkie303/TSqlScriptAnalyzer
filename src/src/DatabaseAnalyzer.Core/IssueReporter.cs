@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 using DatabaseAnalyzer.Contracts;
-using DatabaseAnalyzer.Core.Models;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 
 namespace DatabaseAnalyzer.Core;
 

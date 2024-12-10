@@ -4,7 +4,6 @@
     <File Path="Directory.Build.props" />
     <File Path=".gitignore" />
   </Folder>
-  <Project Path="src\DatabaseAnalyzer.AnalyzerHelpers\DatabaseAnalyzer.AnalyzerHelpers.csproj" Type="Classic C#" />
   <Project Path="src\DatabaseAnalyzer.App\DatabaseAnalyzer.App.csproj" Type="Classic C#" />
   <Project Path="src\DatabaseAnalyzer.Contracts.DefaultImplementations\DatabaseAnalyzer.Contracts.DefaultImplementations.csproj" Type="Classic C#" />
   <Project Path="src\DatabaseAnalyzer.Contracts\DatabaseAnalyzer.Contracts.csproj" Type="Classic C#" />

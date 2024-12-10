@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Services;
 using DatabaseAnalyzer.Testing.Models;
-using DatabaseAnalyzer.Testing.Services;
 
 namespace DatabaseAnalyzer.Testing;
 

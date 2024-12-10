@@ -1,13 +1,13 @@
 using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
 
-namespace DatabaseAnalyzer.AnalyzerHelpers.Extensions;
+namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 
 public static class SqlCodeObjectExtensions
 {
     public static IEnumerable<T> GetTopLevelDescendantsOfType<T>(this SqlCodeObject codeObject)
         where T : SqlCodeObject
     {
-        return Get(codeObject, isStartingNode: true);
+        return Get(codeObject, true);
 
         static IEnumerable<T> Get(SqlCodeObject codeObject, bool isStartingNode)
         {
@@ -19,7 +19,7 @@ public static class SqlCodeObjectExtensions
             {
                 foreach (var child in codeObject.Children)
                 {
-                    foreach (var descendant in Get(child, isStartingNode: false))
+                    foreach (var descendant in Get(child, false))
                     {
                         yield return descendant;
                     }
@@ -31,7 +31,7 @@ public static class SqlCodeObjectExtensions
     public static IEnumerable<T> GetDescendantsOfType<T>(this SqlCodeObject codeObject)
         where T : SqlCodeObject
     {
-        return Get(codeObject, isStartingNode: true);
+        return Get(codeObject, true);
 
         static IEnumerable<T> Get(SqlCodeObject codeObject, bool isStartingNode)
         {
@@ -42,7 +42,7 @@ public static class SqlCodeObjectExtensions
 
             foreach (var child in codeObject.Children)
             {
-                foreach (var descendant in Get(child, isStartingNode: false))
+                foreach (var descendant in Get(child, false))
                 {
                     yield return descendant;
                 }

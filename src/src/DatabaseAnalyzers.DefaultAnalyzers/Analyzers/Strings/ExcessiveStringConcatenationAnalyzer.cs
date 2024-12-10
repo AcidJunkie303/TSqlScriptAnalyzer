@@ -1,5 +1,5 @@
-using DatabaseAnalyzer.AnalyzerHelpers.Extensions;
 using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Strings;
@@ -69,16 +69,13 @@ public class ExcessiveStringConcatenationAnalyzer : IScriptAnalyzer
                 return false;
             }
 
-            if (expression is SqlLiteralExpression literalExpression && literalExpression.Type is LiteralValueType.String or LiteralValueType.UnicodeString)
+            if (expression is SqlLiteralExpression { Type: LiteralValueType.String or LiteralValueType.UnicodeString })
             {
                 return true;
             }
 
-            if (expression is SqlScalarVariableRefExpression variableRefExpression)
-            {
-            }
-
-            return false;
+            return expression is SqlScalarVariableRefExpression variableRefExpression
+                   && (variableRefExpression.TryGetVariableDeclaration()?.GetDataType().IsString ?? false);
         }
     }
 

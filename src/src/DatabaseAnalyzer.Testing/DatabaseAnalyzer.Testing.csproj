@@ -1,7 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+    <PropertyGroup>
+        <IsTestProject>true</IsTestProject>
+    </PropertyGroup>
+
     <ItemGroup>
+        <ProjectReference Include="..\DatabaseAnalyzer.Contracts.DefaultImplementations\DatabaseAnalyzer.Contracts.DefaultImplementations.csproj"/>
         <ProjectReference Include="..\DatabaseAnalyzer.Contracts\DatabaseAnalyzer.Contracts.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Services\"/>
     </ItemGroup>
 
 </Project>

@@ -1,5 +1,5 @@
 using DatabaseAnalyzer.Contracts;
-using DatabaseAnalyzer.Testing.Services;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Services;
 
 namespace DatabaseAnalyzer.Testing.Tests;
 
@@ -11,12 +11,6 @@ internal static class TestDiagnosticDefinitions
 
     private sealed class InternalDiagnosticDefinition : IDiagnosticDefinition, IEquatable<InternalDiagnosticDefinition>
     {
-        public string DiagnosticId { get; }
-        public IssueType IssueType { get; }
-        public string Title { get; }
-        public string MessageTemplate { get; }
-        public int RequiredInsertionStringCount { get; }
-
         public InternalDiagnosticDefinition(string diagnosticId, IssueType issueType, string title, string messageTemplate)
         {
             DiagnosticId = diagnosticId;
@@ -25,6 +19,12 @@ internal static class TestDiagnosticDefinitions
             MessageTemplate = messageTemplate;
             RequiredInsertionStringCount = InsertionStringHelpers.CountInsertionStrings(messageTemplate);
         }
+
+        public string DiagnosticId { get; }
+        public IssueType IssueType { get; }
+        public string Title { get; }
+        public string MessageTemplate { get; }
+        public int RequiredInsertionStringCount { get; }
 
         public bool Equals(InternalDiagnosticDefinition? other)
         {

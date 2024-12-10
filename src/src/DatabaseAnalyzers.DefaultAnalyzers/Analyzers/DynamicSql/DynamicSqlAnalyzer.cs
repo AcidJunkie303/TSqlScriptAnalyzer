@@ -1,6 +1,5 @@
-using DatabaseAnalyzer.AnalyzerHelpers.Extensions;
 using DatabaseAnalyzer.Contracts;
-using DatabaseAnalyzers.DefaultAnalyzers.Extensions;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.DynamicSql;
