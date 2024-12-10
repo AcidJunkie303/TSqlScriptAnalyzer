@@ -8,12 +8,12 @@ namespace DatabaseAnalyzer.Testing;
 public abstract class ScriptAnalyzerTestsBase<TAnalyzer>
     where TAnalyzer : class, IScriptAnalyzer, new()
 {
-    protected ITestOutputHelper TestOutputHelper { get; }
-
     protected ScriptAnalyzerTestsBase(ITestOutputHelper testOutputHelper)
     {
         TestOutputHelper = testOutputHelper;
     }
+
+    protected ITestOutputHelper TestOutputHelper { get; }
 
     protected static ScriptAnalyzerTesterBuilder<TAnalyzer> GetDefaultTesterBuilder(string sql)
         => ScriptAnalyzerTesterBuilder
@@ -26,4 +26,6 @@ public abstract class ScriptAnalyzerTestsBase<TAnalyzer>
         TestOutputHelper.WriteLine(syntaxTree);
         tester.Test();
     }
+
+    protected void Verify(string sql) => Verify(GetDefaultTesterBuilder(sql).Build());
 }

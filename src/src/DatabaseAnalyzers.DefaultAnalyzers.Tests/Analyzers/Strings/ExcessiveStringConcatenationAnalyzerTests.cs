@@ -12,7 +12,7 @@ public class ExcessiveStringConcatenationAnalyzerTests(ITestOutputHelper testOut
         const string sql = """
                            SET @x = 'a' + 'b' + 'c'
                            """;
-        Verify(GetDefaultTesterBuilder(sql).Build());
+        Verify(sql);
     }
 
     [Fact]
@@ -21,7 +21,7 @@ public class ExcessiveStringConcatenationAnalyzerTests(ITestOutputHelper testOut
         const string sql = """
                            SET @x = {{AJ5001¦main.sql¦¦2|||'a' + 'b' + 'c' + 'd'}} -- 2 is the default max allowed string concatenation count
                            """;
-        Verify(GetDefaultTesterBuilder(sql).Build());
+        Verify(sql);
     }
 
     [Fact]
@@ -30,7 +30,7 @@ public class ExcessiveStringConcatenationAnalyzerTests(ITestOutputHelper testOut
         const string sql = """
                            SET @x = 1 + 2 + 3 + 4
                            """;
-        Verify(GetDefaultTesterBuilder(sql).Build());
+        Verify(sql);
     }
 
     [Fact]
@@ -40,7 +40,7 @@ public class ExcessiveStringConcatenationAnalyzerTests(ITestOutputHelper testOut
                            DECLARE @a NVARCHAR(MAX) = N'a'
                            SET @x = {{AJ5001¦main.sql¦¦2|||@a + @a + @a + @a}}
                            """;
-        Verify(GetDefaultTesterBuilder(sql).Build());
+        Verify(sql);
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class ExcessiveStringConcatenationAnalyzerTests(ITestOutputHelper testOut
                            SET @x = @a + @a + @a + @a
                            """;
 
-        Verify(GetDefaultTesterBuilder(sql).Build());
+        Verify(sql);
     }
 
     [Fact]
@@ -92,6 +92,6 @@ public class ExcessiveStringConcatenationAnalyzerTests(ITestOutputHelper testOut
                            END
                            """;
 
-        Verify(GetDefaultTesterBuilder(sql).Build());
+        Verify(sql);
     }
 }

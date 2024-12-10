@@ -16,7 +16,6 @@ dotnet_sort_system_directives_first = true
 # Enforce file-scoped namespaces
 csharp_style_namespace_declarations = file_scoped:error
 
-
 # Don't use this. qualifier
 dotnet_style_qualification_for_field = false:suggestion
 dotnet_style_qualification_for_property = false:suggestion

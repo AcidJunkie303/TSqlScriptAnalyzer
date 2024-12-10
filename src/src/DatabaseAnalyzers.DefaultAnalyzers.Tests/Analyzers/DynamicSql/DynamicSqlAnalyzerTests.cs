@@ -12,7 +12,7 @@ public class DynamicSqlAnalyzerTests(ITestOutputHelper testOutputHelper) : Scrip
         const string sql = """
                            EXEC dbo.P1
                            """;
-        Verify(GetDefaultTesterBuilder(sql).Build());
+        Verify(sql);
     }
 
     [Fact]
@@ -22,7 +22,7 @@ public class DynamicSqlAnalyzerTests(ITestOutputHelper testOutputHelper) : Scrip
                            {{AJ5000¦main.sql¦|||EXEC ('SELECT 1')}}
                            """;
 
-        Verify(GetDefaultTesterBuilder(sql).Build());
+        Verify(sql);
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class DynamicSqlAnalyzerTests(ITestOutputHelper testOutputHelper) : Scrip
                            {{AJ5000¦main.sql¦|||EXEC sp_executeSql 'dbo.P1'}}
                            """;
 
-        Verify(GetDefaultTesterBuilder(sql).Build());
+        Verify(sql);
     }
 
     [Fact]
@@ -43,7 +43,7 @@ public class DynamicSqlAnalyzerTests(ITestOutputHelper testOutputHelper) : Scrip
                            {{AJ5000¦main.sql¦|||EXEC sp_executeSql @sql}}
                            """;
 
-        Verify(GetDefaultTesterBuilder(sql).Build());
+        Verify(sql);
     }
 
     [Fact]
@@ -53,6 +53,6 @@ public class DynamicSqlAnalyzerTests(ITestOutputHelper testOutputHelper) : Scrip
                            dbo.P1 @param1 = 123
                            """;
 
-        Verify(GetDefaultTesterBuilder(sql).Build());
+        Verify(sql);
     }
 }

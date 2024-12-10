@@ -17,4 +17,9 @@ public static class StringExtensions
 
     public static bool EqualsOrdinalIgnoreCase(this string? value, string? other)
         => string.Equals(value, other, StringComparison.OrdinalIgnoreCase);
+
+    public static string SimpleUnquoteSql(this string value)
+        => value
+            .Replace("[", string.Empty, StringComparison.Ordinal)
+            .Replace("]", string.Empty, StringComparison.Ordinal);
 }

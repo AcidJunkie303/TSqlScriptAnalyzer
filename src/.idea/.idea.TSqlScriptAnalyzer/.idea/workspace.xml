@@ -10,36 +10,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bc5c4f41-9446-4faf-a8e5-3c6d90b660d2" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../.idea/indexLayout.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/SqlScalarVariableRefExpressionExtensions.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/SqlVariableDeclarationExtensions.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Services/BuiltInVariables.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/SqlDataTypeSpecificationExtensions.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/Strings/UnicodeAsciiStringMixAnalyzerTests.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Strings/UnicodeAsciiStringMixAnalyzer.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.editorconfig" beforeDir="false" afterPath="$PROJECT_DIR$/.editorconfig" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TSqlScriptAnalyzer/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TSqlScriptAnalyzer/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TSqlScriptAnalyzer.slnx" beforeDir="false" afterPath="$PROJECT_DIR$/TSqlScriptAnalyzer.slnx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.AnalyzerHelpers/DatabaseAnalyzer.AnalyzerHelpers.csproj" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.AnalyzerHelpers/Extensions/SqlCodeObjectExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/SqlCodeObjectExtensions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.AnalyzerHelpers/Extensions/SqlScalarVariableRefExpressionExtensions.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.AnalyzerHelpers/Extensions/StringExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/StringExtensions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/DataType.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/DataType.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/DataTypeFactory.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/DatabaseAnalyzer.Contracts.DefaultImplementations.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/DatabaseAnalyzer.Contracts.DefaultImplementations.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts/DataType.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts/DataType.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Core/DatabaseAnalyzer.Core.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Core/DatabaseAnalyzer.Core.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Core/InsertionStringHelpers.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Services/InsertionStringHelpers.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Core/IssueReporter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Core/IssueReporter.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Core/Models/Issue.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Models/Issue.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Testing/DatabaseAnalyzer.Testing.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Testing/DatabaseAnalyzer.Testing.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Testing/IssueReporter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Testing/IssueReporter.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Testing/Services/InsertionStringHelpers.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/StringExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/StringExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Testing/ScriptAnalyzerTestsBase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Testing/ScriptAnalyzerTestsBase.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/DynamicSql/DynamicSqlAnalyzerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/DynamicSql/DynamicSqlAnalyzerTests.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/Strings/ExcessiveStringConcatenationAnalyzerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/Strings/ExcessiveStringConcatenationAnalyzerTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/DynamicSql/DynamicSqlAnalyzer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/DynamicSql/DynamicSqlAnalyzer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Strings/ExcessiveStringConcatenationAnalyzer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Strings/ExcessiveStringConcatenationAnalyzer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/DatabaseAnalyzers.DefaultAnalyzers.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/DatabaseAnalyzers.DefaultAnalyzers.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Extensions/StringExtensions.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/DatabaseAnalyzer.Testing.Tests/TestDiagnosticDefinitions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/tests/DatabaseAnalyzer.Testing.Tests/TestDiagnosticDefinitions.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -73,8 +52,10 @@
 }</component>
   <component name="HighlightingSettingsPerFile">
     <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/75/525aeaaa/SqlParameterDeclaration.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/78/d62904b9/DataTypeArgSpec.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/8c/e1e11fdf/SqlCastExpression.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/c62dbcc4ba2718769223d2edcbb462defa1d97c8f2ef066639d41ddd521e/XUnit2TestFramework.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
@@ -116,7 +97,7 @@
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;rider.code.cleanup.on.save&quot;: &quot;true&quot;,
     &quot;rider.code.cleanup.on.save.profile&quot;: &quot;Built-in: Full Cleanup2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode.C#&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.tabs&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
   &quot;keyToStringList&quot;: {
@@ -175,7 +156,8 @@
       <workItem from="1733686896911" duration="163000" />
       <workItem from="1733687166181" duration="108000" />
       <workItem from="1733802686064" duration="5377000" />
-      <workItem from="1733808104103" duration="403000" />
+      <workItem from="1733808104103" duration="7082000" />
+      <workItem from="1733835395326" duration="699000" />
     </task>
     <task id="LOCAL-00001" summary="daily commit">
       <option name="closed" value="true" />
@@ -273,7 +255,23 @@
       <option name="project" value="LOCAL" />
       <updated>1733665736391</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="completed ExcessiveStringConcatenationAnalyzer">
+      <option name="closed" value="true" />
+      <created>1733808877763</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1733808877763</updated>
+    </task>
+    <task id="LOCAL-00014" summary="....">
+      <option name="closed" value="true" />
+      <created>1733809107236</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1733809107236</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -303,7 +301,9 @@
     <MESSAGE value="nightly commit" />
     <MESSAGE value="implemented first analyzer with unit tests. hoorraaaayyyyy :)" />
     <MESSAGE value="additional files" />
-    <option name="LAST_COMMIT_MESSAGE" value="additional files" />
+    <MESSAGE value="completed ExcessiveStringConcatenationAnalyzer" />
+    <MESSAGE value="...." />
+    <option name="LAST_COMMIT_MESSAGE" value="...." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -547,14 +547,26 @@
           </properties>
           <option name="timeStamp" value="108" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/SqlDataTypeSpecificationExtensions.cs</url>
+          <line>14</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\Extensions\SqlDataTypeSpecificationExtensions.cs" containingFunctionPresentation="Method 'GetDataType'">
+            <startOffsets>
+              <option value="553" />
+            </startOffsets>
+            <endOffsets>
+              <option value="554" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="122" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
-    <watches-manager>
-      <configuration name="RiderUnitTests">
-        <watch expression="codeObject.StartLocation" language="C#" />
-        <watch expression="codeObject.EndLocation" language="C#" />
-      </configuration>
-    </watches-manager>
+    <pin-to-top-manager>
+      <pinned-members>
+        <PinnedItemInfo parentTag="Type#Microsoft.SqlServer.Management.SqlParser.Metadata.DataTypeSpec" memberName="ArgSpec1" />
+      </pinned-members>
+    </pin-to-top-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
