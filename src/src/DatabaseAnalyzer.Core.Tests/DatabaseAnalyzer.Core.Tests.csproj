@@ -6,7 +6,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\DatabaseAnalyzer.Testing\DatabaseAnalyzer.Testing.csproj"/>
+        <Using Include="Xunit"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\DatabaseAnalyzer.Core\DatabaseAnalyzer.Core.csproj"/>
     </ItemGroup>
 
 </Project>

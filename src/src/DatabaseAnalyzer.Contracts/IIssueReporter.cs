@@ -5,7 +5,7 @@ namespace DatabaseAnalyzer.Contracts;
 
 public interface IIssueReporter
 {
-    IReadOnlyList<IIssue> GetReportedIssues();
+    IReadOnlyList<IIssue> GetIssues();
 
     void Report(IDiagnosticDefinition rule, string fullScriptFilePath, string? fullObjectName, CodeRegion codeRegion, params object[] insertionStrings);
 }

@@ -7,5 +7,6 @@ public sealed record ScriptModel(
     string FullScriptFilePath,
     string Content,
     SqlScript Script,
-    IReadOnlyList<string> Errors
+    IReadOnlyList<string> Errors,
+    IReadOnlyList<Suppression> Suppressions
 );

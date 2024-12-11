@@ -5,7 +5,7 @@ namespace DatabaseAnalyzer.Testing.Models;
 
 internal sealed record Issue(
     IDiagnosticDefinition DiagnosticDefinition,
-    string FullFilePath,
+    string FullScriptFilePath,
     string? ObjectName,
     CodeRegion CodeRegion,
     IReadOnlyList<string> MessageInsertionStrings

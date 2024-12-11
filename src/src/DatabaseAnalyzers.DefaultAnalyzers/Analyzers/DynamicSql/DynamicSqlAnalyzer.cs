@@ -1,3 +1,4 @@
+using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;

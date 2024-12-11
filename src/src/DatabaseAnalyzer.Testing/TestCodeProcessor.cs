@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
+using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
-using DatabaseAnalyzer.Testing.Extensions;
 using DatabaseAnalyzer.Testing.Models;
 
 namespace DatabaseAnalyzer.Testing;

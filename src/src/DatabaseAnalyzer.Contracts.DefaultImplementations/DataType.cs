@@ -1,5 +1,5 @@
 using System.Text;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
+using DatabaseAnalyzer.Common.Extensions;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations;
 
@@ -46,7 +46,9 @@ public sealed class DataType : IDataType
             && string.Equals(Name, other.Name, StringComparison.Ordinal);
     }
 
-    public override bool Equals(object? obj) => ReferenceEquals(this, obj) || (obj is IDataType other && Equals(other));
+    public override bool Equals(object? obj)
+        => ReferenceEquals(this, obj)
+           || (obj is IDataType other && Equals(other));
 
     public override int GetHashCode() => HashCode.Combine(Name, Argument1, Argument2);
 

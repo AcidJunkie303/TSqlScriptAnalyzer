@@ -10,8 +10,6 @@ public sealed class ScriptAnalyzerTester
 {
     private readonly IAnalysisContext _analysisContext;
     private readonly IScriptAnalyzer _analyzer;
-    public ScriptModel MainScript { get; }
-    public IReadOnlyList<IIssue> ExpectedIssues { get; }
 
     public ScriptAnalyzerTester(
         IAnalysisContext analysisContext,
@@ -25,6 +23,9 @@ public sealed class ScriptAnalyzerTester
         _analyzer = analyzer;
     }
 
+    public ScriptModel MainScript { get; }
+    public IReadOnlyList<IIssue> ExpectedIssues { get; }
+
     public void Test()
     {
         var firstScriptError = _analysisContext.Scripts.SelectMany(script => script.Errors).FirstOrDefault();
@@ -35,7 +36,7 @@ public sealed class ScriptAnalyzerTester
 
         _analyzer.AnalyzeScript(_analysisContext, MainScript);
 
-        var reportedIssues = _analysisContext.IssueReporter.GetReportedIssues();
+        var reportedIssues = _analysisContext.IssueReporter.GetIssues();
         reportedIssues.Should().BeEquivalentTo(ExpectedIssues);
     }
 }

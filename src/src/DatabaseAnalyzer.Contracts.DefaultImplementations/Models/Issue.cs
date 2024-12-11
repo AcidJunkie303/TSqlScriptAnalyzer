@@ -5,7 +5,7 @@ namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 
 public sealed record Issue(
     IDiagnosticDefinition DiagnosticDefinition,
-    string FullFilePath,
+    string FullScriptFilePath,
     string? ObjectName,
     CodeRegion CodeRegion,
     IReadOnlyList<string> MessageInsertionStrings
@@ -23,5 +23,7 @@ public sealed record Issue(
     }
 
     private static ImmutableArray<string> ToStringArray(IReadOnlyCollection<object> insertionStrings)
-        => [.. insertionStrings.Select(a => a.ToString() ?? string.Empty)];
+        => insertionStrings
+            .Select(a => a.ToString() ?? string.Empty)
+            .ToImmutableArray();
 }

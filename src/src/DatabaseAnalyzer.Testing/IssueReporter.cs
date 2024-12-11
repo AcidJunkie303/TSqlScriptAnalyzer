@@ -9,7 +9,7 @@ internal sealed class IssueReporter : IIssueReporter
 {
     private readonly ConcurrentBag<IIssue> _reportedIssues = [];
 
-    public IReadOnlyList<IIssue> GetReportedIssues() => [.. _reportedIssues];
+    public IReadOnlyList<IIssue> GetIssues() => [.. _reportedIssues];
 
     public void Report(IDiagnosticDefinition rule, string fullScriptFilePath, string? fullObjectName, CodeRegion codeRegion, params object[] insertionStrings)
     {

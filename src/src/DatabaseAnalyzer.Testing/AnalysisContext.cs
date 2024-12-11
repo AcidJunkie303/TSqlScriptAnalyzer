@@ -1,5 +1,5 @@
+using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
-using DatabaseAnalyzer.Testing.Extensions;
 
 namespace DatabaseAnalyzer.Testing;
 

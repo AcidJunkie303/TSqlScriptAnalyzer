@@ -20,4 +20,9 @@ public record struct CodeRegion(
 
     public static CodeRegion From(Token token)
         => new(token.StartLocation.LineNumber, token.StartLocation.ColumnNumber, token.EndLocation.LineNumber, token.EndLocation.ColumnNumber);
+
+    public static CodeRegion From(Location start, Location end)
+        => new(start.LineNumber, start.ColumnNumber, end.LineNumber, end.ColumnNumber);
+
+    public override string ToString() => $"({StartLineNumber},{StartColumnNumber})-({EndLineNumber},{EndColumnNumber})";
 }

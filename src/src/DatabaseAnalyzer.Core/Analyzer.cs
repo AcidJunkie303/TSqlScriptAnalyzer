@@ -13,16 +13,18 @@ internal sealed class Analyzer : IAnalyzer
 {
     private readonly ApplicationSettings _applicationSettings;
     private readonly IDiagnosticSettingsRetriever _diagnosticSettingsProviderFactory;
+    private readonly IDiagnosticSuppressionExtractor _diagnosticSuppressionExtractor;
     private readonly IEnumerable<IGlobalAnalyzer> _globalAnalyzers;
     private readonly IProgressCallback _progressCallback;
     private readonly IEnumerable<IScriptAnalyzer> _scriptAnalyzers;
     private readonly IScriptLoader _scriptLoader;
     private readonly IScriptSourceProvider _scriptSourceProvider;
+    private readonly ISuppressionFilterer _suppressionFilterer;
 
     public Analyzer
     (
         IProgressCallback progressCallback,
-        IScriptSourceProvider scriptSourceProvider, IScriptLoader scriptLoader, ApplicationSettings applicationSettings, IDiagnosticSettingsRetriever diagnosticSettingsProviderFactory, IEnumerable<IScriptAnalyzer> scriptAnalyzers, IEnumerable<IGlobalAnalyzer> globalAnalyzers)
+        IScriptSourceProvider scriptSourceProvider, IScriptLoader scriptLoader, ApplicationSettings applicationSettings, IDiagnosticSettingsRetriever diagnosticSettingsProviderFactory, IEnumerable<IScriptAnalyzer> scriptAnalyzers, IEnumerable<IGlobalAnalyzer> globalAnalyzers, IDiagnosticSuppressionExtractor diagnosticSuppressionExtractor, ISuppressionFilterer suppressionFilterer)
     {
         _progressCallback = progressCallback;
         _scriptSourceProvider = scriptSourceProvider;
@@ -31,6 +33,8 @@ internal sealed class Analyzer : IAnalyzer
         _diagnosticSettingsProviderFactory = diagnosticSettingsProviderFactory;
         _scriptAnalyzers = scriptAnalyzers;
         _globalAnalyzers = globalAnalyzers;
+        _diagnosticSuppressionExtractor = diagnosticSuppressionExtractor;
+        _suppressionFilterer = suppressionFilterer;
     }
 
     public AnalysisResult Analyze()
@@ -57,7 +61,8 @@ internal sealed class Analyzer : IAnalyzer
 
         Parallel.ForEach(_globalAnalyzers, analyzer => analyzer.Analyze(analysisContext));
 
-        var issues = analysisContext.IssueReporter.GetReportedIssues();
+        var issues = analysisContext.IssueReporter.GetIssues();
+        _suppressionFilterer.Filter(issues,);
         var issuesByObjectName = issues
             .GroupBy(a => a.FullObjectNameOrFileName, StringComparer.OrdinalIgnoreCase)
             .ToDictionary(
@@ -83,21 +88,23 @@ internal sealed class Analyzer : IAnalyzer
             .Select(ParseScript)
             .ToImmutableArray();
 
-        static ScriptModel ParseScript(BasicScriptInformation script)
+        ScriptModel ParseScript(BasicScriptInformation script)
         {
             var parseResult = Parser.Parse(script.Content);
             var errors = parseResult.Errors
-                .Select(a => $"{a.Message} at {a.Start.LineNumber},{a.Start.ColumnNumber} - {a.End.LineNumber},{a.End.ColumnNumber}")
+                .Select(a => $"{a.Message} at {CodeRegion.From(a.Start, a.End)}")
                 .ToImmutableArray();
             var parsedScript = parseResult.Script;
+            var suppressions = _diagnosticSuppressionExtractor.ExtractSuppressions(parsedScript).ToList();
 
             return new ScriptModel
             (
-                DatabaseName: script.DatabaseName,
-                FullScriptFilePath: script.FullScriptPath,
-                Content: script.Content,
-                Script: parsedScript,
-                Errors: errors
+                script.DatabaseName,
+                script.FullScriptPath,
+                script.Content,
+                parsedScript,
+                errors,
+                suppressions
             );
         }
 
