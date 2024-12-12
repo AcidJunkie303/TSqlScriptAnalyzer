@@ -1,5 +1,6 @@
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Strings;
@@ -86,8 +87,7 @@ public class ExcessiveStringConcatenationAnalyzer : IScriptAnalyzer
             "AJ5001",
             IssueType.Warning,
             "Excessive string concatenations",
-            "More than {0} allowed string concatenations",
-            1
+            "More than {0} allowed string concatenations"
         );
     }
 }

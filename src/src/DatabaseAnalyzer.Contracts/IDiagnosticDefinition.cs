@@ -8,11 +8,3 @@ public interface IDiagnosticDefinition
     string MessageTemplate { get; }
     int RequiredInsertionStringCount { get; }
 }
-
-public sealed record DiagnosticDefinition(
-    string DiagnosticId,
-    IssueType IssueType,
-    string Title,
-    string MessageTemplate,
-    int RequiredInsertionStringCount
-) : IDiagnosticDefinition;

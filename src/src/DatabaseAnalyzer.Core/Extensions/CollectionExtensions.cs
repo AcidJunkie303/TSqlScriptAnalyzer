@@ -16,12 +16,6 @@ public static class CollectionExtensions
         where TKey : notnull
         => value ?? ImmutableDictionary<TKey, TValue>.Empty;
 
-    public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> items)
-        where T : class
-        => items
-            .Where(a => a is not null)
-            .Select(a => a!);
-
     public static IEnumerable<KeyValuePair<TKey, TValue>> WhereValueNotNull<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue?>> dictionary)
         where TKey : notnull
         => dictionary

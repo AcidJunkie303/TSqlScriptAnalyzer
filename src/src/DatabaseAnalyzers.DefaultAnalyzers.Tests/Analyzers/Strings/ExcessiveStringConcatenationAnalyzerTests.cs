@@ -4,7 +4,7 @@ using Xunit.Abstractions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Strings;
 
-public class ExcessiveStringConcatenationAnalyzerTests(ITestOutputHelper testOutputHelper) : ScriptAnalyzerTestsBase<ExcessiveStringConcatenationAnalyzer>(testOutputHelper)
+public sealed class ExcessiveStringConcatenationAnalyzerTests(ITestOutputHelper testOutputHelper) : ScriptAnalyzerTestsBase<ExcessiveStringConcatenationAnalyzer>(testOutputHelper)
 {
     [Fact]
     public void WhenTwoStringConcatenation_ThenOk()

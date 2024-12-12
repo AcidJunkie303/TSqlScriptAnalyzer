@@ -1,9 +1,8 @@
 namespace DatabaseAnalyzer.Contracts;
 
-public sealed record Suppression(
+public sealed record DiagnosticSuppression(
     string DiagnosticId,
-    int LineNumber,
-    int ColumnNumber,
+    CodeLocation Location,
     SuppressionAction Action,
     string Reason
 );

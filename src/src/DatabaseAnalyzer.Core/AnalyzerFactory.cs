@@ -1,4 +1,5 @@
 using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Services;
 using DatabaseAnalyzer.Core.Configuration;
 using DatabaseAnalyzer.Core.Plugins;
 using DatabaseAnalyzer.Core.Services;
@@ -31,6 +32,7 @@ public static class AnalyzerFactory
                 services.AddSingleton<IScriptLoader, ScriptLoader>();
                 services.AddSingleton<IScriptSourceProvider, ScriptSourceSourceProvider>();
                 services.AddSingleton<IDiagnosticSettingsRetriever, DiagnosticSettingsRetriever>();
+                services.AddSingleton<IDiagnosticSuppressionExtractor, DiagnosticSuppressionExtractor>();
 
                 RegisterPlugins(services);
             });

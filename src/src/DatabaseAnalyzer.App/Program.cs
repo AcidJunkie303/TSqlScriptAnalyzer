@@ -57,7 +57,30 @@ internal static class Program
         var analyzer = AnalyzerFactory.Create(configuration, settings, new ProgressCallbackConsoleWriter());
         var analysisResult = analyzer.Analyze();
 
-        // TODO: add report type and render the report accordingly
-        Console.WriteLine(analysisResult.ToString());
+        if (analysisResult.Issues.Count == 0)
+        {
+            Console.WriteLine("No issues found.");
+        }
+        else
+        {
+            Console.WriteLine("{0} issues found.", analysisResult.Issues);
+            foreach (var issue in analysisResult.Issues)
+            {
+                Console.WriteLine($"{issue.DiagnosticDefinition.DiagnosticId} {issue.FullScriptFilePath} {issue.Message}");
+            }
+        }
+
+        if (analysisResult.SuppressedIssues.Count == 0)
+        {
+            Console.WriteLine("No suppressed issues found.");
+        }
+        else
+        {
+            Console.WriteLine("{0} suppressed issues found.", analysisResult.Issues);
+            foreach (var issue in analysisResult.SuppressedIssues)
+            {
+                Console.WriteLine($"{issue.Issue.DiagnosticDefinition.DiagnosticId} {issue.Issue.FullScriptFilePath} {issue.Issue.Message}.    Reason={issue.Reason}");
+            }
+        }
     }
 }

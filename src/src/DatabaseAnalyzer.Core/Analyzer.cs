@@ -19,12 +19,17 @@ internal sealed class Analyzer : IAnalyzer
     private readonly IEnumerable<IScriptAnalyzer> _scriptAnalyzers;
     private readonly IScriptLoader _scriptLoader;
     private readonly IScriptSourceProvider _scriptSourceProvider;
-    private readonly ISuppressionFilterer _suppressionFilterer;
 
     public Analyzer
     (
         IProgressCallback progressCallback,
-        IScriptSourceProvider scriptSourceProvider, IScriptLoader scriptLoader, ApplicationSettings applicationSettings, IDiagnosticSettingsRetriever diagnosticSettingsProviderFactory, IEnumerable<IScriptAnalyzer> scriptAnalyzers, IEnumerable<IGlobalAnalyzer> globalAnalyzers, IDiagnosticSuppressionExtractor diagnosticSuppressionExtractor, ISuppressionFilterer suppressionFilterer)
+        IScriptSourceProvider scriptSourceProvider,
+        IScriptLoader scriptLoader,
+        ApplicationSettings applicationSettings,
+        IDiagnosticSettingsRetriever diagnosticSettingsProviderFactory,
+        IEnumerable<IScriptAnalyzer> scriptAnalyzers,
+        IEnumerable<IGlobalAnalyzer> globalAnalyzers,
+        IDiagnosticSuppressionExtractor diagnosticSuppressionExtractor)
     {
         _progressCallback = progressCallback;
         _scriptSourceProvider = scriptSourceProvider;
@@ -34,7 +39,6 @@ internal sealed class Analyzer : IAnalyzer
         _scriptAnalyzers = scriptAnalyzers;
         _globalAnalyzers = globalAnalyzers;
         _diagnosticSuppressionExtractor = diagnosticSuppressionExtractor;
-        _suppressionFilterer = suppressionFilterer;
     }
 
     public AnalysisResult Analyze()
@@ -62,7 +66,9 @@ internal sealed class Analyzer : IAnalyzer
         Parallel.ForEach(_globalAnalyzers, analyzer => analyzer.Analyze(analysisContext));
 
         var issues = analysisContext.IssueReporter.GetIssues();
-        _suppressionFilterer.Filter(issues,);
+
+        var (unsuppressedIssues, suppressedIssues) = SplitIssuesToSuppressedAndUnsuppressed(scripts, issues);
+
         var issuesByObjectName = issues
             .GroupBy(a => a.FullObjectNameOrFileName, StringComparer.OrdinalIgnoreCase)
             .ToDictionary(
@@ -72,10 +78,41 @@ internal sealed class Analyzer : IAnalyzer
             );
 
         return new AnalysisResult(
-            issues,
+            unsuppressedIssues,
+            suppressedIssues,
             issuesByObjectName,
             _applicationSettings.Diagnostics.DisabledDiagnostics
         );
+    }
+
+    private static (List<IIssue> UnsuppressedIssues, List<SuppressedIssue> SuppressedIssues) SplitIssuesToSuppressedAndUnsuppressed(IReadOnlyCollection<ScriptModel> scripts, IReadOnlyCollection<IIssue> issues)
+    {
+        var unsuppressedIssues = new List<IIssue>(issues.Count);
+        var suppressedIssues = new List<SuppressedIssue>(issues.Count);
+
+        foreach (var scriptAndIssues in AggregateScriptsAndIssues(scripts, issues))
+        {
+            var (currentUnsuppressedIssues, currentSuppressedIssues) = DiagnosticSuppressionFilterer.Filter(scriptAndIssues.Script, scriptAndIssues.Issues);
+            unsuppressedIssues.AddRange(currentUnsuppressedIssues);
+            suppressedIssues.AddRange(currentSuppressedIssues);
+        }
+
+        return (unsuppressedIssues, suppressedIssues);
+    }
+
+    private static List<(ScriptModel Script, List<IIssue> Issues)> AggregateScriptsAndIssues(IEnumerable<ScriptModel> scripts, IEnumerable<IIssue> issues)
+    {
+        var issuesByFileName = issues
+            .GroupBy(a => a.FullScriptFilePath, StringComparer.OrdinalIgnoreCase);
+
+        return scripts
+            .Join(
+                issuesByFileName,
+                a => a.FullScriptFilePath,
+                a => a.Key,
+                (a, b) => (a, b.ToList()),
+                StringComparer.OrdinalIgnoreCase)
+            .ToList();
     }
 
     private ImmutableArray<ScriptModel> ParseScripts()

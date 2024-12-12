@@ -2,7 +2,7 @@ using System.Collections.Frozen;
 using DatabaseAnalyzer.Common.Extensions;
 using Microsoft.SqlServer.Management.SqlParser.Parser;
 
-namespace DatabaseAnalyzer.Core.Extensions;
+namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 
 public static class TokenExtensions
 {

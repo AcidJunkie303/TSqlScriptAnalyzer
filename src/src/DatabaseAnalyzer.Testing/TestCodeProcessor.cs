@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
-using DatabaseAnalyzer.Testing.Models;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 
 namespace DatabaseAnalyzer.Testing;
 
@@ -54,8 +54,8 @@ internal sealed partial class TestCodeProcessor
             var endLineNumber = startLineNumber + endLineNumberOffset;
 
             var endColumnNumber = endLineNumberOffset == 0
-                ? startColumnNumber + endColumnOffset + 1
-                : endColumnOffset + 1 + 1;
+                ? startColumnNumber + endColumnOffset + 1 // 1 because it's an offset
+                : endColumnOffset + 1 + 1; // 1 because it's an offset and 1 because ... uhm.. TODO:
 
             var location = CodeRegion.Create(startLineNumber, startColumnNumber, endLineNumber, endColumnNumber);
             var issue = Issue.Create(_diagnosticRegistry.GetDefinition(id), fileName, fullObjectName, location, insertions);

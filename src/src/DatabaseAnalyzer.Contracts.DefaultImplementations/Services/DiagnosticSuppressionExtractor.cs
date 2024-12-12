@@ -1,28 +1,22 @@
 using System.Text.RegularExpressions;
 using DatabaseAnalyzer.Common.Extensions;
-using DatabaseAnalyzer.Contracts;
-using DatabaseAnalyzer.Core.Extensions;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using Microsoft.SqlServer.Management.SqlParser.Parser;
 using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
 
-namespace DatabaseAnalyzer.Core.Services;
-
-internal interface IDiagnosticSuppressionExtractor
-{
-    IEnumerable<Suppression> ExtractSuppressions(SqlScript script);
-}
+namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Services;
 
 public sealed partial class DiagnosticSuppressionExtractor : IDiagnosticSuppressionExtractor
 {
     private static readonly char[] DiagnosticIdSeparators = [';', ',', ' ', '\t'];
 
-    public IEnumerable<Suppression> ExtractSuppressions(SqlScript script)
+    public IEnumerable<DiagnosticSuppression> ExtractSuppressions(SqlScript script)
         => script.Tokens.SelectMany(Extract);
 
-    [GeneratedRegex(@"#pragma\s+diagnostic\s+((?<disable>(disable))|(?<restore>restore))\s+(?<ids>[A-Za-z0-9, ]+)+(\s+->\s+(?<reason>.*))", RegexOptions.ExplicitCapture, 100)]
+    [GeneratedRegex(@"#pragma\s+diagnostic\s+((?<disable>(disable))|(?<restore>restore))\s+(?<ids>[A-Za-z0-9, ]+)(\s*-> \s*(?<reason>.*))?", RegexOptions.ExplicitCapture, 100)]
     private static partial Regex DiagnosticSuppressionActionFinder();
 
-    private static IEnumerable<Suppression> Extract(Token token)
+    private static IEnumerable<DiagnosticSuppression> Extract(Token token)
     {
         if (!token.IsComment())
         {
@@ -38,7 +32,7 @@ public sealed partial class DiagnosticSuppressionExtractor : IDiagnosticSuppress
         }
     }
 
-    private static IEnumerable<Suppression> GetSuppressionsFromMatch(Match match, Token token)
+    private static IEnumerable<DiagnosticSuppression> GetSuppressionsFromMatch(Match match, Token token)
     {
         var (lineOffset, columnOffset) = token.Text.GetLineAndColumnIndex(match.Index);
         var lineNumber = token.StartLocation.LineNumber + lineOffset;
@@ -47,14 +41,25 @@ public sealed partial class DiagnosticSuppressionExtractor : IDiagnosticSuppress
             : columnOffset + 1;
 
         var diagnosticIds = match.Groups["ids"].Value.Split(DiagnosticIdSeparators, StringSplitOptions.RemoveEmptyEntries);
-        var action = match.Groups["disable"].Success
-            ? SuppressionAction.Disable
-            : SuppressionAction.Restore;
-        var reason = match.Groups["reason"].Value.Trim();
+
+        SuppressionAction action;
+        string reason;
+        if (match.Groups["disable"].Success)
+        {
+            action = SuppressionAction.Disable;
+            reason = match.Groups["reason"].Value.Trim();
+        }
+        else
+        {
+            action = SuppressionAction.Restore;
+            reason = string.Empty;
+        }
+
+        var location = new CodeLocation(lineNumber, columnNumber);
 
         foreach (var diagnosticId in diagnosticIds)
         {
-            yield return new Suppression(diagnosticId, lineNumber, columnNumber, action, reason);
+            yield return new DiagnosticSuppression(diagnosticId, location, action, reason);
         }
     }
 }

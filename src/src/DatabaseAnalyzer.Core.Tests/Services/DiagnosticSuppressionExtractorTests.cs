@@ -1,6 +1,6 @@
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
-using DatabaseAnalyzer.Core.Services;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Services;
 using FluentAssertions;
 
 namespace DatabaseAnalyzer.Core.Tests.Services;
@@ -11,7 +11,7 @@ public sealed class DiagnosticSuppressionExtractorTests
     public void WhenSuppressionIsInEndOfLineComment_ThenExtract()
     {
         const string sql = """
-                           -- #pragma diagnostic disable AJ1111
+                           -- #pragma diagnostic disable AJ1111 -> Bla
                            """;
         // arrange
         var script = sql.ParseSqlScript();
@@ -24,7 +24,7 @@ public sealed class DiagnosticSuppressionExtractorTests
 
         // assert
         suppressions.Should().HaveCount(1);
-        suppressions.Should().ContainEquivalentOf(new Suppression("AJ1111", 1, 4, SuppressionAction.Disable));
+        suppressions.Should().ContainEquivalentOf(new DiagnosticSuppression("AJ1111", new CodeLocation(1, 4), SuppressionAction.Disable, "Bla"));
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public sealed class DiagnosticSuppressionExtractorTests
     {
         const string sql = """
                            /*
-                             #pragma diagnostic disable AJ1111
+                             #pragma diagnostic disable AJ1111 -> Hello World
                            */
                            """;
         // arrange
@@ -46,14 +46,14 @@ public sealed class DiagnosticSuppressionExtractorTests
 
         // assert
         suppressions.Should().HaveCount(1);
-        suppressions.Should().ContainEquivalentOf(new Suppression("AJ1111", 2, 3, SuppressionAction.Disable));
+        suppressions.Should().ContainEquivalentOf(new DiagnosticSuppression("AJ1111", new CodeLocation(2, 3), SuppressionAction.Disable, "Hello World"));
     }
 
     [Fact]
     public void WhenMultipleSuppressionIdsInSameSuppression_ThenExtractAll()
     {
         const string sql = """
-                           -- #pragma diagnostic disable AJ1111 , AJ2222
+                           -- #pragma diagnostic disable AJ1111 , AJ2222 -> Whatever
                            """;
         // arrange
         var script = sql.ParseSqlScript();
@@ -66,18 +66,18 @@ public sealed class DiagnosticSuppressionExtractorTests
 
         // assert
         suppressions.Should().HaveCount(2);
-        suppressions[0].Should().Be(new Suppression("AJ1111", 1, 4, SuppressionAction.Disable));
-        suppressions[1].Should().Be(new Suppression("AJ2222", 1, 4, SuppressionAction.Disable));
+        suppressions[0].Should().Be(new DiagnosticSuppression("AJ1111", new CodeLocation(1, 4), SuppressionAction.Disable, "Whatever"));
+        suppressions[1].Should().Be(new DiagnosticSuppression("AJ2222", new CodeLocation(1, 4), SuppressionAction.Disable, "Whatever"));
     }
 
     [Fact]
     public void AllTogether()
     {
         const string sql = """
-                           -- #pragma diagnostic disable AJ1111
-                           -- #pragma diagnostic disable AJ2222,AJ3333
-                           -- #pragma diagnostic restore AJ3333 , AJ2222
-                           -- #pragma diagnostic restore AJ1111
+                           -- #pragma diagnostic disable AJ1111 -> aa
+                           -- #pragma diagnostic disable AJ2222,AJ3333 -> bb
+                           -- #pragma diagnostic restore AJ3333 , AJ2222 -> cc
+                           -- #pragma diagnostic restore AJ1111 -> dd
                            """;
         // arrange
         var script = sql.ParseSqlScript();
@@ -90,11 +90,11 @@ public sealed class DiagnosticSuppressionExtractorTests
 
         // assert
         suppressions.Should().HaveCount(6);
-        suppressions[0].Should().Be(new Suppression("AJ1111", 1, 4, SuppressionAction.Disable));
-        suppressions[1].Should().Be(new Suppression("AJ2222", 2, 4, SuppressionAction.Disable));
-        suppressions[2].Should().Be(new Suppression("AJ3333", 2, 4, SuppressionAction.Disable));
-        suppressions[3].Should().Be(new Suppression("AJ3333", 3, 4, SuppressionAction.Restore));
-        suppressions[4].Should().Be(new Suppression("AJ2222", 3, 4, SuppressionAction.Restore));
-        suppressions[5].Should().Be(new Suppression("AJ1111", 4, 4, SuppressionAction.Restore));
+        suppressions[0].Should().Be(new DiagnosticSuppression("AJ1111", new CodeLocation(1, 4), SuppressionAction.Disable, "aa"));
+        suppressions[1].Should().Be(new DiagnosticSuppression("AJ2222", new CodeLocation(2, 4), SuppressionAction.Disable, "bb"));
+        suppressions[2].Should().Be(new DiagnosticSuppression("AJ3333", new CodeLocation(2, 4), SuppressionAction.Disable, "bb"));
+        suppressions[3].Should().Be(new DiagnosticSuppression("AJ3333", new CodeLocation(3, 4), SuppressionAction.Restore, ""));
+        suppressions[4].Should().Be(new DiagnosticSuppression("AJ2222", new CodeLocation(3, 4), SuppressionAction.Restore, ""));
+        suppressions[5].Should().Be(new DiagnosticSuppression("AJ1111", new CodeLocation(4, 4), SuppressionAction.Restore, ""));
     }
 }

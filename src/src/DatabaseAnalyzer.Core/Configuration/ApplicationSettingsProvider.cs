@@ -17,9 +17,13 @@ public static class ApplicationSettingsProvider
             ? settingsFilePath
             : Path.GetFullPath(settingsFilePath, Environment.CurrentDirectory);
 
+        var directoryPath = Path.GetDirectoryName(path) ?? throw new ConfigurationException($"Unable to get the directory of path {path}");
+        var commonSettingsFilePath = Path.Combine(directoryPath, "common.jsonc");
+
         return new ConfigurationBuilder()
             .SetBasePath(Environment.CurrentDirectory)
-            .AddJsonFile(path, optional: false)
+            .AddJsonFile(commonSettingsFilePath, true)
+            .AddJsonFile(path, false)
             .Build();
     }
 }

@@ -1,5 +1,6 @@
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Strings;
@@ -98,8 +99,7 @@ public class StringConcatenationUnicodeAsciiMixAnalyzer : IScriptAnalyzer
             "AJ5002",
             IssueType.Warning,
             "Unicode/ASCII string mix",
-            "Concatenating Unicode and ASCII strings",
-            0
+            "Concatenating Unicode and ASCII strings"
         );
     }
 }

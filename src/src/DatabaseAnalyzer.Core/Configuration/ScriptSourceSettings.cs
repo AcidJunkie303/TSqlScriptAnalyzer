@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using Ardalis.GuardClauses;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using DatabaseAnalyzer.Core.Extensions;
 
 namespace DatabaseAnalyzer.Core.Configuration;
@@ -23,12 +24,12 @@ internal sealed class ScriptSourceSettingsRaw
         AssertNoDuplicateDatabaseOrScriptSourcePaths(databaseScriptsRootPathByDatabaseName);
 
         return new ScriptSourceSettings(
-            ExclusionFilters: ExclusionFilters
+            ExclusionFilters
                 .EmptyIfNull()
                 .WhereNotNullOrWhiteSpace()
-                .Select(FileNameFilterToRegex)
+                .Select(a => a.ToRegexWithSimpleWildcards(true))
                 .ToImmutableArray(),
-            DatabaseScriptsRootPathByDatabaseName: databaseScriptsRootPathByDatabaseName
+            databaseScriptsRootPathByDatabaseName
         );
     }
 
@@ -48,15 +49,6 @@ internal sealed class ScriptSourceSettingsRaw
         }
 
         throw new ConfigurationException($"Duplicate database or script source path: {firstDuplicate}");
-    }
-
-    private static Regex FileNameFilterToRegex(string filter)
-    {
-        var expression = Regex.Escape(filter)
-            .Replace("\\*", ".*", StringComparison.Ordinal) // Convert '*' to '.*'
-            .Replace("\\?", ".", StringComparison.Ordinal); // Convert '?' to '.'
-
-        return new Regex(expression, RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
     }
 }
 

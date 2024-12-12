@@ -8,4 +8,21 @@ public static partial class InsertionStringHelpers
     private static partial Regex InsertionStringsFinder();
 
     public static int CountInsertionStrings(string messageTemplate) => InsertionStringsFinder().Matches(messageTemplate).Count;
+
+    public static string FormatMessage(string messageTemplate, IReadOnlyList<string> insertionStrings)
+    {
+        if (insertionStrings.Count == 0)
+        {
+            return messageTemplate;
+        }
+
+        var message = messageTemplate;
+        for (var i = 0; i < insertionStrings.Count; i++)
+        {
+            var keyToFind = $"{{{i}}}";
+            message = message.Replace(keyToFind, insertionStrings[i], StringComparison.Ordinal);
+        }
+
+        return message;
+    }
 }

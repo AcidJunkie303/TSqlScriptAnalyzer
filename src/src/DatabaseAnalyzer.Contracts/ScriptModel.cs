@@ -8,5 +8,5 @@ public sealed record ScriptModel(
     string Content,
     SqlScript Script,
     IReadOnlyList<string> Errors,
-    IReadOnlyList<Suppression> Suppressions
+    IReadOnlyList<DiagnosticSuppression> DiagnosticSuppressions
 );

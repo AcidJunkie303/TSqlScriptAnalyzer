@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Services;
 using Microsoft.SqlServer.Management.SqlParser.Parser;
 
 namespace DatabaseAnalyzer.Testing;
@@ -68,18 +69,18 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
             .ToList();
 
         var analysisContext = new AnalysisContext(
-            DatabaseName: DatabaseName,
-            DefaultSchemaName: _defaultSchemaName,
-            Scripts: [mainScript, .. otherScripts],
-            ScriptsByDatabaseName: otherScripts.ToDictionary(a => a.DatabaseName, a => a, StringComparer.OrdinalIgnoreCase),
-            DiagnosticSettingsRetriever: diagnosticSettingsProvider,
-            IssueReporter: new IssueReporter());
+            DatabaseName,
+            _defaultSchemaName,
+            [mainScript, .. otherScripts],
+            otherScripts.ToDictionary(a => a.DatabaseName, a => a, StringComparer.OrdinalIgnoreCase),
+            diagnosticSettingsProvider,
+            new IssueReporter());
 
         return new ScriptAnalyzerTester(
-            analysisContext: analysisContext,
-            analyzer: analyzer,
-            mainScript: mainScript,
-            expectedIssues: expectedIssues
+            analysisContext,
+            analyzer,
+            mainScript,
+            expectedIssues
         );
     }
 
@@ -90,14 +91,16 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
             .Select(a => $"{a.Message} at {a.Start.LineNumber},{a.Start.ColumnNumber} - {a.End.LineNumber},{a.End.ColumnNumber}")
             .ToImmutableArray();
         var parsedScript = parseResult.Script;
+        var diagnosticSuppressions = new DiagnosticSuppressionExtractor().ExtractSuppressions(parsedScript);
 
         return new ScriptModel
         (
-            DatabaseName: DatabaseName,
-            FullScriptFilePath: fullScriptFilePath,
-            Content: scriptContents,
-            Script: parsedScript,
-            Errors: errors
+            DatabaseName,
+            fullScriptFilePath,
+            scriptContents,
+            parsedScript,
+            errors,
+            diagnosticSuppressions.ToList()
         );
     }
 }

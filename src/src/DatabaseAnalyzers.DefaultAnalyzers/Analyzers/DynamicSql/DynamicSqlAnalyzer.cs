@@ -1,6 +1,7 @@
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.DynamicSql;
@@ -58,8 +59,7 @@ public sealed class DynamicSqlAnalyzer : IScriptAnalyzer
             "AJ5000",
             IssueType.Warning,
             "Dynamic SQL",
-            "Dynamic SQL is not recommended.",
-            0
+            "Dynamic SQL is not recommended."
         );
     }
 }
