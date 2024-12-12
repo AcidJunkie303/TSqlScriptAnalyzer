@@ -1,4 +1,3 @@
-using DatabaseAnalyzer.Common.Extensions;
 using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;

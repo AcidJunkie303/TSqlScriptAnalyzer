@@ -1,5 +1,4 @@
 using System.Text.RegularExpressions;
-using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
@@ -44,7 +43,7 @@ public class WrongUseDatabaseNameAnalyzer : IScriptAnalyzer
 
     private static IReadOnlyCollection<Regex> GetExcludedFileNamePatterns(IAnalysisContext context)
     {
-        var settings = context.DiagnosticSettingsRetriever.GetSettings<Aj5003Settings>("AJ5003") ?? Aj5003Settings.Default;
+        var settings = context.DiagnosticSettingsRetriever.GetSettings<Aj5003Settings>();
 
         return settings.ExcludedFilePathPatterns;
     }

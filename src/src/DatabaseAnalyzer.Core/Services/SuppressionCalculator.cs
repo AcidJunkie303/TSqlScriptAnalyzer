@@ -1,5 +1,5 @@
-using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using DatabaseAnalyzer.Core.Extensions;
 
 namespace DatabaseAnalyzer.Core.Services;

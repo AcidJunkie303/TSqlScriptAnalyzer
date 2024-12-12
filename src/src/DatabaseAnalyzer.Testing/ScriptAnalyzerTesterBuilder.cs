@@ -33,9 +33,10 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
         return this;
     }
 
-    public ScriptAnalyzerTesterBuilder<TAnalyzer> WithSettings(string diagnosticId, object? settings)
+    public ScriptAnalyzerTesterBuilder<TAnalyzer> WithSettings<TSettings>(TSettings settings)
+        where TSettings : class, ISettings<TSettings>
     {
-        _settingsDiagnosticId.Add(diagnosticId, settings);
+        _settingsDiagnosticId.Add(TSettings.DiagnosticId, settings);
         return this;
     }
 

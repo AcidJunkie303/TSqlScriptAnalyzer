@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using System.Text.RegularExpressions;
+using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.UseDatabaseStatements;
@@ -24,7 +25,10 @@ public sealed class Aj5003SettingsRaw
     }
 }
 
-public sealed record Aj5003Settings(IReadOnlyList<Regex> ExcludedFilePathPatterns)
+public sealed record Aj5003Settings(
+    IReadOnlyList<Regex> ExcludedFilePathPatterns
+) : ISettings<Aj5003Settings>
 {
     public static Aj5003Settings Default { get; } = new([]);
+    public static string DiagnosticId => "AJ5003";
 }

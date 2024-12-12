@@ -41,7 +41,7 @@ public class ExcessiveStringConcatenationAnalyzer : IScriptAnalyzer
     private static int GetMaxAllowedStringConcatenations(IAnalysisContext context)
     {
         var settings = context
-                           .DiagnosticSettingsRetriever.GetSettings<Aj5001Settings>("AJ5001")
+                           .DiagnosticSettingsRetriever.GetSettings<Aj5001Settings>()
                        ?? Aj5001Settings.Default;
 
         return settings.MaxAllowedConcatenations;

@@ -4,7 +4,7 @@ namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 
 public static class SqlDataTypeSpecificationExtensions
 {
-    public static DataType GetDataType(this SqlDataTypeSpecification dataTypeSpec)
+    public static IDataType GetDataType(this SqlDataTypeSpecification dataTypeSpec)
     {
         var spec = dataTypeSpec.DataType.GetTypeSpec();
 

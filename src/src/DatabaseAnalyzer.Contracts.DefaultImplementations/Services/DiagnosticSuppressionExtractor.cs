@@ -1,5 +1,4 @@
 using System.Text.RegularExpressions;
-using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using Microsoft.SqlServer.Management.SqlParser.Parser;
 using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;

@@ -28,4 +28,18 @@ public abstract class ScriptAnalyzerTestsBase<TAnalyzer>
     }
 
     protected void Verify(string sql) => Verify(GetDefaultTesterBuilder(sql).Build());
+
+    protected void Verify<TSettings>(string sql, TSettings settings)
+        where TSettings : class, ISettings<TSettings>
+    {
+        var tester = GetDefaultTesterBuilder(sql)
+            .WithSettings(settings)
+            .Build();
+
+        Verify(tester);
+    }
+
+    protected void VerifyWithDefaultSettings<TSettings>(string sql)
+        where TSettings : class, ISettings<TSettings>
+        => Verify(sql, TSettings.Default);
 }

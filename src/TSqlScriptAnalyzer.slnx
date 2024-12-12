@@ -3,9 +3,11 @@
     <File Path=".editorconfig" />
     <File Path="Directory.Build.props" />
     <File Path=".gitignore" />
+    <File Path="..\README.md" />
   </Folder>
   <Project Path="src\DatabaseAnalyzer.App\DatabaseAnalyzer.App.csproj" Type="Classic C#" />
   <Project Path="src\DatabaseAnalyzer.Common\DatabaseAnalyzer.Common.csproj" Type="Classic C#" />
+  <Project Path="src\DatabaseAnalyzer.Contracts.DefaultImplementations.Tests\DatabaseAnalyzer.Contracts.DefaultImplementations.Tests.csproj" Type="Classic C#" />
   <Project Path="src\DatabaseAnalyzer.Contracts.DefaultImplementations\DatabaseAnalyzer.Contracts.DefaultImplementations.csproj" Type="Classic C#" />
   <Project Path="src\DatabaseAnalyzer.Contracts\DatabaseAnalyzer.Contracts.csproj" Type="Classic C#" />
   <Project Path="src\DatabaseAnalyzer.Core.Tests\DatabaseAnalyzer.Core.Tests.csproj" Type="Classic C#" />

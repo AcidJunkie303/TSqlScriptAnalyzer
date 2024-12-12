@@ -1,4 +1,5 @@
 using Ardalis.GuardClauses;
+using DatabaseAnalyzer.Contracts;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Strings;
 
@@ -12,7 +13,10 @@ public sealed class Aj5001SettingsRaw
     );
 }
 
-public sealed record Aj5001Settings(int MaxAllowedConcatenations)
+public sealed record Aj5001Settings(
+    int MaxAllowedConcatenations
+) : ISettings<Aj5001Settings>
 {
     public static Aj5001Settings Default { get; } = new(2);
+    public static string DiagnosticId => "AJ5001";
 }

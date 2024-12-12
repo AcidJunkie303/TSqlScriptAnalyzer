@@ -1,5 +1,5 @@
 using System.Text;
-using DatabaseAnalyzer.Common.Extensions;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations;
 
@@ -54,9 +54,10 @@ public sealed class DataType : IDataType
 
     public static bool operator ==(IDataType? left, DataType? right) => Equals(left, right);
     public static bool operator ==(DataType? left, IDataType? right) => Equals(left, right);
-
     public static bool operator !=(IDataType? left, DataType? right) => !Equals(left, right);
     public static bool operator !=(DataType? left, IDataType? right) => !Equals(left, right);
+
+    public override string ToString() => FullName;
 
     private static string GenerateFullName(string name, int? argument1, int? argument2, bool quote)
     {
@@ -81,7 +82,7 @@ public sealed class DataType : IDataType
             buffer.Append(name);
         }
 
-        buffer.Append('(').Append(argument1);
+        buffer.Append('(').Append(argument1 == -1 ? "MAX" : argument1);
 
         if (argument2 is not null)
         {

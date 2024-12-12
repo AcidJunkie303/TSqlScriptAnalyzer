@@ -31,7 +31,7 @@ public sealed class ScriptAnalyzerTester
         var firstScriptError = _analysisContext.Scripts.SelectMany(script => script.Errors).FirstOrDefault();
         if (firstScriptError is not null)
         {
-            throw new InvalidOperandException($"Error in script. {firstScriptError}");
+            throw new InvalidOperandException($"Error in script. {firstScriptError}", firstScriptError);
         }
 
         _analyzer.AnalyzeScript(_analysisContext, MainScript);

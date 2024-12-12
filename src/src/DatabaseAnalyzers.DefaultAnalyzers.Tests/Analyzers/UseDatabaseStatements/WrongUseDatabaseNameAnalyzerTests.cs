@@ -13,7 +13,8 @@ public sealed class WrongUseDatabaseNameAnalyzerTests(ITestOutputHelper testOutp
                            PRINT 'Hello World'
                            USE [db1]
                            """;
-        Verify(sql);
+
+        VerifyWithDefaultSettings<Aj5003Settings>(sql);
     }
 
     [Fact]
@@ -25,7 +26,8 @@ public sealed class WrongUseDatabaseNameAnalyzerTests(ITestOutputHelper testOutp
                            PRINT 'Hello World'
                            {{AJ5003¦main.sql¦¦db1¦master|||USE [master]}}
                            """;
-        Verify(sql);
+
+        VerifyWithDefaultSettings<Aj5003Settings>(sql);
     }
 
     [Fact]
@@ -37,14 +39,9 @@ public sealed class WrongUseDatabaseNameAnalyzerTests(ITestOutputHelper testOutp
 
         var settings = new Aj5003SettingsRaw
         {
-            ExcludedFilePathPatterns = ["dummy.sql"]
+            ExcludedFilePathPatterns = ["main.sql"]
         }.ToSettings();
 
-        var tester = GetDefaultTesterBuilder(sql)
-            .WithMainScriptFile(sql, "dummy.sql")
-            .WithSettings("AJ5003", settings)
-            .Build();
-
-        Verify(tester);
+        Verify(sql, settings);
     }
 }

@@ -11,14 +11,14 @@ internal sealed class FakeDiagnosticSettingsRetriever : IDiagnosticSettingsRetri
         _settingsByDiagnosticId = settingsByDiagnosticId;
     }
 
-    public T? GetSettings<T>(string diagnosticId)
-        where T : class
+    public TSettings GetSettings<TSettings>()
+        where TSettings : class, ISettings<TSettings>
     {
-        if (!_settingsByDiagnosticId.TryGetValue(diagnosticId, out var settings))
+        if (!_settingsByDiagnosticId.TryGetValue(TSettings.DiagnosticId, out var settings) || settings is null)
         {
-            return null;
+            throw new InvalidOperationException($"The settings provider for diagnostic '{TSettings.DiagnosticId}' returned null!");
         }
 
-        return (T?)settings;
+        return (TSettings)settings;
     }
 }

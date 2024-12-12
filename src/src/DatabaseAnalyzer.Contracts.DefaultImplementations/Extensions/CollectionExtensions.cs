@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 
 public static class CollectionExtensions
@@ -24,4 +26,16 @@ public static class CollectionExtensions
 
         return default;
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IReadOnlyList<T> NullIfEmpty<T>(this IReadOnlyList<T>? items)
+        => items ?? [];
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IReadOnlyCollection<T> NullIfEmpty<T>(this IReadOnlyCollection<T>? items)
+        => items ?? [];
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IEnumerable<T> NullIfEmpty<T>(this IEnumerable<T>? items)
+        => items ?? [];
 }

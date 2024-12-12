@@ -13,6 +13,11 @@
     },
     "AJ5003": { // Wrong USE DATABASE name statement
       "ExcludedFilePathPatterns": "0000 Create*.sql"
+    },
+    "AJ5006":{ // Data Type Analyzer
+      "BannedColumnDataTypes":[],
+      "BannedFunctionParameterDataTypes":[],
+      "BannedProcedureParameterDataTypes":[]
     }
   },
 }

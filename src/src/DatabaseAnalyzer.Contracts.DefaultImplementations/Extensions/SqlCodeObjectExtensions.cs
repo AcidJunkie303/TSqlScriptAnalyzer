@@ -1,4 +1,3 @@
-using DatabaseAnalyzer.Common.Extensions;
 using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
@@ -142,6 +141,15 @@ public static class SqlCodeObjectExtensions
 
     private static string[] TryFindObjectName(SqlCodeObject codeObject, string defaultSchemaName)
     {
+        if (codeObject is SqlNullStatement nullStatement)
+        {
+            var clrProcedure = nullStatement.TryParseCreateClrStoredProcedureStatement(defaultSchemaName);
+            if (clrProcedure is not null)
+            {
+                return [clrProcedure.SchemaName, clrProcedure.Name];
+            }
+        }
+
         return codeObject switch
         {
             SqlCreateFunctionStatement o => GetObjectName(o.Definition.Name, true, defaultSchemaName),
