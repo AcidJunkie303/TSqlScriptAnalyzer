@@ -11,12 +11,12 @@ public sealed class DynamicSqlAnalyzer : IScriptAnalyzer
 
     public void AnalyzeScript(IAnalysisContext context, ScriptModel script)
     {
-        foreach (var statement in script.Script.GetDescendantsOfType<SqlExecuteModuleStatement>())
+        foreach (var statement in script.ParsedScript.GetDescendantsOfType<SqlExecuteModuleStatement>())
         {
             Analyze(context, script, statement);
         }
 
-        foreach (var statement in script.Script.GetDescendantsOfType<SqlExecuteStringStatement>())
+        foreach (var statement in script.ParsedScript.GetDescendantsOfType<SqlExecuteStringStatement>())
         {
             Analyze(context, script, statement);
         }

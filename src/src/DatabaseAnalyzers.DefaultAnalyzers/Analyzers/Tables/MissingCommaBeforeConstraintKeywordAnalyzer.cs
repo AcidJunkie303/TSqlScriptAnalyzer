@@ -11,7 +11,7 @@ public class MissingCommaBeforeConstraintKeywordAnalyzer : IScriptAnalyzer
 
     public void AnalyzeScript(IAnalysisContext context, ScriptModel script)
     {
-        foreach (var createTableStatement in script.Script.GetDescendantsOfType<SqlCreateTableStatement>())
+        foreach (var createTableStatement in script.ParsedScript.GetDescendantsOfType<SqlCreateTableStatement>())
         {
             AnalyzeTable(context, script.RelativeScriptFilePath, createTableStatement);
         }

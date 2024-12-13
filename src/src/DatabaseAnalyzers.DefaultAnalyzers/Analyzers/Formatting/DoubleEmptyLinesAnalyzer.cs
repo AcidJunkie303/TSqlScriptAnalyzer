@@ -10,22 +10,22 @@ public class DoubleEmptyLinesAnalyzer : IScriptAnalyzer
 
     public void AnalyzeScript(IAnalysisContext context, ScriptModel script)
     {
-        var whitespaceTokens = script.Script.Tokens
+        var whitespaceTokens = script.ParsedScript.Tokens
             .Where(a => a.IsWhiteSpace())
             .ToList();
 
-        for (var i = 0; i < whitespaceTokens.Count; i++)
+        foreach (var token in whitespaceTokens)
         {
-            var token = whitespaceTokens[i];
-
-            if (token.Text.Count(a => a == '\n') > 2)
+            if (token.Text.Count(a => a == '\n') <= 2)
             {
-                var fullObjectName = script.Script
-                    .GetCodeObjectAtPosition(token.StartLocation)
-                    ?.TryGetFullObjectName(context.DefaultSchemaName);
-
-                context.IssueReporter.Report(DiagnosticDefinitions.Default, script.RelativeScriptFilePath, fullObjectName, token);
+                continue;
             }
+
+            var fullObjectName = script.ParsedScript
+                .GetCodeObjectAtPosition(token.StartLocation)
+                ?.TryGetFullObjectName(context.DefaultSchemaName);
+
+            context.IssueReporter.Report(DiagnosticDefinitions.Default, script.RelativeScriptFilePath, fullObjectName, token);
         }
     }
 

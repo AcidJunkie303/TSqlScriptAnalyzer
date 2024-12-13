@@ -10,7 +10,7 @@ public class FirstStatementIsNotUseDatabaseAnalyzer : IScriptAnalyzer
 
     public void AnalyzeScript(IAnalysisContext context, ScriptModel script)
     {
-        var batch = script.Script.Batches.FirstOrDefault();
+        var batch = script.ParsedScript.Batches.FirstOrDefault();
         if (batch is null)
         {
             return;

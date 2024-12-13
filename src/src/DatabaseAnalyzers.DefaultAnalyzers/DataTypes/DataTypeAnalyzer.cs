@@ -14,10 +14,10 @@ public sealed class DataTypeAnalyzer : IScriptAnalyzer
     {
         var settings = context.DiagnosticSettingsRetriever.GetSettings<Aj5006Settings>();
 
-        var createTableStatements = script.Script.GetDescendantsOfType<SqlCreateTableStatement>();
-        var createProcedureStatements = script.Script.GetDescendantsOfType<SqlCreateProcedureStatement>();
-        var createFunctionStatements = script.Script.GetDescendantsOfType<SqlCreateAlterFunctionStatementBase>();
-        var createClrProcedureStatements = script.Script
+        var createTableStatements = script.ParsedScript.GetDescendantsOfType<SqlCreateTableStatement>();
+        var createProcedureStatements = script.ParsedScript.GetDescendantsOfType<SqlCreateProcedureStatement>();
+        var createFunctionStatements = script.ParsedScript.GetDescendantsOfType<SqlCreateAlterFunctionStatementBase>();
+        var createClrProcedureStatements = script.ParsedScript
             .GetDescendantsOfType<SqlNullStatement>()
             .Select(a => a.TryParseCreateClrStoredProcedureStatement(context.DefaultSchemaName))
             .WhereNotNull();

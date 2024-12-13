@@ -11,7 +11,7 @@ public class StringConcatenationUnicodeAsciiMixAnalyzer : IScriptAnalyzer
 
     public void AnalyzeScript(IAnalysisContext context, ScriptModel script)
     {
-        foreach (var expression in script.Script.GetTopLevelDescendantsOfType<SqlBinaryScalarExpression>())
+        foreach (var expression in script.ParsedScript.GetTopLevelDescendantsOfType<SqlBinaryScalarExpression>())
         {
             Analyze(context, script, expression);
         }

@@ -26,13 +26,13 @@ public abstract class ScriptAnalyzerTestsBase<TAnalyzer>
         TestOutputHelper.WriteLine(string.Empty);
         TestOutputHelper.WriteLine(string.Empty);
         TestOutputHelper.WriteLine("Syntax Tree:");
-        TestOutputHelper.WriteLine(SyntaxTreeVisualizer.Visualize(tester.MainScript.Script));
+        TestOutputHelper.WriteLine(SyntaxTreeVisualizer.Visualize(tester.MainScript.ParsedScript));
 
         TestOutputHelper.WriteLine(string.Empty);
         TestOutputHelper.WriteLine(string.Empty);
         TestOutputHelper.WriteLine(string.Empty);
         TestOutputHelper.WriteLine("Tokens");
-        TestOutputHelper.WriteLine(TokenVisualizer.Visualize(tester.MainScript.Script));
+        TestOutputHelper.WriteLine(TokenVisualizer.Visualize(tester.MainScript.ParsedScript));
 
         tester.Test();
     }

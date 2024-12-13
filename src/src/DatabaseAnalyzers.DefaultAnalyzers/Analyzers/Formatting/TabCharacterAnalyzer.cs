@@ -10,19 +10,19 @@ public class TabCharacterAnalyzer : IScriptAnalyzer
 
     public void AnalyzeScript(IAnalysisContext context, ScriptModel script)
     {
-        for (var i = 0; i < script.Script.Sql.Length; i++)
+        for (var i = 0; i < script.ParsedScript.Sql.Length; i++)
         {
-            var c = script.Script.Sql[i];
+            var c = script.ParsedScript.Sql[i];
             if (c != '\t')
             {
                 continue;
             }
 
-            var (lineNumber, columnNumber) = script.Script.Sql.GetLineAndColumnNumber(i);
+            var (lineNumber, columnNumber) = script.ParsedScript.Sql.GetLineAndColumnNumber(i);
 
             var codeRegion = CodeRegion.Create(lineNumber, columnNumber, lineNumber, columnNumber + 1);
 
-            var fullObjectName = script.Script
+            var fullObjectName = script.ParsedScript
                 .GetCodeObjectAtPosition(i)
                 ?.TryGetFullObjectName(context.DefaultSchemaName);
 

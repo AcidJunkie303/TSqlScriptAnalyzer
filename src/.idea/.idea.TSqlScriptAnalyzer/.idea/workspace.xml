@@ -9,16 +9,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bc5c4f41-9446-4faf-a8e5-3c6d90b660d2" name="Changes" comment="simplified to analyze all at once">
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Testing/TokenVisualizer.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/Formatting/DoubleEmptyLinesAnalyzerTests.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/Formatting/TabCharacterAnalyzerTests.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Formatting/DoubleEmptyLinesAnalyzer.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Formatting/TabCharacterAnalyzer.cs" afterDir="false" />
+    <list default="true" id="bc5c4f41-9446-4faf-a8e5-3c6d90b660d2" name="Changes" comment="added:&#10;- double empty lines analyzer&#10;- tab character analyzer">
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/ObjectCreation/ObjectCreationWithoutOrAlterAnalyzerTests.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/ObjectCreation/ObjectCreationWithoutOrAlterAnalyzer.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TSqlScriptAnalyzer/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TSqlScriptAnalyzer/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TSqlScriptAnalyzer.sln.DotSettings" beforeDir="false" afterPath="$PROJECT_DIR$/TSqlScriptAnalyzer.sln.DotSettings" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/SqlCodeObjectExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/SqlCodeObjectExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts/ScriptModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts/ScriptModel.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Testing/ScriptAnalyzerTestsBase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Testing/ScriptAnalyzerTestsBase.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/DynamicSql/DynamicSqlAnalyzer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/DynamicSql/DynamicSqlAnalyzer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Formatting/DoubleEmptyLinesAnalyzer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Formatting/DoubleEmptyLinesAnalyzer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Formatting/TabCharacterAnalyzer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Formatting/TabCharacterAnalyzer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Strings/ExcessiveStringConcatenationAnalyzer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Strings/ExcessiveStringConcatenationAnalyzer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Strings/StringConcatenationUnicodeAsciiMixAnalyzer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Strings/StringConcatenationUnicodeAsciiMixAnalyzer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Tables/MissingCommaBeforeConstraintKeywordAnalyzer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Tables/MissingCommaBeforeConstraintKeywordAnalyzer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/UseDatabaseStatements/FirstStatementIsNotUseDatabaseAnalyzer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/UseDatabaseStatements/FirstStatementIsNotUseDatabaseAnalyzer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/UseDatabaseStatements/WrongUseDatabaseNameAnalyzer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/UseDatabaseStatements/WrongUseDatabaseNameAnalyzer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/DataTypes/DataTypeAnalyzer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/DataTypes/DataTypeAnalyzer.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,10 +57,13 @@
 }</component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/19/20629951/SqlCodeObjectRecursiveVisitor.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/3d/7168c6e6/SqlViewDefinition.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/5d/14a15217/Parser.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/5f/1c88ed9e/SqlCodeObject.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/75/525aeaaa/SqlParameterDeclaration.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/78/d62904b9/DataTypeArgSpec.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/8c/e1e11fdf/SqlCastExpression.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/c4/a4152c8b/SqlCreateAlterViewStatementBase.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/e9/14a01925/Parser.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/24c42e8075f5cf67cafc4c1ea68ec67b4c1aa450d864d67882fb7c5ff0b8e73/Tuple.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/8292cc85b5cd628b92c7a2eb35999f97ba5f9949a2d5e2e4ae4387f532448d0/ParameterInfo.cs" root0="FORCE_HIGHLIGHTING" />
@@ -63,6 +71,10 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/bb141ac1fc1f69806ef6b3596b5ba35ce5ed97155b92d396a34cbabf6cb92d/ReferenceTypeAssertions.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/c62dbcc4ba2718769223d2edcbb462defa1d97c8f2ef066639d41ddd521e/XUnit2TestFramework.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/ded3b52c6e1f5df70d0eb72e72941c96c12d398d4383fa15061718235e7/LinkedList.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock://C:/projects/TSqlScriptAnalyzer/src/src/DatabaseAnalyzer.Contracts/ScriptModel.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/projects/TSqlScriptAnalyzer/src/src/DatabaseAnalyzer.Core/Services/ScriptLoader.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/projects/TSqlScriptAnalyzer/src/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Strings/Aj5000Settings.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/projects/TSqlScriptAnalyzer/src/tests/DatabaseAnalyzer.Testing.Tests/TestCodeProcessorTests.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
@@ -323,7 +335,15 @@
       <option name="project" value="LOCAL" />
       <updated>1734072812862</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="added:&#10;- double empty lines analyzer&#10;- tab character analyzer">
+      <option name="closed" value="true" />
+      <created>1734076399632</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1734076399632</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -360,7 +380,8 @@
     <MESSAGE value="FirstStatementIsNotUseDatabaseAnalyzer &amp; WrongUseDatabaseNameAnalyzer" />
     <MESSAGE value="Added MissingCommaBeforeConstraintKeywordAnalyzer" />
     <MESSAGE value="simplified to analyze all at once" />
-    <option name="LAST_COMMIT_MESSAGE" value="simplified to analyze all at once" />
+    <MESSAGE value="added:&#10;- double empty lines analyzer&#10;- tab character analyzer" />
+    <option name="LAST_COMMIT_MESSAGE" value="added:&#10;- double empty lines analyzer&#10;- tab character analyzer" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -427,10 +448,10 @@
           <line>28</line>
           <properties documentPath="C:\Users\Binggi\source\repos\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\Strings\ExcessiveStringConcatenationAnalyzer.cs" containingFunctionPresentation="Method 'Analyze'">
             <startOffsets>
-              <option value="1150" />
+              <option value="1156" />
             </startOffsets>
             <endOffsets>
-              <option value="1157" />
+              <option value="1163" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="80" />
@@ -440,10 +461,10 @@
           <line>36</line>
           <properties documentPath="C:\Users\Binggi\source\repos\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\Strings\ExcessiveStringConcatenationAnalyzer.cs" containingFunctionPresentation="Method 'Analyze'">
             <startOffsets>
-              <option value="1293" />
+              <option value="1299" />
             </startOffsets>
             <endOffsets>
-              <option value="1373" />
+              <option value="1379" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="88" />
@@ -453,10 +474,10 @@
           <line>33</line>
           <properties documentPath="C:\Users\Binggi\source\repos\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\Strings\ExcessiveStringConcatenationAnalyzer.cs" containingFunctionPresentation="Method 'Analyze'">
             <startOffsets>
-              <option value="1266" />
+              <option value="1272" />
             </startOffsets>
             <endOffsets>
-              <option value="1273" />
+              <option value="1279" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="89" />
@@ -466,10 +487,10 @@
           <line>72</line>
           <properties documentPath="C:\Users\Binggi\source\repos\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\Strings\ExcessiveStringConcatenationAnalyzer.cs" containingFunctionPresentation="Method 'IsStringVariableOrStringLiteral'">
             <startOffsets>
-              <option value="2650" />
+              <option value="2656" />
             </startOffsets>
             <endOffsets>
-              <option value="2757" />
+              <option value="2763" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="91" />
@@ -479,10 +500,10 @@
           <line>79</line>
           <properties documentPath="C:\Users\Binggi\source\repos\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\Strings\ExcessiveStringConcatenationAnalyzer.cs" containingFunctionPresentation="Method 'IsStringVariableOrStringLiteral'">
             <startOffsets>
-              <option value="3018" />
+              <option value="3024" />
             </startOffsets>
             <endOffsets>
-              <option value="3019" />
+              <option value="3025" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="92" />
@@ -504,10 +525,10 @@
           <line>26</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\Strings\ExcessiveStringConcatenationAnalyzer.cs" containingFunctionPresentation="Method 'Analyze'">
             <startOffsets>
-              <option value="1095" />
+              <option value="1101" />
             </startOffsets>
             <endOffsets>
-              <option value="1127" />
+              <option value="1133" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="97" />
@@ -517,10 +538,10 @@
           <line>55</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\Strings\ExcessiveStringConcatenationAnalyzer.cs" containingFunctionPresentation="Method 'Visit'">
             <startOffsets>
-              <option value="2130" />
+              <option value="2136" />
             </startOffsets>
             <endOffsets>
-              <option value="2131" />
+              <option value="2137" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="98" />
@@ -530,10 +551,10 @@
           <line>66</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\Strings\ExcessiveStringConcatenationAnalyzer.cs" containingFunctionPresentation="Method 'IsStringVariableOrStringLiteral'">
             <startOffsets>
-              <option value="2520" />
+              <option value="2526" />
             </startOffsets>
             <endOffsets>
-              <option value="2521" />
+              <option value="2527" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="99" />
@@ -611,7 +632,7 @@
               <option value="505" />
             </startOffsets>
             <endOffsets>
-              <option value="556" />
+              <option value="562" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="132" />
@@ -627,10 +648,10 @@
           <line>35</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\UseDatabaseStatements\WrongUseDatabaseNameAnalyzer.cs" containingFunctionPresentation="Method 'AnalyzeScript'">
             <startOffsets>
-              <option value="1341" />
+              <option value="1353" />
             </startOffsets>
             <endOffsets>
-              <option value="1342" />
+              <option value="1354" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="135" />
@@ -652,10 +673,10 @@
           <line>21</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\Tables\MissingCommaBeforeConstraintKeywordAnalyzer.cs" containingFunctionPresentation="Method 'AnalyzeTable'">
             <startOffsets>
-              <option value="932" />
+              <option value="938" />
             </startOffsets>
             <endOffsets>
-              <option value="1022" />
+              <option value="1028" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="139" />
@@ -665,10 +686,10 @@
           <line>70</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\DataTypes\DataTypeAnalyzer.cs" containingFunctionPresentation="Method 'AnalyzeDataType'">
             <startOffsets>
-              <option value="3946" />
+              <option value="3970" />
             </startOffsets>
             <endOffsets>
-              <option value="4051" />
+              <option value="4075" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="146" />
@@ -701,16 +722,16 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Formatting/TabCharacterAnalyzer.cs</url>
-          <line>14</line>
+          <line>20</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\Formatting\TabCharacterAnalyzer.cs" containingFunctionPresentation="Method 'AnalyzeScript'">
             <startOffsets>
-              <option value="558" />
+              <option value="694" />
             </startOffsets>
             <endOffsets>
-              <option value="587" />
+              <option value="777" />
             </endOffsets>
           </properties>
-          <option name="timeStamp" value="150" />
+          <option name="timeStamp" value="151" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

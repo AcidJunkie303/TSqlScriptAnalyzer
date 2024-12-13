@@ -12,7 +12,7 @@ public class WrongUseDatabaseNameAnalyzer : IScriptAnalyzer
 
     public void AnalyzeScript(IAnalysisContext context, ScriptModel script)
     {
-        var batch = script.Script.Batches.FirstOrDefault();
+        var batch = script.ParsedScript.Batches.FirstOrDefault();
         if (batch is null)
         {
             return;
@@ -24,7 +24,7 @@ public class WrongUseDatabaseNameAnalyzer : IScriptAnalyzer
         }
 
         var expectedDatabaseName = script.DatabaseName;
-        foreach (var useStatement in script.Script.GetDescendantsOfType<SqlUseStatement>())
+        foreach (var useStatement in script.ParsedScript.GetDescendantsOfType<SqlUseStatement>())
         {
             if (expectedDatabaseName.EqualsOrdinalIgnoreCase(useStatement.DatabaseName.ToString()))
             {

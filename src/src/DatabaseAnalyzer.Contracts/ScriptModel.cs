@@ -6,7 +6,7 @@ public sealed record ScriptModel(
     string DatabaseName,
     string RelativeScriptFilePath,
     string Contents,
-    SqlScript Script,
+    SqlScript ParsedScript,
     IReadOnlyList<string> Errors,
     IReadOnlyList<DiagnosticSuppression> DiagnosticSuppressions
 );
