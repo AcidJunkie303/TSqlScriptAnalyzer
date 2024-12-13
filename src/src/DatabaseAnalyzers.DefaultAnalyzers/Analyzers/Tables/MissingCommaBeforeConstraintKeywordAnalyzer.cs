@@ -13,20 +13,20 @@ public class MissingCommaBeforeConstraintKeywordAnalyzer : IScriptAnalyzer
     {
         foreach (var createTableStatement in script.Script.GetDescendantsOfType<SqlCreateTableStatement>())
         {
-            AnalyzeTable(context, script.FullScriptFilePath, createTableStatement);
+            AnalyzeTable(context, script.RelativeScriptFilePath, createTableStatement);
         }
     }
 
-    private static void AnalyzeTable(IAnalysisContext context, string fullScriptFilePath, SqlCreateTableStatement createTableStatement)
+    private static void AnalyzeTable(IAnalysisContext context, string relativeScriptFilePath, SqlCreateTableStatement createTableStatement)
     {
         var fullObjectName = createTableStatement.TryGetFullObjectName(context.DefaultSchemaName);
         foreach (var column in createTableStatement.Definition.ColumnDefinitions)
         {
-            AnalyzeColumn(context.IssueReporter, column, fullScriptFilePath, fullObjectName);
+            AnalyzeColumn(context.IssueReporter, column, relativeScriptFilePath, fullObjectName);
         }
     }
 
-    private static void AnalyzeColumn(IIssueReporter issueReporter, SqlColumnDefinition columnDefinition, string fullScriptFilePath, string? fullObjectName)
+    private static void AnalyzeColumn(IIssueReporter issueReporter, SqlColumnDefinition columnDefinition, string relativeScriptFilePath, string? fullObjectName)
     {
         var tokens = columnDefinition.Tokens
             .ToList();
@@ -50,7 +50,7 @@ public class MissingCommaBeforeConstraintKeywordAnalyzer : IScriptAnalyzer
                 return;
             }
 
-            issueReporter.Report(DiagnosticDefinitions.Default, fullScriptFilePath, fullObjectName, constraintToken);
+            issueReporter.Report(DiagnosticDefinitions.Default, relativeScriptFilePath, fullObjectName, constraintToken);
             return;
         }
     }

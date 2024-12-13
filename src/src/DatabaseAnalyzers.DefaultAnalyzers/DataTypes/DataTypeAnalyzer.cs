@@ -34,7 +34,7 @@ public sealed class DataTypeAnalyzer : IScriptAnalyzer
         {
             foreach (var parameter in createClrProcedureStatement.Parameters)
             {
-                AnalyzeDataType(context, script.FullScriptFilePath, parameter.DataType, createClrProcedureStatement.CreationStatement, settings.BannedProcedureParameterDataTypes, "procedures");
+                AnalyzeDataType(context, script.RelativeScriptFilePath, parameter.DataType, createClrProcedureStatement.CreationStatement, settings.BannedProcedureParameterDataTypes, "procedures");
             }
         }
     }
@@ -44,7 +44,7 @@ public sealed class DataTypeAnalyzer : IScriptAnalyzer
         foreach (var columnDefinition in createTableStatements.SelectMany(a => a.Definition.ColumnDefinitions))
         {
             var dataType = columnDefinition.DataType.GetDataType();
-            AnalyzeDataType(context, script.FullScriptFilePath, dataType, columnDefinition, settings.BannedColumnDataTypes, "tables");
+            AnalyzeDataType(context, script.RelativeScriptFilePath, dataType, columnDefinition, settings.BannedColumnDataTypes, "tables");
         }
     }
 
@@ -53,7 +53,7 @@ public sealed class DataTypeAnalyzer : IScriptAnalyzer
         foreach (var parameter in createProcedureStatements.SelectMany(a => a.Definition.Parameters))
         {
             var dataType = parameter.GetDataType();
-            AnalyzeDataType(context, script.FullScriptFilePath, dataType, parameter, settings.BannedProcedureParameterDataTypes, "procedures");
+            AnalyzeDataType(context, script.RelativeScriptFilePath, dataType, parameter, settings.BannedProcedureParameterDataTypes, "procedures");
         }
     }
 
@@ -62,11 +62,11 @@ public sealed class DataTypeAnalyzer : IScriptAnalyzer
         foreach (var parameter in createFunctionStatements.SelectMany(a => a.Definition.Parameters))
         {
             var dataType = parameter.GetDataType();
-            AnalyzeDataType(context, script.FullScriptFilePath, dataType, parameter, settings.BannedFunctionParameterDataTypes, "functions");
+            AnalyzeDataType(context, script.RelativeScriptFilePath, dataType, parameter, settings.BannedFunctionParameterDataTypes, "functions");
         }
     }
 
-    private static void AnalyzeDataType(IAnalysisContext context, string fullScriptFilePath, IDataType dataType, SqlCodeObject codeObject, IReadOnlyCollection<Regex> bannedTypesExpressions, string pluralObjectType)
+    private static void AnalyzeDataType(IAnalysisContext context, string relativeScriptFilePath, IDataType dataType, SqlCodeObject codeObject, IReadOnlyCollection<Regex> bannedTypesExpressions, string pluralObjectType)
     {
         var isBanned = bannedTypesExpressions.Any(a => a.IsMatch(dataType.Name) || a.IsMatch(dataType.FullName));
         if (!isBanned)
@@ -76,7 +76,7 @@ public sealed class DataTypeAnalyzer : IScriptAnalyzer
 
         var fullObjectName = codeObject.TryGetFullObjectName(context.DefaultSchemaName);
 
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, fullScriptFilePath, fullObjectName, codeObject, dataType.FullName, pluralObjectType);
+        context.IssueReporter.Report(DiagnosticDefinitions.Default, relativeScriptFilePath, fullObjectName, codeObject, dataType.FullName, pluralObjectType);
     }
 
     private static class DiagnosticDefinitions

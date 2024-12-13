@@ -18,9 +18,9 @@ public static class ScriptAnalyzerTesterBuilder
 public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
     where TAnalyzer : class, IScriptAnalyzer, new()
 {
-    private const string DatabaseName = "db1";
+    private const string DefaultDatabaseName = "db1";
 
-    private readonly Dictionary<string, string> _additionalScriptContentsByFilePath = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, (string Contents, string DatabaseName)> _additionalScriptsByFilePath = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, object?> _settingsDiagnosticId = new(StringComparer.OrdinalIgnoreCase);
     private string _defaultSchemaName = "dbo";
     private string? _mainScriptContents;
@@ -46,9 +46,9 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
         return this;
     }
 
-    public ScriptAnalyzerTesterBuilder<TAnalyzer> AddAdditionalScriptFile(string scriptFileContent, string scriptFileFullPath)
+    public ScriptAnalyzerTesterBuilder<TAnalyzer> AddAdditionalScriptFile(string contents, string scriptFileFullPath, string databaseName)
     {
-        _additionalScriptContentsByFilePath.Add(scriptFileFullPath, scriptFileContent);
+        _additionalScriptsByFilePath.Add(scriptFileFullPath, (contents, databaseName));
         return this;
     }
 
@@ -63,17 +63,21 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
         var diagnosticSettingsProvider = new FakeDiagnosticSettingsRetriever(_settingsDiagnosticId);
         var diagnosticDefinitionRegistry = new DiagnosticDefinitionRegistry(analyzer.SupportedDiagnostics);
         var (markupFreeSql, expectedIssues) = new TestCodeProcessor(diagnosticDefinitionRegistry).ParseTestCode(_mainScriptContents!);
-        var mainScript = ParseScript(markupFreeSql, _mainScriptFileFullPath!);
+        var mainScript = ParseScript(_mainScriptFileFullPath!, markupFreeSql, DefaultDatabaseName);
 
-        var otherScripts = _additionalScriptContentsByFilePath
-            .Select(a => ParseScript(a.Key, a.Value))
+        var otherScripts = _additionalScriptsByFilePath
+            .Select(a => ParseScript(a.Key, a.Value.Contents, a.Value.DatabaseName))
             .ToList();
 
+        List<ScriptModel> allScripts = [mainScript, .. otherScripts];
+        var allScriptsByDatabseName = allScripts
+            .GroupBy(a => a.DatabaseName, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(a => a.Key, a => (IReadOnlyList<ScriptModel>)a.ToList(), StringComparer.OrdinalIgnoreCase);
+
         var analysisContext = new AnalysisContext(
-            DatabaseName,
             _defaultSchemaName,
-            [mainScript, .. otherScripts],
-            otherScripts.ToDictionary(a => a.DatabaseName, a => a, StringComparer.OrdinalIgnoreCase),
+            allScripts,
+            allScriptsByDatabseName,
             diagnosticSettingsProvider,
             new IssueReporter());
 
@@ -85,7 +89,7 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
         );
     }
 
-    private static ScriptModel ParseScript(string scriptContents, string fullScriptFilePath)
+    private static ScriptModel ParseScript(string relativeScriptFilePath, string scriptContents, string databaseName)
     {
         var parseResult = Parser.Parse(scriptContents);
         var errors = parseResult.Errors
@@ -96,8 +100,8 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
 
         return new ScriptModel
         (
-            DatabaseName,
-            fullScriptFilePath,
+            databaseName,
+            relativeScriptFilePath,
             scriptContents,
             parsedScript,
             errors,

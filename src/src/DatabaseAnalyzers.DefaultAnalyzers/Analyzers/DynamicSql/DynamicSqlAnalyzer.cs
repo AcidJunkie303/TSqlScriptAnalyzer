@@ -42,13 +42,13 @@ public sealed class DynamicSqlAnalyzer : IScriptAnalyzer
         }
 
         var fullObjectName = statement.TryGetFullObjectName(context.DefaultSchemaName);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, script.FullScriptFilePath, fullObjectName, statement);
+        context.IssueReporter.Report(DiagnosticDefinitions.Default, script.RelativeScriptFilePath, fullObjectName, statement);
     }
 
     private static void Analyze(IAnalysisContext context, ScriptModel script, SqlExecuteStringStatement statement)
     {
         var fullObjectName = statement.TryGetFullObjectName(context.DefaultSchemaName);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, script.FullScriptFilePath, fullObjectName, statement);
+        context.IssueReporter.Report(DiagnosticDefinitions.Default, script.RelativeScriptFilePath, fullObjectName, statement);
     }
 
     private static class DiagnosticDefinitions

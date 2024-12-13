@@ -12,6 +12,7 @@ namespace DatabaseAnalyzer.Core.Configuration;
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global", Justification = "Instantiated during deserialization")]
 internal sealed class ScriptSourceSettingsRaw
 {
+    public string? ScriptsRootDirectoryPath { get; set; }
     public IReadOnlyCollection<string?>? ExclusionFilters { get; set; }
     public IReadOnlyDictionary<string, string?>? DatabaseScriptsRootPathByDatabaseName { get; set; }
 
@@ -22,8 +23,10 @@ internal sealed class ScriptSourceSettingsRaw
             .ToFrozenDictionary(a => a.Key, a => a.Value, StringComparer.OrdinalIgnoreCase);
 
         AssertNoDuplicateDatabaseOrScriptSourcePaths(databaseScriptsRootPathByDatabaseName);
+        AssertNoOverlappingScriptSourcePaths(databaseScriptsRootPathByDatabaseName);
 
         return new ScriptSourceSettings(
+            Guard.Against.NullOrWhiteSpace(ScriptsRootDirectoryPath),
             ExclusionFilters
                 .EmptyIfNull()
                 .WhereNotNullOrWhiteSpace()
@@ -31,6 +34,23 @@ internal sealed class ScriptSourceSettingsRaw
                 .ToImmutableArray(),
             databaseScriptsRootPathByDatabaseName
         );
+    }
+
+    private static void AssertNoOverlappingScriptSourcePaths(IReadOnlyDictionary<string, string> databaseScriptsRootPathByDatabaseName)
+    {
+        var paths = databaseScriptsRootPathByDatabaseName.Values.ToList();
+
+        var firstOverlappingPath = paths
+            .Join(paths, a => a, a => a, (l, r) => (Left: l, Right: r), StringComparer.OrdinalIgnoreCase)
+            .Where(a => !ReferenceEquals(a.Left, a.Right))
+            .FirstOrDefault(a => a.Left.StartsWith(a.Right, StringComparison.OrdinalIgnoreCase) || a.Right.StartsWith(a.Left, StringComparison.OrdinalIgnoreCase));
+
+        if (firstOverlappingPath == default)
+        {
+            return;
+        }
+
+        throw new ConfigurationException($"Overlapping database script source paths: '{firstOverlappingPath.Left}' and '{firstOverlappingPath.Right}'");
     }
 
     private static void AssertNoDuplicateDatabaseOrScriptSourcePaths(IReadOnlyDictionary<string, string> databaseScriptsRootPathByDatabaseName)
@@ -53,6 +73,7 @@ internal sealed class ScriptSourceSettingsRaw
 }
 
 public sealed record ScriptSourceSettings(
+    string ScriptsRootDirectoryPath,
     IReadOnlyCollection<Regex> ExclusionFilters,
     FrozenDictionary<string, string> DatabaseScriptsRootPathByDatabaseName
 );

@@ -4,8 +4,8 @@ namespace DatabaseAnalyzer.Contracts;
 
 public sealed record ScriptModel(
     string DatabaseName,
-    string FullScriptFilePath,
-    string Content,
+    string RelativeScriptFilePath,
+    string Contents,
     SqlScript Script,
     IReadOnlyList<string> Errors,
     IReadOnlyList<DiagnosticSuppression> DiagnosticSuppressions

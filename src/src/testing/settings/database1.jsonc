@@ -1,23 +1,24 @@
 {
-  "Inherit": "common.jsonc",
   "ScriptSource": {
-    "ExclusionFilters":[],
-    "DatabaseScriptsRootPathByDatabaseName":{
+    "ExclusionFilters": [],
+    "DatabaseScriptsRootPathByDatabaseName": {
       "database 1": "..\\..\\..\\..\\testing\\scripts\\database 1",
       "database 2": "..\\..\\..\\..\\testing\\scripts\\database 2",
       "database 3": "..\\..\\..\\..\\testing\\scripts\\database 3"
     }
   },
   "Diagnostics": {
-    "CustomDiagnosticSettings":{
-      "Aj5000":{
-        "ExampleValue": "Hello from config"
-      }
+    "DisabledDiagnostics": [],
+    "AJ5001": { // Excessive string concatenation
+      "MaxAllowedConcatenations": 2
+    },
+    "AJ5003": { // Wrong USE DATABASE name statement
+      "ExcludedFilePathPatterns": "0000 Create*.sql"
+    },
+    "AJ5006": { // Banned data types
+      "BannedColumnDataTypes": [ "decimal", "varchar" ],
+      "BannedFunctionParameterDataTypes": [ "decimal", "varchar" ],
+      "BannedProcedureParameterDataTypes": [ "decimal", "varchar" ]
     }
-  },
-  "DatabaseToAnalyze": "database 1",
-  "DatabasesToLoad": [
-    "database 2",
-    "database 3"
-  ]
+  }
 }

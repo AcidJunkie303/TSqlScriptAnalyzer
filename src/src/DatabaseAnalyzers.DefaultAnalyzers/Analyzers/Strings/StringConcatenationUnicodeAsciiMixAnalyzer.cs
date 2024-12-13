@@ -28,7 +28,7 @@ public class StringConcatenationUnicodeAsciiMixAnalyzer : IScriptAnalyzer
         }
 
         var fullObjectName = expression.TryGetFullObjectName(context.DefaultSchemaName);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, script.FullScriptFilePath, fullObjectName, expression);
+        context.IssueReporter.Report(DiagnosticDefinitions.Default, script.RelativeScriptFilePath, fullObjectName, expression);
     }
 
     private sealed class Visitor : SqlCodeObjectRecursiveVisitor

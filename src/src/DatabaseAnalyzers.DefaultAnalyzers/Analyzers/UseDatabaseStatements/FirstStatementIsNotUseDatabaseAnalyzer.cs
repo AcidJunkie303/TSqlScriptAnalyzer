@@ -22,7 +22,7 @@ public class FirstStatementIsNotUseDatabaseAnalyzer : IScriptAnalyzer
             return;
         }
 
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, script.FullScriptFilePath, null, codeObject, script.DatabaseName);
+        context.IssueReporter.Report(DiagnosticDefinitions.Default, script.RelativeScriptFilePath, null, codeObject, script.DatabaseName);
     }
 
     private static class DiagnosticDefinitions

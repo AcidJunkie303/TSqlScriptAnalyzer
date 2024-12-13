@@ -66,7 +66,7 @@ internal static class Program
             Console.WriteLine("{0} issues found.", analysisResult.Issues);
             foreach (var issue in analysisResult.Issues)
             {
-                Console.WriteLine($"{issue.DiagnosticDefinition.DiagnosticId} {issue.FullScriptFilePath} {issue.Message}");
+                Console.WriteLine($"{issue.DiagnosticDefinition.DiagnosticId} {issue.RelativeScriptFilePath} {issue.Message}");
             }
         }
 
@@ -79,7 +79,7 @@ internal static class Program
             Console.WriteLine("{0} suppressed issues found.", analysisResult.Issues);
             foreach (var issue in analysisResult.SuppressedIssues)
             {
-                Console.WriteLine($"{issue.Issue.DiagnosticDefinition.DiagnosticId} {issue.Issue.FullScriptFilePath} {issue.Issue.Message}.    Reason={issue.Reason}");
+                Console.WriteLine($"{issue.Issue.DiagnosticDefinition.DiagnosticId} {issue.Issue.RelativeScriptFilePath} {issue.Issue.Message}.    Reason={issue.Reason}");
             }
         }
     }

@@ -45,17 +45,20 @@ internal sealed class Analyzer : IAnalyzer
     {
         var scripts = ParseScripts();
 
+        var scriptByDatabaseName = scripts
+            .GroupBy(a => a.DatabaseName, StringComparer.OrdinalIgnoreCase)
+            .ToFrozenDictionary(a => a.Key, a => (IReadOnlyList<ScriptModel>)a.ToImmutableArray(), StringComparer.OrdinalIgnoreCase);
+
         var analysisContext = new AnalysisContext
         (
-            _applicationSettings.DatabaseToAnalyze,
             _applicationSettings.DefaultSchemaName,
             scripts,
-            scripts.ToFrozenDictionary(a => a.DatabaseName, a => a, StringComparer.OrdinalIgnoreCase),
+            scriptByDatabaseName,
             _diagnosticSettingsProviderFactory,
             new IssueReporter()
         );
 
-        Parallel.ForEach(analysisContext.CurrentDatabaseScripts, script =>
+        Parallel.ForEach(analysisContext.Scripts, script =>
         {
             foreach (var analyzer in _scriptAnalyzers)
             {
@@ -78,6 +81,7 @@ internal sealed class Analyzer : IAnalyzer
             );
 
         return new AnalysisResult(
+            _applicationSettings.ScriptSource.ScriptsRootDirectoryPath,
             unsuppressedIssues,
             suppressedIssues,
             issuesByObjectName,
@@ -103,12 +107,12 @@ internal sealed class Analyzer : IAnalyzer
     private static List<(ScriptModel Script, List<IIssue> Issues)> AggregateScriptsAndIssues(IEnumerable<ScriptModel> scripts, IEnumerable<IIssue> issues)
     {
         var issuesByFileName = issues
-            .GroupBy(a => a.FullScriptFilePath, StringComparer.OrdinalIgnoreCase);
+            .GroupBy(a => a.RelativeScriptFilePath, StringComparer.OrdinalIgnoreCase);
 
         return scripts
             .Join(
                 issuesByFileName,
-                a => a.FullScriptFilePath,
+                a => a.RelativeScriptFilePath,
                 a => a.Key,
                 (a, b) => (a, b.ToList()),
                 StringComparer.OrdinalIgnoreCase)
@@ -127,7 +131,7 @@ internal sealed class Analyzer : IAnalyzer
 
         ScriptModel ParseScript(BasicScriptInformation script)
         {
-            var parseResult = Parser.Parse(script.Content);
+            var parseResult = Parser.Parse(script.Contents);
             var errors = parseResult.Errors
                 .Select(a => $"{a.Message} at {CodeRegion.From(a.Start, a.End)}")
                 .ToImmutableArray();
@@ -138,7 +142,7 @@ internal sealed class Analyzer : IAnalyzer
             (
                 script.DatabaseName,
                 script.FullScriptPath,
-                script.Content,
+                script.Contents,
                 parsedScript,
                 errors,
                 suppressions

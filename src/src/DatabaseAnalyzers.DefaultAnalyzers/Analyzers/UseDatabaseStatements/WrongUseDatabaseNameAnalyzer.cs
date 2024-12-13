@@ -18,7 +18,7 @@ public class WrongUseDatabaseNameAnalyzer : IScriptAnalyzer
             return;
         }
 
-        if (IsScriptFileExcluded(context, script.FullScriptFilePath))
+        if (IsScriptFileExcluded(context, script.RelativeScriptFilePath))
         {
             return;
         }
@@ -31,7 +31,7 @@ public class WrongUseDatabaseNameAnalyzer : IScriptAnalyzer
                 continue;
             }
 
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, script.FullScriptFilePath, null, useStatement, script.DatabaseName, useStatement.DatabaseName.Value);
+            context.IssueReporter.Report(DiagnosticDefinitions.Default, script.RelativeScriptFilePath, null, useStatement, script.DatabaseName, useStatement.DatabaseName.Value);
         }
     }
 

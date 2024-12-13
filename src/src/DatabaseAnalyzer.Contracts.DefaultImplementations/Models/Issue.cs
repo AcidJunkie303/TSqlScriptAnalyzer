@@ -7,14 +7,14 @@ public sealed class Issue : IIssue
 {
     private Issue(
         IDiagnosticDefinition diagnosticDefinition,
-        string fullScriptFilePath,
+        string relativeScriptFilePath,
         string? objectName,
         CodeRegion codeRegion,
         IReadOnlyList<string> messageInsertionStrings,
         string message)
     {
         DiagnosticDefinition = diagnosticDefinition;
-        FullScriptFilePath = fullScriptFilePath;
+        RelativeScriptFilePath = relativeScriptFilePath;
         ObjectName = objectName;
         CodeRegion = codeRegion;
         MessageInsertionStrings = messageInsertionStrings;
@@ -23,7 +23,7 @@ public sealed class Issue : IIssue
 
     public IDiagnosticDefinition DiagnosticDefinition { get; }
     public string Message { get; }
-    public string FullScriptFilePath { get; }
+    public string RelativeScriptFilePath { get; }
     public string? ObjectName { get; }
     public CodeRegion CodeRegion { get; }
     public IReadOnlyList<string> MessageInsertionStrings { get; }
