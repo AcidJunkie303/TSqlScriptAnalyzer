@@ -8,12 +8,12 @@ namespace DatabaseAnalyzer.Testing;
 public abstract class ScriptAnalyzerTestsBase<TAnalyzer>
     where TAnalyzer : class, IScriptAnalyzer, new()
 {
+    protected ITestOutputHelper TestOutputHelper { get; }
+
     protected ScriptAnalyzerTestsBase(ITestOutputHelper testOutputHelper)
     {
         TestOutputHelper = testOutputHelper;
     }
-
-    protected ITestOutputHelper TestOutputHelper { get; }
 
     protected static ScriptAnalyzerTesterBuilder<TAnalyzer> GetDefaultTesterBuilder(string sql)
         => ScriptAnalyzerTesterBuilder
@@ -22,8 +22,18 @@ public abstract class ScriptAnalyzerTestsBase<TAnalyzer>
 
     protected void Verify(ScriptAnalyzerTester tester)
     {
-        var syntaxTree = SyntaxTreeVisualizer.Visualize(tester.MainScript.Script);
-        TestOutputHelper.WriteLine(syntaxTree);
+        TestOutputHelper.WriteLine(string.Empty);
+        TestOutputHelper.WriteLine(string.Empty);
+        TestOutputHelper.WriteLine(string.Empty);
+        TestOutputHelper.WriteLine("Syntax Tree:");
+        TestOutputHelper.WriteLine(SyntaxTreeVisualizer.Visualize(tester.MainScript.Script));
+
+        TestOutputHelper.WriteLine(string.Empty);
+        TestOutputHelper.WriteLine(string.Empty);
+        TestOutputHelper.WriteLine(string.Empty);
+        TestOutputHelper.WriteLine("Tokens");
+        TestOutputHelper.WriteLine(TokenVisualizer.Visualize(tester.MainScript.Script));
+
         tester.Test();
     }
 

@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+using Microsoft.SqlServer.Management.SqlParser.Parser;
 using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
@@ -103,6 +105,42 @@ public static class SqlCodeObjectExtensions
             {
                 hasPassedCurrentNode = true;
             }
+        }
+    }
+
+    public static SqlCodeObject? GetCodeObjectAtPosition(this SqlCodeObject codeObject, int characterIndex)
+    {
+        var (lineNumber, columnNumber) = codeObject.Sql.GetLineAndColumnNumber(characterIndex);
+        return codeObject.GetCodeObjectAtPosition(lineNumber, columnNumber);
+    }
+
+    public static SqlCodeObject? GetCodeObjectAtPosition(this SqlCodeObject codeObject, Location location)
+        => codeObject.GetCodeObjectAtPosition(location.LineNumber, location.ColumnNumber);
+
+    public static SqlCodeObject? GetCodeObjectAtPosition(this SqlCodeObject codeObject, CodeLocation location)
+        => codeObject.GetCodeObjectAtPosition(location.LineNumber, location.ColumnNumber);
+
+    [SuppressMessage("Minor Code Smell", "S3267:Loops should be simplified with \"LINQ\" expressions")]
+    public static SqlCodeObject? GetCodeObjectAtPosition(this SqlCodeObject codeObject, int lineNumber, int columnNumber)
+    {
+        SqlCodeObject? match = null;
+
+        foreach (var child in codeObject.GetDescendantsOfType<SqlCodeObject>())
+        {
+            if (IsInsideElement(child, lineNumber, columnNumber))
+            {
+                match = child;
+            }
+        }
+
+        return match;
+
+        static bool IsInsideElement(SqlCodeObject codeObject, int lineNumber, int columnNumber)
+        {
+            return (lineNumber >= codeObject.StartLocation.LineNumber)
+                   && (columnNumber >= codeObject.StartLocation.ColumnNumber)
+                   && (lineNumber <= codeObject.EndLocation.LineNumber)
+                   && (columnNumber <= codeObject.EndLocation.ColumnNumber);
         }
     }
 
