@@ -1,14 +1,15 @@
 using DatabaseAnalyzer.Testing;
-using DatabaseAnalyzers.DefaultAnalyzers.DataTypes;
+using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.DataTypes;
 using Xunit.Abstractions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.DataTypes;
 
-public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper) : ScriptAnalyzerTestsBase<DataTypeAnalyzer>(testOutputHelper)
+public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper)
+    : ScriptAnalyzerTestsBase<DataTypeAnalyzer>(testOutputHelper)
 {
     private static readonly Aj5006Settings Settings = new Aj5006SettingsRaw
     {
-        BannedColumnDataTypes = ["float"], BannedFunctionParameterDataTypes = ["varchar"], BannedProcedureParameterDataTypes = ["uniqueidentifier"]
+        BannedColumnDataTypes = ["float"], BannedFunctionParameterDataTypes = ["varchar"], BannedProcedureParameterDataTypes = ["uniqueidentifier"], BannedScriptVariableDataTypes = ["bigint"]
     }.ToSettings();
 
     [Fact]
@@ -136,7 +137,7 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper) : 
     {
         const string sql = """
                            CREATE PROCEDURE P1
-                               █AJ5006░main.sql░dbo.P1░UNIQUEIDENTIFIER░procedures███@Param1 UniqueIdentifier█
+                               █AJ5006░main.sql░dbo.P1░UNIQUEIDENTIFIER░procedure parameters███@Param1 UniqueIdentifier█
                            AS
                            BEGIN
                                SELECT 1
@@ -169,6 +170,28 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper) : 
                                @Param1 uniqueidentifier
                            WITH EXECUTE AS OWNER
                            AS EXTERNAL NAME A.B.C█
+                           """;
+
+        Verify(sql, Settings);
+    }
+
+    [Fact]
+    public void WhenVariableDeclaration_WithoutBannedDataType_ThenOk()
+    {
+        const string sql = """
+                           DECLARE @Var INT
+                           """;
+
+        Verify(sql, Settings);
+    }
+
+    [Fact]
+    public void WhenVariableDeclaration_WithBannedDataType_ThenDiagnose()
+    {
+        // since the provided parser doesn't support CLR stored procedures, and we are doing the parsing our own in a simple way,
+        // we use the whole statement as code region
+        const string sql = """
+                           DECLARE █AJ5006░main.sql░░BIGINT░variables███@Var BIGINT█
                            """;
 
         Verify(sql, Settings);

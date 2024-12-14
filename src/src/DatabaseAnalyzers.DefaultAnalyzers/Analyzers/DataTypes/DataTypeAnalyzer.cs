@@ -4,7 +4,7 @@ using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
 
-namespace DatabaseAnalyzers.DefaultAnalyzers.DataTypes;
+namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.DataTypes;
 
 public sealed class DataTypeAnalyzer : IScriptAnalyzer
 {
@@ -14,6 +14,7 @@ public sealed class DataTypeAnalyzer : IScriptAnalyzer
     {
         var settings = context.DiagnosticSettingsRetriever.GetSettings<Aj5006Settings>();
 
+        var variableDeclarations = script.ParsedScript.GetDescendantsOfType<SqlVariableDeclaration>();
         var createTableStatements = script.ParsedScript.GetDescendantsOfType<SqlCreateTableStatement>();
         var createProcedureStatements = script.ParsedScript.GetDescendantsOfType<SqlCreateProcedureStatement>();
         var createFunctionStatements = script.ParsedScript.GetDescendantsOfType<SqlCreateAlterFunctionStatementBase>();
@@ -22,10 +23,20 @@ public sealed class DataTypeAnalyzer : IScriptAnalyzer
             .Select(a => a.TryParseCreateClrStoredProcedureStatement(context.DefaultSchemaName))
             .WhereNotNull();
 
-        AnalyzeClrProcedures(context, settings, script, createClrProcedureStatements);
+        AnalyzeVariableDeclarations(context, settings, script, variableDeclarations);
         AnalyzeTables(context, settings, script, createTableStatements);
         AnalyzeProcedures(context, settings, script, createProcedureStatements);
         AnalyzeFunctions(context, settings, script, createFunctionStatements);
+        AnalyzeClrProcedures(context, settings, script, createClrProcedureStatements);
+    }
+
+    private static void AnalyzeVariableDeclarations(IAnalysisContext context, Aj5006Settings settings, ScriptModel script, IEnumerable<SqlVariableDeclaration> variableDeclarations)
+    {
+        foreach (var variableDeclaration in variableDeclarations)
+        {
+            var dataType = variableDeclaration.Type.GetDataType();
+            AnalyzeDataType(context, script.RelativeScriptFilePath, dataType, variableDeclaration, settings.BannedScriptVariableDataTypes, "variables");
+        }
     }
 
     private static void AnalyzeClrProcedures(IAnalysisContext context, Aj5006Settings settings, ScriptModel script, IEnumerable<SqlCreateClrStoredProcedureStatement> createClrProcedureStatements)
@@ -53,7 +64,7 @@ public sealed class DataTypeAnalyzer : IScriptAnalyzer
         foreach (var parameter in createProcedureStatements.SelectMany(a => a.Definition.Parameters))
         {
             var dataType = parameter.GetDataType();
-            AnalyzeDataType(context, script.RelativeScriptFilePath, dataType, parameter, settings.BannedProcedureParameterDataTypes, "procedures");
+            AnalyzeDataType(context, script.RelativeScriptFilePath, dataType, parameter, settings.BannedProcedureParameterDataTypes, "procedure parameters");
         }
     }
 
