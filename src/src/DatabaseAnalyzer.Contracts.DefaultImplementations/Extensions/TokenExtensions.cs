@@ -10,4 +10,5 @@ public static class TokenExtensions
     public static bool IsConstraint(this Token token) => token.Type.EqualsOrdinalIgnoreCase("TOKEN_CONSTRAINT");
     public static bool IsWhiteSpace(this Token token) => token.Type.EqualsOrdinalIgnoreCase("LEX_WHITE");
     public static bool IsComma(this Token token) => token.Type.EqualsOrdinalIgnoreCase("COMMA");
+    public static bool IsVariable(this Token token) => token.Type.EqualsOrdinalIgnoreCase("TOKEN_VARIABLE");
 }

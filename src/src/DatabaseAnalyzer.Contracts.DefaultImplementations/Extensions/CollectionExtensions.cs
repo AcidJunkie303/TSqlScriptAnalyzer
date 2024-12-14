@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
@@ -38,4 +39,8 @@ public static class CollectionExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IEnumerable<T> NullIfEmpty<T>(this IEnumerable<T>? items)
         => items ?? [];
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsNullOrEmpty<T>([NotNullWhen(false)] this IReadOnlyCollection<T>? items)
+        => items is null || (items.Count == 0);
 }

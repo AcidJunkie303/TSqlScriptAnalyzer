@@ -9,12 +9,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bc5c4f41-9446-4faf-a8e5-3c6d90b660d2" name="Changes" comment="changed markup for testing which makes it easier to understand it&#10;added missing blank space analyzer">
+    <list default="true" id="bc5c4f41-9446-4faf-a8e5-3c6d90b660d2" name="Changes" comment="some cleanup&#10;DataTypeAnalyzer now also checks vor banned data types for variables">
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/Extensions/SqlCreateAlterFunctionStatementBaseExtensionsTests.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/Extensions/SqlCreateAlterProcedureStatementBaseExtensionsTests.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/SqlCreateAlterFunctionStatementBaseExtensions.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/SqlCreateAlterProcedureStatementBaseExtensions.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/UnreferencedObject/UnreferencedParameterAnalyzerTests.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/UnreferencedObject/UnreferencedParameterAnalyzer.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TSqlScriptAnalyzer/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TSqlScriptAnalyzer/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/CollectionExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/CollectionExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/SqlCodeObjectExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/SqlCodeObjectExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/TokenExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/TokenExtensions.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/DataTypes/DataTypeAnalyzerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/DataTypes/DataTypeAnalyzerTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/DataTypes/Aj5006Settings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/DataTypes/Aj5006Settings.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/DataTypes/Aj5006SettingsProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/DataTypes/Aj5006SettingsProvider.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/DataTypes/DataTypeAnalyzer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/DataTypes/DataTypeAnalyzer.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,20 +53,32 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/.nuget/packages/microsoft.net.test.sdk/17.12.0/build/netcoreapp3.1/Microsoft.NET.Test.Sdk.Program.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5a497ef51b924bcb82a5215076ef5ef5f2820/e3/612cf853/CollectionUtilities.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/19/20629951/SqlCodeObjectRecursiveVisitor.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/29/46c8c4ac/Token.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/3d/7168c6e6/SqlViewDefinition.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/4f/d1690050/SqlInlineFunctionBodyDefinition.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/5d/14a15217/Parser.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/5f/1c88ed9e/SqlCodeObject.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/75/525aeaaa/SqlParameterDeclaration.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/78/d62904b9/DataTypeArgSpec.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/8c/0319e277/SqlMultistatementFunctionBodyDefinition.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/8c/e1e11fdf/SqlCastExpression.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/c4/a4152c8b/SqlCreateAlterViewStatementBase.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/d8/84216f2f/Tokens.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/df/66cc3746/SqlFunctionBodyDefinition.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/e9/14a01925/Parser.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/f2/b4994655/SqlCreateAlterFunctionStatementBase.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/e449c3275c48488bba145c2871ab81daf9928/30/aa170b0b/Regex.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/24c42e8075f5cf67cafc4c1ea68ec67b4c1aa450d864d67882fb7c5ff0b8e73/Tuple.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/5e14a4e27990972fa4ae94975603bd298aaf328ee083c03b10569ee4724d57/TestInvoker.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/8292cc85b5cd628b92c7a2eb35999f97ba5f9949a2d5e2e4ae4387f532448d0/ParameterInfo.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/948494fffd27a44b5c55f2f85972545a315f73df6c6278f9e692cbbad86b0/MemoryMarshal.CoreCLR.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/9a6b1457cbcf17db31a383ba49ef9bcc786cf3ef77146d997eee499b27a46d/Object.cs" root0="FORCE_HIGHLIGHTING" />
@@ -371,7 +389,15 @@
       <option name="project" value="LOCAL" />
       <updated>1734158094393</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="some cleanup&#10;DataTypeAnalyzer now also checks vor banned data types for variables">
+      <option name="closed" value="true" />
+      <created>1734161086835</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1734161086835</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -412,7 +438,8 @@
     <MESSAGE value="added ObjectCreationWithoutOrAlterAnalyzer&#10;some cleanup" />
     <MESSAGE value="updated README.md" />
     <MESSAGE value="changed markup for testing which makes it easier to understand it&#10;added missing blank space analyzer" />
-    <option name="LAST_COMMIT_MESSAGE" value="changed markup for testing which makes it easier to understand it&#10;added missing blank space analyzer" />
+    <MESSAGE value="some cleanup&#10;DataTypeAnalyzer now also checks vor banned data types for variables" />
+    <option name="LAST_COMMIT_MESSAGE" value="some cleanup&#10;DataTypeAnalyzer now also checks vor banned data types for variables" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -733,45 +760,6 @@
           <option name="timeStamp" value="151" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Testing/TestCodeProcessor.cs</url>
-          <line>68</line>
-          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Testing\TestCodeProcessor.cs" containingFunctionPresentation="Lambda expression inside Method 'ParseTestCode'">
-            <startOffsets>
-              <option value="3730" />
-            </startOffsets>
-            <endOffsets>
-              <option value="3750" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="177" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Testing/ScriptAnalyzerTestsBase.cs</url>
-          <line>36</line>
-          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Testing\ScriptAnalyzerTestsBase.cs" containingFunctionPresentation="Method 'Verify'">
-            <startOffsets>
-              <option value="1497" />
-            </startOffsets>
-            <endOffsets>
-              <option value="1511" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="178" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Testing/TestCodeProcessor.cs</url>
-          <line>71</line>
-          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Testing\TestCodeProcessor.cs" containingFunctionPresentation="Method 'ParseTestCode'">
-            <startOffsets>
-              <option value="3772" />
-            </startOffsets>
-            <endOffsets>
-              <option value="3816" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="179" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Formatting/DoubleEmptyLinesAnalyzer.cs</url>
           <line>18</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\Formatting\DoubleEmptyLinesAnalyzer.cs" containingFunctionPresentation="Method 'AnalyzeScript'">
@@ -784,12 +772,157 @@
           </properties>
           <option name="timeStamp" value="180" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/DataTypes/DataTypeAnalyzer.cs</url>
+          <line>65</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\DataTypes\DataTypeAnalyzer.cs" containingFunctionPresentation="Method 'AnalyzeProcedures'">
+            <startOffsets>
+              <option value="3712" />
+            </startOffsets>
+            <endOffsets>
+              <option value="3751" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="181" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/UnreferencedObject/UnreferencedParameterAnalyzer.cs</url>
+          <line>61</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\UnreferencedObject\UnreferencedParameterAnalyzer.cs" containingFunctionPresentation="Method 'AnalyzeParameters'">
+            <startOffsets>
+              <option value="2566" />
+            </startOffsets>
+            <endOffsets>
+              <option value="2599" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="183" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/UnreferencedObject/UnreferencedParameterAnalyzer.cs</url>
+          <line>78</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\UnreferencedObject\UnreferencedParameterAnalyzer.cs" containingFunctionPresentation="Method 'AnalyzeParameter'">
+            <startOffsets>
+              <option value="3101" />
+            </startOffsets>
+            <endOffsets>
+              <option value="3108" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="185" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/UnreferencedObject/UnreferencedParameterAnalyzer.cs</url>
+          <line>81</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\UnreferencedObject\UnreferencedParameterAnalyzer.cs" containingFunctionPresentation="Method 'AnalyzeParameter'">
+            <startOffsets>
+              <option value="3128" />
+            </startOffsets>
+            <endOffsets>
+              <option value="3207" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="186" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/UnreferencedObject/UnreferencedParameterAnalyzer.cs</url>
+          <line>86</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\UnreferencedObject\UnreferencedParameterAnalyzer.cs" containingFunctionPresentation="Method 'IsParameterReferenced'">
+            <startOffsets>
+              <option value="3465" />
+            </startOffsets>
+            <endOffsets>
+              <option value="3557" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="187" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/Extensions/SqlCreateAlterProcedureStatementBaseExtensionsTests.cs</url>
+          <line>30</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations.Tests\Extensions\SqlCreateAlterProcedureStatementBaseExtensionsTests.cs" containingFunctionPresentation="Method 'GetProcedure'">
+            <startOffsets>
+              <option value="946" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1075" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="188" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/Extensions/SqlCreateAlterFunctionStatementBaseExtensionsTests.cs</url>
+          <line>51</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations.Tests\Extensions\SqlCreateAlterFunctionStatementBaseExtensionsTests.cs" containingFunctionPresentation="Method 'TryGetBody_WhenMultiStatementTableValuedFunction_ThenReturnBody'">
+            <startOffsets>
+              <option value="1577" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1643" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="189" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/Extensions/SqlCreateAlterFunctionStatementBaseExtensionsTests.cs</url>
+          <line>27</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations.Tests\Extensions\SqlCreateAlterFunctionStatementBaseExtensionsTests.cs" containingFunctionPresentation="Method 'TryGetBody_WhenInlineTableValuedFunction_ThenReturnBody'">
+            <startOffsets>
+              <option value="865" />
+            </startOffsets>
+            <endOffsets>
+              <option value="931" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="193" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/Extensions/SqlCreateAlterFunctionStatementBaseExtensionsTests.cs</url>
+          <line>24</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations.Tests\Extensions\SqlCreateAlterFunctionStatementBaseExtensionsTests.cs" containingFunctionPresentation="Method 'TryGetBody_WhenInlineTableValuedFunction_ThenReturnBody'">
+            <startOffsets>
+              <option value="804" />
+            </startOffsets>
+            <endOffsets>
+              <option value="837" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="194" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/DataTypes/DataTypeAnalyzerTests.cs</url>
+          <line>103</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers.Tests\Analyzers\DataTypes\DataTypeAnalyzerTests.cs" containingFunctionPresentation="Method 'WhenCreatingScalarValuedFunction_WithBannedDataType_ThenDiagnose'">
+            <startOffsets>
+              <option value="3496" />
+            </startOffsets>
+            <endOffsets>
+              <option value="3497" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="195" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/Extensions/SqlCreateAlterFunctionStatementBaseExtensionsTests.cs</url>
+          <line>72</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations.Tests\Extensions\SqlCreateAlterFunctionStatementBaseExtensionsTests.cs" containingFunctionPresentation="Method 'TryGetBody_WhenScalarFunction_ThenReturnBody'">
+            <startOffsets>
+              <option value="2162" />
+            </startOffsets>
+            <endOffsets>
+              <option value="2228" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="196" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
     <pin-to-top-manager>
       <pinned-members>
         <PinnedItemInfo parentTag="Type#Microsoft.SqlServer.Management.SqlParser.Metadata.DataTypeSpec" memberName="ArgSpec1" />
+        <PinnedItemInfo parentTag="Type#Microsoft.SqlServer.Management.SqlParser.SqlCodeDom.SqlBatch" memberName="Children" />
         <PinnedItemInfo parentTag="Type#Microsoft.SqlServer.Management.SqlParser.SqlCodeDom.SqlTableDefinition" memberName="Children" />
+        <PinnedItemInfo parentTag="Type#Microsoft.SqlServer.Management.SqlParser.SqlCodeDom.SqlCreateAlterProcedureStatementBase" memberName="TargetObjectType" />
       </pinned-members>
     </pin-to-top-manager>
     <watches-manager>
@@ -800,6 +933,9 @@
       <configuration name="RiderUnitTests">
         <watch expression="statement.Definition" />
         <watch expression="statement.Definition.ColumnDefinitions.ToList()[1].Tokens" language="C#" />
+        <watch expression="procedure.GetDescendantsOfType&lt;SqlCompoundStatement&gt;().SingleOrDefault()" language="C#" />
+        <watch expression="statement.Definition" />
+        <watch expression="sql.ParseSqlScript()" language="C#" />
       </configuration>
     </watches-manager>
   </component>

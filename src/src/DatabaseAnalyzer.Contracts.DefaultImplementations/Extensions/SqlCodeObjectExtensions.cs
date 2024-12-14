@@ -33,9 +33,9 @@ public static class SqlCodeObjectExtensions
     public static IEnumerable<T> GetDescendantsOfType<T>(this SqlCodeObject codeObject)
         where T : SqlCodeObject
     {
-        return Get(codeObject, true);
+        return GetChildren(codeObject, true);
 
-        static IEnumerable<T> Get(SqlCodeObject codeObject, bool isStartingNode)
+        static IEnumerable<T> GetChildren(SqlCodeObject codeObject, bool isStartingNode)
         {
             if (!isStartingNode && codeObject is T t)
             {
@@ -44,7 +44,28 @@ public static class SqlCodeObjectExtensions
 
             foreach (var child in codeObject.Children)
             {
-                foreach (var descendant in Get(child, false))
+                foreach (var descendant in GetChildren(child, false))
+                {
+                    yield return descendant;
+                }
+            }
+        }
+    }
+
+    public static IEnumerable<SqlCodeObject> GetDescendants(this SqlCodeObject codeObject)
+    {
+        return GetChildren(codeObject, true);
+
+        static IEnumerable<SqlCodeObject> GetChildren(SqlCodeObject codeObject, bool isStartingNode)
+        {
+            if (!isStartingNode)
+            {
+                yield return codeObject;
+            }
+
+            foreach (var child in codeObject.Children)
+            {
+                foreach (var descendant in GetChildren(child, false))
                 {
                     yield return descendant;
                 }

@@ -41,7 +41,7 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper)
     }
 
     [Fact]
-    public void WhenCreatingFunction_WithoutBannedDataType_ThenOk()
+    public void WhenCreatingInlineTableValuedFunction_WithoutBannedDataType_ThenOk()
     {
         const string sql = """
                            CREATE FUNCTION dbo.F1
