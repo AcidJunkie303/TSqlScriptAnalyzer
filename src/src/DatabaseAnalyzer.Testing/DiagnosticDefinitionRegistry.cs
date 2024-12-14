@@ -14,8 +14,8 @@ internal sealed class DiagnosticDefinitionRegistry : IDiagnosticDefinitionRegist
         }
     }
 
-    public void Register(IDiagnosticDefinition definition) => _definitions.Add(definition.DiagnosticId, definition);
-
     public IDiagnosticDefinition GetDefinition(string id)
-        => _definitions.GetValueOrDefault(id) ?? throw new IOException($"The diagnostic definition with id '{id}' is not registered.");
+        => _definitions.GetValueOrDefault(id) ?? throw new InvalidOperationException($"The diagnostic definition with id '{id}' is not registered.");
+
+    public void Register(IDiagnosticDefinition definition) => _definitions.Add(definition.DiagnosticId, definition);
 }

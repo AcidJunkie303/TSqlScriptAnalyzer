@@ -15,12 +15,16 @@ internal sealed partial class TestCodeProcessor
     }
 
     // examples:
-    //  {{AJ5000¦file.sql¦object-name|||Code here}}
-    //  {{AJ5000¦file.sql¦object-name¦insertion1||Code here}}
-    //  {{AJ5000¦file.sql¦object-name¦insertion1¦insertion2||Code here}}
-    //  {{AJ5000¦file.sql¦object-name¦insertion1¦insertion2¦insertion3||Code here}}
+    // █AJ5000░file.sql░object.name██RINT 303█                -> has object name;     no insertions: [],                  region: "PRINT 303"
+    // █AJ5000░file.sql░██RINT 303█                           -> no object name;      no insertions: [],                  region: "PRINT 303"
+    // █AJ5000░file.sql░object.name░██RINT 303█               -> has object name;     1 insertion: [""],                  region: "PRINT 303"
+    // █AJ5000░file.sql░schema.name░hello██RINT 303█          -> has object name;     1 insertion: ["hello"],             region: "PRINT 303"
+    // █AJ5000░file.sql░schema.name░hello░██RINT 303█         -> has object name;     2 insertion: ["hello", ""],         region: "PRINT 303"
+    // █AJ5000░file.sql░schema.name░hello░world██RINT 303█    -> has object name;     2 insertion: ["hello", "world"],    region: "PRINT 303"
+    // █AJ5000░file.sql░░hello░world██RINT 303█               -> no object name;      2 insertion: ["hello", "world"],    region: "PRINT 303"
     // please note that the object-name is optional and can be empty. E.g. when the code is not within a CREATE PROCEDURE statement for example
-    [GeneratedRegex(@"\{\{(?<id>[^¦]+)¦(?<parts>[^\|]+)\|\|\|(?<code>.*?)\}\}", RegexOptions.Compiled | RegexOptions.Singleline, 1000)]
+    //[GeneratedRegex(@"\{\{(?<id>[^░]+)░(?<parts>[^\|]+)\|\|\|(?<code>.*?)\}\}", RegexOptions.Compiled | RegexOptions.Singleline, 1000)]
+    [GeneratedRegex(@"█(?<header>[^█]+)███(?<code>[^█]+)█", RegexOptions.Compiled | RegexOptions.ExplicitCapture, 1000)]
     private static partial Regex MarkupRegex();
 
     public TestCode ParseTestCode(string code)
@@ -30,26 +34,27 @@ internal sealed partial class TestCodeProcessor
         // locate, parse and remove markup code and extract issues to issues list
         var markupFreeCode = MarkupRegex().Replace(code, match =>
         {
-            var id = match.Groups["id"].Value;
-            var parts = match.Groups["parts"].Value.Split('¦');
-            if (parts.Length < 2)
+            var parts = match.Groups["header"].Value
+                .Split('░')
+                .Select(x => x.Trim())
+                .ToList();
+
+            if (parts.Count < 3)
             {
-                throw new InvalidMarkupException("The header, separated by '¦', must contain at least two parts.'");
+                throw new InvalidMarkupException("The header, separated by '░', must contain at least two parts.'");
             }
 
-            var inner = match.Groups["code"].Value;
-            if (inner.Length == 0)
-            {
-                throw new InvalidMarkupException("The header does not contain any code which is enclosed in '|' and '}}'");
-            }
-
-            var fileName = parts[0];
-            var fullObjectName = parts[1].Length == 0 ? null : parts[1];
-            var insertions = parts[2..];
+            var id = parts[0];
+            var fileName = parts[1];
+            var fullObjectName = parts[2].NullIfEmptyOrWhiteSpace();
+            var affectedCode = match.Groups["code"].Value;
+            var insertions = parts.Count >= 4
+                ? parts[3..]
+                : [];
 
             // tricky part: the code can span across multiple lines
             var (startLineNumber, startColumnNumber) = code.GetLineAndColumnNumber(match.Index);
-            var (endLineNumberOffset, endColumnOffset) = inner.GetLineAndColumnIndex(inner.Length - 1);
+            var (endLineNumberOffset, endColumnOffset) = affectedCode.GetLineAndColumnIndex(affectedCode.Length - 1);
 
             var endLineNumber = startLineNumber + endLineNumberOffset;
 
@@ -61,7 +66,7 @@ internal sealed partial class TestCodeProcessor
             var issue = Issue.Create(_diagnosticRegistry.GetDefinition(id), fileName, fullObjectName, location, insertions);
             issues.Add(issue);
 
-            return inner;
+            return affectedCode;
         });
 
         return new TestCode(markupFreeCode, issues);

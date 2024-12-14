@@ -30,7 +30,7 @@ public class StringConcatenationUnicodeAsciiMixAnalyzerTests(ITestOutputHelper t
     public void WhenConcatenatingUnicodeAndAsciiStrings_ThenDiagnose()
     {
         const string sql = """
-                           SET @x = {{AJ5002¦main.sql¦|||N'a' + 'b'}}
+                           SET @x = █AJ5002░main.sql░███N'a' + 'b'█
                            """;
 
         Verify(sql);
@@ -50,7 +50,7 @@ public class StringConcatenationUnicodeAsciiMixAnalyzerTests(ITestOutputHelper t
     public void WhenConvertingPartToDifferentStringType_ThenDiagnose()
     {
         const string sql = """
-                           SET @x = {{AJ5002¦main.sql¦|||N'a' + CONVERT(VARCHAR(999), N'b')}}
+                           SET @x = █AJ5002░main.sql░███N'a' + CONVERT(VARCHAR(999), N'b')█
                            """;
 
         Verify(sql);
@@ -60,7 +60,7 @@ public class StringConcatenationUnicodeAsciiMixAnalyzerTests(ITestOutputHelper t
     public void WhenCastingPartToDifferentStringType_ThenDiagnose()
     {
         const string sql = """
-                           SET @x = {{AJ5002¦main.sql¦|||N'a' + CAST(N'b' AS VARCHAR(999))}}
+                           SET @x = █AJ5002░main.sql░███N'a' + CAST(N'b' AS VARCHAR(999))█
                            """;
 
         Verify(sql);

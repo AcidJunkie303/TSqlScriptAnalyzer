@@ -19,7 +19,7 @@ public sealed class ExcessiveStringConcatenationAnalyzerTests(ITestOutputHelper 
     public void WhenMoreThanTwoStringConcatenation_ThenDiagnose()
     {
         const string sql = """
-                           SET @x = {{AJ5001¦main.sql¦¦2|||'a' + 'b' + 'c' + 'd'}} -- 2 is the default max allowed string concatenation count
+                           SET @x = █AJ5001░main.sql░░2███'a' + 'b' + 'c' + 'd'█ -- 2 is the default max allowed string concatenation count
                            """;
         VerifyWithDefaultSettings<Aj5001Settings>(sql);
     }
@@ -39,7 +39,7 @@ public sealed class ExcessiveStringConcatenationAnalyzerTests(ITestOutputHelper 
     {
         const string sql = """
                            DECLARE @a NVARCHAR(MAX) = N'a'
-                           SET @x = {{AJ5001¦main.sql¦¦2|||@a + @a + @a + @a}}
+                           SET @x = █AJ5001░main.sql░░2███a + @a + @a + @a█
                            """;
         VerifyWithDefaultSettings<Aj5001Settings>(sql);
     }
@@ -71,7 +71,7 @@ public sealed class ExcessiveStringConcatenationAnalyzerTests(ITestOutputHelper 
     public void WithSettings_MaxAllowedConcatenationsIsOne_WhenSettingsWhenTwoConcatenations_ThenDiagnose()
     {
         const string sql = """
-                           SET @x = {{AJ5001¦main.sql¦¦1|||'a' + 'b' + 'c'}}
+                           SET @x = █AJ5001░main.sql░░1███'a' + 'b' + 'c'█
                            """;
 
         var settings = new Aj5001Settings(1);
@@ -87,7 +87,7 @@ public sealed class ExcessiveStringConcatenationAnalyzerTests(ITestOutputHelper 
                            	   @Param1 NVARCHAR(MAX)
                            AS
                            BEGIN
-                           	   SET @x  = {{AJ5001¦main.sql¦xxx.P1¦2|||@Param1 + @Param1 + @Param1 + @Param1}}
+                           	   SET @x  = █AJ5001░main.sql░xxx.P1░2███Param1 + @Param1 + @Param1 + @Param1█
                            END
                            """;
 

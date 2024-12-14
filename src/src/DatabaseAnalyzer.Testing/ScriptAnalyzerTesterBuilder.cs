@@ -70,14 +70,14 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
             .ToList();
 
         List<ScriptModel> allScripts = [mainScript, .. otherScripts];
-        var allScriptsByDatabseName = allScripts
+        var allScriptsByDatabaseName = allScripts
             .GroupBy(a => a.DatabaseName, StringComparer.OrdinalIgnoreCase)
             .ToDictionary(a => a.Key, a => (IReadOnlyList<ScriptModel>)a.ToList(), StringComparer.OrdinalIgnoreCase);
 
         var analysisContext = new AnalysisContext(
             _defaultSchemaName,
             allScripts,
-            allScriptsByDatabseName,
+            allScriptsByDatabaseName,
             diagnosticSettingsProvider,
             new IssueReporter());
 

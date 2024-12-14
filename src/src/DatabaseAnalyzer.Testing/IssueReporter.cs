@@ -20,7 +20,7 @@ internal sealed class IssueReporter : IIssueReporter
 
         static void AssertCorrectInsertionStringCount(string messageTemplate, IReadOnlyList<object> messageInsertionStrings)
         {
-            var expectedInsertionStringCount = InsertionStringHelpers.CountInsertionStrings(messageTemplate);
+            var expectedInsertionStringCount = InsertionStringHelpers.CountInsertionStringPlaceholders(messageTemplate);
             if (expectedInsertionStringCount == messageInsertionStrings.Count)
             {
                 return;

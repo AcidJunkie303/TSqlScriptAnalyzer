@@ -4,7 +4,7 @@ using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.UseDatabaseStatements;
 
-public class FirstStatementIsNotUseDatabaseAnalyzer : IScriptAnalyzer
+public sealed class FirstStatementIsNotUseDatabaseAnalyzer : IScriptAnalyzer
 {
     public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
 

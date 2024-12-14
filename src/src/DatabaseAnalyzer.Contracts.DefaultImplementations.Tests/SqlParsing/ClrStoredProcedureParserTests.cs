@@ -6,7 +6,7 @@ using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Tests.SqlParsing;
 
-public class ClrStoredProcedureParserTests
+public sealed class ClrStoredProcedureParserTests
 {
     [Fact]
     public void WhenWithExecuteAs_ThenItIsIgnored()

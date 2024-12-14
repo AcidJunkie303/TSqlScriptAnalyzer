@@ -108,20 +108,20 @@ public static class SqlCodeObjectExtensions
         }
     }
 
-    public static SqlCodeObject? GetCodeObjectAtPosition(this SqlCodeObject codeObject, int characterIndex)
+    public static SqlCodeObject? TryGetCodeObjectAtPosition(this SqlCodeObject codeObject, int characterIndex)
     {
         var (lineNumber, columnNumber) = codeObject.Sql.GetLineAndColumnNumber(characterIndex);
-        return codeObject.GetCodeObjectAtPosition(lineNumber, columnNumber);
+        return codeObject.TryGetCodeObjectAtPosition(lineNumber, columnNumber);
     }
 
-    public static SqlCodeObject? GetCodeObjectAtPosition(this SqlCodeObject codeObject, Location location)
-        => codeObject.GetCodeObjectAtPosition(location.LineNumber, location.ColumnNumber);
+    public static SqlCodeObject? TryGetCodeObjectAtPosition(this SqlCodeObject codeObject, Location location)
+        => codeObject.TryGetCodeObjectAtPosition(location.LineNumber, location.ColumnNumber);
 
-    public static SqlCodeObject? GetCodeObjectAtPosition(this SqlCodeObject codeObject, CodeLocation location)
-        => codeObject.GetCodeObjectAtPosition(location.LineNumber, location.ColumnNumber);
+    public static SqlCodeObject? TryGetCodeObjectAtPosition(this SqlCodeObject codeObject, CodeLocation location)
+        => codeObject.TryGetCodeObjectAtPosition(location.LineNumber, location.ColumnNumber);
 
     [SuppressMessage("Minor Code Smell", "S3267:Loops should be simplified with \"LINQ\" expressions")]
-    public static SqlCodeObject? GetCodeObjectAtPosition(this SqlCodeObject codeObject, int lineNumber, int columnNumber)
+    public static SqlCodeObject? TryGetCodeObjectAtPosition(this SqlCodeObject codeObject, int lineNumber, int columnNumber)
     {
         SqlCodeObject? match = null;
 
@@ -142,6 +142,28 @@ public static class SqlCodeObjectExtensions
                    && (lineNumber <= codeObject.EndLocation.LineNumber)
                    && (columnNumber <= codeObject.EndLocation.ColumnNumber);
         }
+    }
+
+    public static string? TryGetFullObjectNameAtPosition(this SqlCodeObject codeObject, string defaultSchemaName, Location location)
+        => codeObject.TryGetFullObjectNameAtPosition(defaultSchemaName, location.LineNumber, location.ColumnNumber);
+
+    public static string? TryGetFullObjectNameAtPosition(this SqlCodeObject codeObject, string defaultSchemaName, int lineNumber, int columnNumber)
+    {
+        var codeObjectFound = codeObject.TryGetCodeObjectAtPosition(lineNumber, columnNumber);
+        if (codeObjectFound is null)
+        {
+            return null;
+        }
+
+        var (schemaName, objectName) = codeObjectFound.TryGetSchemaAndObjectName(defaultSchemaName);
+        if (schemaName is null && objectName is null)
+        {
+            return null;
+        }
+
+        return schemaName is null
+            ? objectName
+            : $"{schemaName}.{objectName}";
     }
 
     public static string? TryGetFullObjectName(this SqlCodeObject codeObject, string defaultSchemaName)

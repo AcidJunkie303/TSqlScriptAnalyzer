@@ -5,7 +5,7 @@ using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Strings;
 
-public class ExcessiveStringConcatenationAnalyzer : IScriptAnalyzer
+public sealed class ExcessiveStringConcatenationAnalyzer : IScriptAnalyzer
 {
     public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
 

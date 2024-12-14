@@ -32,7 +32,7 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper) : 
                            CREATE TABLE Employee
                            (
                                Id INT NOT NULL,
-                               {{AJ5006¦main.sql¦dbo.Employee¦FLOAT¦tables|||Value1 FLOAT}}
+                               █AJ5006░main.sql░dbo.Employee░FLOAT░tables███Value1 FLOAT█
                            );
                            """;
 
@@ -64,7 +64,7 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper) : 
         const string sql = """
                            CREATE FUNCTION F1
                            (
-                               {{AJ5006¦main.sql¦dbo.F1¦VARCHAR(MAX)¦functions|||@Param1 VARCHAR(MAX)}}
+                               █AJ5006░main.sql░dbo.F1░VARCHAR(MAX)░functions███@Param1 VARCHAR(MAX)█
                            )
                            RETURNS TABLE
                            AS
@@ -83,7 +83,7 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper) : 
         const string sql = """
                            CREATE FUNCTION F1
                            (
-                           	   {{AJ5006¦main.sql¦dbo.F1¦VARCHAR(MAX)¦functions|||@Param1 VARCHAR(MAX)}}
+                           	   █AJ5006░main.sql░dbo.F1░VARCHAR(MAX)░functions███@Param1 VARCHAR(MAX)█
                            )
                            RETURNS @Result TABLE
                            (
@@ -104,7 +104,7 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper) : 
         const string sql = """
                            CREATE FUNCTION F1
                            (
-                               {{AJ5006¦main.sql¦dbo.F1¦VARCHAR(MAX)¦functions|||@Param1 VARCHAR(MAX)}}
+                               █AJ5006░main.sql░dbo.F1░VARCHAR(MAX)░functions███@Param1 VARCHAR(MAX)█
                            )
                            RETURNS INT
                            AS
@@ -136,7 +136,7 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper) : 
     {
         const string sql = """
                            CREATE PROCEDURE P1
-                               {{AJ5006¦main.sql¦dbo.P1¦UNIQUEIDENTIFIER¦procedures|||@Param1 UniqueIdentifier}}
+                               █AJ5006░main.sql░dbo.P1░UNIQUEIDENTIFIER░procedures███@Param1 UniqueIdentifier█
                            AS
                            BEGIN
                                SELECT 1
@@ -147,7 +147,7 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper) : 
     }
 
     [Fact]
-    public void WhenCreatingClrProcedure_WithoutBannedDataType_ThenDiagnose()
+    public void WhenCreatingClrProcedure_WithoutBannedDataType_ThenOk()
     {
         const string sql = """
                            CREATE  PROCEDURE dbo.P1
@@ -165,10 +165,10 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper) : 
         // since the provided parser doesn't support CLR stored procedures, and we are doing the parsing our own in a simple way,
         // we use the whole statement as code region
         const string sql = """
-                           {{AJ5006¦main.sql¦dbo.P1¦UNIQUEIDENTIFIER¦procedures|||CREATE  PROCEDURE dbo.P1
+                           █AJ5006░main.sql░dbo.P1░UNIQUEIDENTIFIER░procedures███CREATE  PROCEDURE dbo.P1
                                @Param1 uniqueidentifier
                            WITH EXECUTE AS OWNER
-                           AS EXTERNAL NAME A.B.C}}
+                           AS EXTERNAL NAME A.B.C█
                            """;
 
         Verify(sql, Settings);

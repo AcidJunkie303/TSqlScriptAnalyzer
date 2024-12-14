@@ -28,7 +28,7 @@ public sealed class MissingCommaBeforeConstraintKeywordAnalyzerTests(ITestOutput
                            (
                                Id INT NOT NULL,
                                Name VARCHAR(50) NOT NULL /* aa */  -- bla
-                               {{AJ5005¦main.sql¦dbo.Employee|||CONSTRAINT}} PK_Employee PRIMARY KEY (Id)
+                               █AJ5005░main.sql░dbo.Employee███CONSTRAINT█ PK_Employee PRIMARY KEY (Id)
                            );
                            """;
         Verify(sql);

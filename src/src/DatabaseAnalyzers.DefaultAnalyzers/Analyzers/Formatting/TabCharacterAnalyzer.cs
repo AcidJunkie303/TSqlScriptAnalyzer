@@ -4,7 +4,7 @@ using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 
-public class TabCharacterAnalyzer : IScriptAnalyzer
+public sealed class TabCharacterAnalyzer : IScriptAnalyzer
 {
     public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
 
@@ -22,9 +22,7 @@ public class TabCharacterAnalyzer : IScriptAnalyzer
 
             var codeRegion = CodeRegion.Create(lineNumber, columnNumber, lineNumber, columnNumber + 1);
 
-            var fullObjectName = script.ParsedScript
-                .GetCodeObjectAtPosition(i)
-                ?.TryGetFullObjectName(context.DefaultSchemaName);
+            var fullObjectName = script.ParsedScript.GetFullObjectNameAtIndex(i, context.DefaultSchemaName);
 
             context.IssueReporter.Report(DiagnosticDefinitions.Default, script.RelativeScriptFilePath, fullObjectName, codeRegion);
         }

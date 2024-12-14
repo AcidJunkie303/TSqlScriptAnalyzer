@@ -19,7 +19,7 @@ public sealed class DynamicSqlAnalyzerTests(ITestOutputHelper testOutputHelper) 
     public void WhenUsingExecWithBrackets_ThenDiagnose()
     {
         const string sql = """
-                           {{AJ5000¦main.sql¦|||EXEC ('SELECT 1')}}
+                           █AJ5000░main.sql░███EXEC ('SELECT 1')█
                            """;
 
         Verify(sql);
@@ -29,7 +29,7 @@ public sealed class DynamicSqlAnalyzerTests(ITestOutputHelper testOutputHelper) 
     public void WhenUsingExecWithSpExecuteSqlAndCallingStringProvidedCommand_ThenDiagnose()
     {
         const string sql = """
-                           {{AJ5000¦main.sql¦|||EXEC sp_executeSql 'dbo.P1'}}
+                           █AJ5000░main.sql░███EXEC sp_executeSql 'dbo.P1'█
                            """;
 
         Verify(sql);
@@ -40,7 +40,7 @@ public sealed class DynamicSqlAnalyzerTests(ITestOutputHelper testOutputHelper) 
     {
         const string sql = """
                            DECLARE @sql NVARCHAR = N'SELECT 1'
-                           {{AJ5000¦main.sql¦|||EXEC sp_executeSql @sql}}
+                           █AJ5000░main.sql░███EXEC sp_executeSql @sql█
                            """;
 
         Verify(sql);

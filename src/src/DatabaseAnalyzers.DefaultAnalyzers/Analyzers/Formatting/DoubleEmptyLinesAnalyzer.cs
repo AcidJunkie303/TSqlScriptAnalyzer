@@ -4,7 +4,7 @@ using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 
-public class DoubleEmptyLinesAnalyzer : IScriptAnalyzer
+public sealed class DoubleEmptyLinesAnalyzer : IScriptAnalyzer
 {
     public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
 
@@ -22,7 +22,7 @@ public class DoubleEmptyLinesAnalyzer : IScriptAnalyzer
             }
 
             var fullObjectName = script.ParsedScript
-                .GetCodeObjectAtPosition(token.StartLocation)
+                .TryGetCodeObjectAtPosition(token.StartLocation)
                 ?.TryGetFullObjectName(context.DefaultSchemaName);
 
             context.IssueReporter.Report(DiagnosticDefinitions.Default, script.RelativeScriptFilePath, fullObjectName, token);

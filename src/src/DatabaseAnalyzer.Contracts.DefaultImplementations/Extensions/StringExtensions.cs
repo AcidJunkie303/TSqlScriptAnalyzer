@@ -52,7 +52,7 @@ public static class StringExtensions
     {
         var lineIndex = 0;
         var columnIndex = 0;
-        for (var i = 0; i < index; i++)
+        for (var i = 0; (i < index) && (i < text.Length); i++)
         {
             if (text[i] == '\n')
             {

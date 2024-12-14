@@ -32,7 +32,7 @@ public sealed class TestCodeProcessorTests
         // arrange
         var sut = new TestCodeProcessor(DiagnosticDefinitionRegistry);
         const string code = """
-                            aaa{{TE0000¦file.sql¦dbo.p1|||bbb}}ccc
+                            aaa█TE0000░file.sql░dbo.p1███bbb█ccc
                             """;
 
         // act
@@ -54,7 +54,7 @@ public sealed class TestCodeProcessorTests
         // arrange
         var sut = new TestCodeProcessor(DiagnosticDefinitionRegistry);
         const string code = """
-                            aaa{{TE0001¦file.sql¦dbo.p1¦X|||bbb}}ccc
+                            aaa█TE0001░file.sql░dbo.p1░X███bbb█ccc
                             """;
 
         // act
@@ -76,7 +76,7 @@ public sealed class TestCodeProcessorTests
         // arrange
         var sut = new TestCodeProcessor(DiagnosticDefinitionRegistry);
         const string code = """
-                            aaa{{TE0002¦file.sql¦dbo.p1¦X¦Y|||bbb}}ccc
+                            aaa█TE0002░file.sql░dbo.p1░X░Y███bbb█ccc
                             """;
 
         // act
@@ -98,9 +98,9 @@ public sealed class TestCodeProcessorTests
         // arrange
         var sut = new TestCodeProcessor(DiagnosticDefinitionRegistry);
         const string code = """
-                            aaa{{TE0000¦file.sql¦dbo.p1|||
+                            aaa█TE0000░file.sql░dbo.p1███---
                             ---
-                            ---bbb}}ccc
+                            ---bbb█ccc
                             """;
 
         // act
@@ -114,7 +114,7 @@ public sealed class TestCodeProcessorTests
         result.ExpectedIssues.Should().HaveCount(1);
 
         result.MarkupFreeSql.Should().Be("""
-                                         aaa
+                                         aaa---
                                          ---
                                          ---bbbccc
                                          """);

@@ -5,7 +5,7 @@ using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Strings;
 
-public class StringConcatenationUnicodeAsciiMixAnalyzer : IScriptAnalyzer
+public sealed class StringConcatenationUnicodeAsciiMixAnalyzer : IScriptAnalyzer
 {
     public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
 

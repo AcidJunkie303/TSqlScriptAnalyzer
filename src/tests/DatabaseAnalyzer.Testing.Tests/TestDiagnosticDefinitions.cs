@@ -17,7 +17,7 @@ internal static class TestDiagnosticDefinitions
             IssueType = issueType;
             Title = title;
             MessageTemplate = messageTemplate;
-            RequiredInsertionStringCount = InsertionStringHelpers.CountInsertionStrings(messageTemplate);
+            RequiredInsertionStringCount = InsertionStringHelpers.CountInsertionStringPlaceholders(messageTemplate);
         }
 
         public string DiagnosticId { get; }
@@ -38,10 +38,10 @@ internal static class TestDiagnosticDefinitions
                 return true;
             }
 
-            return RequiredInsertionStringCount == other.RequiredInsertionStringCount
+            return (RequiredInsertionStringCount == other.RequiredInsertionStringCount)
                    && string.Equals(DiagnosticId, other.DiagnosticId, StringComparison.Ordinal)
                    && string.Equals(MessageTemplate, other.MessageTemplate, StringComparison.Ordinal)
-                   && IssueType == other.IssueType;
+                   && (IssueType == other.IssueType);
         }
 
         public override bool Equals(object? obj) => ReferenceEquals(this, obj) || (obj is InternalDiagnosticDefinition other && Equals(other));

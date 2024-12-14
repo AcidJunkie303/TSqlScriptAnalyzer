@@ -6,7 +6,7 @@ using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.UseDatabaseStatements;
 
-public class WrongUseDatabaseNameAnalyzer : IScriptAnalyzer
+public sealed class WrongUseDatabaseNameAnalyzer : IScriptAnalyzer
 {
     public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
 

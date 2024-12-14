@@ -5,7 +5,7 @@ using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Tables;
 
-public class MissingCommaBeforeConstraintKeywordAnalyzer : IScriptAnalyzer
+public sealed class MissingCommaBeforeConstraintKeywordAnalyzer : IScriptAnalyzer
 {
     public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
 

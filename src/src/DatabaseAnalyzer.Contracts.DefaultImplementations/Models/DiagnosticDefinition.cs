@@ -10,7 +10,7 @@ public sealed class DiagnosticDefinition : IDiagnosticDefinition, IEquatable<IDi
         IssueType = issueType;
         Title = title;
         MessageTemplate = messageTemplate;
-        RequiredInsertionStringCount = InsertionStringHelpers.CountInsertionStrings(messageTemplate);
+        RequiredInsertionStringCount = InsertionStringHelpers.CountInsertionStringPlaceholders(messageTemplate);
     }
 
     public string DiagnosticId { get; }
@@ -33,10 +33,10 @@ public sealed class DiagnosticDefinition : IDiagnosticDefinition, IEquatable<IDi
             return true;
         }
 
-        return RequiredInsertionStringCount == other.RequiredInsertionStringCount
+        return (RequiredInsertionStringCount == other.RequiredInsertionStringCount)
                && string.Equals(DiagnosticId, other.DiagnosticId, StringComparison.Ordinal)
                && string.Equals(MessageTemplate, other.MessageTemplate, StringComparison.Ordinal)
-               && IssueType == other.IssueType;
+               && (IssueType == other.IssueType);
     }
 
     public override bool Equals(object? obj)

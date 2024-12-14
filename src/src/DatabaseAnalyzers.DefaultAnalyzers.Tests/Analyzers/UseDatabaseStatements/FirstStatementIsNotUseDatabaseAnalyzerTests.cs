@@ -34,7 +34,7 @@ public sealed class FirstStatementIsNotUseDatabaseAnalyzerTests(ITestOutputHelpe
     public void WhenFirstStatementIsNotUseDatabase_ThenDiagnose()
     {
         const string sql = """
-                           {{AJ5004¦main.sql¦¦db1|||PRINT 'Hello World'}}
+                           █AJ5004░main.sql░░db1███PRINT 'Hello World'█
                            USE DB1
                            """;
         Verify(sql);

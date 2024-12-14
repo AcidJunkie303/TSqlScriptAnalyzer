@@ -22,9 +22,9 @@ public sealed class ObjectCreationWithoutOrAlterAnalyzerTests(ITestOutputHelper 
     public void WhenCreatingView_WhenNoOrAlterIsSpecified_ThenDiagnose()
     {
         const string sql = """
-                           {{AJ5009¦main.sql¦dbo.V1|||CREATE VIEW dbo.V1
+                           █AJ5009░main.sql░dbo.V1███CREATE VIEW dbo.V1
                            AS
-                           SELECT 1 AS Expr1}}
+                           SELECT 1 AS Expr1█
                            """;
 
         Verify(sql);
@@ -48,11 +48,11 @@ public sealed class ObjectCreationWithoutOrAlterAnalyzerTests(ITestOutputHelper 
     public void WhenCreatingProcedure_WhenNoOrAlterIsSpecified_ThenDiagnose()
     {
         const string sql = """
-                           {{AJ5009¦main.sql¦dbo.P1|||CREATE PROCEDURE P1
+                           █AJ5009░main.sql░dbo.P1███CREATE PROCEDURE P1
                            AS
                            BEGIN
                                SELECT 1
-                           END}}
+                           END█
                            """;
 
         Verify(sql);
@@ -77,12 +77,12 @@ public sealed class ObjectCreationWithoutOrAlterAnalyzerTests(ITestOutputHelper 
     public void WhenCreatingFunction_WhenNoOrAlterIsSpecified_ThenDiagnose()
     {
         const string sql = """
-                           {{AJ5009¦main.sql¦dbo.F1|||CREATE FUNCTION F1()
+                           █AJ5009░main.sql░dbo.F1███CREATE FUNCTION F1()
                            RETURNS INT
                            AS
                            BEGIN
                            	    RETURN 1
-                           END}}
+                           END█
                            """;
 
         Verify(sql);
@@ -103,8 +103,8 @@ public sealed class ObjectCreationWithoutOrAlterAnalyzerTests(ITestOutputHelper 
     public void WhenCreatingClrFunction_WhenNoOrAlterIsSpecified_ThenDiagnose()
     {
         const string sql = """
-                           {{AJ5009¦main.sql¦dbo.P1|||CREATE PROCEDURE dbo.P1
-                           AS EXTERNAL NAME A.B.C}}
+                           █AJ5009░main.sql░dbo.P1███CREATE PROCEDURE dbo.P1
+                           AS EXTERNAL NAME A.B.C█
                            """;
 
         Verify(sql);

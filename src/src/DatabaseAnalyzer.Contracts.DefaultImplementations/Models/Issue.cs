@@ -30,7 +30,7 @@ public sealed class Issue : IIssue
 
     public static Issue Create(IDiagnosticDefinition diagnosticDefinition, string fullFilePath, string? fullObjectName, CodeRegion codeRegion, params IReadOnlyList<object> insertions)
     {
-        var expectedInsertionCount = InsertionStringHelpers.CountInsertionStrings(diagnosticDefinition.MessageTemplate);
+        var expectedInsertionCount = InsertionStringHelpers.CountInsertionStringPlaceholders(diagnosticDefinition.MessageTemplate);
         if (expectedInsertionCount != insertions.Count)
         {
             throw new ArgumentException($"Expected {expectedInsertionCount} insertions, but got {insertions.Count}.", nameof(insertions));

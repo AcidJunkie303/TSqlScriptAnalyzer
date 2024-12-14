@@ -20,7 +20,7 @@ public sealed class TabCharacterAnalyzerTests(ITestOutputHelper testOutputHelper
     public void WhenTabFound_ThenDiagnose()
     {
         // had to be done this way because the IDE replaces tabs with spaces...
-        const string sql = "PRINT 303\r\n    {{AJ5008¦main.sql¦|||\t}}PRINT 909";
+        const string sql = "PRINT 303\r\n█AJ5008░main.sql░███\t█PRINT 909";
 
         Verify(sql);
     }

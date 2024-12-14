@@ -22,10 +22,10 @@ public sealed class DoubleEmptyLinesAnalyzerTests(ITestOutputHelper testOutputHe
     {
         const string sql =
             @"
-            PRINT 303{{AJ5007¦main.sql¦|||
+            PRINT 303█AJ5007░main.sql░███
 
 
-            }}PRINT 909
+            █PRINT 909
             ";
         Verify(sql);
     }

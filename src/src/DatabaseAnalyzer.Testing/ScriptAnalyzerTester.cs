@@ -1,7 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using DatabaseAnalyzer.Contracts;
 using FluentAssertions;
-using Microsoft.SqlServer.Management.Dmf;
 
 namespace DatabaseAnalyzer.Testing;
 
@@ -10,6 +9,9 @@ public sealed class ScriptAnalyzerTester
 {
     private readonly IAnalysisContext _analysisContext;
     private readonly IScriptAnalyzer _analyzer;
+
+    public ScriptModel MainScript { get; }
+    public IReadOnlyList<IIssue> ExpectedIssues { get; }
 
     public ScriptAnalyzerTester(
         IAnalysisContext analysisContext,
@@ -23,15 +25,12 @@ public sealed class ScriptAnalyzerTester
         _analyzer = analyzer;
     }
 
-    public ScriptModel MainScript { get; }
-    public IReadOnlyList<IIssue> ExpectedIssues { get; }
-
     public void Test()
     {
         var firstScriptError = _analysisContext.Scripts.SelectMany(script => script.Errors).FirstOrDefault();
         if (firstScriptError is not null)
         {
-            throw new InvalidOperandException($"Error in script. {firstScriptError}", firstScriptError);
+            throw new InvalidOperationException($"Error in script: {firstScriptError}");
         }
 
         _analyzer.AnalyzeScript(_analysisContext, MainScript);
