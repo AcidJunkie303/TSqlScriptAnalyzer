@@ -1,14 +1,19 @@
 {
+  "DefaultSchemaName": "dbo",
   "ScriptSource": {
     "ExclusionFilters": [],
+    "ScriptsRootDirectoryPath": "..\\..\\..\\..\\testing\\scripts\\",
     "DatabaseScriptsRootPathByDatabaseName": {
-      "database 1": "..\\..\\..\\..\\testing\\scripts\\database 1",
-      "database 2": "..\\..\\..\\..\\testing\\scripts\\database 2",
-      "database 3": "..\\..\\..\\..\\testing\\scripts\\database 3"
+      "database-1": "..\\..\\..\\..\\testing\\scripts\\database-1",
+      "database-2": "..\\..\\..\\..\\testing\\scripts\\database-2",
+      "database-3": "..\\..\\..\\..\\testing\\scripts\\database-3"
     }
   },
   "Diagnostics": {
-    "DisabledDiagnostics": [],
+    "DisabledDiagnostics": [
+      "AB1111",
+      "AB2222"
+    ],
     "AJ5001": { // Excessive string concatenation
       "MaxAllowedConcatenations": 2
     },
@@ -16,9 +21,18 @@
       "ExcludedFilePathPatterns": "0000 Create*.sql"
     },
     "AJ5006": { // Banned data types
-      "BannedColumnDataTypes": [ "decimal", "varchar" ],
-      "BannedFunctionParameterDataTypes": [ "decimal", "varchar" ],
-      "BannedProcedureParameterDataTypes": [ "decimal", "varchar" ]
+      "BannedColumnDataTypes": [
+        "decimal",
+        "varchar"
+      ],
+      "BannedFunctionParameterDataTypes": [
+        "decimal",
+        "varchar"
+      ],
+      "BannedProcedureParameterDataTypes": [
+        "decimal",
+        "varchar"
+      ]
     }
   }
 }

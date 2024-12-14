@@ -31,7 +31,7 @@ public abstract class ScriptAnalyzerTestsBase<TAnalyzer>
         TestOutputHelper.WriteLine(string.Empty);
         TestOutputHelper.WriteLine(string.Empty);
         TestOutputHelper.WriteLine(string.Empty);
-        TestOutputHelper.WriteLine("Tokens");
+        TestOutputHelper.WriteLine("Tokens:");
         TestOutputHelper.WriteLine(TokenVisualizer.Visualize(tester.MainScript.ParsedScript));
 
         tester.Test();

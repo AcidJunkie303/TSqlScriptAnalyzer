@@ -17,4 +17,8 @@
         <ProjectReference Include="..\DatabaseAnalyzers.DefaultAnalyzers\DatabaseAnalyzers.DefaultAnalyzers.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <Folder Include="Analyzers\Naming\"/>
+    </ItemGroup>
+
 </Project>

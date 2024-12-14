@@ -24,7 +24,7 @@ public sealed class WrongUseDatabaseNameAnalyzerTests(ITestOutputHelper testOutp
                            PRINT 'Hello World'
                            USE [db1]
                            PRINT 'Hello World'
-                           █AJ5003░main.sql░░db1░master███USE [master]█
+                           █AJ5003░main.sql░░master░db1███USE [master]█
                            """;
 
         VerifyWithDefaultSettings<Aj5003Settings>(sql);

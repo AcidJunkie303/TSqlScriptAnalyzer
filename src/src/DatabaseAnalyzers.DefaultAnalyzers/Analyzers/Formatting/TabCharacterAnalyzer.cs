@@ -22,7 +22,7 @@ public sealed class TabCharacterAnalyzer : IScriptAnalyzer
 
             var codeRegion = CodeRegion.Create(lineNumber, columnNumber, lineNumber, columnNumber + 1);
 
-            var fullObjectName = script.ParsedScript.GetFullObjectNameAtIndex(i, context.DefaultSchemaName);
+            var fullObjectName = script.ParsedScript.TryGetFullObjectNameAtIndex(i, context.DefaultSchemaName);
 
             context.IssueReporter.Report(DiagnosticDefinitions.Default, script.RelativeScriptFilePath, fullObjectName, codeRegion);
         }

@@ -63,10 +63,10 @@ internal static class Program
         }
         else
         {
-            Console.WriteLine("{0} issues found.", analysisResult.Issues);
+            Console.WriteLine($"{analysisResult.Issues.Count} issue(s) found:");
             foreach (var issue in analysisResult.Issues)
             {
-                Console.WriteLine($"{issue.DiagnosticDefinition.DiagnosticId} {issue.RelativeScriptFilePath} {issue.Message}");
+                Console.WriteLine($"    {issue.DiagnosticDefinition.DiagnosticId} {issue.RelativeScriptFilePath} {issue.Message} Location:{issue.CodeRegion}");
             }
         }
 
@@ -76,10 +76,10 @@ internal static class Program
         }
         else
         {
-            Console.WriteLine("{0} suppressed issues found.", analysisResult.Issues);
+            Console.WriteLine($"{analysisResult.SuppressedIssues.Count} suppressed issue(s) found:");
             foreach (var issue in analysisResult.SuppressedIssues)
             {
-                Console.WriteLine($"{issue.Issue.DiagnosticDefinition.DiagnosticId} {issue.Issue.RelativeScriptFilePath} {issue.Issue.Message}.    Reason={issue.Reason}");
+                Console.WriteLine($"    {issue.Issue.DiagnosticDefinition.DiagnosticId} {issue.Issue.RelativeScriptFilePath} {issue.Issue.Message}.    Reason={issue.Reason}");
             }
         }
     }

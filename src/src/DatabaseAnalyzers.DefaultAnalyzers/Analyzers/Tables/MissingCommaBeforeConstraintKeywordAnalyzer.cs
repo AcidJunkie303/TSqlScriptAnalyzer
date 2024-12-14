@@ -28,8 +28,7 @@ public sealed class MissingCommaBeforeConstraintKeywordAnalyzer : IScriptAnalyze
 
     private static void AnalyzeColumn(IIssueReporter issueReporter, SqlColumnDefinition columnDefinition, string relativeScriptFilePath, string? fullObjectName)
     {
-        var tokens = columnDefinition.Tokens
-            .ToList();
+        var tokens = columnDefinition.Tokens.ToList();
 
         var (constraintToken, constraintTokenIndex) = tokens.FirstOrDefaultWithIndex(token => token.IsConstraint());
         if (constraintToken is null)

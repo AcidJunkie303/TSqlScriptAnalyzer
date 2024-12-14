@@ -4,7 +4,7 @@ namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 
 public static class SqlScriptExtensions
 {
-    public static string? GetFullObjectNameAtIndex(this SqlScript script, int characterIndex, string defaultSchemaName)
+    public static string? TryGetFullObjectNameAtIndex(this SqlScript script, int characterIndex, string defaultSchemaName)
         => script
             .TryGetCodeObjectAtPosition(characterIndex)
             ?.TryGetFullObjectName(defaultSchemaName);
