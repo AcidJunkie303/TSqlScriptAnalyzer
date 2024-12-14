@@ -22,11 +22,11 @@ public sealed class Issue : IIssue
     }
 
     public IDiagnosticDefinition DiagnosticDefinition { get; }
-    public string Message { get; }
     public string RelativeScriptFilePath { get; }
     public string? ObjectName { get; }
     public CodeRegion CodeRegion { get; }
     public IReadOnlyList<string> MessageInsertionStrings { get; }
+    public string Message { get; }
 
     public static Issue Create(IDiagnosticDefinition diagnosticDefinition, string fullFilePath, string? fullObjectName, CodeRegion codeRegion, params IReadOnlyList<object> insertions)
     {

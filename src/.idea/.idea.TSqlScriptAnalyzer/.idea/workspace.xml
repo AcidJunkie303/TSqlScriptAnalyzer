@@ -9,24 +9,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bc5c4f41-9446-4faf-a8e5-3c6d90b660d2" name="Changes" comment="added unreferenced variable analyzer&#10;cleanup and fixes">
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.App/Reporting/ConsoleReportType.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.App/Reporting/FileReportType.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.App/Reporting/HtmlReportRenderer.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.App/Reporting/IReportRenderer.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.App/Reporting/JsonReportRenderer.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.App/Reporting/ReportFileRenderer.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.App/Reporting/ReportRendererFactory.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.App/Reporting/TextReportRenderer.cs" afterDir="false" />
+    <list default="true" id="bc5c4f41-9446-4faf-a8e5-3c6d90b660d2" name="Changes" comment="added reporting (HTML not done yet)&#10;added command line parsing">
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/Naming/ParameterReferenceWithDifferentCasingAnalyzerTests.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/Naming/VariableReferenceWithDifferentCasingAnalyzerTests.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Naming/ParameterReferenceWithDifferentCasingAnalyzer.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Naming/VariableReferenceWithDifferentCasingAnalyzer.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TSqlScriptAnalyzer/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TSqlScriptAnalyzer/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Directory.Build.props" beforeDir="false" afterPath="$PROJECT_DIR$/Directory.Build.props" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.App/CommandLineOptions.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.App/CommandLineParser.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.App/CommandType.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.App/DatabaseAnalyzer.App.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.App/DatabaseAnalyzer.App.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.App/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.App/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.App/Properties/launchSettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.App/Properties/launchSettings.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/testing/settings/database1.jsonc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Models/Issue.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Models/Issue.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts/IIssue.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts/IIssue.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/DatabaseAnalyzers.DefaultAnalyzers.Tests.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/DatabaseAnalyzers.DefaultAnalyzers.Tests.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/DatabaseAnalyzers.DefaultAnalyzers.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/DatabaseAnalyzers.DefaultAnalyzers.csproj" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,7 +59,9 @@
     <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Dummy.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/.nuget/packages/microsoft.net.test.sdk/17.12.0/build/netcoreapp3.1/Microsoft.NET.Test.Sdk.Program.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/505d92d4dd474b5baf908fd6bb70bae4a0938/dc/3aeddb5e/Utilities.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5a497ef51b924bcb82a5215076ef5ef5f2820/e3/612cf853/CollectionUtilities.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/19/20629951/SqlCodeObjectRecursiveVisitor.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/29/46c8c4ac/Token.cs" root0="FORCE_HIGHLIGHTING" />
@@ -97,6 +92,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/c62dbcc4ba2718769223d2edcbb462defa1d97c8f2ef066639d41ddd521e/XUnit2TestFramework.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/ded3b52c6e1f5df70d0eb72e72941c96c12d398d4383fa15061718235e7/LinkedList.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/ea42db23f2bfdf51231fc0d520206e7c849ca2e9eb3af4432436561a38e58076/ParseResult.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock://C:/projects/TSqlScriptAnalyzer/src/src/DatabaseAnalyzer.App/Program.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock://C:/projects/TSqlScriptAnalyzer/src/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/ClrStoredProcedureParserTests.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock://C:/projects/TSqlScriptAnalyzer/src/src/DatabaseAnalyzer.Contracts/ScriptModel.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock://C:/projects/TSqlScriptAnalyzer/src/src/DatabaseAnalyzer.Core/Services/ScriptLoader.cs" root0="SKIP_HIGHLIGHTING" />
@@ -133,7 +129,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    ".NET Launch Settings Profile.DatabaseAnalyzer.App.executor": "Run",
+    ".NET Launch Settings Profile.DatabaseAnalyzer.App.executor": "Debug",
     ".NET Launch Settings Profile.TSqlScriptAnalyzer.App.executor": "Run",
     ".NET Project.DatabaseAnalyzer.App.executor": "Debug",
     "2238f1ec-19dd-4aa1-9b94-b3b5f7d1a21a.executor": "Debug",
@@ -426,7 +422,15 @@
       <option name="project" value="LOCAL" />
       <updated>1734174028710</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="added reporting (HTML not done yet)&#10;added command line parsing">
+      <option name="closed" value="true" />
+      <created>1734186572654</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1734186572654</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -470,7 +474,8 @@
     <MESSAGE value="some cleanup&#10;DataTypeAnalyzer now also checks vor banned data types for variables" />
     <MESSAGE value="Added UnreferencedParameterAnalyzer" />
     <MESSAGE value="added unreferenced variable analyzer&#10;cleanup and fixes" />
-    <option name="LAST_COMMIT_MESSAGE" value="added unreferenced variable analyzer&#10;cleanup and fixes" />
+    <MESSAGE value="added reporting (HTML not done yet)&#10;added command line parsing" />
+    <option name="LAST_COMMIT_MESSAGE" value="added reporting (HTML not done yet)&#10;added command line parsing" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -863,6 +868,45 @@
           </properties>
           <option name="timeStamp" value="196" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.App/Reporting/ReportFileRenderer.cs</url>
+          <line>9</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.App\Reporting\ReportFileRenderer.cs" containingFunctionPresentation="Method 'Render'">
+            <startOffsets>
+              <option value="280" />
+            </startOffsets>
+            <endOffsets>
+              <option value="409" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="207" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/UnreferencedObject/UnreferencedVariableAnalyzer.cs</url>
+          <line>32</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\UnreferencedObject\UnreferencedVariableAnalyzer.cs" containingFunctionPresentation="Method 'AnalyzeBatch'">
+            <startOffsets>
+              <option value="1401" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1527" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="214" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Naming/VariableReferenceWithDifferentCasingAnalyzer.cs</url>
+          <line>50</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\Naming\VariableReferenceWithDifferentCasingAnalyzer.cs" containingFunctionPresentation="Method 'AnalyzeBatch'">
+            <startOffsets>
+              <option value="2211" />
+            </startOffsets>
+            <endOffsets>
+              <option value="2351" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="215" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
     <pin-to-top-manager>
@@ -885,6 +929,7 @@
         <watch expression="procedure.GetDescendantsOfType&lt;SqlCompoundStatement&gt;().SingleOrDefault()" language="C#" />
         <watch expression="statement.Definition" />
         <watch expression="sql.ParseSqlScript()" language="C#" />
+        <watch expression="tokens.Where(a=&gt;a.IsVariable())" language="C#" />
       </configuration>
     </watches-manager>
   </component>
