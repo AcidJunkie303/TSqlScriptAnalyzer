@@ -10,6 +10,7 @@
         <!-- CA1062     Does not recognize scenarios where arguments are not null, see: https://github.com/dotnet/roslyn-analyzers/issues/2877 -->
         <!-- CA1303     All our tools are English only, we don't need to localize any string -->
         <!-- IDE0008    Use explicit type instead of var -->
+        <!-- MA0045     Do not use blocking calls in a sync method -> We're not using async (mostly) -->
         <!-- NU1901     Warning As Error: Package 'Microsoft.Identity.Client' 4.56.0 has a known low severity vulnerability-->
         <!-- NU1902     Warning As Error: Package 'Azure.Identity' 1.10.3 has a known moderate severity vulnerability-->
         <!-- NU1903     Warning As Error: Package 'System.Formats.Asn1' 5.0.0 has a known high severity vulnerability-->
@@ -17,7 +18,7 @@
         <!-- RCS1194    We should only implement exception constructors we use, we don't want dead code -->
         <!-- S1135      Already covered by MA0026 -->
         <!-- SA1600     Elements Must Be Documented-->
-        <NoWarn>CA1014;CA1032;CA1034;CA1062;CA1303;IDE0008;NU1901;NU1902;NU1903;RCS1004;RCS1194;S1135;SA1600;</NoWarn>
+        <NoWarn>CA1014;CA1032;CA1034;CA1062;CA1303;IDE0008;MA0045;NU1901;NU1902;NU1903;RCS1004;RCS1194;S1135;SA1600;</NoWarn>
 
         <!-- MA0025: NotImplementedException are like TODOs they should be warning only -->
         <!-- MA0026: We know TODO items should be tackled, let's not create Errors for them -->

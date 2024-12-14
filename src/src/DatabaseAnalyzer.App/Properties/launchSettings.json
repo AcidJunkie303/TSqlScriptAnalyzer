@@ -3,7 +3,7 @@
     "profiles": {
         "DatabaseAnalyzer.App": {
             "commandName": "Project",
-            "commandLineArgs": "..\\..\\..\\..\\testing\\settings\\database1.jsonc",
+            "commandLineArgs": "analyze --file ..\\..\\..\\..\\testing\\settings\\project1.jsonc",
             "environmentVariables": {
             }
         }
