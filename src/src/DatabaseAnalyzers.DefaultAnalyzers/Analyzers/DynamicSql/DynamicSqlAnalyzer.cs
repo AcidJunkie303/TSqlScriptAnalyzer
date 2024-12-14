@@ -9,7 +9,7 @@ public sealed class DynamicSqlAnalyzer : IScriptAnalyzer
 {
     public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
 
-    public void AnalyzeScript(IAnalysisContext context, ScriptModel script)
+    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
         foreach (var statement in script.ParsedScript.GetDescendantsOfType<SqlExecuteModuleStatement>())
         {
@@ -22,7 +22,7 @@ public sealed class DynamicSqlAnalyzer : IScriptAnalyzer
         }
     }
 
-    private static void Analyze(IAnalysisContext context, ScriptModel script, SqlExecuteModuleStatement statement)
+    private static void Analyze(IAnalysisContext context, IScriptModel script, SqlExecuteModuleStatement statement)
     {
         var firstChild = statement.Children.FirstOrDefault();
         if (firstChild is SqlObjectReference objectReference && !objectReference.ObjectIdentifier.ObjectName.Value.EqualsOrdinalIgnoreCase("sp_executeSql"))
@@ -42,13 +42,13 @@ public sealed class DynamicSqlAnalyzer : IScriptAnalyzer
         }
 
         var fullObjectName = statement.TryGetFullObjectName(context.DefaultSchemaName);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, script.RelativeScriptFilePath, fullObjectName, statement);
+        context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, statement);
     }
 
-    private static void Analyze(IAnalysisContext context, ScriptModel script, SqlExecuteStringStatement statement)
+    private static void Analyze(IAnalysisContext context, IScriptModel script, SqlExecuteStringStatement statement)
     {
         var fullObjectName = statement.TryGetFullObjectName(context.DefaultSchemaName);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, script.RelativeScriptFilePath, fullObjectName, statement);
+        context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, statement);
     }
 
     private static class DiagnosticDefinitions

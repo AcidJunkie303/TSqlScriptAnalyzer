@@ -10,7 +10,7 @@ public sealed class VariableReferenceWithDifferentCasingAnalyzer : IScriptAnalyz
 {
     public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
 
-    public void AnalyzeScript(IAnalysisContext context, ScriptModel script)
+    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
         foreach (var batch in script.ParsedScript.Batches)
         {
@@ -18,7 +18,7 @@ public sealed class VariableReferenceWithDifferentCasingAnalyzer : IScriptAnalyz
         }
     }
 
-    private static void AnalyzeBatch(IAnalysisContext context, ScriptModel script, SqlBatch batch)
+    private static void AnalyzeBatch(IAnalysisContext context, IScriptModel script, SqlBatch batch)
     {
         var variableDeclarationsByName = batch
             .GetDescendantsOfType<SqlVariableDeclaration>()
@@ -48,7 +48,7 @@ public sealed class VariableReferenceWithDifferentCasingAnalyzer : IScriptAnalyz
         foreach (var (token, declaredName) in variableReferencesWithDifferentCasing)
         {
             var fullObjectName = script.ParsedScript.TryGetFullObjectNameAtPosition(context.DefaultSchemaName, token.StartLocation);
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, script.RelativeScriptFilePath, fullObjectName, token, token.Text, declaredName);
+            context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, token, token.Text, declaredName);
         }
     }
 

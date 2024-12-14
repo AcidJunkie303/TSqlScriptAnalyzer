@@ -40,7 +40,7 @@ public sealed class TestCodeProcessorTests
 
         // assert
         var expectedLocation = CodeRegion.Create(1, 4, 1, 7);
-        var expectedIssue = Issue.Create(TestDiagnosticDefinitions.TestDiagnostic0, "file.sql", "dbo.p1", expectedLocation);
+        var expectedIssue = Issue.Create(TestDiagnosticDefinitions.TestDiagnostic0, "db1", "file.sql", "dbo.p1", expectedLocation);
 
         result.ExpectedIssues.Should().ContainEquivalentOf(expectedIssue);
         result.ExpectedIssues.Should().HaveCount(1);
@@ -62,7 +62,7 @@ public sealed class TestCodeProcessorTests
 
         // assert
         var expectedLocation = CodeRegion.Create(1, 4, 1, 7);
-        var expectedIssue = Issue.Create(TestDiagnosticDefinitions.TestDiagnostic1, "file.sql", "dbo.p1", expectedLocation, "X");
+        var expectedIssue = Issue.Create(TestDiagnosticDefinitions.TestDiagnostic1, "db1", "file.sql", "dbo.p1", expectedLocation, "X");
 
         result.ExpectedIssues.Should().ContainEquivalentOf(expectedIssue);
         result.ExpectedIssues.Should().HaveCount(1);
@@ -84,7 +84,7 @@ public sealed class TestCodeProcessorTests
 
         // assert
         var expectedLocation = CodeRegion.Create(1, 4, 1, 7);
-        var expectedIssue = Issue.Create(TestDiagnosticDefinitions.TestDiagnostic2, "file.sql", "dbo.p1", expectedLocation, "X", "Y");
+        var expectedIssue = Issue.Create(TestDiagnosticDefinitions.TestDiagnostic2, "db1", "file.sql", "dbo.p1", expectedLocation, "X", "Y");
 
         result.ExpectedIssues.Should().ContainEquivalentOf(expectedIssue);
         result.ExpectedIssues.Should().HaveCount(1);
@@ -108,7 +108,7 @@ public sealed class TestCodeProcessorTests
 
         // assert
         var expectedLocation = CodeRegion.Create(1, 4, 3, 7);
-        var expectedIssue = Issue.Create(TestDiagnosticDefinitions.TestDiagnostic0, "file.sql", "dbo.p1", expectedLocation);
+        var expectedIssue = Issue.Create(TestDiagnosticDefinitions.TestDiagnostic0, "db1", "file.sql", "dbo.p1", expectedLocation);
 
         result.ExpectedIssues.Should().ContainEquivalentOf(expectedIssue);
         result.ExpectedIssues.Should().HaveCount(1);

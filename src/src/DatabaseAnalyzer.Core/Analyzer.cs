@@ -1,6 +1,7 @@
 using System.Collections.Frozen;
 using System.Collections.Immutable;
 using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 using DatabaseAnalyzer.Core.Configuration;
 using DatabaseAnalyzer.Core.Extensions;
 using DatabaseAnalyzer.Core.Models;
@@ -47,7 +48,7 @@ internal sealed class Analyzer : IAnalyzer
 
         var scriptByDatabaseName = scripts
             .GroupBy(a => a.DatabaseName, StringComparer.OrdinalIgnoreCase)
-            .ToFrozenDictionary(a => a.Key, a => (IReadOnlyList<ScriptModel>)a.ToImmutableArray(), StringComparer.OrdinalIgnoreCase);
+            .ToFrozenDictionary(a => a.Key, a => (IReadOnlyList<IScriptModel>)a.ToImmutableArray(), StringComparer.OrdinalIgnoreCase);
 
         var analysisContext = new AnalysisContext
         (
@@ -89,14 +90,15 @@ internal sealed class Analyzer : IAnalyzer
         );
     }
 
-    private static (List<IIssue> UnsuppressedIssues, List<SuppressedIssue> SuppressedIssues) SplitIssuesToSuppressedAndUnsuppressed(IReadOnlyCollection<ScriptModel> scripts, IReadOnlyCollection<IIssue> issues)
+    private static (List<IIssue> UnsuppressedIssues, List<SuppressedIssue> SuppressedIssues) SplitIssuesToSuppressedAndUnsuppressed(IReadOnlyCollection<IScriptModel> scripts, IReadOnlyCollection<IIssue> issues)
     {
         var unsuppressedIssues = new List<IIssue>(issues.Count);
         var suppressedIssues = new List<SuppressedIssue>(issues.Count);
 
         foreach (var scriptAndIssues in AggregateScriptsAndIssues(scripts, issues))
         {
-            var (currentUnsuppressedIssues, currentSuppressedIssues) = DiagnosticSuppressionFilterer.Filter(scriptAndIssues.Script, scriptAndIssues.Issues);
+            var (currentUnsuppressedIssues, currentSuppressedIssues)
+                = DiagnosticSuppressionFilterer.Filter(scriptAndIssues.Script, scriptAndIssues.Issues);
             unsuppressedIssues.AddRange(currentUnsuppressedIssues);
             suppressedIssues.AddRange(currentSuppressedIssues);
         }
@@ -104,7 +106,7 @@ internal sealed class Analyzer : IAnalyzer
         return (unsuppressedIssues, suppressedIssues);
     }
 
-    private static List<(ScriptModel Script, List<IIssue> Issues)> AggregateScriptsAndIssues(IEnumerable<ScriptModel> scripts, IEnumerable<IIssue> issues)
+    private static List<(IScriptModel Script, List<IIssue> Issues)> AggregateScriptsAndIssues(IEnumerable<IScriptModel> scripts, IEnumerable<IIssue> issues)
     {
         var issuesByFileName = issues
             .GroupBy(a => a.RelativeScriptFilePath, StringComparer.OrdinalIgnoreCase);
@@ -119,7 +121,7 @@ internal sealed class Analyzer : IAnalyzer
             .ToList();
     }
 
-    private ImmutableArray<ScriptModel> ParseScripts()
+    private ImmutableArray<IScriptModel> ParseScripts()
     {
         var sourceScripts = GetScriptFilePaths();
         var basicScripts = LoadScriptFiles(sourceScripts);
@@ -129,7 +131,7 @@ internal sealed class Analyzer : IAnalyzer
             .Select(ParseScript)
             .ToImmutableArray();
 
-        ScriptModel ParseScript(BasicScriptInformation script)
+        IScriptModel ParseScript(BasicScriptInformation script)
         {
             var parseResult = Parser.Parse(script.Contents);
             var errors = parseResult.Errors

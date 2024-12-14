@@ -9,24 +9,24 @@ public sealed class MissingCommaBeforeConstraintKeywordAnalyzer : IScriptAnalyze
 {
     public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
 
-    public void AnalyzeScript(IAnalysisContext context, ScriptModel script)
+    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
         foreach (var createTableStatement in script.ParsedScript.GetDescendantsOfType<SqlCreateTableStatement>())
         {
-            AnalyzeTable(context, script.RelativeScriptFilePath, createTableStatement);
+            AnalyzeTable(context, script, createTableStatement);
         }
     }
 
-    private static void AnalyzeTable(IAnalysisContext context, string relativeScriptFilePath, SqlCreateTableStatement createTableStatement)
+    private static void AnalyzeTable(IAnalysisContext context, IScriptModel script, SqlCreateTableStatement createTableStatement)
     {
         var fullObjectName = createTableStatement.TryGetFullObjectName(context.DefaultSchemaName);
         foreach (var column in createTableStatement.Definition.ColumnDefinitions)
         {
-            AnalyzeColumn(context.IssueReporter, column, relativeScriptFilePath, fullObjectName);
+            AnalyzeColumn(context.IssueReporter, script, column, fullObjectName);
         }
     }
 
-    private static void AnalyzeColumn(IIssueReporter issueReporter, SqlColumnDefinition columnDefinition, string relativeScriptFilePath, string? fullObjectName)
+    private static void AnalyzeColumn(IIssueReporter issueReporter, IScriptModel script, SqlColumnDefinition columnDefinition, string? fullObjectName)
     {
         var tokens = columnDefinition.Tokens.ToList();
 
@@ -49,7 +49,7 @@ public sealed class MissingCommaBeforeConstraintKeywordAnalyzer : IScriptAnalyze
                 return;
             }
 
-            issueReporter.Report(DiagnosticDefinitions.Default, relativeScriptFilePath, fullObjectName, constraintToken);
+            issueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, constraintToken);
             return;
         }
     }

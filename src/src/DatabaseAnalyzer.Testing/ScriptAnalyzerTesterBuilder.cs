@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Services;
 using Microsoft.SqlServer.Management.SqlParser.Parser;
 
@@ -69,10 +70,13 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
             .Select(a => ParseScript(a.Key, a.Value.Contents, a.Value.DatabaseName))
             .ToList();
 
-        List<ScriptModel> allScripts = [mainScript, .. otherScripts];
+        List<IScriptModel> allScripts = [mainScript, .. otherScripts];
         var allScriptsByDatabaseName = allScripts
             .GroupBy(a => a.DatabaseName, StringComparer.OrdinalIgnoreCase)
-            .ToDictionary(a => a.Key, a => (IReadOnlyList<ScriptModel>)a.ToList(), StringComparer.OrdinalIgnoreCase);
+            .ToDictionary(
+                a => a.Key,
+                a => (IReadOnlyList<IScriptModel>)a.ToList(),
+                StringComparer.OrdinalIgnoreCase);
 
         var analysisContext = new AnalysisContext(
             _defaultSchemaName,

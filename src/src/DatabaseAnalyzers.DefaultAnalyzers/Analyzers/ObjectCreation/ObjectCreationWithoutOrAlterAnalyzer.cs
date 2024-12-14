@@ -13,7 +13,7 @@ public sealed partial class ObjectCreationWithoutOrAlterAnalyzer : IScriptAnalyz
 {
     public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
 
-    public void AnalyzeScript(IAnalysisContext context, ScriptModel script)
+    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
         var createViewStatements = GetDescendantsOfType<SqlCreateViewStatement>(script.ParsedScript);
         var createProcedureStatements = GetDescendantsOfType<SqlCreateProcedureStatement>(script.ParsedScript);
@@ -34,7 +34,7 @@ public sealed partial class ObjectCreationWithoutOrAlterAnalyzer : IScriptAnalyz
         => script
             .GetDescendantsOfType<T>();
 
-    private static void Analyze(IAnalysisContext context, ScriptModel script, IEnumerable<SqlCodeObject> creationStatements)
+    private static void Analyze(IAnalysisContext context, IScriptModel script, IEnumerable<SqlCodeObject> creationStatements)
     {
         foreach (var statement in creationStatements)
         {
@@ -46,11 +46,11 @@ public sealed partial class ObjectCreationWithoutOrAlterAnalyzer : IScriptAnalyz
             }
 
             var fullObjectName = statement.TryGetFullObjectName(context.DefaultSchemaName);
-            Report(context.IssueReporter, script.RelativeScriptFilePath, fullObjectName, CodeRegion.From(statement));
+            Report(context.IssueReporter, script, fullObjectName, CodeRegion.From(statement));
         }
     }
 
-    private static void Analyze(IAnalysisContext context, ScriptModel script, IEnumerable<SqlCreateClrStoredProcedureStatement> creationStatements)
+    private static void Analyze(IAnalysisContext context, IScriptModel script, IEnumerable<SqlCreateClrStoredProcedureStatement> creationStatements)
     {
         foreach (var statement in creationStatements)
         {
@@ -60,12 +60,12 @@ public sealed partial class ObjectCreationWithoutOrAlterAnalyzer : IScriptAnalyz
             }
 
             var fullObjectName = statement.CreationStatement.TryGetFullObjectName(context.DefaultSchemaName);
-            Report(context.IssueReporter, script.RelativeScriptFilePath, fullObjectName, statement.CodeRegion);
+            Report(context.IssueReporter, script, fullObjectName, statement.CodeRegion);
         }
     }
 
-    private static void Report(IIssueReporter issueReporter, string relativeScriptFilePath, string? fullObjectName, CodeRegion codeRegion)
-        => issueReporter.Report(DiagnosticDefinitions.Default, relativeScriptFilePath, fullObjectName, codeRegion);
+    private static void Report(IIssueReporter issueReporter, IScriptModel script, string? fullObjectName, CodeRegion codeRegion)
+        => issueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, codeRegion);
 
     [GeneratedRegex(@"\ACREATE\s+OR\s+ALTER\s", RegexOptions.None, 100)]
     private static partial Regex IsCreateOrAlterFinder();

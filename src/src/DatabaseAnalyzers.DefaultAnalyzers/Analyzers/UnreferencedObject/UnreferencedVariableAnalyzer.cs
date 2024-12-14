@@ -10,7 +10,7 @@ public sealed class UnreferencedVariableAnalyzer : IScriptAnalyzer
 {
     public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
 
-    public void AnalyzeScript(IAnalysisContext context, ScriptModel script)
+    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
         foreach (var batch in script.ParsedScript.Batches)
         {
@@ -18,7 +18,7 @@ public sealed class UnreferencedVariableAnalyzer : IScriptAnalyzer
         }
     }
 
-    private static void AnalyzeBatch(IAnalysisContext context, ScriptModel script, SqlBatch batch)
+    private static void AnalyzeBatch(IAnalysisContext context, IScriptModel script, SqlBatch batch)
     {
         var singleVariables = batch.Tokens
             .Where(a => a.IsVariable() && !IsParameter(a, script.ParsedScript))
@@ -30,7 +30,7 @@ public sealed class UnreferencedVariableAnalyzer : IScriptAnalyzer
         foreach (var token in singleVariables)
         {
             var fullObjectName = script.ParsedScript.TryGetFullObjectNameAtPosition(context.DefaultSchemaName, token.StartLocation);
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, script.RelativeScriptFilePath, fullObjectName, token, token.Text);
+            context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, token, token.Text);
         }
     }
 

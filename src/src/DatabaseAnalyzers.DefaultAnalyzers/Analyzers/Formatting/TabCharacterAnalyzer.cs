@@ -8,7 +8,7 @@ public sealed class TabCharacterAnalyzer : IScriptAnalyzer
 {
     public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
 
-    public void AnalyzeScript(IAnalysisContext context, ScriptModel script)
+    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
         for (var i = 0; i < script.ParsedScript.Sql.Length; i++)
         {
@@ -24,7 +24,7 @@ public sealed class TabCharacterAnalyzer : IScriptAnalyzer
 
             var fullObjectName = script.ParsedScript.TryGetFullObjectNameAtIndex(i, context.DefaultSchemaName);
 
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, script.RelativeScriptFilePath, fullObjectName, codeRegion);
+            context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, codeRegion);
         }
     }
 

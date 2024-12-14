@@ -10,19 +10,19 @@ public sealed class ScriptAnalyzerTester
     private readonly IAnalysisContext _analysisContext;
     private readonly IScriptAnalyzer _analyzer;
 
-    public ScriptModel MainScript { get; }
+    public IScriptModel MainScript { get; }
     public IReadOnlyList<IIssue> ExpectedIssues { get; }
 
     public ScriptAnalyzerTester(
         IAnalysisContext analysisContext,
         IScriptAnalyzer analyzer,
-        ScriptModel mainScript,
+        IScriptModel mainScript,
         IReadOnlyList<IIssue> expectedIssues)
     {
-        MainScript = mainScript;
-        ExpectedIssues = expectedIssues;
         _analysisContext = analysisContext;
         _analyzer = analyzer;
+        MainScript = mainScript;
+        ExpectedIssues = expectedIssues;
     }
 
     public void Test()

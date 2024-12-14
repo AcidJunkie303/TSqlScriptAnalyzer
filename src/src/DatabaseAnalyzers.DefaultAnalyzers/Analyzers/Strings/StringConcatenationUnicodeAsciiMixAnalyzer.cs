@@ -9,7 +9,7 @@ public sealed class StringConcatenationUnicodeAsciiMixAnalyzer : IScriptAnalyzer
 {
     public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
 
-    public void AnalyzeScript(IAnalysisContext context, ScriptModel script)
+    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
         foreach (var expression in script.ParsedScript.GetTopLevelDescendantsOfType<SqlBinaryScalarExpression>())
         {
@@ -17,7 +17,7 @@ public sealed class StringConcatenationUnicodeAsciiMixAnalyzer : IScriptAnalyzer
         }
     }
 
-    private static void Analyze(IAnalysisContext context, ScriptModel script, SqlBinaryScalarExpression expression)
+    private static void Analyze(IAnalysisContext context, IScriptModel script, SqlBinaryScalarExpression expression)
     {
         var visitor = new Visitor();
         visitor.Visit(expression);
@@ -28,7 +28,7 @@ public sealed class StringConcatenationUnicodeAsciiMixAnalyzer : IScriptAnalyzer
         }
 
         var fullObjectName = expression.TryGetFullObjectName(context.DefaultSchemaName);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, script.RelativeScriptFilePath, fullObjectName, expression);
+        context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, expression);
     }
 
     private sealed class Visitor : SqlCodeObjectRecursiveVisitor

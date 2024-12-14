@@ -1,6 +1,6 @@
 using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
 
-namespace DatabaseAnalyzer.Contracts;
+namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 
 public sealed record ScriptModel(
     string DatabaseName,
@@ -9,4 +9,4 @@ public sealed record ScriptModel(
     SqlScript ParsedScript,
     IReadOnlyList<string> Errors,
     IReadOnlyList<DiagnosticSuppression> DiagnosticSuppressions
-);
+) : IScriptModel;

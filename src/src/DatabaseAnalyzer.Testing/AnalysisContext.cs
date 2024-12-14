@@ -4,8 +4,8 @@ namespace DatabaseAnalyzer.Testing;
 
 internal sealed record AnalysisContext(
     string DefaultSchemaName,
-    IReadOnlyList<ScriptModel> Scripts,
-    IReadOnlyDictionary<string, IReadOnlyList<ScriptModel>> ScriptsByDatabaseName,
+    IReadOnlyList<IScriptModel> Scripts,
+    IReadOnlyDictionary<string, IReadOnlyList<IScriptModel>> ScriptsByDatabaseName,
     IDiagnosticSettingsRetriever DiagnosticSettingsRetriever,
     IIssueReporter IssueReporter
 ) : IAnalysisContext;

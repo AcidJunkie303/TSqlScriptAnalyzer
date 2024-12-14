@@ -11,9 +11,9 @@ internal sealed class IssueReporter : IIssueReporter
 
     public IReadOnlyList<IIssue> GetIssues() => _issues.ToImmutableArray();
 
-    public void Report(IDiagnosticDefinition rule, string relativeScriptFilePath, string? fullObjectName, CodeRegion codeRegion, params object[] insertionStrings)
+    public void Report(IDiagnosticDefinition rule, string databaseName, string relativeScriptFilePath, string? fullObjectName, CodeRegion codeRegion, params object[] insertionStrings)
     {
-        var issue = Issue.Create(rule, relativeScriptFilePath, fullObjectName, codeRegion, insertionStrings);
+        var issue = Issue.Create(rule, databaseName, relativeScriptFilePath, fullObjectName, codeRegion, insertionStrings);
         _issues.Add(issue);
     }
 }

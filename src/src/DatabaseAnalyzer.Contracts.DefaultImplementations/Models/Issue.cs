@@ -5,8 +5,11 @@ namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 
 public sealed class Issue : IIssue
 {
+    public string DatabaseName { get; }
+
     private Issue(
         IDiagnosticDefinition diagnosticDefinition,
+        string databaseName,
         string relativeScriptFilePath,
         string? objectName,
         CodeRegion codeRegion,
@@ -14,6 +17,7 @@ public sealed class Issue : IIssue
         string message)
     {
         DiagnosticDefinition = diagnosticDefinition;
+        DatabaseName = databaseName;
         RelativeScriptFilePath = relativeScriptFilePath;
         ObjectName = objectName;
         CodeRegion = codeRegion;
@@ -28,7 +32,7 @@ public sealed class Issue : IIssue
     public IReadOnlyList<string> MessageInsertionStrings { get; }
     public string Message { get; }
 
-    public static Issue Create(IDiagnosticDefinition diagnosticDefinition, string fullFilePath, string? fullObjectName, CodeRegion codeRegion, params IReadOnlyList<object> insertions)
+    public static Issue Create(IDiagnosticDefinition diagnosticDefinition, string databaseName, string relativeScriptFilePath, string? fullObjectName, CodeRegion codeRegion, params IReadOnlyList<object> insertions)
     {
         var expectedInsertionCount = InsertionStringHelpers.CountInsertionStringPlaceholders(diagnosticDefinition.MessageTemplate);
         if (expectedInsertionCount != insertions.Count)
@@ -38,7 +42,7 @@ public sealed class Issue : IIssue
 
         var messageInsertionStrings = ToStringArray(insertions);
         var message = InsertionStringHelpers.FormatMessage(diagnosticDefinition.MessageTemplate, messageInsertionStrings);
-        return new Issue(diagnosticDefinition, fullFilePath, fullObjectName, codeRegion, messageInsertionStrings, message);
+        return new Issue(diagnosticDefinition, databaseName, relativeScriptFilePath, fullObjectName, codeRegion, messageInsertionStrings, message);
     }
 
     private static ImmutableArray<string> ToStringArray(IReadOnlyCollection<object> insertionStrings)

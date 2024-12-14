@@ -10,7 +10,7 @@ public sealed class MissingBlankSpaceAnalyzer : IScriptAnalyzer
 {
     public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
 
-    public void AnalyzeScript(IAnalysisContext context, ScriptModel script)
+    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
         var tokens = script.ParsedScript.Tokens.ToList();
 
@@ -41,7 +41,7 @@ public sealed class MissingBlankSpaceAnalyzer : IScriptAnalyzer
         {
             var fullObjectName = script.ParsedScript.TryGetFullObjectNameAtPosition(context.DefaultSchemaName, token.StartLocation);
             var codeRegion = CodeRegion.From(token);
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, script.RelativeScriptFilePath, fullObjectName, codeRegion, beforeOrAfter, token.Text);
+            context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, codeRegion, beforeOrAfter, token.Text);
         }
     }
 

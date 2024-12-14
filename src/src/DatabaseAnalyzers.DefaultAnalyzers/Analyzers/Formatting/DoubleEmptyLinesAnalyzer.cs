@@ -8,7 +8,7 @@ public sealed class DoubleEmptyLinesAnalyzer : IScriptAnalyzer
 {
     public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
 
-    public void AnalyzeScript(IAnalysisContext context, ScriptModel script)
+    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
         var whitespaceTokens = script.ParsedScript.Tokens
             .Where(a => a.IsWhiteSpace())
@@ -25,7 +25,7 @@ public sealed class DoubleEmptyLinesAnalyzer : IScriptAnalyzer
                 .TryGetCodeObjectAtPosition(token.StartLocation)
                 ?.TryGetFullObjectName(context.DefaultSchemaName);
 
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, script.RelativeScriptFilePath, fullObjectName, token);
+            context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, token);
         }
     }
 

@@ -10,7 +10,7 @@ public sealed class DataTypeAnalyzer : IScriptAnalyzer
 {
     public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
 
-    public void AnalyzeScript(IAnalysisContext context, ScriptModel script)
+    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
         var settings = context.DiagnosticSettingsRetriever.GetSettings<Aj5006Settings>();
 
@@ -30,54 +30,54 @@ public sealed class DataTypeAnalyzer : IScriptAnalyzer
         AnalyzeClrProcedures(context, settings, script, createClrProcedureStatements);
     }
 
-    private static void AnalyzeVariableDeclarations(IAnalysisContext context, Aj5006Settings settings, ScriptModel script, IEnumerable<SqlVariableDeclaration> variableDeclarations)
+    private static void AnalyzeVariableDeclarations(IAnalysisContext context, Aj5006Settings settings, IScriptModel script, IEnumerable<SqlVariableDeclaration> variableDeclarations)
     {
         foreach (var variableDeclaration in variableDeclarations)
         {
             var dataType = variableDeclaration.Type.GetDataType();
-            AnalyzeDataType(context, script.RelativeScriptFilePath, dataType, variableDeclaration, settings.BannedScriptVariableDataTypes, "variables");
+            AnalyzeDataType(context, script, dataType, variableDeclaration, settings.BannedScriptVariableDataTypes, "variables");
         }
     }
 
-    private static void AnalyzeClrProcedures(IAnalysisContext context, Aj5006Settings settings, ScriptModel script, IEnumerable<SqlCreateClrStoredProcedureStatement> createClrProcedureStatements)
+    private static void AnalyzeClrProcedures(IAnalysisContext context, Aj5006Settings settings, IScriptModel script, IEnumerable<SqlCreateClrStoredProcedureStatement> createClrProcedureStatements)
     {
         foreach (var createClrProcedureStatement in createClrProcedureStatements)
         {
             foreach (var parameter in createClrProcedureStatement.Parameters)
             {
-                AnalyzeDataType(context, script.RelativeScriptFilePath, parameter.DataType, createClrProcedureStatement.CreationStatement, settings.BannedProcedureParameterDataTypes, "procedures");
+                AnalyzeDataType(context, script, parameter.DataType, createClrProcedureStatement.CreationStatement, settings.BannedProcedureParameterDataTypes, "procedures");
             }
         }
     }
 
-    private static void AnalyzeTables(IAnalysisContext context, Aj5006Settings settings, ScriptModel script, IEnumerable<SqlCreateTableStatement> createTableStatements)
+    private static void AnalyzeTables(IAnalysisContext context, Aj5006Settings settings, IScriptModel script, IEnumerable<SqlCreateTableStatement> createTableStatements)
     {
         foreach (var columnDefinition in createTableStatements.SelectMany(a => a.Definition.ColumnDefinitions))
         {
             var dataType = columnDefinition.DataType.GetDataType();
-            AnalyzeDataType(context, script.RelativeScriptFilePath, dataType, columnDefinition, settings.BannedColumnDataTypes, "tables");
+            AnalyzeDataType(context, script, dataType, columnDefinition, settings.BannedColumnDataTypes, "tables");
         }
     }
 
-    private static void AnalyzeProcedures(IAnalysisContext context, Aj5006Settings settings, ScriptModel script, IEnumerable<SqlCreateProcedureStatement> createProcedureStatements)
+    private static void AnalyzeProcedures(IAnalysisContext context, Aj5006Settings settings, IScriptModel script, IEnumerable<SqlCreateProcedureStatement> createProcedureStatements)
     {
         foreach (var parameter in createProcedureStatements.SelectMany(a => a.Definition.Parameters))
         {
             var dataType = parameter.GetDataType();
-            AnalyzeDataType(context, script.RelativeScriptFilePath, dataType, parameter, settings.BannedProcedureParameterDataTypes, "procedure parameters");
+            AnalyzeDataType(context, script, dataType, parameter, settings.BannedProcedureParameterDataTypes, "procedure parameters");
         }
     }
 
-    private static void AnalyzeFunctions(IAnalysisContext context, Aj5006Settings settings, ScriptModel script, IEnumerable<SqlCreateAlterFunctionStatementBase> createFunctionStatements)
+    private static void AnalyzeFunctions(IAnalysisContext context, Aj5006Settings settings, IScriptModel script, IEnumerable<SqlCreateAlterFunctionStatementBase> createFunctionStatements)
     {
         foreach (var parameter in createFunctionStatements.SelectMany(a => a.Definition.Parameters))
         {
             var dataType = parameter.GetDataType();
-            AnalyzeDataType(context, script.RelativeScriptFilePath, dataType, parameter, settings.BannedFunctionParameterDataTypes, "functions");
+            AnalyzeDataType(context, script, dataType, parameter, settings.BannedFunctionParameterDataTypes, "functions");
         }
     }
 
-    private static void AnalyzeDataType(IAnalysisContext context, string relativeScriptFilePath, IDataType dataType, SqlCodeObject codeObject, IReadOnlyCollection<Regex> bannedTypesExpressions, string pluralObjectType)
+    private static void AnalyzeDataType(IAnalysisContext context, IScriptModel script, IDataType dataType, SqlCodeObject codeObject, IReadOnlyCollection<Regex> bannedTypesExpressions, string pluralObjectType)
     {
         var isBanned = bannedTypesExpressions.Any(a => a.IsMatch(dataType.Name) || a.IsMatch(dataType.FullName));
         if (!isBanned)
@@ -87,7 +87,7 @@ public sealed class DataTypeAnalyzer : IScriptAnalyzer
 
         var fullObjectName = codeObject.TryGetFullObjectName(context.DefaultSchemaName);
 
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, relativeScriptFilePath, fullObjectName, codeObject, dataType.FullName, pluralObjectType);
+        context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, codeObject, dataType.FullName, pluralObjectType);
     }
 
     private static class DiagnosticDefinitions

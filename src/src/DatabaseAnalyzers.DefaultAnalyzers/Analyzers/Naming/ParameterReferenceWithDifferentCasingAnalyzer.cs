@@ -10,24 +10,24 @@ public sealed class ParameterReferenceWithDifferentCasingAnalyzer : IScriptAnaly
 {
     public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
 
-    public void AnalyzeScript(IAnalysisContext context, ScriptModel script)
+    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
         var functions = script.ParsedScript.GetTopLevelDescendantsOfType<SqlCreateAlterFunctionStatementBase>();
         var procedures = script.ParsedScript.GetTopLevelDescendantsOfType<SqlCreateAlterProcedureStatementBase>();
 
-        AnalyzeFunctions(context, script.RelativeScriptFilePath, functions);
-        AnalyzeProcedures(context, script.RelativeScriptFilePath, procedures);
+        AnalyzeFunctions(context, script, functions);
+        AnalyzeProcedures(context, script, procedures);
     }
 
-    private static void AnalyzeFunctions(IAnalysisContext context, string relativeScriptFilePath, IEnumerable<SqlCreateAlterFunctionStatementBase> functions)
+    private static void AnalyzeFunctions(IAnalysisContext context, IScriptModel script, IEnumerable<SqlCreateAlterFunctionStatementBase> functions)
     {
         foreach (var function in functions)
         {
-            AnalyzeFunction(context, relativeScriptFilePath, function);
+            AnalyzeFunction(context, script, function);
         }
     }
 
-    private static void AnalyzeFunction(IAnalysisContext context, string relativeScriptFilePath, SqlCreateAlterFunctionStatementBase function)
+    private static void AnalyzeFunction(IAnalysisContext context, IScriptModel script, SqlCreateAlterFunctionStatementBase function)
     {
         var body = function.TryGetBody();
         if (body is null)
@@ -35,18 +35,18 @@ public sealed class ParameterReferenceWithDifferentCasingAnalyzer : IScriptAnaly
             return;
         }
 
-        AnalyzeParameters(context, relativeScriptFilePath, function.Definition.Parameters, body.Tokens);
+        AnalyzeParameters(context, script, function.Definition.Parameters, body.Tokens);
     }
 
-    private static void AnalyzeProcedures(IAnalysisContext context, string relativeScriptFilePath, IEnumerable<SqlCreateAlterProcedureStatementBase> procedures)
+    private static void AnalyzeProcedures(IAnalysisContext context, IScriptModel script, IEnumerable<SqlCreateAlterProcedureStatementBase> procedures)
     {
         foreach (var procedure in procedures)
         {
-            AnalyzeProcedure(context, relativeScriptFilePath, procedure);
+            AnalyzeProcedure(context, script, procedure);
         }
     }
 
-    private static void AnalyzeProcedure(IAnalysisContext context, string relativeScriptFilePath, SqlCreateAlterProcedureStatementBase procedure)
+    private static void AnalyzeProcedure(IAnalysisContext context, IScriptModel script, SqlCreateAlterProcedureStatementBase procedure)
     {
         var body = procedure.TryGetBody();
         if (body is null)
@@ -54,20 +54,20 @@ public sealed class ParameterReferenceWithDifferentCasingAnalyzer : IScriptAnaly
             return;
         }
 
-        AnalyzeParameters(context, relativeScriptFilePath, procedure.Definition.Parameters, body.Tokens);
+        AnalyzeParameters(context, script, procedure.Definition.Parameters, body.Tokens);
     }
 
-    private static void AnalyzeParameters(IAnalysisContext context, string relativeScriptFilePath, IEnumerable<SqlParameterDeclaration> parameters, IEnumerable<Token> bodyTokens)
+    private static void AnalyzeParameters(IAnalysisContext context, IScriptModel script, IEnumerable<SqlParameterDeclaration> parameters, IEnumerable<Token> bodyTokens)
     {
         var tokens = bodyTokens.ToList();
 
         foreach (var parameter in parameters)
         {
-            AnalyzeParameter(context, relativeScriptFilePath, parameter, tokens);
+            AnalyzeParameter(context, script, parameter, tokens);
         }
     }
 
-    private static void AnalyzeParameter(IAnalysisContext context, string relativeScriptFilePath, SqlParameterDeclaration parameter, IReadOnlyCollection<Token>? bodyTokens)
+    private static void AnalyzeParameter(IAnalysisContext context, IScriptModel script, SqlParameterDeclaration parameter, IReadOnlyCollection<Token>? bodyTokens)
     {
         if (bodyTokens.IsNullOrEmpty())
         {
@@ -84,7 +84,7 @@ public sealed class ParameterReferenceWithDifferentCasingAnalyzer : IScriptAnaly
         var fullObjectName = parameter.TryGetFullObjectName(context.DefaultSchemaName);
         foreach (var token in tokens)
         {
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, relativeScriptFilePath, fullObjectName, token, token.Text, parameter.Name);
+            context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, token, token.Text, parameter.Name);
         }
     }
 

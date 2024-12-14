@@ -63,7 +63,7 @@ internal sealed partial class TestCodeProcessor
                 : endColumnOffset + 1 + 1; // 1 because it's an offset and 1 because ... uhm.. TODO:
 
             var location = CodeRegion.Create(startLineNumber, startColumnNumber, endLineNumber, endColumnNumber);
-            var issue = Issue.Create(_diagnosticRegistry.GetDefinition(id), fileName, fullObjectName, location, insertions);
+            var issue = Issue.Create(_diagnosticRegistry.GetDefinition(id), "db1", fileName, fullObjectName, location, insertions);
             issues.Add(issue);
 
             return affectedCode;

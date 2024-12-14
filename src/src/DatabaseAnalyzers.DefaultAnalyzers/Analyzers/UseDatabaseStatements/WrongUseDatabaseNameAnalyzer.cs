@@ -10,7 +10,7 @@ public sealed class WrongUseDatabaseNameAnalyzer : IScriptAnalyzer
 {
     public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
 
-    public void AnalyzeScript(IAnalysisContext context, ScriptModel script)
+    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
         var batch = script.ParsedScript.Batches.FirstOrDefault();
         if (batch is null)
@@ -31,7 +31,7 @@ public sealed class WrongUseDatabaseNameAnalyzer : IScriptAnalyzer
                 continue;
             }
 
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, script.RelativeScriptFilePath, null, useStatement, useStatement.DatabaseName.Value, script.DatabaseName);
+            context.IssueReporter.Report(DiagnosticDefinitions.Default, script, null, useStatement, useStatement.DatabaseName.Value, script.DatabaseName);
         }
     }
 

@@ -9,7 +9,7 @@ public sealed class ExcessiveStringConcatenationAnalyzer : IScriptAnalyzer
 {
     public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
 
-    public void AnalyzeScript(IAnalysisContext context, ScriptModel script)
+    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
         var maxAllowedStringConcatenations = GetMaxAllowedStringConcatenations(context);
 
@@ -19,7 +19,7 @@ public sealed class ExcessiveStringConcatenationAnalyzer : IScriptAnalyzer
         }
     }
 
-    private static void Analyze(IAnalysisContext context, ScriptModel script, SqlBinaryScalarExpression expression, int maxAllowedStringConcatenations)
+    private static void Analyze(IAnalysisContext context, IScriptModel script, SqlBinaryScalarExpression expression, int maxAllowedStringConcatenations)
     {
         var visitor = new Visitor();
         visitor.Visit(expression);
@@ -35,7 +35,7 @@ public sealed class ExcessiveStringConcatenationAnalyzer : IScriptAnalyzer
         }
 
         var fullObjectName = expression.TryGetFullObjectName(context.DefaultSchemaName);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, script.RelativeScriptFilePath, fullObjectName, expression, maxAllowedStringConcatenations);
+        context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, expression, maxAllowedStringConcatenations);
     }
 
     private static int GetMaxAllowedStringConcatenations(IAnalysisContext context)

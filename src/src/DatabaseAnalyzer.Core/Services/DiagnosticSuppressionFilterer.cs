@@ -7,7 +7,7 @@ namespace DatabaseAnalyzer.Core.Services;
 internal static class DiagnosticSuppressionFilterer
 {
     public static (IReadOnlyList<IIssue> Issues, IReadOnlyList<SuppressedIssue> SuppressedIssues)
-        Filter(ScriptModel script, IEnumerable<IIssue> issues)
+        Filter(IScriptModel script, IEnumerable<IIssue> issues)
     {
         var suppressionMap = new SuppressionMap(script.DiagnosticSuppressions);
         var unsuppressedIssues = new List<IIssue>();

@@ -8,7 +8,7 @@ public sealed class FirstStatementIsNotUseDatabaseAnalyzer : IScriptAnalyzer
 {
     public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
 
-    public void AnalyzeScript(IAnalysisContext context, ScriptModel script)
+    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
         var batch = script.ParsedScript.Batches.FirstOrDefault();
         if (batch is null)
@@ -22,7 +22,7 @@ public sealed class FirstStatementIsNotUseDatabaseAnalyzer : IScriptAnalyzer
             return;
         }
 
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, script.RelativeScriptFilePath, null, codeObject, script.DatabaseName);
+        context.IssueReporter.Report(DiagnosticDefinitions.Default, script, null, codeObject, script.DatabaseName);
     }
 
     private static class DiagnosticDefinitions
