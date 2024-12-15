@@ -5,12 +5,15 @@
         <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.0"/>
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0"/>
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0"/>
-
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\DatabaseAnalyzer.Contracts.DefaultImplementations\DatabaseAnalyzer.Contracts.DefaultImplementations.csproj"/>
         <ProjectReference Include="..\DatabaseAnalyzer.Contracts\DatabaseAnalyzer.Contracts.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="SqlParsing\"/>
     </ItemGroup>
 
 </Project>

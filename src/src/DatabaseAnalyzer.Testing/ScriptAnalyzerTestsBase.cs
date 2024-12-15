@@ -26,14 +26,18 @@ public abstract class ScriptAnalyzerTestsBase<TAnalyzer>
         TestOutputHelper.WriteLine(string.Empty);
         TestOutputHelper.WriteLine(string.Empty);
         TestOutputHelper.WriteLine("Syntax Tree:");
-        TestOutputHelper.WriteLine(SyntaxTreeVisualizer.Visualize(tester.MainScript.ParsedScript));
+        TestOutputHelper.WriteLine(SyntaxTreeVisualizer2.Visualize(tester.MainScript.ParsedScript));
 
+        // TODO: remove
+#pragma warning disable
+        /*
         TestOutputHelper.WriteLine(string.Empty);
         TestOutputHelper.WriteLine(string.Empty);
         TestOutputHelper.WriteLine(string.Empty);
         TestOutputHelper.WriteLine("Tokens:");
         TestOutputHelper.WriteLine(TokenVisualizer.Visualize(tester.MainScript.ParsedScript));
-
+        */
+#pragma warning restore
         tester.Test();
     }
 

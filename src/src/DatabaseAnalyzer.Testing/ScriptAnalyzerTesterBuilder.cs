@@ -1,9 +1,9 @@
-using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Services;
-using Microsoft.SqlServer.Management.SqlParser.Parser;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing;
 
 namespace DatabaseAnalyzer.Testing;
 
@@ -95,19 +95,19 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
 
     private static ScriptModel ParseScript(string relativeScriptFilePath, string scriptContents, string databaseName)
     {
-        var parseResult = Parser.Parse(scriptContents);
-        var errors = parseResult.Errors
-            .Select(a => $"{a.Message} at {a.Start.LineNumber},{a.Start.ColumnNumber} - {a.End.LineNumber},{a.End.ColumnNumber}")
-            .ToImmutableArray();
-        var parsedScript = parseResult.Script;
-        var diagnosticSuppressions = new DiagnosticSuppressionExtractor().ExtractSuppressions(parsedScript);
+        var script = scriptContents.TryParseSqlScript(out var errors);
+        var diagnosticSuppressions = new DiagnosticSuppressionExtractor().ExtractSuppressions(script);
+        var parentChildMap = ParentChildMapBuilder.Build(script);
+
+        ParentChildMapBuilder2.Build(script);
 
         return new ScriptModel
         (
             databaseName,
             relativeScriptFilePath,
             scriptContents,
-            parsedScript,
+            script,
+            parentChildMap,
             errors,
             diagnosticSuppressions.ToList()
         );

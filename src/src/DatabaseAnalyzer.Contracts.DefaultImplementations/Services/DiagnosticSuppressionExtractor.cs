@@ -1,16 +1,19 @@
 using System.Text.RegularExpressions;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using Microsoft.SqlServer.Management.SqlParser.Parser;
-using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Services;
+
+// TODO: remove
+#pragma warning disable
 
 public sealed partial class DiagnosticSuppressionExtractor : IDiagnosticSuppressionExtractor
 {
     private static readonly char[] DiagnosticIdSeparators = [';', ',', ' ', '\t'];
 
-    public IEnumerable<DiagnosticSuppression> ExtractSuppressions(SqlScript script)
-        => script.Tokens.SelectMany(Extract);
+    public IEnumerable<DiagnosticSuppression> ExtractSuppressions(TSqlScript script)
+        => []; // => script.Tokens.SelectMany(Extract);
 
     [GeneratedRegex(@"#pragma\s+diagnostic\s+((?<disable>(disable))|(?<restore>restore))\s+(?<ids>[A-Za-z0-9, ]+)(\s*-> \s*(?<reason>.*))?", RegexOptions.ExplicitCapture, 100)]
     private static partial Regex DiagnosticSuppressionActionFinder();

@@ -5,6 +5,8 @@ using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Strings;
 
+// TODO: REmove
+#pragma warning disable
 public sealed class ExcessiveStringConcatenationAnalyzer : IScriptAnalyzer
 {
     public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
@@ -13,29 +15,12 @@ public sealed class ExcessiveStringConcatenationAnalyzer : IScriptAnalyzer
     {
         var maxAllowedStringConcatenations = GetMaxAllowedStringConcatenations(context);
 
+        /*
         foreach (var expression in script.ParsedScript.GetTopLevelDescendantsOfType<SqlBinaryScalarExpression>())
         {
             Analyze(context, script, expression, maxAllowedStringConcatenations);
         }
-    }
-
-    private static void Analyze(IAnalysisContext context, IScriptModel script, SqlBinaryScalarExpression expression, int maxAllowedStringConcatenations)
-    {
-        var visitor = new Visitor();
-        visitor.Visit(expression);
-
-        if (!visitor.AreStringsInvolved)
-        {
-            return;
-        }
-
-        if (visitor.TotalConcatenations <= maxAllowedStringConcatenations)
-        {
-            return;
-        }
-
-        var fullObjectName = expression.TryGetFullObjectName(context.DefaultSchemaName);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, expression, maxAllowedStringConcatenations);
+        */
     }
 
     private static int GetMaxAllowedStringConcatenations(IAnalysisContext context)
@@ -90,4 +75,25 @@ public sealed class ExcessiveStringConcatenationAnalyzer : IScriptAnalyzer
             "More than {0} allowed string concatenations"
         );
     }
+/*
+    private static void Analyze(IAnalysisContext context, IScriptModel script, SqlBinaryScalarExpression expression, int maxAllowedStringConcatenations)
+    {
+        var visitor = new Visitor();
+        visitor.Visit(expression);
+
+        if (!visitor.AreStringsInvolved)
+        {
+            return;
+        }
+
+        if (visitor.TotalConcatenations <= maxAllowedStringConcatenations)
+        {
+            return;
+        }
+
+        var fullObjectName = expression.TryGetFullObjectName(context.DefaultSchemaName);
+
+        context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, expression, maxAllowedStringConcatenations);
+    }
+*/
 }

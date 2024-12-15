@@ -4,6 +4,8 @@ using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 
+// TODO Remove
+#pragma warning disable
 public static class SqlCodeObjectExtensions
 {
     public static IEnumerable<T> GetTopLevelDescendantsOfType<T>(this SqlCodeObject codeObject)
@@ -222,6 +224,8 @@ public static class SqlCodeObjectExtensions
 
     private static string[] TryFindObjectName(SqlCodeObject codeObject, string defaultSchemaName)
     {
+        return [""];
+        /*
         if (codeObject is SqlNullStatement nullStatement)
         {
             var clrProcedure = nullStatement.TryParseCreateClrStoredProcedureStatement(defaultSchemaName);
@@ -230,7 +234,7 @@ public static class SqlCodeObjectExtensions
                 return [clrProcedure.SchemaName, clrProcedure.Name];
             }
         }
-
+*/
         return codeObject switch
         {
             SqlCreateFunctionStatement o => GetObjectName(o.Definition.Name, true, defaultSchemaName),

@@ -13,4 +13,8 @@
         <ProjectReference Include="..\DatabaseAnalyzer.Contracts.DefaultImplementations\DatabaseAnalyzer.Contracts.DefaultImplementations.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <Folder Include="Extensions\"/>
+    </ItemGroup>
+
 </Project>

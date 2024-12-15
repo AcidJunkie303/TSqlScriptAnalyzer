@@ -2,11 +2,12 @@ using System.Collections.Frozen;
 using System.Collections.Immutable;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing;
 using DatabaseAnalyzer.Core.Configuration;
 using DatabaseAnalyzer.Core.Extensions;
 using DatabaseAnalyzer.Core.Models;
 using DatabaseAnalyzer.Core.Services;
-using Microsoft.SqlServer.Management.SqlParser.Parser;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Core;
 
@@ -133,12 +134,14 @@ internal sealed class Analyzer : IAnalyzer
 
         IScriptModel ParseScript(BasicScriptInformation script)
         {
-            var parseResult = Parser.Parse(script.Contents);
-            var errors = parseResult.Errors
-                .Select(a => $"{a.Message} at {CodeRegion.From(a.Start, a.End)}")
+            var parser = TSqlParser.CreateParser(SqlVersion.Sql170, false);
+            using var reader = new StreamReader(script.Contents);
+            var parsedScript = parser.Parse(reader, out var parserErrors) as TSqlScript ?? new TSqlScript();
+            var errorMessages = parserErrors
+                .Select(a => $"{a.Message} at {CodeRegion.Create(a.Line, a.Column, a.Line, a.Column)}")
                 .ToImmutableArray();
-            var parsedScript = parseResult.Script;
             var suppressions = _diagnosticSuppressionExtractor.ExtractSuppressions(parsedScript).ToList();
+            var parentChildMap = ParentChildMapBuilder.Build(parsedScript);
 
             return new ScriptModel
             (
@@ -146,7 +149,8 @@ internal sealed class Analyzer : IAnalyzer
                 script.FullScriptPath,
                 script.Contents,
                 parsedScript,
-                errors,
+                parentChildMap,
+                errorMessages,
                 suppressions
             );
         }

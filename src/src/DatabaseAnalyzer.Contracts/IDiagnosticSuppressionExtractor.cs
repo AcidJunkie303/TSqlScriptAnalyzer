@@ -1,8 +1,8 @@
-using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Contracts;
 
 public interface IDiagnosticSuppressionExtractor
 {
-    IEnumerable<DiagnosticSuppression> ExtractSuppressions(SqlScript script);
+    IEnumerable<DiagnosticSuppression> ExtractSuppressions(TSqlScript script);
 }

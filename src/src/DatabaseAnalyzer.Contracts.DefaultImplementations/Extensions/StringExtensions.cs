@@ -1,7 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
-using Microsoft.SqlServer.Management.SqlParser.Parser;
-using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 
@@ -9,6 +8,9 @@ public static class StringExtensions
 {
     public static bool IsNullOrWhiteSpace([NotNullWhen(false)] this string? value)
         => string.IsNullOrWhiteSpace(value);
+
+    public static string EmptyIfNull(this string? value)
+        => value ?? string.Empty;
 
     public static string? NullIfEmptyOrWhiteSpace(this string? value)
         => string.IsNullOrWhiteSpace(value)
@@ -74,18 +76,34 @@ public static class StringExtensions
         return (lineIndex + 1, columnIndex + 1);
     }
 
-    public static SqlScript ParseSqlScript(this string sqlScript)
+    public static TSqlScript ParseSqlScript(this string sqlScriptContents)
     {
-        var parseResult = Parser.Parse(sqlScript);
-
-        var error = parseResult.Errors.FirstOrDefault();
-        if (error is not null)
+        var script = sqlScriptContents.TryParseSqlScript(out var errors);
+        if (!errors.IsNullOrEmpty())
         {
-            var codeRegion = CodeRegion.From(error.Start, error.End);
-            var errorMessage = $"{error.Message} at {codeRegion}";
-            throw new ArgumentException(errorMessage, nameof(sqlScript));
+            var message = $"Error parsing SQL script:\n{string.Join("\n", errors)}";
+            throw new ArgumentException(message, nameof(sqlScriptContents));
         }
 
-        return parseResult.Script;
+        return script!;
+    }
+
+    public static TSqlScript TryParseSqlScript(this string sqlScriptContents, out IReadOnlyList<string> errors)
+    {
+        var parser = TSqlParser.CreateParser(SqlVersion.Sql170, false);
+        using var reader = new StringReader(sqlScriptContents);
+        var script = parser.Parse(reader, out var parserErrors) as TSqlScript ?? new TSqlScript();
+
+        if (parserErrors.Count == 0)
+        {
+            errors = [];
+            return script;
+        }
+
+        errors = parserErrors
+            .Select(a => $"{a.Message} at {CodeRegion.Create(a.Line, a.Column, a.Line, a.Column)}")
+            .ToList();
+
+        return script;
     }
 }

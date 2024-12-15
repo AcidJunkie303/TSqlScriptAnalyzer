@@ -17,4 +17,13 @@
         <ProjectReference Include="..\DatabaseAnalyzers.DefaultAnalyzers\DatabaseAnalyzers.DefaultAnalyzers.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <Compile Remove="Analyzers\_old\**"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Remove="Analyzers\_old\**"/>
+    </ItemGroup>
+
+
 </Project>
