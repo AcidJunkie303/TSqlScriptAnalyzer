@@ -7,7 +7,7 @@ public sealed record ScriptModel(
     string RelativeScriptFilePath,
     string Contents,
     TSqlScript ParsedScript,
-    ParentChildMap ParentChildMap,
+    IParentFragmentProvider ParentFragmentProvider,
     IReadOnlyList<string> Errors,
     IReadOnlyList<DiagnosticSuppression> DiagnosticSuppressions
 ) : IScriptModel;

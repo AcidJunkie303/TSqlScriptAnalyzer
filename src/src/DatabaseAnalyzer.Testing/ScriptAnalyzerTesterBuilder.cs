@@ -3,7 +3,6 @@ using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Services;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing;
 
 namespace DatabaseAnalyzer.Testing;
 
@@ -97,9 +96,7 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
     {
         var script = scriptContents.TryParseSqlScript(out var errors);
         var diagnosticSuppressions = new DiagnosticSuppressionExtractor().ExtractSuppressions(script);
-        var parentChildMap = ParentChildMapBuilder.Build(script);
-
-        ParentChildMapBuilder2.Build(script);
+        var parentFragmentProvider = script.CreateParentFragmentProvider();
 
         return new ScriptModel
         (
@@ -107,7 +104,7 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
             relativeScriptFilePath,
             scriptContents,
             script,
-            parentChildMap,
+            parentFragmentProvider,
             errors,
             diagnosticSuppressions.ToList()
         );

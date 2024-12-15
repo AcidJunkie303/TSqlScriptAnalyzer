@@ -1,8 +1,8 @@
 using System.Collections.Frozen;
 using System.Collections.Immutable;
 using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing;
 using DatabaseAnalyzer.Core.Configuration;
 using DatabaseAnalyzer.Core.Extensions;
 using DatabaseAnalyzer.Core.Models;
@@ -141,7 +141,7 @@ internal sealed class Analyzer : IAnalyzer
                 .Select(a => $"{a.Message} at {CodeRegion.Create(a.Line, a.Column, a.Line, a.Column)}")
                 .ToImmutableArray();
             var suppressions = _diagnosticSuppressionExtractor.ExtractSuppressions(parsedScript).ToList();
-            var parentChildMap = ParentChildMapBuilder.Build(parsedScript);
+            var parentFragmentProvider = parsedScript.CreateParentFragmentProvider();
 
             return new ScriptModel
             (
@@ -149,7 +149,7 @@ internal sealed class Analyzer : IAnalyzer
                 script.FullScriptPath,
                 script.Contents,
                 parsedScript,
-                parentChildMap,
+                parentFragmentProvider,
                 errorMessages,
                 suppressions
             );
