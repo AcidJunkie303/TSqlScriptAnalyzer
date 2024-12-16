@@ -5,9 +5,7 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 
-// TODO: Remove
-// ReSharper disable InconsistentNaming
-public static class TSqlFragmentExtensions
+public static class SqlFragmentExtensions
 {
     public static CodeRegion GetCodeRegion(this TSqlFragment fragment)
     {
