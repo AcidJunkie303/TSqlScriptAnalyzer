@@ -43,4 +43,8 @@ public static class CollectionExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsNullOrEmpty<T>([NotNullWhen(false)] this IReadOnlyCollection<T>? items)
         => items is null || (items.Count == 0);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsNullOrEmpty<T>([NotNullWhen(false)] this IList<T>? items)
+        => items is null || (items.Count == 0);
 }

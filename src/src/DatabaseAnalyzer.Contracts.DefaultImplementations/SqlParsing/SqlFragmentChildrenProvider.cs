@@ -2,15 +2,15 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing;
 
-public static class SqlFragmentChildProvider
+public static class SqlFragmentChildrenProvider
 {
-    public static IReadOnlyList<TSqlFragment> GetChildren(TSqlFragment fragment, bool recursive = false)
-        => GetChildren<TSqlFragment>(fragment, recursive);
+    public static IReadOnlyList<TSqlFragment> GetChildren(TSqlFragment fragment, bool recursive = false, Func<TSqlFragment, bool>? continueBranchRecursionPredicate = null)
+        => GetChildren<TSqlFragment>(fragment, recursive, continueBranchRecursionPredicate);
 
-    public static IReadOnlyList<T> GetChildren<T>(TSqlFragment fragment, bool recursive = false)
+    public static IReadOnlyList<T> GetChildren<T>(TSqlFragment fragment, bool recursive = false, Func<TSqlFragment, bool>? continueBranchRecursionPredicate = null)
         where T : TSqlFragment
     {
-        var visitor = new RecursiveVisitor<T>(fragment, recursive);
+        var visitor = new RecursiveVisitor<T>(fragment, recursive, continueBranchRecursionPredicate);
         fragment.Accept(visitor);
         return visitor.Children;
     }
@@ -18,6 +18,7 @@ public static class SqlFragmentChildProvider
     private sealed class RecursiveVisitor<T> : TSqlFragmentVisitor
         where T : TSqlFragment
     {
+        private readonly Func<TSqlFragment, bool> _continueBranchRecursionPredicate;
         private readonly bool _isRecursive;
         private readonly TSqlFragment _root;
         private readonly HashSet<TSqlFragment> _visited = [];
@@ -25,15 +26,21 @@ public static class SqlFragmentChildProvider
 
         public List<T> Children { get; } = [];
 
-        public RecursiveVisitor(TSqlFragment root, bool isRecursive)
+        public RecursiveVisitor(TSqlFragment root, bool isRecursive, Func<TSqlFragment, bool>? continueBranchRecursionPredicate)
         {
             _root = root;
             _isRecursive = isRecursive;
+            _continueBranchRecursionPredicate = continueBranchRecursionPredicate ?? (_ => true);
         }
 
         public override void Visit(TSqlFragment fragment)
         {
             if (!_visited.Add(fragment))
+            {
+                return;
+            }
+
+            if (!_continueBranchRecursionPredicate(fragment))
             {
                 return;
             }

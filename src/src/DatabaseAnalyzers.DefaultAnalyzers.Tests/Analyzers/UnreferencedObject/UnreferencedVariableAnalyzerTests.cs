@@ -21,7 +21,7 @@ public sealed class UnreferencedVariableAnalyzerTests(ITestOutputHelper testOutp
     public void WhenVariableIsNotReferenced_ThenDiagnose()
     {
         const string sql = """
-                           DECLARE █AJ5012░main.sql░░@Var1███@Var1█ INT = 303
+                           DECLARE █AJ5012░main.sql░░@Var1███@Var1 INT = 303█
                            PRINT 'Hello'
                            """;
         Verify(sql);
@@ -32,7 +32,7 @@ public sealed class UnreferencedVariableAnalyzerTests(ITestOutputHelper testOutp
     {
         const string sql = """
                            -- Variable not referenced in this batch
-                           DECLARE █AJ5012░main.sql░░@Var1███@Var1█ INT = 303
+                           DECLARE █AJ5012░main.sql░░@Var1███@Var1 INT = 303█
                            PRINT 'Hello'
                            GO
 
@@ -55,7 +55,7 @@ public sealed class UnreferencedVariableAnalyzerTests(ITestOutputHelper testOutp
                            GO
 
                            -- Variable not referenced in this batch
-                           DECLARE █AJ5012░main.sql░░@Var1███@Var1█ INT = 303
+                           DECLARE █AJ5012░main.sql░░@Var1███@Var1 INT = 303█
                            PRINT 'Hello'
                            """;
         Verify(sql);

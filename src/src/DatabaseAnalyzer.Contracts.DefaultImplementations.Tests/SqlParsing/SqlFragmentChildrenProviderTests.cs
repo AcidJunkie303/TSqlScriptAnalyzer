@@ -5,7 +5,7 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Tests.SqlParsing;
 
-public sealed class SqlFragmentChildProviderTests
+public sealed class SqlFragmentChildrenProviderTests
 {
     [Fact]
     public void GetChildren_WhenNoGenericType_WhenNotRecursive_ThenGetDirectChildren()
@@ -20,7 +20,7 @@ public sealed class SqlFragmentChildProviderTests
         var batch = sql.ParseSqlScript().Batches[0];
 
         // act
-        var children = SqlFragmentChildProvider.GetChildren(batch);
+        var children = SqlFragmentChildrenProvider.GetChildren(batch);
         children.Should().HaveCount(2);
         children[0].Should().BeOfType<PrintStatement>();
         children[1].Should().BeOfType<SelectStatement>();
@@ -39,7 +39,7 @@ public sealed class SqlFragmentChildProviderTests
         var batch = sql.ParseSqlScript().Batches[0];
 
         // act
-        var children = SqlFragmentChildProvider.GetChildren(batch, true);
+        var children = SqlFragmentChildrenProvider.GetChildren(batch, true);
         children.Should().HaveCount(8);
     }
 
@@ -56,7 +56,7 @@ public sealed class SqlFragmentChildProviderTests
         var batch = sql.ParseSqlScript().Batches[0];
 
         // act
-        var children = SqlFragmentChildProvider.GetChildren<SelectStatement>(batch, true);
+        var children = SqlFragmentChildrenProvider.GetChildren<SelectStatement>(batch, true);
         children.Should().HaveCount(1);
     }
 
@@ -73,7 +73,7 @@ public sealed class SqlFragmentChildProviderTests
         var batch = sql.ParseSqlScript().Batches[0];
 
         // act
-        var children = SqlFragmentChildProvider.GetChildren<IntegerLiteral>(batch, true);
+        var children = SqlFragmentChildrenProvider.GetChildren<IntegerLiteral>(batch, true);
         children.Should().HaveCount(2);
     }
 }

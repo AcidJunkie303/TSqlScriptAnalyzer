@@ -4,7 +4,8 @@ using Xunit.Abstractions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.UseDatabaseStatements;
 
-public sealed class WrongUseDatabaseNameAnalyzerTests(ITestOutputHelper testOutputHelper) : ScriptAnalyzerTestsBase<WrongUseDatabaseNameAnalyzer>(testOutputHelper)
+public sealed class WrongUseDatabaseNameAnalyzerTests(ITestOutputHelper testOutputHelper)
+    : ScriptAnalyzerTestsBase<WrongUseDatabaseNameAnalyzer>(testOutputHelper)
 {
     [Fact]
     public void WhenUsingCorrectDatabaseName_ThenOk()

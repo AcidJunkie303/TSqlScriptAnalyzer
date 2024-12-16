@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
-using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.UseDatabaseStatements;
 
@@ -24,9 +24,9 @@ public sealed class WrongUseDatabaseNameAnalyzer : IScriptAnalyzer
         }
 
         var expectedDatabaseName = script.DatabaseName;
-        foreach (var useStatement in script.ParsedScript.GetDescendantsOfType<SqlUseStatement>())
+        foreach (var useStatement in script.ParsedScript.Batches.SelectMany(a => a.GetChildren<UseStatement>(recursive: true)))
         {
-            if (expectedDatabaseName.EqualsOrdinalIgnoreCase(useStatement.DatabaseName.ToString()))
+            if (expectedDatabaseName.EqualsOrdinalIgnoreCase(useStatement.DatabaseName.Value))
             {
                 continue;
             }

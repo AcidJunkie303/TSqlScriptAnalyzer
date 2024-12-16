@@ -1,6 +1,7 @@
 using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
-using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.UseDatabaseStatements;
 
@@ -16,13 +17,13 @@ public sealed class FirstStatementIsNotUseDatabaseAnalyzer : IScriptAnalyzer
             return;
         }
 
-        var codeObject = batch.Children.FirstOrDefault();
-        if (codeObject is null or SqlUseStatement)
+        var statement = batch.Statements.FirstOrDefault();
+        if (statement is null or UseStatement)
         {
             return;
         }
 
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, script, null, codeObject, script.DatabaseName);
+        context.IssueReporter.Report(DiagnosticDefinitions.Default, script, null, statement, script.DatabaseName);
     }
 
     private static class DiagnosticDefinitions

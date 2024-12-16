@@ -9,21 +9,29 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bc5c4f41-9446-4faf-a8e5-3c6d90b660d2" name="Changes" comment="removed &quot;Microsoft.SqlServer.Management.SqlParser&quot; nuget package">
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/VariableReferenceExtensions.cs" afterDir="false" />
+    <list default="true" id="bc5c4f41-9446-4faf-a8e5-3c6d90b660d2" name="Changes" comment="migrated ExcessiveStringConcatenationAnalyzer">
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/DataTypeReferenceExtensions.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TSqlScriptAnalyzer/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TSqlScriptAnalyzer/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/SqlFragmentChildProviderTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/SqlFragmentChildrenProviderTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/CollectionExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/CollectionExtensions.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/SqlFragmentExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/SqlFragmentExtensions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/SqlHelpers.GetParents.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/SqlHelpers.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Testing/TestCodeProcessor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Testing/TestCodeProcessor.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/_old/ObjectCreation/ObjectCreationWithoutOrAlterAnalyzerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/ObjectCreation/ObjectCreationWithoutOrAlterAnalyzerTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/_old/Strings/ExcessiveStringConcatenationAnalyzerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/Strings/ExcessiveStringConcatenationAnalyzerTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/_old/ObjectCreation/ObjectCreationWithoutOrAlterAnalyzer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/ObjectCreation/ObjectCreationWithoutOrAlterAnalyzer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/_old/Strings/Aj5001Settings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Strings/Aj5001Settings.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/_old/Strings/Aj5001SettingsProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Strings/Aj5001SettingsProvider.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/_old/Strings/ExcessiveStringConcatenationAnalyzer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Strings/ExcessiveStringConcatenationAnalyzer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scripts/GetTSqlTokenTypeValues.ps1" beforeDir="false" afterPath="$PROJECT_DIR$/src/scripts/GetTSqlTokenTypeValues.ps1" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/DatabaseAnalyzer.Testing.Tests/TestCodeProcessorTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/tests/DatabaseAnalyzer.Testing.Tests/TestCodeProcessorTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/SqlFragmentChildProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/SqlFragmentChildrenProvider.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/_old/Strings/StringConcatenationUnicodeAsciiMixAnalyzerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/Strings/StringConcatenationUnicodeAsciiMixAnalyzerTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/_old/Tables/MissingCommaBeforeConstraintKeywordAnalyzerTests.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/_old/UnreferencedObject/UnreferencedParameterAnalyzerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/UnreferencedObject/UnreferencedParameterAnalyzerTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/_old/UnreferencedObject/UnreferencedVariableAnalyzerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/UnreferencedObject/UnreferencedVariableAnalyzerTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/_old/UseDatabaseStatements/FirstStatementIsNotUseDatabaseAnalyzerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/UseDatabaseStatements/FirstStatementIsNotUseDatabaseAnalyzerTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/_old/UseDatabaseStatements/WrongUseDatabaseNameAnalyzerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/UseDatabaseStatements/WrongUseDatabaseNameAnalyzerTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/DatabaseAnalyzers.DefaultAnalyzers.Tests.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/DatabaseAnalyzers.DefaultAnalyzers.Tests.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/_old/Strings/StringConcatenationUnicodeAsciiMixAnalyzer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Strings/StringConcatenationUnicodeAsciiMixAnalyzer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/_old/Tables/MissingCommaBeforeConstraintKeywordAnalyzer.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/_old/UnreferencedObject/UnreferencedParameterAnalyzer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/UnreferencedObject/UnreferencedParameterAnalyzer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/_old/UnreferencedObject/UnreferencedVariableAnalyzer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/UnreferencedObject/UnreferencedVariableAnalyzer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/_old/UseDatabaseStatements/Aj5003Settings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/UseDatabaseStatements/Aj5003Settings.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/_old/UseDatabaseStatements/Aj5003SettingsProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/UseDatabaseStatements/Aj5003SettingsProvider.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/_old/UseDatabaseStatements/FirstStatementIsNotUseDatabaseAnalyzer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/UseDatabaseStatements/FirstStatementIsNotUseDatabaseAnalyzer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/_old/UseDatabaseStatements/WrongUseDatabaseNameAnalyzer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/UseDatabaseStatements/WrongUseDatabaseNameAnalyzer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/DatabaseAnalyzers.DefaultAnalyzers.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/DatabaseAnalyzers.DefaultAnalyzers.csproj" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -106,6 +114,8 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/b3/1653ff71/ProcedureStatementBodyBase.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/c0/35209749/ProcedureParameter.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/c0/92372ef5/Literal.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/c1/4e996719/SchemaObjectName.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/c5/0fa07cce/ConvertCall.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/c7/7e5a7663/BinaryExpression.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/cd/2662dfa4/TSqlTokenType.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/ce/5fbdc6d5/SelectStatement.cs" root0="SKIP_HIGHLIGHTING" />
@@ -165,15 +175,16 @@
     <setting file="mock://C:/projects/TSqlScriptAnalyzer/src/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/SqlFragmentExtensions.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock://C:/projects/TSqlScriptAnalyzer/src/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/SqlScriptExtensions.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock://C:/projects/TSqlScriptAnalyzer/src/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/SqlScriptExtensions.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/UnreferencedObject/UnreferencedParameterAnalyzerTests.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/DataTypes/DataTypeAnalyzer.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Formatting/TabCharacterAnalyzer.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Naming/VariableReferenceWithDifferentCasingAnalyzer.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/ObjectCreation/ObjectCreationWithoutOrAlterAnalyzer.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Strings/ExcessiveStringConcatenationAnalyzer.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/_old/Strings/StringConcatenationUnicodeAsciiMixAnalyzer.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/_old/Tables/MissingCommaBeforeConstraintKeywordAnalyzer.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/_old/UnreferencedObject/UnreferencedVariableAnalyzer.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/_old/UseDatabaseStatements/FirstStatementIsNotUseDatabaseAnalyzer.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Strings/StringConcatenationUnicodeAsciiMixAnalyzer.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/UnreferencedObject/UnreferencedParameterAnalyzer.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/UnreferencedObject/UnreferencedVariableAnalyzer.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/UseDatabaseStatements/FirstStatementIsNotUseDatabaseAnalyzer.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
@@ -293,7 +304,7 @@
       <workItem from="1734202807224" duration="155000" />
       <workItem from="1734202972582" duration="163000" />
       <workItem from="1734203240490" duration="12387000" />
-      <workItem from="1734249069144" duration="61394000" />
+      <workItem from="1734249069144" duration="68321000" />
     </task>
     <task id="LOCAL-00001" summary="daily commit">
       <option name="closed" value="true" />
@@ -567,7 +578,15 @@
       <option name="project" value="LOCAL" />
       <updated>1734358090811</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="migrated ExcessiveStringConcatenationAnalyzer">
+      <option name="closed" value="true" />
+      <created>1734365901828</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1734365901828</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -606,7 +625,6 @@
   <component name="VcsManagerConfiguration">
     <option name="CHECK_NEW_TODO" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="nightly commit" />
     <MESSAGE value="implemented first analyzer with unit tests. hoorraaaayyyyy :)" />
     <MESSAGE value="additional files" />
     <MESSAGE value="completed ExcessiveStringConcatenationAnalyzer" />
@@ -631,7 +649,8 @@
     <MESSAGE value="various fixes&#10;ported Double empty lines analyzer&#10;ported dynamic sql analyzer" />
     <MESSAGE value="Migrated some more analyzers" />
     <MESSAGE value="removed &quot;Microsoft.SqlServer.Management.SqlParser&quot; nuget package" />
-    <option name="LAST_COMMIT_MESSAGE" value="removed &quot;Microsoft.SqlServer.Management.SqlParser&quot; nuget package" />
+    <MESSAGE value="migrated ExcessiveStringConcatenationAnalyzer" />
+    <option name="LAST_COMMIT_MESSAGE" value="migrated ExcessiveStringConcatenationAnalyzer" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -688,40 +707,40 @@
           <option name="timeStamp" value="128" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/_old/UseDatabaseStatements/FirstStatementIsNotUseDatabaseAnalyzer.cs</url>
-          <line>12</line>
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/UseDatabaseStatements/FirstStatementIsNotUseDatabaseAnalyzer.cs</url>
+          <line>13</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\FirstStatementIsNotUseDatabase\FirstStatementIsNotUseDatabaseAnalyzer.cs" containingFunctionPresentation="Method 'AnalyzeScript'">
             <startOffsets>
-              <option value="513" />
+              <option value="571" />
             </startOffsets>
             <endOffsets>
-              <option value="570" />
+              <option value="628" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="132" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/_old/UseDatabaseStatements/WrongUseDatabaseNameAnalyzerTests.cs</url>
-          <line>39</line>
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/UseDatabaseStatements/WrongUseDatabaseNameAnalyzerTests.cs</url>
+          <line>40</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers.Tests\Analyzers\FirstStatementIsNotUseDatabase\FirstStatementIsNotUseDatabaseAnalyzerTests.cs" containingFunctionPresentation="Method 'WhenUsingWrongDatabaseButFileIsExcluded_ThenOk'">
             <startOffsets>
-              <option value="1263" />
+              <option value="1267" />
             </startOffsets>
             <endOffsets>
-              <option value="1385" />
+              <option value="1389" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="133" />
         </line-breakpoint>
         <line-breakpoint enabled="true" log-message="true" suspend="NONE" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/_old/UseDatabaseStatements/WrongUseDatabaseNameAnalyzer.cs</url>
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/UseDatabaseStatements/WrongUseDatabaseNameAnalyzer.cs</url>
           <line>35</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\UseDatabaseStatements\WrongUseDatabaseNameAnalyzer.cs" containingFunctionPresentation="Method 'AnalyzeScript'">
             <startOffsets>
-              <option value="1338" />
+              <option value="1353" />
             </startOffsets>
             <endOffsets>
-              <option value="1339" />
+              <option value="1354" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="135" />
@@ -740,45 +759,6 @@
           <option name="timeStamp" value="147" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/_old/UnreferencedObject/UnreferencedParameterAnalyzer.cs</url>
-          <line>78</line>
-          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\UnreferencedObject\UnreferencedParameterAnalyzer.cs" containingFunctionPresentation="Method 'AnalyzeParameter'">
-            <startOffsets>
-              <option value="2916" />
-            </startOffsets>
-            <endOffsets>
-              <option value="2923" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="185" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/_old/UnreferencedObject/UnreferencedParameterAnalyzer.cs</url>
-          <line>81</line>
-          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\UnreferencedObject\UnreferencedParameterAnalyzer.cs" containingFunctionPresentation="Method 'AnalyzeParameter'">
-            <startOffsets>
-              <option value="2943" />
-            </startOffsets>
-            <endOffsets>
-              <option value="3022" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="186" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/_old/UnreferencedObject/UnreferencedParameterAnalyzer.cs</url>
-          <line>86</line>
-          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\UnreferencedObject\UnreferencedParameterAnalyzer.cs" containingFunctionPresentation="Method 'IsParameterReferenced'">
-            <startOffsets>
-              <option value="3264" />
-            </startOffsets>
-            <endOffsets>
-              <option value="3356" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="187" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.App/Reporting/ReportFileRenderer.cs</url>
           <line>9</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.App\Reporting\ReportFileRenderer.cs" containingFunctionPresentation="Method 'Render'">
@@ -790,19 +770,6 @@
             </endOffsets>
           </properties>
           <option name="timeStamp" value="207" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/_old/UnreferencedObject/UnreferencedVariableAnalyzer.cs</url>
-          <line>32</line>
-          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\UnreferencedObject\UnreferencedVariableAnalyzer.cs" containingFunctionPresentation="Method 'AnalyzeBatch'">
-            <startOffsets>
-              <option value="1403" />
-            </startOffsets>
-            <endOffsets>
-              <option value="1506" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="214" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.App/Program.cs</url>
@@ -844,14 +811,14 @@
           <option name="timeStamp" value="224" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/SqlFragmentChildProviderTests.cs</url>
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/SqlFragmentChildrenProviderTests.cs</url>
           <line>29</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations.Tests\SqlParsing\SqlHelpersTests.cs" containingFunctionPresentation="Method 'GetParent_When___'">
             <startOffsets>
-              <option value="752" />
+              <option value="758" />
             </startOffsets>
             <endOffsets>
-              <option value="754" />
+              <option value="760" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="225" />
@@ -883,40 +850,40 @@
           <option name="timeStamp" value="278" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/SqlFragmentChildProviderTests.cs</url>
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/SqlFragmentChildrenProviderTests.cs</url>
           <line>23</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations.Tests\SqlParsing\SqlFragmentChildProviderTests.cs" containingFunctionPresentation="Method 'GetChildren_WhenNoGenericType_WhenNotRecursive_ThenGetDirectChildren'">
             <startOffsets>
-              <option value="763" />
+              <option value="769" />
             </startOffsets>
             <endOffsets>
-              <option value="794" />
+              <option value="800" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="283" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/SqlFragmentChildProviderTests.cs</url>
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/SqlFragmentChildrenProviderTests.cs</url>
           <line>42</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations.Tests\SqlParsing\SqlFragmentChildProviderTests.cs" containingFunctionPresentation="Method 'GetChildren_WhenNoGenericType_WhenRecursive_ThenGetDirectChildren'">
             <startOffsets>
-              <option value="1342" />
+              <option value="1351" />
             </startOffsets>
             <endOffsets>
-              <option value="1373" />
+              <option value="1382" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="288" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/SqlFragmentChildProviderTests.cs</url>
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/SqlFragmentChildrenProviderTests.cs</url>
           <line>75</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations.Tests\SqlParsing\SqlFragmentChildProviderTests.cs" containingFunctionPresentation="Method 'GetChildren_WhenGenericType_WhenRecursive_ThenGetDirectChildren'">
             <startOffsets>
-              <option value="2212" />
+              <option value="2224" />
             </startOffsets>
             <endOffsets>
-              <option value="2293" />
+              <option value="2308" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="289" />
@@ -987,45 +954,6 @@
           <option name="timeStamp" value="329" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/SqlFragmentExtensions.cs</url>
-          <line>47</line>
-          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\Extensions\SqlFragmentExtensions.cs" containingFunctionPresentation="Method 'TryGetFirstClassObjectName'">
-            <startOffsets>
-              <option value="2059" />
-            </startOffsets>
-            <endOffsets>
-              <option value="2144" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="330" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Strings/ExcessiveStringConcatenationAnalyzer.cs</url>
-          <line>31</line>
-          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\Strings\ExcessiveStringConcatenationAnalyzer.cs" containingFunctionPresentation="Method 'Analyze'">
-            <startOffsets>
-              <option value="1278" />
-            </startOffsets>
-            <endOffsets>
-              <option value="1279" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="334" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Strings/ExcessiveStringConcatenationAnalyzer.cs</url>
-          <line>35</line>
-          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\Strings\ExcessiveStringConcatenationAnalyzer.cs" containingFunctionPresentation="Method 'Analyze'">
-            <startOffsets>
-              <option value="1398" />
-            </startOffsets>
-            <endOffsets>
-              <option value="1430" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="338" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Strings/ExcessiveStringConcatenationAnalyzer.cs</url>
           <line>15</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\Strings\ExcessiveStringConcatenationAnalyzer.cs" containingFunctionPresentation="Method 'AnalyzeScript'">
@@ -1039,30 +967,56 @@
           <option name="timeStamp" value="341" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Strings/ExcessiveStringConcatenationAnalyzer.cs</url>
-          <line>64</line>
-          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\Strings\ExcessiveStringConcatenationAnalyzer.cs" containingFunctionPresentation="Method 'Visit'">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Strings/StringConcatenationUnicodeAsciiMixAnalyzer.cs</url>
+          <line>21</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\Strings\StringConcatenationUnicodeAsciiMixAnalyzer.cs" containingFunctionPresentation="Method 'Analyze'">
             <startOffsets>
-              <option value="2488" />
+              <option value="857" />
             </startOffsets>
             <endOffsets>
-              <option value="2489" />
+              <option value="891" />
             </endOffsets>
           </properties>
-          <option name="timeStamp" value="342" />
+          <option name="timeStamp" value="346" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Strings/ExcessiveStringConcatenationAnalyzer.cs</url>
-          <line>77</line>
-          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\Strings\ExcessiveStringConcatenationAnalyzer.cs" containingFunctionPresentation="Method 'Visit'">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Strings/StringConcatenationUnicodeAsciiMixAnalyzer.cs</url>
+          <line>22</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\Strings\StringConcatenationUnicodeAsciiMixAnalyzer.cs" containingFunctionPresentation="Method 'Analyze'">
             <startOffsets>
-              <option value="2932" />
+              <option value="900" />
             </startOffsets>
             <endOffsets>
-              <option value="2955" />
+              <option value="934" />
             </endOffsets>
           </properties>
-          <option name="timeStamp" value="345" />
+          <option name="timeStamp" value="347" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/UnreferencedObject/UnreferencedParameterAnalyzer.cs</url>
+          <line>24</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\UnreferencedObject\UnreferencedParameterAnalyzer.cs" containingFunctionPresentation="Method 'Analyze'">
+            <startOffsets>
+              <option value="1257" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1258" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="354" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/UnreferencedObject/UnreferencedParameterAnalyzer.cs</url>
+          <line>31</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\UnreferencedObject\UnreferencedParameterAnalyzer.cs" containingFunctionPresentation="Method 'Analyze'">
+            <startOffsets>
+              <option value="1615" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1616" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="355" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

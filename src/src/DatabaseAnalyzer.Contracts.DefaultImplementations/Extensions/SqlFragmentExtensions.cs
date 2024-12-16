@@ -5,6 +5,7 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 
+// aa
 public static class SqlFragmentExtensions
 {
     public static CodeRegion GetCodeRegion(this TSqlFragment fragment)
@@ -15,12 +16,12 @@ public static class SqlFragmentExtensions
         return CodeRegion.Create(firstTokenRegion.StartLineNumber, firstTokenRegion.StartColumnNumber, lastTokenRegion.EndLineNumber, lastTokenRegion.EndColumnNumber);
     }
 
-    public static IReadOnlyList<TSqlFragment> GetChildren(this TSqlFragment fragment, bool recursive = false)
-        => SqlFragmentChildProvider.GetChildren<TSqlFragment>(fragment, recursive);
+    public static IReadOnlyList<TSqlFragment> GetChildren(this TSqlFragment fragment, bool recursive = false, Func<TSqlFragment, bool>? continueBranchRecursionPredicate = null)
+        => SqlFragmentChildrenProvider.GetChildren<TSqlFragment>(fragment, recursive, continueBranchRecursionPredicate);
 
-    public static IReadOnlyList<T> GetChildren<T>(this TSqlFragment fragment, bool recursive = false)
+    public static IReadOnlyList<T> GetChildren<T>(this TSqlFragment fragment, bool recursive = false, Func<TSqlFragment, bool>? continueBranchRecursionPredicate = null)
         where T : TSqlFragment
-        => SqlFragmentChildProvider.GetChildren<T>(fragment, recursive);
+        => SqlFragmentChildrenProvider.GetChildren<T>(fragment, recursive, continueBranchRecursionPredicate);
 
     public static string GetSql(this TSqlFragment fragment)
     {
