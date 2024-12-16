@@ -45,7 +45,7 @@ public static class SqlFragmentExtensions
 
     public static string? TryGetFirstClassObjectName(this TSqlFragment fragment, string defaultSchemaName, IParentFragmentProvider parentFragmentProvider)
     {
-        foreach (var parent in parentFragmentProvider.GetParents(fragment))
+        foreach (var parent in parentFragmentProvider.GetParents(fragment).Prepend(fragment))
         {
             var name = TryGetFirstClassObjectNameCore(parent, defaultSchemaName);
             if (!name.IsNullOrWhiteSpace())
@@ -67,6 +67,12 @@ public static class SqlFragmentExtensions
             CreateViewStatement s => s.SchemaObjectName.GetConcatenatedTwoPartObjectName(defaultSchemaName),
             _ => null
         };
+
+    public static IEnumerable<TSqlFragment> GetParents(this TSqlFragment fragment, IScriptModel script)
+        => fragment.GetParents(script.ParentFragmentProvider);
+
+    public static IEnumerable<TSqlFragment> GetParents(this TSqlFragment fragment, IParentFragmentProvider parentFragmentProvider)
+        => parentFragmentProvider.GetParents(fragment);
 
     public static TSqlFragment? GetParent(this TSqlFragment fragment, IScriptModel script)
         => fragment.GetParent(script.ParentFragmentProvider);

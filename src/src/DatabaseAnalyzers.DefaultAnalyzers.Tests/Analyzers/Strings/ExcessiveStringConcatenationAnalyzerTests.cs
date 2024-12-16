@@ -4,7 +4,8 @@ using Xunit.Abstractions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Strings;
 
-public sealed class ExcessiveStringConcatenationAnalyzerTests(ITestOutputHelper testOutputHelper) : ScriptAnalyzerTestsBase<ExcessiveStringConcatenationAnalyzer>(testOutputHelper)
+public sealed class ExcessiveStringConcatenationAnalyzerTests(ITestOutputHelper testOutputHelper)
+    : ScriptAnalyzerTestsBase<ExcessiveStringConcatenationAnalyzer>(testOutputHelper)
 {
     [Fact]
     public void WhenTwoStringConcatenation_ThenOk()
@@ -19,7 +20,7 @@ public sealed class ExcessiveStringConcatenationAnalyzerTests(ITestOutputHelper 
     public void WhenMoreThanTwoStringConcatenation_ThenDiagnose()
     {
         const string sql = """
-                           SET @x = █AJ5001░main.sql░░2███'a' + 'b' + 'c' + 'd'█ -- 2 is the default max allowed string concatenation count
+                           SET @x = █AJ5001░main.sql░░2███N'a' + N'b' + N'c' + N'd'█ -- 2 is the default max allowed string concatenation count
                            """;
         VerifyWithDefaultSettings<Aj5001Settings>(sql);
     }

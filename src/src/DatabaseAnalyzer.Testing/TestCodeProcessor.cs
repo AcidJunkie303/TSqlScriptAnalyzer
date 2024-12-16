@@ -60,9 +60,15 @@ internal sealed partial class TestCodeProcessor
 
             var endColumnNumber = endLineNumberOffset == 0
                 ? startColumnNumber + endColumnOffset
-                : endColumnOffset;
+                : endColumnOffset + 1;
 
             endColumnNumber++; // because it's an offset
+
+            if (affectedCode.EndsWith('\n'))
+            {
+                endColumnNumber--;
+            }
+
             var location = CodeRegion.Create(startLineNumber, startColumnNumber, endLineNumber, endColumnNumber);
             var issue = Issue.Create(_diagnosticRegistry.GetDefinition(id), "db1", fileName, fullObjectName, location, insertions);
             issues.Add(issue);
