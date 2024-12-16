@@ -1,0 +1,59 @@
+using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
+
+namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Naming;
+
+public sealed class VariableReferenceWithDifferentCasingAnalyzer : IScriptAnalyzer
+{
+    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    {
+        foreach (var batch in script.ParsedScript.Batches)
+        {
+            AnalyzeBatch(context, script, batch);
+        }
+    }
+
+    private static void AnalyzeBatch(IAnalysisContext context, IScriptModel script, TSqlBatch batch)
+    {
+        var variableDeclarationsByName = batch
+            .GetChildren<DeclareVariableStatement>(true)
+            .SelectMany(a => a.Declarations)
+            .GroupBy(a => a.VariableName.Value, StringComparer.OrdinalIgnoreCase)
+            .Select(a => a.First())
+            .ToDictionary(a => a.VariableName.Value, a => a, StringComparer.OrdinalIgnoreCase);
+
+        foreach (var variableReference in batch.GetChildren<VariableReference>(recursive: true))
+        {
+            var variableReferenceName = variableReference.Name;
+
+            // case-insensitive lookup
+            if (!variableDeclarationsByName.TryGetValue(variableReferenceName, out var variableDeclaration))
+            {
+                continue;
+            }
+
+            if (variableReferenceName.EqualsOrdinal(variableDeclaration.VariableName.Value))
+            {
+                continue;
+            }
+
+            var fullObjectName = variableReference.TryGetFirstClassObjectName(context, script);
+            context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, variableReference, variableReference.Name, variableDeclaration.VariableName.Value);
+        }
+    }
+
+    private static class DiagnosticDefinitions
+    {
+        public static DiagnosticDefinition Default { get; } = new
+        (
+            "AJ5014",
+            IssueType.Warning,
+            "Variable reference with different casing",
+            "The variable reference '{0}' has different casing compared to the declaration '{1}'."
+        );
+    }
+}

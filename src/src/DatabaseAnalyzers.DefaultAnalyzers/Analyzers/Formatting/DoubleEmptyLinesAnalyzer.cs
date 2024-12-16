@@ -37,7 +37,7 @@ public sealed class DoubleEmptyLinesAnalyzer : IScriptAnalyzer
 
             var codeRegion = CodeRegion.Create(firstToken.Line, firstToken.Column, endLine, endColumn);
             var fullObjectName = script.ParsedScript
-                .TryGetCodeObjectAtPosition(block[0])
+                .TryGetSqlFragmentAtPosition(block[0])
                 ?.TryGetFirstClassObjectName(context, script);
 
             context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, codeRegion);

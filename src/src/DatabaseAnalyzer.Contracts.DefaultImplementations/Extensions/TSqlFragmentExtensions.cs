@@ -76,11 +76,34 @@ public static class TSqlFragmentExtensions
     public static TSqlFragment? GetParent(this TSqlFragment fragment, IParentFragmentProvider parentFragmentProvider)
         => parentFragmentProvider.GetParent(fragment);
 
-    public static TSqlFragment? TryGetCodeObjectAtPosition(this TSqlScript script, TSqlParserToken token)
-        => script.TryGetCodeObjectAtPosition(token.Line, token.Column);
+    public static TSqlFragment? TryGetSqlFragmentAtPosition(this TSqlScript script, TSqlParserToken token)
+        => script.TryGetSqlFragmentAtPosition(token.Line, token.Column);
+
+    public static TSqlFragment? TryGetSqlFragmentAtPosition(this TSqlScript script, int index)
+    {
+        TSqlFragment? match = null;
+
+        foreach (var child in script.GetChildren(recursive: true))
+        {
+            if (IsIndexInsideFragment(index, child))
+            {
+                // get the last possible match
+                match = child;
+            }
+        }
+
+        return match;
+
+        static bool IsIndexInsideFragment(int index, TSqlFragment fragment)
+        {
+            var fragmentEndOffset = fragment.StartOffset + fragment.FragmentLength;
+            return (index >= fragment.StartOffset)
+                   && (index <= fragmentEndOffset);
+        }
+    }
 
     [SuppressMessage("Minor Code Smell", "S3267:Loops should be simplified with \"LINQ\" expressions")]
-    public static TSqlFragment? TryGetCodeObjectAtPosition(this TSqlScript script, int lineNumber, int columnNumber)
+    public static TSqlFragment? TryGetSqlFragmentAtPosition(this TSqlScript script, int lineNumber, int columnNumber)
     {
         TSqlFragment? match = null;
 
@@ -88,6 +111,7 @@ public static class TSqlFragmentExtensions
         {
             if (IsInsideElement(child, lineNumber, columnNumber))
             {
+                // get the last possible match
                 match = child;
             }
         }

@@ -117,4 +117,8 @@ public static class StringExtensions
 
         return script;
     }
+
+    public static bool IsEqualToButWithDifferentCasing(this string value, string? other)
+        => string.Equals(value, other, StringComparison.OrdinalIgnoreCase)
+           && !string.Equals(value, other, StringComparison.Ordinal);
 }
