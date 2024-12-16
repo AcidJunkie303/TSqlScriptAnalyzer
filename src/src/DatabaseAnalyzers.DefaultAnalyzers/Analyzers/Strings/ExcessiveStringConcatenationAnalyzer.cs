@@ -5,8 +5,6 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Strings;
 
-// TODO: REmove
-#pragma warning disable
 public sealed class ExcessiveStringConcatenationAnalyzer : IScriptAnalyzer
 {
     public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
@@ -19,13 +17,6 @@ public sealed class ExcessiveStringConcatenationAnalyzer : IScriptAnalyzer
         {
             Analyze(context, script, expression, maxAllowedStringConcatenations);
         }
-
-        /*
-        foreach (var expression in script.ParsedScript.GetTopLevelDescendantsOfType<SqlBinaryScalarExpression>())
-        {
-            Analyze(context, script, expression, maxAllowedStringConcatenations);
-        }
-        */
     }
 
     private static void Analyze(IAnalysisContext context, IScriptModel script, BinaryExpression expression, int maxAllowedStringConcatenations)
@@ -61,9 +52,9 @@ public sealed class ExcessiveStringConcatenationAnalyzer : IScriptAnalyzer
             _parentFragmentProvider = parentFragmentProvider;
         }
 
-        public override void Visit(BinaryExpression expression)
+        public override void Visit(BinaryExpression node)
         {
-            if (expression.BinaryExpressionType != BinaryExpressionType.Add)
+            if (node.BinaryExpressionType != BinaryExpressionType.Add)
             {
                 return;
             }
@@ -71,11 +62,11 @@ public sealed class ExcessiveStringConcatenationAnalyzer : IScriptAnalyzer
             TotalConcatenations++;
             if (!AreStringsInvolved)
             {
-                AreStringsInvolved = IsStringVariableOrStringLiteral(expression.FirstExpression)
-                                     || IsStringVariableOrStringLiteral(expression.SecondExpression);
+                AreStringsInvolved = IsStringVariableOrStringLiteral(node.FirstExpression)
+                                     || IsStringVariableOrStringLiteral(node.SecondExpression);
             }
 
-            base.Visit(expression);
+            base.Visit(node);
         }
 
         private bool IsStringVariableOrStringLiteral(ScalarExpression scalarExpression)
@@ -115,25 +106,4 @@ public sealed class ExcessiveStringConcatenationAnalyzer : IScriptAnalyzer
             "More than {0} allowed string concatenations"
         );
     }
-/*
-    private static void Analyze(IAnalysisContext context, IScriptModel script, SqlBinaryScalarExpression expression, int maxAllowedStringConcatenations)
-    {
-        var visitor = new Visitor();
-        visitor.Visit(expression);
-
-        if (!visitor.AreStringsInvolved)
-        {
-            return;
-        }
-
-        if (visitor.TotalConcatenations <= maxAllowedStringConcatenations)
-        {
-            return;
-        }
-
-        var fullObjectName = expression.TryGetFullObjectName(context.DefaultSchemaName);
-
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, expression, maxAllowedStringConcatenations);
-    }
-*/
 }

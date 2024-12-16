@@ -4,9 +4,6 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Services;
 
-// TODO: remove
-#pragma warning disable
-
 public sealed partial class DiagnosticSuppressionExtractor : IDiagnosticSuppressionExtractor
 {
     private static readonly char[] DiagnosticIdSeparators = [';', ',', ' ', '\t'];
