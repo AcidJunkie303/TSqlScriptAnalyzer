@@ -107,7 +107,7 @@ public sealed class TestCodeProcessorTests
         var result = sut.ParseTestCode(code);
 
         // assert
-        var expectedLocation = CodeRegion.Create(1, 4, 3, 7);
+        var expectedLocation = CodeRegion.Create(1, 4, 3, 6);
         var expectedIssue = Issue.Create(TestDiagnosticDefinitions.TestDiagnostic0, "db1", "file.sql", "dbo.p1", expectedLocation);
 
         result.ExpectedIssues.Should().ContainEquivalentOf(expectedIssue);
@@ -117,6 +117,34 @@ public sealed class TestCodeProcessorTests
                                          aaa---
                                          ---
                                          ---bbbccc
+                                         """);
+    }
+
+    [Fact]
+    public void MarkupSpansAcrossMultipleLinesAndEndsAtBeginningOfLine()
+    {
+        // arrange
+        var sut = new TestCodeProcessor(DiagnosticDefinitionRegistry);
+        const string code = """
+                            aaa█TE0000░file.sql░dbo.p1███---
+                            ---
+                            █ccc
+                            """;
+
+        // act
+        var result = sut.ParseTestCode(code);
+
+        // assert
+        var expectedLocation = CodeRegion.Create(1, 4, 3, 1);
+        var expectedIssue = Issue.Create(TestDiagnosticDefinitions.TestDiagnostic0, "db1", "file.sql", "dbo.p1", expectedLocation);
+
+        result.ExpectedIssues.Should().ContainEquivalentOf(expectedIssue);
+        result.ExpectedIssues.Should().HaveCount(1);
+
+        result.MarkupFreeSql.Should().Be("""
+                                         aaa---
+                                         ---
+                                         ccc
                                          """);
     }
 }

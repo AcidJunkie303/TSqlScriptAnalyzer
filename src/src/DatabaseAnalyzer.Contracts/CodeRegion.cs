@@ -16,5 +16,11 @@ public record struct CodeRegion(
     public static CodeRegion Create(int startLineNumber, int startColumnNumber, int endLineNumber, int endColumnNumber)
         => new(startLineNumber, startColumnNumber, endLineNumber, endColumnNumber);
 
+    public bool IsAround(int lineNumber, int columnNumber)
+        => (lineNumber >= StartLineNumber)
+           && (columnNumber >= StartColumnNumber)
+           && (lineNumber <= EndLineNumber)
+           && (columnNumber <= EndColumnNumber);
+
     public override string ToString() => $"({StartLineNumber},{StartColumnNumber})-({EndLineNumber},{EndColumnNumber})";
 }

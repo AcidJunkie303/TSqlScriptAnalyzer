@@ -1,85 +1,77 @@
-using System.Text;
-using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
+using BetterConsoleTables;
+using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Testing;
 
 internal static class SyntaxTreeVisualizer
 {
-    private const int IndentationCharactersPerLevel = 2;
-
-    public static string Visualize(SqlCodeObject codeObject)
+    public static string Visualize(TSqlScript script)
     {
-        var nodes = new List<Node>();
-        Traverse(codeObject, 0, nodes);
+        var traverser = new Traverser();
+        traverser.Traverse(script);
 
-        return Visualize(nodes);
+        return Visualize(traverser.Nodes);
     }
 
     private static string Visualize(List<Node> nodes)
     {
-        var maxTypeWidth = nodes
-            .Select(a => a.TypeName.Length + (a.Level * IndentationCharactersPerLevel))
-            .Append(Headers.Type.Length)
-            .Max();
+        var table = new Table(Alignment.Left)
+        {
+            Config = TableConfiguration.MySql()
+        };
 
-        var buffer = new StringBuilder();
-
-        RenderHeaderFooterDivider();
-        RenderLine(Headers.Type, Headers.Code, 0);
-        RenderHeaderFooterDivider();
+        table.Config.hasInnerRows = false;
+        table
+            .AddColumn("Type")
+            .AddColumn("Region")
+            .AddColumn("Contents");
 
         foreach (var node in nodes)
         {
-            RenderLine(node.TypeName, node.Code, node.Level);
+            var typeNameWithIndentation = new string(' ', node.Level * 2) + node.TypeName;
+            var code = node.Code.IsNullOrWhiteSpace() ? $"¦{node.Code}¦" : node.Code;
+            table.AddRow(typeNameWithIndentation, node.CodeRegion, code);
         }
 
-        RenderHeaderFooterDivider();
-
-        return buffer.ToString();
-
-        void RenderHeaderFooterDivider()
-        {
-            buffer
-                .Append('+')
-                .Append('-', maxTypeWidth + 2)
-                .Append('+')
-                .Append('-', 100)
-                .AppendLine();
-        }
-
-        void RenderLine(string type, string code, int level)
-        {
-            var indentationCharCount = level * IndentationCharactersPerLevel;
-            buffer
-                .Append("| ")
-                .Append(' ', indentationCharCount)
-                .Append(type)
-                .Append(' ', maxTypeWidth - type.Length - indentationCharCount)
-                .Append(" | ")
-                .AppendLine(code);
-        }
+        return table.ToString();
     }
 
-    private static void Traverse(SqlCodeObject codeObject, int level, List<Node> nodes)
+    private struct Traverser
     {
-        var codeWithoutNewlineCharacters = codeObject.Sql
-            .Replace("\r", "\\r", StringComparison.Ordinal)
-            .Replace("\n", "\\n", StringComparison.Ordinal);
+        private int _level;
 
-        var node = new Node(level, codeWithoutNewlineCharacters, codeObject.GetType().Name);
-        nodes.Add(node);
-
-        foreach (var child in codeObject.Children)
+        public Traverser()
         {
-            Traverse(child, level + 1, nodes);
+            _level = 0;
+        }
+
+        public List<Node> Nodes { get; } = [];
+
+        public void Traverse(TSqlFragment fragment)
+        {
+            var currentLevel = _level++;
+
+            var codeRegion = fragment.StartLine >= 0 && fragment.StartColumn >= 0
+                ? fragment.GetCodeRegion().ToString()
+                : "Unknown";
+
+            var code = fragment.GetSql()
+                .Replace("\r", "\\r", StringComparison.Ordinal)
+                .Replace("\n", "\\n", StringComparison.Ordinal);
+
+            var node = new Node(currentLevel, codeRegion, fragment.GetType().Name, code);
+            Nodes.Add(node);
+
+            foreach (var child in fragment.GetChildren())
+            {
+                Traverse(child);
+            }
+
+            _level--;
         }
     }
 
-    private sealed record Node(int Level, string Code, string TypeName);
-
-    private static class Headers
-    {
-        public const string Type = "Type";
-        public const string Code = "Code";
-    }
+    private sealed record Node(int Level, string CodeRegion, string TypeName, string Code);
 }

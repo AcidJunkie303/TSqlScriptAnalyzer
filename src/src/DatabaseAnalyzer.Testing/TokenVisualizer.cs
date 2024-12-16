@@ -1,22 +1,36 @@
-using System.Text;
-using Microsoft.SqlServer.Management.SqlParser.Parser;
-using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
+using BetterConsoleTables;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Testing;
 
 internal static class TokenVisualizer
 {
-    public static string Visualize(SqlCodeObject codeObject) => Visualize(codeObject.Tokens);
+    public static string Visualize(TSqlFragment fragment) => Visualize(fragment.ScriptTokenStream);
 
-    public static string Visualize(IEnumerable<Token> tokens)
+    public static string Visualize(IEnumerable<TSqlParserToken> tokens)
     {
-        var buffer = new StringBuilder();
+        var table = new Table(Alignment.Left)
+        {
+            Config = TableConfiguration.MySql()
+        };
+
+        table.Config.hasInnerRows = false;
+
+        table
+            .AddColumn("Type")
+            .AddColumn("Region")
+            .AddColumn("Contents");
 
         foreach (var token in tokens)
         {
-            buffer.AppendLine(token.ToString());
+            var text = token.Text.EmptyIfNull()
+                .Replace("\r\n", "\\r\\n", StringComparison.Ordinal)
+                .Replace("\n", "\\n", StringComparison.Ordinal);
+            text = text.IsNullOrWhiteSpace() ? $"¦{text}¦" : text;
+            table.AddRow(token.TokenType, token.GetCodeRegion(), text);
         }
 
-        return buffer.ToString();
+        return table.ToString();
     }
 }

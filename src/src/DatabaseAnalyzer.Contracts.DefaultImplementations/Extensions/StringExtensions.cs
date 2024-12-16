@@ -52,6 +52,11 @@ public static class StringExtensions
 
     public static (int LineIndex, int ColumnIndex) GetLineAndColumnIndex(this string text, int index)
     {
+        if (index >= text.Length)
+        {
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, text.Length);
+        }
+
         var lineIndex = 0;
         var columnIndex = 0;
         for (var i = 0; (i < index) && (i < text.Length); i++)
@@ -65,6 +70,12 @@ public static class StringExtensions
             {
                 columnIndex++;
             }
+        }
+
+        if ((index == text.Length - 1) && (text[index] == '\n'))
+        {
+            lineIndex++;
+            columnIndex = 0;
         }
 
         return (lineIndex, columnIndex);

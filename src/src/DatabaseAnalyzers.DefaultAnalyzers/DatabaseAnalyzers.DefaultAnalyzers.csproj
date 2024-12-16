@@ -21,10 +21,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Analyzers\"/>
-    </ItemGroup>
-
-    <ItemGroup>
         <Compile Remove="Analyzers\_old\**"/>
     </ItemGroup>
 

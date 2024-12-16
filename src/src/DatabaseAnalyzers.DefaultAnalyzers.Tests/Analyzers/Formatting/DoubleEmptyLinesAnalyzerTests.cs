@@ -20,13 +20,13 @@ public sealed class DoubleEmptyLinesAnalyzerTests(ITestOutputHelper testOutputHe
     [Fact]
     public void WhenDoubleEmptyLines_ThenDiagnose()
     {
-        const string sql =
-            @"
-            PRINT 303█AJ5007░main.sql░███
+        const string sql = """
+                           PRINT 303█AJ5007░main.sql░███
 
 
-            █PRINT 909
-            ";
+                           █PRINT 909
+                           """;
+
         Verify(sql);
     }
 

@@ -23,6 +23,7 @@ internal sealed partial class TestCodeProcessor
     // █AJ5000░file.sql░schema.name░hello░world██RINT 303█    -> has object name;     2 insertion: ["hello", "world"],    region: "PRINT 303"
     // █AJ5000░file.sql░░hello░world██RINT 303█               -> no object name;      2 insertion: ["hello", "world"],    region: "PRINT 303"
     // please note that the object-name is optional and can be empty. E.g. when the code is not within a CREATE PROCEDURE statement for example
+    //[GeneratedRegex(@"\{\{(?<id>[^░]+)░(?<parts>[^\|]+)\|\|\|(?<code>.*?)\}\}", RegexOptions.Compiled | RegexOptions.Singleline, 1000)]
     [GeneratedRegex(@"█(?<header>[^█]+)███(?<code>[^█]+)█", RegexOptions.Compiled | RegexOptions.ExplicitCapture, 1000)]
     private static partial Regex MarkupRegex();
 
@@ -58,9 +59,10 @@ internal sealed partial class TestCodeProcessor
             var endLineNumber = startLineNumber + endLineNumberOffset;
 
             var endColumnNumber = endLineNumberOffset == 0
-                ? startColumnNumber + endColumnOffset + 1 // 1 because it's an offset
-                : endColumnOffset + 1 + 1; // 1 because it's an offset and 1 because ... uhm.. TODO:
+                ? startColumnNumber + endColumnOffset
+                : endColumnOffset;
 
+            endColumnNumber++; // because it's an offset
             var location = CodeRegion.Create(startLineNumber, startColumnNumber, endLineNumber, endColumnNumber);
             var issue = Issue.Create(_diagnosticRegistry.GetDefinition(id), "db1", fileName, fullObjectName, location, insertions);
             issues.Add(issue);
