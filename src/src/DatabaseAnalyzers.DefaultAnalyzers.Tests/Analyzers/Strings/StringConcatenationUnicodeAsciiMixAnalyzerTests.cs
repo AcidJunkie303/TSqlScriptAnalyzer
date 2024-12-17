@@ -9,60 +9,60 @@ public class StringConcatenationUnicodeAsciiMixAnalyzerTests(ITestOutputHelper t
     [Fact]
     public void WhenStringsAreAllAscii_ThenOk()
     {
-        const string sql = """
-                           SET @x = 'a' + 'b'
-                           """;
+        const string code = """
+                            SET @x = 'a' + 'b'
+                            """;
 
-        Verify(sql);
+        Verify(code);
     }
 
     [Fact]
     public void WhenStringsAreAllUnicode_ThenOk()
     {
-        const string sql = """
-                           SET @x = N'a' + N'b'
-                           """;
+        const string code = """
+                            SET @x = N'a' + N'b'
+                            """;
 
-        Verify(sql);
+        Verify(code);
     }
 
     [Fact]
     public void WhenConcatenatingUnicodeAndAsciiStrings_ThenDiagnose()
     {
-        const string sql = """
-                           SET @x = █AJ5002░main.sql░███N'a' + 'b'█
-                           """;
+        const string code = """
+                            SET @x = █AJ5002░main.sql░███N'a' + 'b'█
+                            """;
 
-        Verify(sql);
+        Verify(code);
     }
 
     [Fact]
     public void WhenConvertingPartToSameStringType_ThenOk()
     {
-        const string sql = """
-                           SET @x = N'a' + CONVERT(NVARCHAR(MAX), 'b')
-                           """;
+        const string code = """
+                            SET @x = N'a' + CONVERT(NVARCHAR(MAX), 'b')
+                            """;
 
-        Verify(sql);
+        Verify(code);
     }
 
     [Fact]
     public void WhenConvertingPartToDifferentStringType_ThenDiagnose()
     {
-        const string sql = """
-                           SET @x = █AJ5002░main.sql░███N'a' + CONVERT(VARCHAR(999), N'b')█
-                           """;
+        const string code = """
+                            SET @x = █AJ5002░main.sql░███N'a' + CONVERT(VARCHAR(999), N'b')█
+                            """;
 
-        Verify(sql);
+        Verify(code);
     }
 
     [Fact]
     public void WhenCastingPartToDifferentStringType_ThenDiagnose()
     {
-        const string sql = """
-                           SET @x = █AJ5002░main.sql░███N'a' + CAST(N'b' AS VARCHAR(999))█
-                           """;
+        const string code = """
+                            SET @x = █AJ5002░main.sql░███N'a' + CAST(N'b' AS VARCHAR(999))█
+                            """;
 
-        Verify(sql);
+        Verify(code);
     }
 }

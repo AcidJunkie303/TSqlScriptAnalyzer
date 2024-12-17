@@ -47,4 +47,7 @@ public static class CollectionExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsNullOrEmpty<T>([NotNullWhen(false)] this IList<T>? items)
         => items is null || (items.Count == 0);
+
+    public static string StringJoin<T>(this IEnumerable<T> items, string separator)
+        => string.Join(separator, items);
 }

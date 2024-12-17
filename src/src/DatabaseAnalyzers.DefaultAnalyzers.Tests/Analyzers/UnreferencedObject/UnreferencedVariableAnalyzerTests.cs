@@ -10,69 +10,69 @@ public sealed class UnreferencedVariableAnalyzerTests(ITestOutputHelper testOutp
     [Fact]
     public void WhenVariableIsReferenced_ThenOk()
     {
-        const string sql = """
-                           DECLARE @Var1 INT = 303
-                           PRINT @Var1
-                           """;
-        Verify(sql);
+        const string code = """
+                            DECLARE @Var1 INT = 303
+                            PRINT @Var1
+                            """;
+        Verify(code);
     }
 
     [Fact]
     public void WhenVariableIsNotReferenced_ThenDiagnose()
     {
-        const string sql = """
-                           DECLARE █AJ5012░main.sql░░@Var1███@Var1 INT = 303█
-                           PRINT 'Hello'
-                           """;
-        Verify(sql);
+        const string code = """
+                            DECLARE █AJ5012░main.sql░░@Var1███@Var1 INT = 303█
+                            PRINT 'Hello'
+                            """;
+        Verify(code);
     }
 
     [Fact]
     public void WhenSameVariableIsDefinedInDifferentBatches1_ThenTreatEveryBatchSeparately()
     {
-        const string sql = """
-                           -- Variable not referenced in this batch
-                           DECLARE █AJ5012░main.sql░░@Var1███@Var1 INT = 303█
-                           PRINT 'Hello'
-                           GO
+        const string code = """
+                            -- Variable not referenced in this batch
+                            DECLARE █AJ5012░main.sql░░@Var1███@Var1 INT = 303█
+                            PRINT 'Hello'
+                            GO
 
-                           -- Variable referenced in this batch
-                           DECLARE @Var1 INT = 303
-                           PRINT @Var1
+                            -- Variable referenced in this batch
+                            DECLARE @Var1 INT = 303
+                            PRINT @Var1
 
-                           """;
-        Verify(sql);
+                            """;
+        Verify(code);
     }
 
     [Fact]
     public void WhenSameVariableIsDefinedInDifferentBatches2_ThenTreatEveryBatchSeparately()
     {
-        const string sql = """
-                           -- Variable referenced in this batch
-                           DECLARE @Var1 INT = 303
-                           PRINT @Var1
+        const string code = """
+                            -- Variable referenced in this batch
+                            DECLARE @Var1 INT = 303
+                            PRINT @Var1
 
-                           GO
+                            GO
 
-                           -- Variable not referenced in this batch
-                           DECLARE █AJ5012░main.sql░░@Var1███@Var1 INT = 303█
-                           PRINT 'Hello'
-                           """;
-        Verify(sql);
+                            -- Variable not referenced in this batch
+                            DECLARE █AJ5012░main.sql░░@Var1███@Var1 INT = 303█
+                            PRINT 'Hello'
+                            """;
+        Verify(code);
     }
 
     [Fact]
     public void WhenParameterNotUsed_ThenOk_BecauseItIsNotVariable()
     {
-        const string sql = """
-                           CREATE PROCEDURE P1
-                              @Param1 INT
-                           AS
-                           BEGIN
-                               SELECT 1
-                           END
+        const string code = """
+                            CREATE PROCEDURE P1
+                               @Param1 INT
+                            AS
+                            BEGIN
+                                SELECT 1
+                            END
 
-                           """;
-        Verify(sql);
+                            """;
+        Verify(code);
     }
 }

@@ -9,20 +9,20 @@ public sealed class TabCharacterAnalyzerTests(ITestOutputHelper testOutputHelper
     [Fact]
     public void WhenNoTabFound_ThenOk()
     {
-        const string sql = """
-                           PRINT 303
-                           """;
+        const string code = """
+                            PRINT 303
+                            """;
 
-        Verify(sql);
+        Verify(code);
     }
 
     [Fact]
     public void WhenTabFound_ThenDiagnose()
     {
         // had to be done this way because the IDE replaces tabs with spaces...
-        const string sql = """
-                           PRINT█AJ5008░main.sql░███	█909 -- code is a tab character
-                           """;
-        Verify(sql);
+        const string code = """
+                            PRINT█AJ5008░main.sql░███	█909 -- code is a tab character
+                            """;
+        Verify(code);
     }
 }

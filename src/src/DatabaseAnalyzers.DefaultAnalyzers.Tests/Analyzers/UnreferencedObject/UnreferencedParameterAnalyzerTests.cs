@@ -10,64 +10,64 @@ public sealed class UnreferencedParameterAnalyzerTests(ITestOutputHelper testOut
     [Fact]
     public void WithProcedure_WhenParameterIsReferenced_ThenOk()
     {
-        const string sql = """
-                           CREATE PROCEDURE [dbo].[P1]
-                           	    @Param1 VARCHAR(MAX)
-                           AS
-                           BEGIN
-                           	    PRINT @Param1
-                           END
-                           """;
-        Verify(sql);
+        const string code = """
+                            CREATE PROCEDURE [dbo].[P1]
+                                @Param1 VARCHAR(MAX)
+                            AS
+                            BEGIN
+                                PRINT @Param1
+                            END
+                            """;
+        Verify(code);
     }
 
     [Fact]
     public void WithProcedure_WhenParameterIsNotReferenced_ThenDiagnose()
     {
-        const string sql = """
-                           CREATE PROCEDURE [dbo].[P1]
-                           	    █AJ5011░main.sql░dbo.P1░@Param1███@Param1 VARCHAR(MAX)█
-                           AS
-                           BEGIN
-                           	    PRINT 'Hello'
-                           	    RETURN 1
-                           END
-                           """;
-        Verify(sql);
+        const string code = """
+                            CREATE PROCEDURE [dbo].[P1]
+                                █AJ5011░main.sql░dbo.P1░@Param1███@Param1 VARCHAR(MAX)█
+                            AS
+                            BEGIN
+                                    PRINT 'Hello'
+                                    RETURN 1
+                            END
+                            """;
+        Verify(code);
     }
 
     [Fact]
     public void WithScalarFunction_WhenParameterIsReferenced_ThenOk()
     {
-        const string sql = """
-                           CREATE FUNCTION F1
-                           (
-                               @Param1 VARCHAR(MAX)
-                           )
-                           RETURNS INT
-                           AS
-                           BEGIN
-                           	    PRINT @Param1
-                           	    RETURN 1
-                           END
-                           """;
-        Verify(sql);
+        const string code = """
+                            CREATE FUNCTION F1
+                            (
+                                @Param1 VARCHAR(MAX)
+                            )
+                            RETURNS INT
+                            AS
+                            BEGIN
+                                    PRINT @Param1
+                                    RETURN 1
+                            END
+                            """;
+        Verify(code);
     }
 
     [Fact]
     public void WithScalarFunction_WhenParameterIsNotReferenced_ThenDiagnose()
     {
-        const string sql = """
-                           CREATE FUNCTION F1
-                           (
-                               █AJ5011░main.sql░dbo.F1░@Param1███@Param1 VARCHAR(MAX)█
-                           )
-                           RETURNS INT
-                           AS
-                           BEGIN
-                           	    RETURN 1
-                           END
-                           """;
-        Verify(sql);
+        const string code = """
+                            CREATE FUNCTION F1
+                            (
+                                █AJ5011░main.sql░dbo.F1░@Param1███@Param1 VARCHAR(MAX)█
+                            )
+                            RETURNS INT
+                            AS
+                            BEGIN
+                                    RETURN 1
+                            END
+                            """;
+        Verify(code);
     }
 }

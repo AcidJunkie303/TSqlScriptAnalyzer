@@ -10,11 +10,11 @@ public sealed class DiagnosticSuppressionExtractorTests
     [Fact]
     public void WhenSuppressionIsInEndOfLineComment_ThenExtract()
     {
-        const string sql = """
-                           -- #pragma diagnostic disable AJ1111 -> Bla
-                           """;
+        const string code = """
+                            -- #pragma diagnostic disable AJ1111 -> Bla
+                            """;
         // arrange
-        var script = sql.ParseSqlScript();
+        var script = code.ParseSqlScript();
         var sut = new DiagnosticSuppressionExtractor();
 
         // act
@@ -30,13 +30,13 @@ public sealed class DiagnosticSuppressionExtractorTests
     [Fact]
     public void WhenSuppressionIsInMultiLineComment_ThenExtract()
     {
-        const string sql = """
-                           /*
-                             #pragma diagnostic disable AJ1111 -> Hello World
-                           */
-                           """;
+        const string code = """
+                            /*
+                              #pragma diagnostic disable AJ1111 -> Hello World
+                            */
+                            """;
         // arrange
-        var script = sql.ParseSqlScript();
+        var script = code.ParseSqlScript();
         var sut = new DiagnosticSuppressionExtractor();
 
         // act
@@ -52,11 +52,11 @@ public sealed class DiagnosticSuppressionExtractorTests
     [Fact]
     public void WhenMultipleSuppressionIdsInSameSuppression_ThenExtractAll()
     {
-        const string sql = """
-                           -- #pragma diagnostic disable AJ1111 , AJ2222 -> Whatever
-                           """;
+        const string code = """
+                            -- #pragma diagnostic disable AJ1111 , AJ2222 -> Whatever
+                            """;
         // arrange
-        var script = sql.ParseSqlScript();
+        var script = code.ParseSqlScript();
         var sut = new DiagnosticSuppressionExtractor();
 
         // act
@@ -73,14 +73,14 @@ public sealed class DiagnosticSuppressionExtractorTests
     [Fact]
     public void AllTogether()
     {
-        const string sql = """
-                           -- #pragma diagnostic disable AJ1111 -> aa
-                           -- #pragma diagnostic disable AJ2222,AJ3333 -> bb
-                           -- #pragma diagnostic restore AJ3333 , AJ2222 -> cc
-                           -- #pragma diagnostic restore AJ1111 -> dd
-                           """;
+        const string code = """
+                            -- #pragma diagnostic disable AJ1111 -> aa
+                            -- #pragma diagnostic disable AJ2222,AJ3333 -> bb
+                            -- #pragma diagnostic restore AJ3333 , AJ2222 -> cc
+                            -- #pragma diagnostic restore AJ1111 -> dd
+                            """;
         // arrange
-        var script = sql.ParseSqlScript();
+        var script = code.ParseSqlScript();
         var sut = new DiagnosticSuppressionExtractor();
 
         // act

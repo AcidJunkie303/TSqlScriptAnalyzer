@@ -12,15 +12,15 @@ public sealed class ParentByChildMapBuilderTests
     [SuppressMessage("Design", "MA0051:Method is too long")]
     public void Build_WhenScriptIsProvided_ThenBuildWorkingProvider()
     {
-        const string sql = """
-                           PRINT 1
+        const string code = """
+                            PRINT 1
 
-                           GO
+                            GO
 
-                           SELECT COALESCE(@a, 303)
-                           """;
+                            SELECT COALESCE(@a, 303)
+                            """;
         // arrange
-        var script = sql.ParseSqlScript();
+        var script = code.ParseSqlScript();
 
         // act
         var sut = ParentFragmentProviderFactory.Build(script);
@@ -61,12 +61,12 @@ public sealed class ParentByChildMapBuilderTests
     [Fact]
     public void Build_WhenScriptIsEmpty_ThenBuildProvider()
     {
-        const string sql = """
+        const string code = """
 
-                           """;
+                            """;
 
         // arrange
-        var script = sql.ParseSqlScript();
+        var script = code.ParseSqlScript();
 
         // act
         var sut = ParentFragmentProviderFactory.Build(script);

@@ -9,35 +9,35 @@ public sealed class DoubleEmptyLinesAnalyzerTests(ITestOutputHelper testOutputHe
     [Fact]
     public void WhenOnlySingleEmptyLine_ThenOk()
     {
-        const string sql = """
-                           PRINT 303
+        const string code = """
+                            PRINT 303
 
-                           PRINT 909
-                           """;
-        Verify(sql);
+                            PRINT 909
+                            """;
+        Verify(code);
     }
 
     [Fact]
     public void WhenDoubleEmptyLines_ThenDiagnose()
     {
-        const string sql = """
-                           PRINT 303█AJ5007░main.sql░███
+        const string code = """
+                            PRINT 303█AJ5007░main.sql░███
 
 
-                           █PRINT 909
-                           """;
+                            █PRINT 909
+                            """;
 
-        Verify(sql);
+        Verify(code);
     }
 
     [Fact]
     public void WhenSingleEmptyLineAtEnd_ThenOk()
     {
-        const string sql = """
+        const string code = """
 
-                           PRINT 303
+                            PRINT 303
 
-                           """;
-        Verify(sql);
+                            """;
+        Verify(code);
     }
 }

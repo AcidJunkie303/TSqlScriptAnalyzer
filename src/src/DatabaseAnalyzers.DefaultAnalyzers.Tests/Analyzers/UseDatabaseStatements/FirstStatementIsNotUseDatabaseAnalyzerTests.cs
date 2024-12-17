@@ -4,39 +4,40 @@ using Xunit.Abstractions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.UseDatabaseStatements;
 
-public sealed class FirstStatementIsNotUseDatabaseAnalyzerTests(ITestOutputHelper testOutputHelper) : ScriptAnalyzerTestsBase<FirstStatementIsNotUseDatabaseAnalyzer>(testOutputHelper)
+public sealed class FirstStatementIsNotUseDatabaseAnalyzerTests(ITestOutputHelper testOutputHelper)
+    : ScriptAnalyzerTestsBase<FirstStatementIsNotUseDatabaseAnalyzer>(testOutputHelper)
 {
     [Fact]
     public void WhenFirstStatementIsUseDatabase_ThenOk()
     {
-        const string sql = """
-                           USE DB1
-                           PRINT 'Hello World'
-                           """;
-        Verify(sql);
+        const string code = """
+                            USE DB1
+                            PRINT 'Hello World'
+                            """;
+        Verify(code);
     }
 
     [Fact]
     public void WithLeadingComments_WhenFirstStatementIsUseDatabase_ThenOk()
     {
-        const string sql = """
-                           -- comments
-                           /*
-                               comments
-                           */
-                           USE DB1
-                           PRINT 'Hello World'
-                           """;
-        Verify(sql);
+        const string code = """
+                            -- comments
+                            /*
+                                comments
+                            */
+                            USE DB1
+                            PRINT 'Hello World'
+                            """;
+        Verify(code);
     }
 
     [Fact]
     public void WhenFirstStatementIsNotUseDatabase_ThenDiagnose()
     {
-        const string sql = """
-                           █AJ5004░main.sql░░db1███PRINT 'Hello World'█
-                           USE DB1
-                           """;
-        Verify(sql);
+        const string code = """
+                            █AJ5004░main.sql░░db1███PRINT 'Hello World'█
+                            USE DB1
+                            """;
+        Verify(code);
     }
 }

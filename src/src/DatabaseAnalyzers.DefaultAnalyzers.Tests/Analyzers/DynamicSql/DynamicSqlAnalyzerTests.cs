@@ -9,50 +9,50 @@ public sealed class DynamicSqlAnalyzerTests(ITestOutputHelper testOutputHelper) 
     [Fact]
     public void WhenUsingExecAndCallingStoredProcedure_ThenOk()
     {
-        const string sql = """
-                           EXEC dbo.P1
-                           """;
-        Verify(sql);
+        const string code = """
+                            EXEC dbo.P1
+                            """;
+        Verify(code);
     }
 
     [Fact]
     public void WhenUsingExecWithBrackets_ThenDiagnose()
     {
-        const string sql = """
-                           █AJ5000░main.sql░███EXEC ('SELECT 1')█
-                           """;
+        const string code = """
+                            █AJ5000░main.sql░███EXEC ('SELECT 1')█
+                            """;
 
-        Verify(sql);
+        Verify(code);
     }
 
     [Fact]
     public void WhenUsingExecWithSpExecuteSqlAndCallingStringProvidedCommand_ThenDiagnose()
     {
-        const string sql = """
-                           █AJ5000░main.sql░███EXEC sp_executeSql 'dbo.P1'█
-                           """;
+        const string code = """
+                            █AJ5000░main.sql░███EXEC sp_executeSql 'dbo.P1'█
+                            """;
 
-        Verify(sql);
+        Verify(code);
     }
 
     [Fact]
     public void WhenUsingExecWithSpExecuteSqlAndCallingVariableProvidedCommand_ThenDiagnose()
     {
-        const string sql = """
-                           DECLARE @sql NVARCHAR = N'SELECT 1'
-                           █AJ5000░main.sql░███EXEC sp_executeSql @sql█
-                           """;
+        const string code = """
+                            DECLARE @sql NVARCHAR = N'SELECT 1'
+                            █AJ5000░main.sql░███EXEC sp_executeSql @sql█
+                            """;
 
-        Verify(sql);
+        Verify(code);
     }
 
     [Fact]
     public void WhenUsingDirectProcedureInvocation_ThenOk()
     {
-        const string sql = """
-                           dbo.P1 @param1 = 123
-                           """;
+        const string code = """
+                            dbo.P1 @param1 = 123
+                            """;
 
-        Verify(sql);
+        Verify(code);
     }
 }

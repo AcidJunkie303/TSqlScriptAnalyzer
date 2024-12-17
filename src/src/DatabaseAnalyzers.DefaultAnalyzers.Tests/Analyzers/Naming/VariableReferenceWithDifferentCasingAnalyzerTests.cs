@@ -10,34 +10,34 @@ public sealed class VariableReferenceWithDifferentCasingAnalyzerTests(ITestOutpu
     [Fact]
     public void WhenVariableReferenceHasSameCasing_ThenOk()
     {
-        const string sql = """
-                           DECLARE @Var1 INT = 303
-                           PRINT @Var1
-                           """;
-        Verify(sql);
+        const string code = """
+                            DECLARE @Var1 INT = 303
+                            PRINT @Var1
+                            """;
+        Verify(code);
     }
 
     [Fact]
     public void WhenVariableReferenceHasDifferentCasing_ThenOk()
     {
-        const string sql = """
-                           DECLARE @Var1 INT = 303
-                           PRINT █AJ5014░main.sql░░@VAR1░@Var1███@VAR1█
-                           """;
-        Verify(sql);
+        const string code = """
+                            DECLARE @Var1 INT = 303
+                            PRINT █AJ5014░main.sql░░@VAR1░@Var1███@VAR1█
+                            """;
+        Verify(code);
     }
 
     [Fact]
     public void WhenVariableIsDefinedInBatch_AndReferencedInDifferentBatchWithDifferentCasing_ThenOK()
     {
-        const string sql = """
-                           DECLARE @Var1 INT
+        const string code = """
+                            DECLARE @Var1 INT
 
-                           GO
+                            GO
 
-                           PRINT @VAR1 -- different casing but in different batch -> ok
-                           """;
-        Verify(sql);
+                            PRINT @VAR1 -- different casing but in different batch -> ok
+                            """;
+        Verify(code);
     }
 
     [Fact]
@@ -46,14 +46,14 @@ public sealed class VariableReferenceWithDifferentCasingAnalyzerTests(ITestOutpu
         // even the parameter is not referenced, we don't care because it is not a variable
         // this is handled by a different analyzer (unreferenced parameter)
         // this is to make sure, we don't intersect the logic
-        const string sql = """
-                           CREATE PROCEDURE P1
-                              @Param1 INT
-                           AS
-                           BEGIN
-                               SELECT 1
-                           END
-                           """;
-        Verify(sql);
+        const string code = """
+                            CREATE PROCEDURE P1
+                               @Param1 INT
+                            AS
+                            BEGIN
+                                SELECT 1
+                            END
+                            """;
+        Verify(code);
     }
 }

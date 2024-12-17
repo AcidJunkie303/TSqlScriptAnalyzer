@@ -10,88 +10,88 @@ public sealed class ExcessiveStringConcatenationAnalyzerTests(ITestOutputHelper 
     [Fact]
     public void WhenTwoStringConcatenation_ThenOk()
     {
-        const string sql = """
-                           SET @x = 'a' + 'b' + 'c'
-                           """;
-        VerifyWithDefaultSettings<Aj5001Settings>(sql);
+        const string code = """
+                            SET @x = 'a' + 'b' + 'c'
+                            """;
+        VerifyWithDefaultSettings<Aj5001Settings>(code);
     }
 
     [Fact]
     public void WhenMoreThanTwoStringConcatenation_ThenDiagnose()
     {
-        const string sql = """
-                           SET @x = █AJ5001░main.sql░░2███N'a' + N'b' + N'c' + N'd'█ -- 2 is the default max allowed string concatenation count
-                           """;
-        VerifyWithDefaultSettings<Aj5001Settings>(sql);
+        const string code = """
+                            SET @x = █AJ5001░main.sql░░2███N'a' + N'b' + N'c' + N'd'█ -- 2 is the default max allowed string concatenation count
+                            """;
+        VerifyWithDefaultSettings<Aj5001Settings>(code);
     }
 
     [Fact]
     public void WhenMoreThanTwoNumberAdditions_ThenOk()
     {
-        const string sql = """
-                           SET @x = 1 + 2 + 3 + 4
-                           """;
+        const string code = """
+                            SET @x = 1 + 2 + 3 + 4
+                            """;
 
-        VerifyWithDefaultSettings<Aj5001Settings>(sql);
+        VerifyWithDefaultSettings<Aj5001Settings>(code);
     }
 
     [Fact]
     public void WhenMoreThanTwoStringVariableConcatenation_ThenDiagnose()
     {
-        const string sql = """
-                           DECLARE @a NVARCHAR(MAX) = N'a'
-                           SET @x = █AJ5001░main.sql░░2███a + @a + @a + @a█
-                           """;
-        VerifyWithDefaultSettings<Aj5001Settings>(sql);
+        const string code = """
+                            DECLARE @a NVARCHAR(MAX) = N'a'
+                            SET @x = █AJ5001░main.sql░░2███a + @a + @a + @a█
+                            """;
+        VerifyWithDefaultSettings<Aj5001Settings>(code);
     }
 
     [Fact]
     public void WhenMoreThanTwoVariableConcatenation_ThenOk()
     {
-        const string sql = """
-                           DECLARE @a INT = 1
-                           SET @x = @a + @a + @a + @a
-                           """;
+        const string code = """
+                            DECLARE @a INT = 1
+                            SET @x = @a + @a + @a + @a
+                            """;
 
-        VerifyWithDefaultSettings<Aj5001Settings>(sql);
+        VerifyWithDefaultSettings<Aj5001Settings>(code);
     }
 
     [Fact]
     public void WithSettings_MaxAllowedConcatenationsIsOne_WhenSettingsWhenOneConcatenation_ThenOk()
     {
-        const string sql = """
-                           SET @x = 'a' + 'b'
-                           """;
+        const string code = """
+                            SET @x = 'a' + 'b'
+                            """;
 
         var settings = new Aj5001Settings(1);
 
-        Verify(sql, settings);
+        Verify(code, settings);
     }
 
     [Fact]
     public void WithSettings_MaxAllowedConcatenationsIsOne_WhenSettingsWhenTwoConcatenations_ThenDiagnose()
     {
-        const string sql = """
-                           SET @x = █AJ5001░main.sql░░1███'a' + 'b' + 'c'█
-                           """;
+        const string code = """
+                            SET @x = █AJ5001░main.sql░░1███'a' + 'b' + 'c'█
+                            """;
 
         var settings = new Aj5001Settings(1);
 
-        Verify(sql, settings);
+        Verify(code, settings);
     }
 
     [Fact]
     public void WhenVariableIsParameter_WhenMoreThanTwoStringConcatenation_ThenDiagnose()
     {
-        const string sql = """
-                           CREATE PROCEDURE xxx.P1
-                           	   @Param1 NVARCHAR(MAX)
-                           AS
-                           BEGIN
-                           	   SET @x  = █AJ5001░main.sql░xxx.P1░2███Param1 + @Param1 + @Param1 + @Param1█
-                           END
-                           """;
+        const string code = """
+                            CREATE PROCEDURE xxx.P1
+                                   @Param1 NVARCHAR(MAX)
+                            AS
+                            BEGIN
+                                   SET @x  = █AJ5001░main.sql░xxx.P1░2███Param1 + @Param1 + @Param1 + @Param1█
+                            END
+                            """;
 
-        VerifyWithDefaultSettings<Aj5001Settings>(sql);
+        VerifyWithDefaultSettings<Aj5001Settings>(code);
     }
 }

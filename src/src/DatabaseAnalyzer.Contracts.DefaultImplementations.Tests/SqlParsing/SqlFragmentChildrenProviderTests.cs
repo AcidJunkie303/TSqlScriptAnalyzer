@@ -10,14 +10,14 @@ public sealed class SqlFragmentChildrenProviderTests
     [Fact]
     public void GetChildren_WhenNoGenericType_WhenNotRecursive_ThenGetDirectChildren()
     {
-        const string sql = """
+        const string code = """
 
-                           PRINT 303
-                           SELECT COALESCE(@a, 303)
+                            PRINT 303
+                            SELECT COALESCE(@a, 303)
 
-                           """;
+                            """;
         // arrange
-        var batch = sql.ParseSqlScript().Batches[0];
+        var batch = code.ParseSqlScript().Batches[0];
 
         // act
         var children = SqlFragmentChildrenProvider.GetChildren(batch);
@@ -29,14 +29,14 @@ public sealed class SqlFragmentChildrenProviderTests
     [Fact]
     public void GetChildren_WhenNoGenericType_WhenRecursive_ThenGetDirectChildren()
     {
-        const string sql = """
+        const string code = """
 
-                           PRINT 303
-                           SELECT COALESCE(@a, 303)
+                            PRINT 303
+                            SELECT COALESCE(@a, 303)
 
-                           """;
+                            """;
         // arrange
-        var batch = sql.ParseSqlScript().Batches[0];
+        var batch = code.ParseSqlScript().Batches[0];
 
         // act
         var children = SqlFragmentChildrenProvider.GetChildren(batch, true);
@@ -46,14 +46,14 @@ public sealed class SqlFragmentChildrenProviderTests
     [Fact]
     public void GetChildren_WhenGenericType_WhenNotRecursive_ThenGetDirectChildren()
     {
-        const string sql = """
+        const string code = """
 
-                           PRINT 303
-                           SELECT COALESCE(@a, 303)
+                            PRINT 303
+                            SELECT COALESCE(@a, 303)
 
-                           """;
+                            """;
         // arrange
-        var batch = sql.ParseSqlScript().Batches[0];
+        var batch = code.ParseSqlScript().Batches[0];
 
         // act
         var children = SqlFragmentChildrenProvider.GetChildren<SelectStatement>(batch, true);
@@ -63,14 +63,14 @@ public sealed class SqlFragmentChildrenProviderTests
     [Fact]
     public void GetChildren_WhenGenericType_WhenRecursive_ThenGetDirectChildren()
     {
-        const string sql = """
+        const string code = """
 
-                           PRINT 303
-                           SELECT COALESCE(@a, 303)
+                            PRINT 303
+                            SELECT COALESCE(@a, 303)
 
-                           """;
+                            """;
         // arrange
-        var batch = sql.ParseSqlScript().Batches[0];
+        var batch = code.ParseSqlScript().Batches[0];
 
         // act
         var children = SqlFragmentChildrenProvider.GetChildren<IntegerLiteral>(batch, true);

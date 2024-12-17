@@ -10,64 +10,64 @@ public sealed class ParameterReferenceWithDifferentCasingAnalyzerTests(ITestOutp
     [Fact]
     public void WithProcedure_WhenParameterReferenceHasSameCasing_ThenOk()
     {
-        const string sql = """
-                           CREATE PROCEDURE [dbo].[P1]
-                           	    @Param1 VARCHAR(MAX)
-                           AS
-                           BEGIN
-                           	    PRINT @Param1
-                           END
-                           """;
-        Verify(sql);
+        const string code = """
+                            CREATE PROCEDURE [dbo].[P1]
+                                    @Param1 VARCHAR(MAX)
+                            AS
+                            BEGIN
+                                    PRINT @Param1
+                            END
+                            """;
+        Verify(code);
     }
 
     [Fact]
     public void WithProcedure_WhenParameterReferenceHasDifferentCasing_ThenDiagnose()
     {
-        const string sql = """
-                           CREATE PROCEDURE [dbo].[P1]
-                           	    @Param1 VARCHAR(MAX)
-                           AS
-                           BEGIN
-                                PRINT █AJ5013░main.sql░dbo.P1░@PARAM1░@Param1███@PARAM1█
-                           END
-                           """;
-        Verify(sql);
+        const string code = """
+                            CREATE PROCEDURE [dbo].[P1]
+                                    @Param1 VARCHAR(MAX)
+                            AS
+                            BEGIN
+                                 PRINT █AJ5013░main.sql░dbo.P1░@PARAM1░@Param1███@PARAM1█
+                            END
+                            """;
+        Verify(code);
     }
 
     [Fact]
     public void WithScalarFunction_WhenParameterReferenceHasSameCasing_ThenOk()
     {
-        const string sql = """
-                           CREATE FUNCTION F1
-                           (
-                               @Param1 VARCHAR(MAX)
-                           )
-                           RETURNS INT
-                           AS
-                           BEGIN
-                           	    PRINT @Param1
-                                RETURN 1
-                           END
-                           """;
-        Verify(sql);
+        const string code = """
+                            CREATE FUNCTION F1
+                            (
+                                @Param1 VARCHAR(MAX)
+                            )
+                            RETURNS INT
+                            AS
+                            BEGIN
+                                    PRINT @Param1
+                                 RETURN 1
+                            END
+                            """;
+        Verify(code);
     }
 
     [Fact]
     public void WithScalarFunction_WhenParameterReferenceHasDifferentCasing_ThenDiagnose()
     {
-        const string sql = """
-                           CREATE FUNCTION F1
-                           (
-                               @Param1 VARCHAR(MAX)
-                           )
-                           RETURNS INT
-                           AS
-                           BEGIN
-                           	    PRINT █AJ5013░main.sql░dbo.F1░@PARAM1░@Param1███@PARAM1█
-                           	    RETURN 1
-                           END
-                           """;
-        Verify(sql);
+        const string code = """
+                            CREATE FUNCTION F1
+                            (
+                                @Param1 VARCHAR(MAX)
+                            )
+                            RETURNS INT
+                            AS
+                            BEGIN
+                                    PRINT █AJ5013░main.sql░dbo.F1░@PARAM1░@Param1███@PARAM1█
+                                    RETURN 1
+                            END
+                            """;
+        Verify(code);
     }
 }
