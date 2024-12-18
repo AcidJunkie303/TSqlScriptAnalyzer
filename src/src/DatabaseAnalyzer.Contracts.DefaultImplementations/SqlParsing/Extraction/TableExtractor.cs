@@ -4,26 +4,23 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction;
 
-internal sealed class TableExtractor : Extractor<TableInformationRaw>
+internal sealed class TableExtractor : Extractor<TableInformation>
 {
-    private readonly string _defaultSchemaName;
-
-    public TableExtractor(string defaultSchemaName)
+    public TableExtractor(string defaultSchemaName) : base(defaultSchemaName)
     {
-        _defaultSchemaName = defaultSchemaName;
     }
 
-    protected override List<TableInformationRaw> ExtractCore(TSqlScript script, string defaultSchemaName)
+    protected override List<TableInformation> ExtractCore(TSqlScript script)
     {
-        var visitor2 = new ObjectExtractorVisitor<CreateTableStatement>();
-        script.AcceptChildren(visitor2);
+        var visitor = new ObjectExtractorVisitor<CreateTableStatement>();
+        script.AcceptChildren(visitor);
 
-        return visitor2.Objects.ConvertAll(a => GetTable(a.Object, a.DatabaseName));
+        return visitor.Objects.ConvertAll(a => GetTable(a.Object, a.DatabaseName));
     }
 
-    private TableInformationRaw GetTable(CreateTableStatement statement, string? databaseName)
+    private TableInformation GetTable(CreateTableStatement statement, string? databaseName)
     {
-        var tableSchemaName = statement.SchemaObjectName.SchemaIdentifier?.Value ?? _defaultSchemaName;
+        var tableSchemaName = statement.SchemaObjectName.SchemaIdentifier?.Value ?? DefaultSchemaName;
         var tableName = statement.SchemaObjectName.BaseIdentifier.Value!;
 
         var calculatedDatabaseName =
@@ -51,17 +48,17 @@ internal sealed class TableExtractor : Extractor<TableInformationRaw>
                 []
             ));
 
-        return new TableInformationRaw
-        {
-            SchemaName = tableSchemaName,
-            TableName = tableName,
-            DatabaseName = calculatedDatabaseName,
-            Columns = statement.Definition.ColumnDefinitions
+        return new TableInformation
+        (
+            calculatedDatabaseName,
+            tableSchemaName,
+            tableName,
+            statement.Definition.ColumnDefinitions
                 .Select(a => GetColumn(a, calculatedDatabaseName, tableSchemaName, tableName))
                 .ToList(),
-            Indices = GetIndices(statement, calculatedDatabaseName, tableSchemaName, tableName).Concat(uniqueColumnIndices).ToList(),
-            ForeignKeys = GetForeignKeyConstraints(statement, calculatedDatabaseName, tableSchemaName, tableName).ToList()
-        };
+            GetIndices(statement, calculatedDatabaseName, tableSchemaName, tableName).Concat(uniqueColumnIndices).ToList(),
+            GetForeignKeyConstraints(statement, calculatedDatabaseName, tableSchemaName, tableName).ToList()
+        );
     }
 
     private static IEnumerable<IndexInformation> GetIndices(CreateTableStatement statement, string databaseName, string tableSchemaName, string tableName)
@@ -86,7 +83,7 @@ internal sealed class TableExtractor : Extractor<TableInformationRaw>
             tableName,
             name,
             constraint.Columns[0].Value,
-            constraint.ReferenceTableName.SchemaIdentifier?.Value ?? _defaultSchemaName,
+            constraint.ReferenceTableName.SchemaIdentifier?.Value ?? DefaultSchemaName,
             constraint.ReferenceTableName.BaseIdentifier.Value!,
             constraint.ReferencedTableColumns[0].Value
         );

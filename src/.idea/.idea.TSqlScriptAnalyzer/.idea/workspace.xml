@@ -9,43 +9,38 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bc5c4f41-9446-4faf-a8e5-3c6d90b660d2" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/Extraction/TableExtractorTests.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/MultiPartIdentifierExtensions.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/DatabaseAwareFragmentVisitor.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Extractor.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/IndexExtractor.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Models/ColumnInformation.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Models/DatabaseInformation.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Models/ForeignKeyConstraintInformation.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Models/FunctionInformation.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Models/IndexInformation.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Models/ProcedureInformation.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Models/SchemaInformation.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Models/TableColumnIndexType.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Models/TableInformation.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/ObjectExtractorVisitor.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/TableExtractor.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/Playground/ObjectCreationWithoutOrAlterAnalyzerTests.cs" afterDir="false" />
+    <list default="true" id="bc5c4f41-9446-4faf-a8e5-3c6d90b660d2" name="Changes" comment="added first part of object extraction for tables and indices">
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/Extraction/DatabaseObjectExtractorTests.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/Extraction/ForeignKeyConstraintExtractorTests.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/Extraction/FunctionExtractorTests.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/Extraction/ProcedureExtractorTests.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/DictionaryExtensions.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/DatabaseObjectExtractor.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/ForeignKeyConstraintExtractor.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/FunctionExtractor.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Models/IDatabaseObject.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Models/ISchemaBoundObject.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Models/SchemaInformationWithObjects.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/ProcedureExtractor.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/SchemaExtractor.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TSqlScriptAnalyzer/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TSqlScriptAnalyzer/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/ParentFragmentProviderFactoryTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/ParentFragmentProviderFactoryTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/SqlFragmentChildrenProviderTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/SqlFragmentChildrenProviderTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/CollectionExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/CollectionExtensions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Core.Tests/Services/DiagnosticSuppressionExtractorTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Core.Tests/Services/DiagnosticSuppressionExtractorTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/DataTypes/DataTypeAnalyzerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/DataTypes/DataTypeAnalyzerTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/DynamicSql/DynamicSqlAnalyzerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/DynamicSql/DynamicSqlAnalyzerTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/Formatting/DoubleEmptyLinesAnalyzerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/Formatting/DoubleEmptyLinesAnalyzerTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/Formatting/MissingBlankSpaceAnalyzerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/Formatting/MissingBlankSpaceAnalyzerTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/Formatting/TabCharacterAnalyzerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/Formatting/TabCharacterAnalyzerTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/Naming/ParameterReferenceWithDifferentCasingAnalyzerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/Naming/ParameterReferenceWithDifferentCasingAnalyzerTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/Naming/VariableReferenceWithDifferentCasingAnalyzerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/Naming/VariableReferenceWithDifferentCasingAnalyzerTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/ObjectCreation/ObjectCreationWithoutOrAlterAnalyzerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/ObjectCreation/ObjectCreationWithoutOrAlterAnalyzerTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/Strings/ExcessiveStringConcatenationAnalyzerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/Strings/ExcessiveStringConcatenationAnalyzerTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/Strings/StringConcatenationUnicodeAsciiMixAnalyzerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/Strings/StringConcatenationUnicodeAsciiMixAnalyzerTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/UnreferencedObject/UnreferencedParameterAnalyzerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/UnreferencedObject/UnreferencedParameterAnalyzerTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/UnreferencedObject/UnreferencedVariableAnalyzerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/UnreferencedObject/UnreferencedVariableAnalyzerTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/UseDatabaseStatements/FirstStatementIsNotUseDatabaseAnalyzerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/UseDatabaseStatements/FirstStatementIsNotUseDatabaseAnalyzerTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/UseDatabaseStatements/WrongUseDatabaseNameAnalyzerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/UseDatabaseStatements/WrongUseDatabaseNameAnalyzerTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Directory.Build.props" beforeDir="false" afterPath="$PROJECT_DIR$/Directory.Build.props" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/Extraction/IndexExtractorTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/Extraction/IndexExtractorTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/Extraction/TableExtractorTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/Extraction/TableExtractorTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/SchemaObjectNameExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/SchemaObjectNameExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Models/ClrStoredProcedure.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Models/ClrStoredProcedure.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Extractor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Extractor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/IndexExtractor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/IndexExtractor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Models/ColumnInformation.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Models/ColumnInformation.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Models/DatabaseInformation.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Models/DatabaseInformation.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Models/ForeignKeyConstraintInformation.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Models/ForeignKeyConstraintInformation.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Models/FunctionInformation.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Models/FunctionInformation.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Models/IndexInformation.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Models/IndexInformation.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Models/ProcedureInformation.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Models/ProcedureInformation.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Models/SchemaInformation.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Models/SchemaInformation.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Models/TableInformation.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/Models/TableInformation.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/TableExtractor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/TableExtractor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Formatting/TabCharacterAnalyzer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Formatting/TabCharacterAnalyzer.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -130,11 +125,13 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/da/38fed077/TSqlScript.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/e7/d7273d49/TSql170Parser.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/e9/8487aaf5/CreateOrAlterFunctionStatement.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/eb/668cf085/ParameterModifier.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/eb/6bd48c36/CharScanner.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/ed/40ebebd5/CreateFunctionStatement.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/f1/7474939e/PrimaryExpression.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/f2/4b4f6521/IndexTypeKind.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/fe/e3243176/TSqlFragmentVisitor.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/505d92d4dd474b5baf908fd6bb70bae4a0938/6d/78bcf928/Enumerable.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/505d92d4dd474b5baf908fd6bb70bae4a0938/dc/3aeddb5e/Utilities.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5a497ef51b924bcb82a5215076ef5ef5f2820/e3/612cf853/CollectionUtilities.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/9bec9f9b2c37455aa613b1130b4dcf614800/c9/e8c5c098/TableConfiguration.cs" root0="SKIP_HIGHLIGHTING" />
@@ -226,6 +223,7 @@
     "9b11e34a-3363-413d-a7b8-56f1a24ab377.executor": "Debug",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "XThreadsFramesViewSplitterKey": "0.790099",
     "a721ffe7-1ee1-42a0-8674-c115e019b586.executor": "Debug",
     "ca080dec-5b55-47dc-8ef1-395b5f235ff7.executor": "Debug",
     "d56e4be0-e56d-4f74-8c19-7db26da47225.executor": "Debug",
@@ -309,7 +307,7 @@
       <workItem from="1734202972582" duration="163000" />
       <workItem from="1734203240490" duration="12387000" />
       <workItem from="1734249069144" duration="68771000" />
-      <workItem from="1734410855800" duration="24858000" />
+      <workItem from="1734410855800" duration="48469000" />
     </task>
     <task id="LOCAL-00001" summary="daily commit">
       <option name="closed" value="true" />
@@ -607,7 +605,15 @@
       <option name="project" value="LOCAL" />
       <updated>1734382568825</updated>
     </task>
-    <option name="localTasksCounter" value="38" />
+    <task id="LOCAL-00038" summary="added first part of object extraction for tables and indices">
+      <option name="closed" value="true" />
+      <created>1734444392032</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1734444392032</updated>
+    </task>
+    <option name="localTasksCounter" value="39" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -646,7 +652,6 @@
   <component name="VcsManagerConfiguration">
     <option name="CHECK_NEW_TODO" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="completed ExcessiveStringConcatenationAnalyzer" />
     <MESSAGE value="...." />
     <MESSAGE value="Added StringConcatenationUnicodeAsciiMixAnalyzer" />
     <MESSAGE value="it's time for a commit/push" />
@@ -671,7 +676,8 @@
     <MESSAGE value="migrated ExcessiveStringConcatenationAnalyzer" />
     <MESSAGE value="migrated all existing analyzers to new platform" />
     <MESSAGE value="minor cleanup" />
-    <option name="LAST_COMMIT_MESSAGE" value="minor cleanup" />
+    <MESSAGE value="added first part of object extraction for tables and indices" />
+    <option name="LAST_COMMIT_MESSAGE" value="added first part of object extraction for tables and indices" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -900,19 +906,6 @@
           <option name="timeStamp" value="293" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Formatting/TabCharacterAnalyzer.cs</url>
-          <line>54</line>
-          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\Formatting\TabCharacterAnalyzer.cs" containingFunctionPresentation="Local function 'CheckToken'">
-            <startOffsets>
-              <option value="1948" />
-            </startOffsets>
-            <endOffsets>
-              <option value="1988" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="328" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/ObjectCreation/ObjectCreationWithoutOrAlterAnalyzer.cs</url>
           <line>23</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzers.DefaultAnalyzers\Analyzers\ObjectCreation\ObjectCreationWithoutOrAlterAnalyzer.cs" containingFunctionPresentation="Method 'Report'">
@@ -1004,43 +997,43 @@
           <option name="timeStamp" value="356" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/Extraction/TableExtractorTests.cs</url>
-          <line>217</line>
-          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations.Tests\SqlParsing\Extraction\TableExtractorTests.cs" containingFunctionPresentation="Method 'Extract_WhenContainsPrimaryKey_ThenResultContainsIndex1'">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/ForeignKeyConstraintExtractor.cs</url>
+          <line>50</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\Extraction\ForeignKeyConstraintExtractor.cs" containingFunctionPresentation="Method 'GetForeignKeyConstraint'">
             <startOffsets>
-              <option value="6759" />
+              <option value="1892" />
             </startOffsets>
             <endOffsets>
-              <option value="6799" />
+              <option value="2374" />
             </endOffsets>
           </properties>
-          <option name="timeStamp" value="362" />
+          <option name="timeStamp" value="369" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/TableExtractor.cs</url>
-          <line>82</line>
-          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\Extraction\TableExtractor.cs" containingFunctionPresentation="Method 'GetForeignKeyConstraint'">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/Extraction/FunctionExtractorTests.cs</url>
+          <line>35</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations.Tests\SqlParsing\Extraction\FunctionExtractorTests.cs" containingFunctionPresentation="Method 'Extract'">
             <startOffsets>
-              <option value="3648" />
+              <option value="1103" />
             </startOffsets>
             <endOffsets>
-              <option value="4048" />
+              <option value="1135" />
             </endOffsets>
           </properties>
-          <option name="timeStamp" value="366" />
+          <option name="timeStamp" value="372" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/TableExtractor.cs</url>
-          <line>53</line>
-          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\Extraction\TableExtractor.cs" containingFunctionPresentation="Method 'GetTable'">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/Extraction/DatabaseObjectExtractorTests.cs</url>
+          <line>88</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations.Tests\SqlParsing\Extraction\DatabaseObjectExtractorTests.cs" containingFunctionPresentation="Method 'ToDo'">
             <startOffsets>
-              <option value="2031" />
+              <option value="3214" />
             </startOffsets>
             <endOffsets>
-              <option value="2650" />
+              <option value="3245" />
             </endOffsets>
           </properties>
-          <option name="timeStamp" value="368" />
+          <option name="timeStamp" value="384" />
         </line-breakpoint>
         <breakpoint enabled="true" type="DotNet Exception Breakpoints">
           <properties exception="Xunit.Sdk.XunitException" isInternal="false" displayValue="XunitException" namespaceName="Xunit.Sdk">
@@ -1053,6 +1046,7 @@
     <pin-to-top-manager>
       <pinned-members>
         <PinnedItemInfo parentTag="Type#Microsoft.SqlServer.Management.SqlParser.Metadata.DataTypeSpec" memberName="ArgSpec1" />
+        <PinnedItemInfo parentTag="Type#Microsoft.SqlServer.TransactSql.ScriptDom.AlterTableAddTableElementStatement" memberName="Definition" />
         <PinnedItemInfo parentTag="Type#Microsoft.SqlServer.Management.SqlParser.SqlCodeDom.SqlTableDefinition" memberName="Children" />
         <PinnedItemInfo parentTag="Type#Microsoft.SqlServer.TransactSql.ScriptDom.CreateTableStatement" memberName="SchemaObjectName" />
         <PinnedItemInfo parentTag="Type#Microsoft.SqlServer.Management.SqlParser.SqlCodeDom.SqlCreateAlterProcedureStatementBase" memberName="TargetObjectType" />
@@ -1074,6 +1068,9 @@
         <watch expression="File.Exists(commonSettingsFilePath)" language="C#" />
         <watch expression="Environment.CurrentDirectory" language="C#" />
         <watch expression="((Microsoft.SqlServer.TransactSql.ScriptDom.TSqlScript) fragment).Batches" />
+      </configuration>
+      <configuration name="RiderUnitTests">
+        <watch expression="new System.Collections.Generic.ICollectionDebugView&lt;Microsoft.SqlServer.TransactSql.ScriptDom.ConstraintDefinition&gt;(statement.Definition.TableConstraints).Items[0]" />
       </configuration>
     </watches-manager>
   </component>

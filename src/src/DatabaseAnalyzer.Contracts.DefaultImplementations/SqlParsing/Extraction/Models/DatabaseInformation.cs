@@ -2,5 +2,5 @@ namespace DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extractio
 
 public sealed record DatabaseInformation(
     string DatabaseName,
-    IReadOnlyDictionary<string, SchemaInformation> SchemasByName
+    IReadOnlyDictionary<string, SchemaInformationWithObjects> SchemasByName
 );

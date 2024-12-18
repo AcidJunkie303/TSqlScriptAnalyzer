@@ -29,39 +29,6 @@ public sealed class TabCharacterAnalyzer : IScriptAnalyzer
 
             context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, codeRegion);
         }
-
-#pragma warning disable S125
-        /*
-        foreach (var token in script.ParsedScript.ScriptTokenStream)
-        {
-            if (TokenTypesToCheck.Contains(token.TokenType))
-            {
-                CheckToken(token);
-            }
-        }
-
-        void CheckToken(TSqlParserToken token)
-        {
-            var indices = token.Text
-                .Select((c, i) => (IsTab: c == '\t', Index: i))
-                .Where(a => a.IsTab)
-                .Select(a => a.Index);
-
-            Lazy<string?> lazyFullObjectName = new(() => script.ParsedScript.TryGetFirstClassObjectName(context, script));
-            Lazy<CodeRegion> lazyCodeTokenCodeRegion = new(token.GetCodeRegion);
-
-            foreach (var index in indices)
-            {
-                var columnNumber = token.Column + index;
-                var codeRegion = lazyCodeTokenCodeRegion.Value with
-                {
-                    StartColumnNumber = columnNumber, EndColumnNumber = columnNumber
-                };
-                context.IssueReporter.Report(DiagnosticDefinitions.Default, script, lazyFullObjectName.Value, codeRegion);
-            }
-        }
-*/
-#pragma warning restore S125
     }
 
     private static class DiagnosticDefinitions

@@ -2,25 +2,20 @@ using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction.Models;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
-#pragma warning disable
-
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction;
 
 internal sealed class IndexExtractor : Extractor<IndexInformation>
 {
-    private readonly string _defaultSchemaName;
-
-    public IndexExtractor(string defaultSchemaName)
+    public IndexExtractor(string defaultSchemaName) : base(defaultSchemaName)
     {
-        _defaultSchemaName = defaultSchemaName;
     }
 
-    protected override List<IndexInformation> ExtractCore(TSqlScript script, string defaultSchemaName)
+    protected override List<IndexInformation> ExtractCore(TSqlScript script)
     {
-        var visitor2 = new ObjectExtractorVisitor<CreateIndexStatement>();
-        script.AcceptChildren(visitor2);
+        var visitor = new ObjectExtractorVisitor<CreateIndexStatement>();
+        script.AcceptChildren(visitor);
 
-        return visitor2.Objects.ConvertAll(a => GetIndex(a.Object, a.DatabaseName));
+        return visitor.Objects.ConvertAll(a => GetIndex(a.Object, a.DatabaseName));
     }
 
     private IndexInformation GetIndex(CreateIndexStatement statement, string? databaseName)
@@ -36,7 +31,7 @@ internal sealed class IndexExtractor : Extractor<IndexInformation>
             indexType |= TableColumnIndexType.Clustered;
         }
 
-        var tableSchemaName = statement.OnName.SchemaIdentifier?.Value ?? _defaultSchemaName;
+        var tableSchemaName = statement.OnName.SchemaIdentifier?.Value ?? DefaultSchemaName;
         var tableName = statement.OnName.BaseIdentifier.Value;
 
         if (databaseName is null)

@@ -8,7 +8,7 @@ namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Tests.SqlParsing.Ext
 public sealed class IndexExtractorTests
 {
     [Fact]
-    public void Extract_WhenSchemaIsNotSpecified_ThenResultContainsDefaultSchema()
+    public void Extract()
     {
         const string defaultSchema = "aaa";
         const string code = """
@@ -26,18 +26,15 @@ public sealed class IndexExtractorTests
         var sut = new IndexExtractor(defaultSchema);
 
         // act
-        var indices = sut.Extract(script, defaultSchema);
+        var indices = sut.Extract(script);
 
         // assert
         indices.Should().HaveCount(1);
         indices[0].IndexName.Should().Be("IX_T1_Value1");
         indices[0].DatabaseName.Should().Be("MyDb");
-        indices[0].TableSchemaName.Should().Be("dbo");
+        indices[0].SchemaName.Should().Be("dbo");
         indices[0].ColumnNames.Should().BeEquivalentTo("Value1");
         indices[0].IndexType.Should().Be(TableColumnIndexType.None);
         indices[0].IncludedColumnNames.Should().BeEmpty();
     }
-
-    // TODO: add index creation outside 'CREATE TABLE' statement
-    // TODO: add FK constraint creation outside 'CREATE TABLE' statement
 }

@@ -25,7 +25,7 @@ public sealed class TableExtractorTests
         var sut = new TableExtractor(defaultSchema);
 
         // act
-        var tables = sut.Extract(script, defaultSchema);
+        var tables = sut.Extract(script);
 
         // assert
         tables.Should().HaveCount(1);
@@ -49,7 +49,7 @@ public sealed class TableExtractorTests
         var sut = new TableExtractor("dbo");
 
         // act
-        var tables = sut.Extract(script, "dbo");
+        var tables = sut.Extract(script);
 
         // assert
         tables.Should().HaveCount(1);
@@ -71,7 +71,7 @@ public sealed class TableExtractorTests
         var sut = new TableExtractor("dbo");
 
         // act
-        var exception = Record.Exception(() => sut.Extract(script, "dbo"));
+        var exception = Record.Exception(() => sut.Extract(script));
 
         // assert
         exception.Should().BeOfType<InvalidOperationException>();
@@ -96,7 +96,7 @@ public sealed class TableExtractorTests
         var sut = new TableExtractor("dbo");
 
         // act
-        var tables = sut.Extract(script, "dbo");
+        var tables = sut.Extract(script);
 
         // assert
         tables.Should().HaveCount(1);
@@ -126,7 +126,7 @@ public sealed class TableExtractorTests
         var sut = new TableExtractor("dbo");
 
         // act
-        var tables = sut.Extract(script, "dbo");
+        var tables = sut.Extract(script);
 
         // assert
         tables.Should().HaveCount(1);
@@ -150,7 +150,7 @@ public sealed class TableExtractorTests
         var sut = new TableExtractor("dbo");
 
         // act
-        var tables = sut.Extract(script, "dbo");
+        var tables = sut.Extract(script);
 
         // assert
         tables.Should().HaveCount(1);
@@ -178,7 +178,7 @@ public sealed class TableExtractorTests
         var sut = new TableExtractor("dbo");
 
         // act
-        var tables = sut.Extract(script, "dbo");
+        var tables = sut.Extract(script);
 
         // assert
         tables.Should().HaveCount(1);
@@ -210,7 +210,7 @@ public sealed class TableExtractorTests
         var sut = new TableExtractor("dbo");
 
         // act
-        var tables = sut.Extract(script, "dbo");
+        var tables = sut.Extract(script);
 
         // assert
         tables.Should().HaveCount(1);
@@ -221,7 +221,7 @@ public sealed class TableExtractorTests
     }
 
     [Fact]
-    public void Extract_WhenForeignKeyConstraint_ThenResultContainsForeignKeyConstraint()
+    public void Extract()
     {
         const string code = """
                             USE MyDb
@@ -238,7 +238,7 @@ public sealed class TableExtractorTests
         var sut = new TableExtractor("dbo");
 
         // act
-        var tables = sut.Extract(script, "dbo");
+        var tables = sut.Extract(script);
 
         // assert
         tables.Should().HaveCount(1);

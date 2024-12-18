@@ -13,10 +13,10 @@ public sealed class ColumnInformationRaw
 
 public sealed record ColumnInformation(
     string DatabaseName,
-    string TableSchemaName,
+    string SchemaName,
     string TableName,
     string ColumnName,
     bool IsNullable,
     bool IsUnique,
     DataTypeReference DataType
-);
+) : ISchemaBoundObject;

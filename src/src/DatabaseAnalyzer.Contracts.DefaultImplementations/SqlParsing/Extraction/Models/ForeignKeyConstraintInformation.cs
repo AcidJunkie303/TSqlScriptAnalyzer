@@ -2,11 +2,11 @@ namespace DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extractio
 
 public sealed record ForeignKeyConstraintInformation(
     string DatabaseName,
-    string TableSchemaName,
+    string SchemaName,
     string TableName,
-    string ConstraintName,
     string ColumnName,
+    string ConstraintName,
     string ReferencedTableSchemaName,
     string ReferencedTableName,
     string ReferencedTableColumnName
-);
+) : ISchemaBoundObject;
