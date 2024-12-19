@@ -13,7 +13,7 @@ internal sealed class ProcedureExtractor : Extractor<ProcedureInformation>
 
     protected override List<ProcedureInformation> ExtractCore(TSqlScript script)
     {
-        var visitor = new ObjectExtractorVisitor<ProcedureStatementBody>();
+        var visitor = new ObjectExtractorVisitor<ProcedureStatementBody>(DefaultSchemaName);
         script.AcceptChildren(visitor);
 
         return visitor.Objects

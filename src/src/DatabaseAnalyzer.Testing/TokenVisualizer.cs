@@ -1,10 +1,12 @@
+using System.Diagnostics.CodeAnalysis;
 using BetterConsoleTables;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Testing;
 
-internal static class TokenVisualizer
+[SuppressMessage("Maintainability", "CA1515:Consider making public types internal")]
+public static class TokenVisualizer
 {
     public static string Visualize(TSqlFragment fragment) => Visualize(fragment.ScriptTokenStream);
 

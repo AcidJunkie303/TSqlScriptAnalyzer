@@ -11,6 +11,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\DatabaseAnalyzer.Contracts.DefaultImplementations\DatabaseAnalyzer.Contracts.DefaultImplementations.csproj"/>
+        <ProjectReference Include="..\DatabaseAnalyzer.Testing\DatabaseAnalyzer.Testing.csproj"/>
     </ItemGroup>
 
     <ItemGroup>

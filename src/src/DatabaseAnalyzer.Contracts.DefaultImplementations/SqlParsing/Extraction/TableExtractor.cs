@@ -12,7 +12,7 @@ internal sealed class TableExtractor : Extractor<TableInformation>
 
     protected override List<TableInformation> ExtractCore(TSqlScript script)
     {
-        var visitor = new ObjectExtractorVisitor<CreateTableStatement>();
+        var visitor = new ObjectExtractorVisitor<CreateTableStatement>(DefaultSchemaName);
         script.AcceptChildren(visitor);
 
         return visitor.Objects.ConvertAll(a => GetTable(a.Object, a.DatabaseName));

@@ -12,7 +12,7 @@ internal sealed class IndexExtractor : Extractor<IndexInformation>
 
     protected override List<IndexInformation> ExtractCore(TSqlScript script)
     {
-        var visitor = new ObjectExtractorVisitor<CreateIndexStatement>();
+        var visitor = new ObjectExtractorVisitor<CreateIndexStatement>(DefaultSchemaName);
         script.AcceptChildren(visitor);
 
         return visitor.Objects.ConvertAll(a => GetIndex(a.Object, a.DatabaseName));

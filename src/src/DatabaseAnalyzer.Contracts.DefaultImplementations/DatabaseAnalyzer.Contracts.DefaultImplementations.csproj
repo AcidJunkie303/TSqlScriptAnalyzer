@@ -3,4 +3,8 @@
         <ProjectReference Include="..\DatabaseAnalyzer.Common\DatabaseAnalyzer.Common.csproj"/>
         <ProjectReference Include="..\DatabaseAnalyzer.Contracts\DatabaseAnalyzer.Contracts.csproj"/>
     </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="SqlParsing\TrackingSqlConcreteFragmentVisitor.generated.cs"/>
+        <Compile Remove="SqlParsing\TrackingSqlFragmentVisitor.generated.cs"/>
+    </ItemGroup>
 </Project>

@@ -12,7 +12,7 @@ internal sealed class ForeignKeyConstraintExtractor : Extractor<ForeignKeyConstr
 
     protected override List<ForeignKeyConstraintInformation> ExtractCore(TSqlScript script)
     {
-        var visitor = new ObjectExtractorVisitor<AlterTableAddTableElementStatement>();
+        var visitor = new ObjectExtractorVisitor<AlterTableAddTableElementStatement>(DefaultSchemaName);
         script.AcceptChildren(visitor);
 
         return visitor.Objects

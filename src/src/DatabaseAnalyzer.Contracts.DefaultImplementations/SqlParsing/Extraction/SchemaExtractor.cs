@@ -11,7 +11,7 @@ internal sealed class SchemaExtractor : Extractor<SchemaInformation>
 
     protected override List<SchemaInformation> ExtractCore(TSqlScript script)
     {
-        var visitor = new ObjectExtractorVisitor<CreateSchemaStatement>();
+        var visitor = new ObjectExtractorVisitor<CreateSchemaStatement>(DefaultSchemaName);
         script.AcceptChildren(visitor);
 
         return visitor.Objects.ConvertAll(a => GetSchema(a.Object, a.DatabaseName));

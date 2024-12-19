@@ -13,7 +13,7 @@ internal sealed class FunctionExtractor : Extractor<FunctionInformation>
 
     protected override List<FunctionInformation> ExtractCore(TSqlScript script)
     {
-        var visitor = new ObjectExtractorVisitor<FunctionStatementBody>();
+        var visitor = new ObjectExtractorVisitor<FunctionStatementBody>(DefaultSchemaName);
         script.AcceptChildren(visitor);
 
         return visitor.Objects

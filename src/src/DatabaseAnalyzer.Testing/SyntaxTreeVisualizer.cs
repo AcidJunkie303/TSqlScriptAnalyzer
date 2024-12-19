@@ -1,11 +1,12 @@
+using System.Diagnostics.CodeAnalysis;
 using BetterConsoleTables;
-using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Testing;
 
-internal static class SyntaxTreeVisualizer
+[SuppressMessage("Maintainability", "CA1515:Consider making public types internal")]
+public static class SyntaxTreeVisualizer
 {
     public static string Visualize(TSqlScript script)
     {
@@ -53,7 +54,7 @@ internal static class SyntaxTreeVisualizer
         {
             var currentLevel = _level++;
 
-            var codeRegion = fragment.StartLine >= 0 && fragment.StartColumn >= 0
+            var codeRegion = (fragment.StartLine >= 0) && (fragment.StartColumn >= 0)
                 ? fragment.GetCodeRegion().ToString()
                 : "Unknown";
 
