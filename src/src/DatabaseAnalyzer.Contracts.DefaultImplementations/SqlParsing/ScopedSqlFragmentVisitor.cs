@@ -6,6 +6,14 @@ namespace DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing;
 
 public abstract class ScopedSqlFragmentVisitor : DatabaseAwareFragmentVisitor
 {
+    public enum SourceType
+    {
+        Other = 0,
+        TableOrView = 1,
+        Cte = 2,
+        TempTable = 3
+    }
+
     protected ScopeCollection Scopes { get; } = new();
 
     protected ScopedSqlFragmentVisitor(string defaultSchemaName) : base(defaultSchemaName)
@@ -17,19 +25,26 @@ public abstract class ScopedSqlFragmentVisitor : DatabaseAwareFragmentVisitor
         private readonly Dictionary<string, TableAndAlias> _tableReferencesByFullNameOrAlias = new(StringComparer.OrdinalIgnoreCase);
 
         public IReadOnlyDictionary<string, TableAndAlias> TableReferencesByFullNameOrAlias => _tableReferencesByFullNameOrAlias;
+        public TSqlFragment Owner { get; }
 
-        public Scope RegisterTableAlias(string? alias, SchemaObjectName schemaObjectName, string currentDatabaseName, string defaultSchemaName)
+        public Scope(TSqlFragment owner)
+        {
+            Owner = owner;
+        }
+
+        public Scope RegisterTableAlias(string? alias, SchemaObjectName schemaObjectName, string currentDatabaseName, string defaultSchemaName, SourceType sourceType)
         {
             var databaseName = schemaObjectName.DatabaseIdentifier?.Value ?? currentDatabaseName;
             var schemaName = schemaObjectName.SchemaIdentifier?.Value ?? defaultSchemaName;
             var tableName = schemaObjectName.BaseIdentifier.Value;
 
-            return RegisterTableAlias(alias, databaseName, schemaName, tableName);
+            return RegisterTableAlias(alias, databaseName, schemaName, tableName, sourceType);
         }
 
-        public Scope RegisterTableAlias(string? alias, string databaseName, string schemaName, string tableName)
+        public Scope RegisterTableAlias(string? alias, string databaseName, string schemaName, string tableName, SourceType sourceType)
         {
-            var tableAndAlias = new TableAndAlias(alias, databaseName, schemaName, tableName);
+            alias ??= $"{databaseName}.{schemaName}.{tableName}";
+            var tableAndAlias = new TableAndAlias(alias, databaseName, schemaName, tableName, sourceType);
             _tableReferencesByFullNameOrAlias.Add(tableAndAlias.AliasOrFullTableName, tableAndAlias);
             return this;
         }
@@ -43,9 +58,9 @@ public abstract class ScopedSqlFragmentVisitor : DatabaseAwareFragmentVisitor
         public Scope CurrentScope => _scopes.Peek();
         public IEnumerable<TableAndAlias> AllTableAndAliases => _scopes.SelectMany(scope => scope.TableReferencesByFullNameOrAlias.Values);
 
-        public IDisposable BeginNewScope()
+        public IDisposable BeginNewScope(TSqlFragment owner)
         {
-            _scopes.Push(new Scope());
+            _scopes.Push(new Scope(owner));
             return new ScopeTerminator(_scopes);
         }
 
@@ -91,7 +106,7 @@ public abstract class ScopedSqlFragmentVisitor : DatabaseAwareFragmentVisitor
         public static QuerySource Create(string databaseName, string schemaName, string tableName, string? alias) => new(databaseName, schemaName, tableName, alias);
     }
 
-    protected sealed record TableAndAlias(string? Alias, string DatabaseName, string SchemaName, string TableName)
+    protected sealed record TableAndAlias(string Alias, string DatabaseName, string SchemaName, string TableName, SourceType SourceType)
     {
         public string AliasOrFullTableName { get; } = Alias.IsNullOrWhiteSpace()
             ? $"{DatabaseName}.{SchemaName}.{TableName}"

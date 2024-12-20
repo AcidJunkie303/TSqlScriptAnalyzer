@@ -33,7 +33,7 @@ public sealed class FilteringColumnVisitorTests(ITestOutputHelper testOutputHelp
 
         // assert
         sut.FilteringColumns.Should().ContainEquivalentOf(
-            new FilteringColumnVisitor.FilteringColumn("MyDb", "dbo", "Person", "Name", null!),
+            new FilteringColumnVisitor.FilteringColumn("MyDb", "dbo", "Person", "Name", ScopedSqlFragmentVisitor.SourceType.TableOrView, null!),
             options => options.Excluding(p => p.Fragment));
 
         sut.FilteringColumns.Should().HaveCount(1);
@@ -60,7 +60,7 @@ public sealed class FilteringColumnVisitorTests(ITestOutputHelper testOutputHelp
 
         // assert
         sut.FilteringColumns.Should().ContainEquivalentOf(
-            new FilteringColumnVisitor.FilteringColumn("MyDb", "dbo", "Person", "Name", null!),
+            new FilteringColumnVisitor.FilteringColumn("MyDb", "dbo", "Person", "Name", ScopedSqlFragmentVisitor.SourceType.TableOrView, null!),
             options => options.Excluding(p => p.Fragment));
 
         sut.FilteringColumns.Should().HaveCount(1);
@@ -87,7 +87,7 @@ public sealed class FilteringColumnVisitorTests(ITestOutputHelper testOutputHelp
 
         // assert
         sut.FilteringColumns.Should().ContainEquivalentOf(
-            new FilteringColumnVisitor.FilteringColumn("MyDb", "dbo", "Person", "Name", null!),
+            new FilteringColumnVisitor.FilteringColumn("MyDb", "dbo", "Person", "Name", ScopedSqlFragmentVisitor.SourceType.TableOrView, null!),
             options => options.Excluding(p => p.Fragment));
 
         sut.FilteringColumns.Should().HaveCount(1);
@@ -120,16 +120,16 @@ public sealed class FilteringColumnVisitorTests(ITestOutputHelper testOutputHelp
 
         // assert
         sut.FilteringColumns.Should().ContainEquivalentOf(
-            new FilteringColumnVisitor.FilteringColumn("MyDb", "dbo", "Person", "Name", null!),
+            new FilteringColumnVisitor.FilteringColumn("MyDb", "dbo", "Person", "Name", ScopedSqlFragmentVisitor.SourceType.TableOrView, null!),
             options => options.Excluding(p => p.Fragment));
         sut.FilteringColumns.Should().ContainEquivalentOf(
-            new FilteringColumnVisitor.FilteringColumn("MyDb", "dbo", "Person", "DepartmentId", null!),
+            new FilteringColumnVisitor.FilteringColumn("MyDb", "dbo", "Person", "DepartmentId", ScopedSqlFragmentVisitor.SourceType.TableOrView, null!),
             options => options.Excluding(p => p.Fragment));
         sut.FilteringColumns.Should().ContainEquivalentOf(
-            new FilteringColumnVisitor.FilteringColumn("MyDb", "dbo", "Department", "DepartmentId", null!),
+            new FilteringColumnVisitor.FilteringColumn("MyDb", "dbo", "Department", "DepartmentId", ScopedSqlFragmentVisitor.SourceType.TableOrView, null!),
             options => options.Excluding(p => p.Fragment));
         sut.FilteringColumns.Should().ContainEquivalentOf(
-            new FilteringColumnVisitor.FilteringColumn("MyDb", "dbo", "Department", "Name", null!),
+            new FilteringColumnVisitor.FilteringColumn("MyDb", "dbo", "Department", "Name", ScopedSqlFragmentVisitor.SourceType.TableOrView, null!),
             options => options.Excluding(p => p.Fragment));
 
         sut.FilteringColumns.Should().HaveCount(4);
@@ -156,9 +156,11 @@ public sealed class FilteringColumnVisitorTests(ITestOutputHelper testOutputHelp
         // arrange
         var script = CreateScript(code);
         var sut = new FilteringColumnVisitor("dbo");
-
+        var sut2 = new MyVisitor();
         // act
-        sut.ExplicitVisit(script.ParsedScript);
+        script.ParsedScript.Accept(sut2);
+        script.ParsedScript.Accept(sut);
+        //sut.ExplicitVisit(script.ParsedScript);
 
         // assert
         true.Should().BeTrue();

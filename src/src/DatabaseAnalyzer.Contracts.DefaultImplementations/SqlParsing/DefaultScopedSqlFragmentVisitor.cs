@@ -11,7 +11,7 @@ public abstract class DefaultScopedSqlFragmentVisitor : ScopedSqlFragmentVisitor
     {
     }
 
-    public override void Visit(QuerySpecification node)
+    public override void ExplicitVisit(QuerySpecification node)
     {
         if (!TrackNodeAndCheck(node))
         {
@@ -19,6 +19,7 @@ public abstract class DefaultScopedSqlFragmentVisitor : ScopedSqlFragmentVisitor
         }
 
         // Visit the FromClause first, if it exists
+        // this is necessary because we need to know the source table first before diving into the other parts
         node.FromClause?.Accept(this);
 
         node.WhereClause?.Accept(this);
@@ -34,13 +35,8 @@ public abstract class DefaultScopedSqlFragmentVisitor : ScopedSqlFragmentVisitor
         //base.ExplicitVisit(node); // Optionally call the base method
     }
 
-    public override void Visit(QualifiedJoin node)
+    public override void ExplicitVisit(QualifiedJoin node)
     {
-        if (!TrackNodeAndCheck(node))
-        {
-            return;
-        }
-
         if (node.FirstTableReference is NamedTableReference firstTable && TrackNodeAndCheck(firstTable))
         {
             RegisterTableReference(firstTable);
@@ -54,41 +50,45 @@ public abstract class DefaultScopedSqlFragmentVisitor : ScopedSqlFragmentVisitor
         //base.ExplicitVisit(node); // Visit children of FromClause
     }
 
-    public override void Visit(FromClause node)
+    public override void ExplicitVisit(FromClause node)
     {
         foreach (var namedTableReference in node.TableReferences.OfType<NamedTableReference>())
         {
             RegisterTableReference(namedTableReference);
         }
 
-        base.Visit(node);
-
-/*
-        foreach (var tableReference in node.TableReferences.OfType<NamedTableReference>())
-        {
-            RegisterTableReference(tableReference);
-        }
-*/
-        //     node.AcceptChildren(this);
+        base.ExplicitVisit(node);
     }
 
-    public override void Visit(StatementWithCtesAndXmlNamespaces node)
+    public override void ExplicitVisit(SelectStatement node)
     {
         if (!TrackNodeAndCheck(node))
         {
             return;
         }
 
-        using var scope = Scopes.BeginNewScope();
+        using var scope = Scopes.BeginNewScope(node);
+
+        base.ExplicitVisit(node);
+    }
+
+    public override void ExplicitVisit(StatementWithCtesAndXmlNamespaces node)
+    {
+        if (!TrackNodeAndCheck(node))
+        {
+            return;
+        }
+
+        using var scope = Scopes.BeginNewScope(node);
 
         node.AcceptChildren(this);
-        //base.Visit(node);
+        //base.ExplicitVisit(node);
     }
 
     private void RegisterTableReference(NamedTableReference node)
     {
         var alias = node.Alias?.Value;
-        Scopes.CurrentScope.RegisterTableAlias(alias, node.SchemaObject, CurrentDatabaseName!, DefaultSchemaName);
+        Scopes.CurrentScope.RegisterTableAlias(alias, node.SchemaObject, CurrentDatabaseName!, DefaultSchemaName, SourceType.TableOrView);
     }
 
     /*

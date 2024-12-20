@@ -5,13 +5,16 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Testing;
 
+// TODO: remove
+#pragma warning disable
+
 [SuppressMessage("Maintainability", "CA1515:Consider making public types internal")]
 public static class SyntaxTreeVisualizer
 {
     public static string Visualize(TSqlScript script)
     {
         var traverser = new Traverser();
-        traverser.Traverse(script);
+        script.Accept(traverser);
 
         return Visualize(traverser.Nodes);
     }
@@ -39,20 +42,18 @@ public static class SyntaxTreeVisualizer
         return table.ToString();
     }
 
-    private struct Traverser
+    private sealed class Traverser : TSqlFragmentVisitor
     {
+        private readonly HashSet<TSqlFragment> _visited = [];
         private int _level;
-
-        public Traverser()
-        {
-            _level = 0;
-        }
-
         public List<Node> Nodes { get; } = [];
 
-        public void Traverse(TSqlFragment fragment)
+        public override void Visit(TSqlFragment fragment)
         {
-            var currentLevel = _level++;
+            if (!_visited.Add(fragment))
+            {
+                return;
+            }
 
             var codeRegion = (fragment.StartLine >= 0) && (fragment.StartColumn >= 0)
                 ? fragment.GetCodeRegion().ToString()
@@ -62,13 +63,12 @@ public static class SyntaxTreeVisualizer
                 .Replace("\r", "\\r", StringComparison.Ordinal)
                 .Replace("\n", "\\n", StringComparison.Ordinal);
 
-            var node = new Node(currentLevel, codeRegion, fragment.GetType().Name, code);
+            var node = new Node(_level, codeRegion, fragment.GetType().Name, code);
             Nodes.Add(node);
 
-            foreach (var child in fragment.GetChildren())
-            {
-                Traverse(child);
-            }
+            _level++;
+
+            fragment.AcceptChildren(this);
 
             _level--;
         }

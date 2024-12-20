@@ -10,27 +10,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bc5c4f41-9446-4faf-a8e5-3c6d90b660d2" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/FilteringColumnVisitorTests.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/DatabaseAwareConcreteFragmentVisitor.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/DefaultScopedSqlConcreteFragmentVisitor.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/DefaultScopedSqlFragmentVisitor.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/FilteringColumnVisitor.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/ScopedSqlConcreteFragmentVisitor.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/ScopedSqlFragmentVisitor.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/MyVisitor.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TSqlScriptAnalyzer/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TSqlScriptAnalyzer/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/DatabaseAnalyzer.Contracts.DefaultImplementations.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/DatabaseAnalyzer.Contracts.DefaultImplementations.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/CollectionExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/CollectionExtensions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/DatabaseAwareFragmentVisitor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/DatabaseAwareFragmentVisitor.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/ForeignKeyConstraintExtractor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/ForeignKeyConstraintExtractor.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/FunctionExtractor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/FunctionExtractor.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/IndexExtractor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/IndexExtractor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/FilteringColumnVisitorTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/FilteringColumnVisitorTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/DatabaseAwareConcreteFragmentVisitor.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/DatabaseAwareFragmentVisitor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/DatabaseAwareFragmentVisitor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/DefaultScopedSqlConcreteFragmentVisitor.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/DefaultScopedSqlFragmentVisitor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/DefaultScopedSqlFragmentVisitor.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/ObjectExtractorVisitor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/ObjectExtractorVisitor.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/ProcedureExtractor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/ProcedureExtractor.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/SchemaExtractor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/SchemaExtractor.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/TableExtractor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/Extraction/TableExtractor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/FilteringColumnVisitor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/FilteringColumnVisitor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/ScopedSqlConcreteFragmentVisitor.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/ScopedSqlFragmentVisitor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/ScopedSqlFragmentVisitor.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Testing/SyntaxTreeVisualizer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Testing/SyntaxTreeVisualizer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Testing/TokenVisualizer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Testing/TokenVisualizer.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,12 +68,17 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/1a/389fb8d5/ExecutableStringList.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/1a/808d9fb1/ExecuteSpecification.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/25/90b948c3/VariableReference.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/2b/0c280533/WithCtesAndXmlNamespaces.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/34/b247d026/Identifier.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/36/f38d9379/DeclareVariableElement.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/38/717b822b/WhereClause.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/42/579fd24c/IndexType.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/42/df15bb79/MultiPartIdentifier.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/46/d52a7e20/IntegerLiteral.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/48/aa36dd6d/UniqueConstraintDefinition.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/4b/634ae186/ProcedureStatementBody.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/4c/d41b4bce/LiteralReplicaOption.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/51/86f93ef5/OnlineIndexOption.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/51/f7f18c42/NullableConstraintDefinition.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/53/11ded8ca/ConstraintDefinition.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/58/5507ff34/SqlDataTypeOption.cs" root0="FORCE_HIGHLIGHTING" />
@@ -100,6 +96,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/90/d288ce06/LiteralType.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/99/d9b22b5e/StringLiteral.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/9d/8ecfdee9/ColumnDefinition.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/9f/b5d357e9/CommonTableExpression.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/a5/d723bb72/CreateOrAlterViewStatement.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/ab/ddf820dd/NamedTableReference.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/af/7b2f007b/ValueExpression.cs" root0="FORCE_HIGHLIGHTING" />
@@ -126,6 +123,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/eb/6bd48c36/CharScanner.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/eb/a172d28f/QuerySpecification.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/ed/40ebebd5/CreateFunctionStatement.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/f0/5c5c6d99/TableSampleClause.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/f1/7474939e/PrimaryExpression.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/f2/4b4f6521/IndexTypeKind.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4ea690799e344d85851ba48cda19452e572420/fe/e3243176/TSqlFragmentVisitor.cs" root0="FORCE_HIGHLIGHTING" />
@@ -178,6 +176,8 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/ded3b52c6e1f5df70d0eb72e72941c96c12d398d4383fa15061718235e7/LinkedList.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/e399fc861c188bd19ebde14346e2f5f2c1a54c1c0d6fbd5cbe05227afe6d/CollectionExtensions.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/ea42db23f2bfdf51231fc0d520206e7c849ca2e9eb3af4432436561a38e58076/ParseResult.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/DatabaseAnalyzer.App/bin/Debug/net9.0/Plugins/DefaultAnalyzers/DatabaseAnalyzers.DefaultAnalyzers.deps.json" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/DatabaseAnalyzer.Common/bin/Debug/net9.0/DatabaseAnalyzer.Common.deps.json" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers.Tests/Analyzers/UnreferencedObject/UnreferencedParameterAnalyzerTests.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/DataTypes/DataTypeAnalyzer.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/DatabaseAnalyzers.DefaultAnalyzers/Analyzers/Formatting/TabCharacterAnalyzer.cs" root0="FORCE_HIGHLIGHTING" />
@@ -193,6 +193,9 @@
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
 }</component>
+  <component name="LLMProjectSettings">
+    <option name="turned_on" value="false" />
+  </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
@@ -209,48 +212,50 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;.NET Launch Settings Profile.DatabaseAnalyzer.App.executor&quot;: &quot;Debug&quot;,
-    &quot;.NET Launch Settings Profile.TSqlScriptAnalyzer.App.executor&quot;: &quot;Run&quot;,
-    &quot;.NET Project.DatabaseAnalyzer.App.executor&quot;: &quot;Debug&quot;,
-    &quot;10004188-94c1-4c88-a582-dfed71e301e9.executor&quot;: &quot;Debug&quot;,
-    &quot;2238f1ec-19dd-4aa1-9b94-b3b5f7d1a21a.executor&quot;: &quot;Debug&quot;,
-    &quot;2f62341b-57af-4b3e-af28-06a9241496bd.executor&quot;: &quot;Debug&quot;,
-    &quot;360054f0-3687-4ac5-a32a-e6e44d305b9e.executor&quot;: &quot;Debug&quot;,
-    &quot;37b90929-bd26-44f3-b6b9-4161e64f3ee6.executor&quot;: &quot;Debug&quot;,
-    &quot;58c56b00-f81e-48fd-a74f-c8e84271fcf4.executor&quot;: &quot;Debug&quot;,
-    &quot;5f02acba-96b8-47f5-8a44-a06b6fdd9cf0.executor&quot;: &quot;Debug&quot;,
-    &quot;7a02a7c0-f573-4be8-a049-d4b795257382.executor&quot;: &quot;Debug&quot;,
-    &quot;9b11e34a-3363-413d-a7b8-56f1a24ab377.executor&quot;: &quot;Debug&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;a721ffe7-1ee1-42a0-8674-c115e019b586.executor&quot;: &quot;Debug&quot;,
-    &quot;ca080dec-5b55-47dc-8ef1-395b5f235ff7.executor&quot;: &quot;Debug&quot;,
-    &quot;d56e4be0-e56d-4f74-8c19-7db26da47225.executor&quot;: &quot;Debug&quot;,
-    &quot;dbda6ab3-2a1f-4f52-93a9-a2b1cca47a90.executor&quot;: &quot;Debug&quot;,
-    &quot;dc3650da-91c6-4773-bd1c-aae6715d29ff.executor&quot;: &quot;Debug&quot;,
-    &quot;f294f8f0-fa65-45b6-9f47-ee247d4d78e0.executor&quot;: &quot;Debug&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;NewFramework&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;rider.code.cleanup.on.save&quot;: &quot;true&quot;,
-    &quot;rider.code.cleanup.on.save.profile&quot;: &quot;Built-in: Full Cleanup2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;RiderDotCoverContinuousTestingPageId&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    ".NET Launch Settings Profile.DatabaseAnalyzer.App.executor": "Run",
+    ".NET Launch Settings Profile.TSqlScriptAnalyzer.App.executor": "Run",
+    ".NET Project.DatabaseAnalyzer.App.executor": "Debug",
+    "10004188-94c1-4c88-a582-dfed71e301e9.executor": "Debug",
+    "2238f1ec-19dd-4aa1-9b94-b3b5f7d1a21a.executor": "Debug",
+    "2f62341b-57af-4b3e-af28-06a9241496bd.executor": "Debug",
+    "360054f0-3687-4ac5-a32a-e6e44d305b9e.executor": "Debug",
+    "37b90929-bd26-44f3-b6b9-4161e64f3ee6.executor": "Debug",
+    "43eedb1e-368b-4e8f-b335-8d99d6977191.executor": "Debug",
+    "58c56b00-f81e-48fd-a74f-c8e84271fcf4.executor": "Debug",
+    "5f02acba-96b8-47f5-8a44-a06b6fdd9cf0.executor": "Debug",
+    "7a02a7c0-f573-4be8-a049-d4b795257382.executor": "Debug",
+    "9b11e34a-3363-413d-a7b8-56f1a24ab377.executor": "Debug",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "XThreadsFramesViewSplitterKey": "0.36637932",
+    "a721ffe7-1ee1-42a0-8674-c115e019b586.executor": "Debug",
+    "ca080dec-5b55-47dc-8ef1-395b5f235ff7.executor": "Debug",
+    "d56e4be0-e56d-4f74-8c19-7db26da47225.executor": "Debug",
+    "dbda6ab3-2a1f-4f52-93a9-a2b1cca47a90.executor": "Debug",
+    "dc3650da-91c6-4773-bd1c-aae6715d29ff.executor": "Debug",
+    "f294f8f0-fa65-45b6-9f47-ee247d4d78e0.executor": "Debug",
+    "git-widget-placeholder": "NewFramework",
+    "ignore.virus.scanning.warn.message": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "rider.code.cleanup.on.save": "true",
+    "rider.code.cleanup.on.save.profile": "Built-in: Full Cleanup2",
+    "settings.editor.selected.configurable": "RiderUnitTestingPageId",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;GitStage.ChangesTree.GroupingKeys&quot;: [
-      &quot;directory&quot;,
-      &quot;module&quot;,
-      &quot;repository&quot;
+  "keyToStringList": {
+    "GitStage.ChangesTree.GroupingKeys": [
+      "directory",
+      "module",
+      "repository"
     ]
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected=".NET Launch Settings Profile.DatabaseAnalyzer.App">
     <configuration name="DatabaseAnalyzer.App" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/src/DatabaseAnalyzer.App/DatabaseAnalyzer.App.csproj" />
@@ -311,7 +316,9 @@
       <workItem from="1734410855800" duration="65370000" />
       <workItem from="1734547560028" duration="2810000" />
       <workItem from="1734550413050" duration="16832000" />
-      <workItem from="1734597288445" duration="5113000" />
+      <workItem from="1734597288445" duration="11568000" />
+      <workItem from="1734622988545" duration="15664000" />
+      <workItem from="1734670175631" duration="6284000" />
     </task>
     <task id="LOCAL-00001" summary="daily commit">
       <option name="closed" value="true" />
@@ -625,7 +632,15 @@
       <option name="project" value="LOCAL" />
       <updated>1734508126327</updated>
     </task>
-    <option name="localTasksCounter" value="40" />
+    <task id="LOCAL-00040" summary="..">
+      <option name="closed" value="true" />
+      <created>1734615951422</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1734615951422</updated>
+    </task>
+    <option name="localTasksCounter" value="41" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -664,7 +679,6 @@
   <component name="VcsManagerConfiguration">
     <option name="CHECK_NEW_TODO" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="Added StringConcatenationUnicodeAsciiMixAnalyzer" />
     <MESSAGE value="it's time for a commit/push" />
     <MESSAGE value="FirstStatementIsNotUseDatabaseAnalyzer &amp; WrongUseDatabaseNameAnalyzer" />
     <MESSAGE value="Added MissingCommaBeforeConstraintKeywordAnalyzer" />
@@ -689,101 +703,219 @@
     <MESSAGE value="minor cleanup" />
     <MESSAGE value="added first part of object extraction for tables and indices" />
     <MESSAGE value="completed db object extractor from scripts" />
-    <option name="LAST_COMMIT_MESSAGE" value="completed db object extractor from scripts" />
+    <MESSAGE value=".." />
+    <option name="LAST_COMMIT_MESSAGE" value=".." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/FilteringColumnVisitorTests.cs</url>
-          <line>121</line>
-          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations.Tests\SqlParsing\FilteringColumnVisitorTests.cs" containingFunctionPresentation="Method 'WithJoin_WithAlias_WithIn_ThenResultContainsFilteringColumn'">
-            <startOffsets>
-              <option value="4132" />
-            </startOffsets>
-            <endOffsets>
-              <option value="4338" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="494" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/FilteringColumnVisitor.cs</url>
-          <line>42</line>
-          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\FilteringColumnVisitor.cs" containingFunctionPresentation="Method 'Visit'">
-            <startOffsets>
-              <option value="1083" />
-            </startOffsets>
-            <endOffsets>
-              <option value="1144" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="500" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/FilteringColumnVisitorTests.cs</url>
           <line>134</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations.Tests\SqlParsing\FilteringColumnVisitorTests.cs" containingFunctionPresentation="Method 'WithJoin_WithAlias_WithIn_ThenResultContainsFilteringColumn'">
             <startOffsets>
-              <option value="5017" />
+              <option value="5360" />
             </startOffsets>
             <endOffsets>
-              <option value="5060" />
+              <option value="5403" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="504" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/FilteringColumnVisitorTests.cs</url>
+          <line>165</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations.Tests\SqlParsing\FilteringColumnVisitorTests.cs" containingFunctionPresentation="Method 'WithCte_WithInnerFilter_WithOuterFilter_ThenResultContainsBothFilteringColumn'">
+            <startOffsets>
+              <option value="6362" />
+            </startOffsets>
+            <endOffsets>
+              <option value="6385" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="505" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/DefaultScopedSqlFragmentVisitor.cs</url>
-          <line>43</line>
-          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\DefaultScopedSqlFragmentVisitor.cs" containingFunctionPresentation="Method 'Visit'">
+          <line>78</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\DefaultScopedSqlFragmentVisitor.cs" containingFunctionPresentation="Method 'ExplicitVisit'">
             <startOffsets>
-              <option value="1063" />
+              <option value="2194" />
             </startOffsets>
             <endOffsets>
-              <option value="1159" />
+              <option value="2201" />
             </endOffsets>
           </properties>
-          <option name="timeStamp" value="506" />
+          <option name="timeStamp" value="520" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/DefaultScopedSqlConcreteFragmentVisitor.cs</url>
-          <line>91</line>
-          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\DefaultScopedSqlConcreteFragmentVisitor.cs" containingFunctionPresentation="Method 'ExplicitVisit'">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/DefaultScopedSqlFragmentVisitor.cs</url>
+          <line>17</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\DefaultScopedSqlFragmentVisitor.cs" containingFunctionPresentation="Method 'ExplicitVisit'">
             <startOffsets>
-              <option value="2413" />
+              <option value="493" />
             </startOffsets>
             <endOffsets>
-              <option value="2414" />
+              <option value="500" />
             </endOffsets>
           </properties>
-          <option name="timeStamp" value="510" />
+          <option name="timeStamp" value="521" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/DefaultScopedSqlConcreteFragmentVisitor.cs</url>
-          <line>77</line>
-          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\DefaultScopedSqlConcreteFragmentVisitor.cs" containingFunctionPresentation="Method 'Visit'">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/FilteringColumnVisitorTests.cs</url>
+          <line>124</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations.Tests\SqlParsing\FilteringColumnVisitorTests.cs" containingFunctionPresentation="Method 'WithJoin_WithAlias_WithIn_ThenResultContainsFilteringColumn'">
             <startOffsets>
-              <option value="2128" />
+              <option value="4543" />
             </startOffsets>
             <endOffsets>
-              <option value="2157" />
+              <option value="4806" />
             </endOffsets>
           </properties>
-          <option name="timeStamp" value="511" />
+          <option name="timeStamp" value="539" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/DefaultScopedSqlFragmentVisitor.cs</url>
+          <line>38</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\DefaultScopedSqlFragmentVisitor.cs" containingFunctionPresentation="Method 'ExplicitVisit'">
+            <startOffsets>
+              <option value="1101" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1102" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="551" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/FilteringColumnVisitor.cs</url>
-          <line>18</line>
-          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\FilteringColumnVisitor.cs" containingFunctionPresentation="Method 'Visit'">
+          <line>45</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\FilteringColumnVisitor.cs" containingFunctionPresentation="Method 'ExplicitVisit'">
             <startOffsets>
-              <option value="623" />
+              <option value="1368" />
             </startOffsets>
             <endOffsets>
-              <option value="624" />
+              <option value="1369" />
             </endOffsets>
           </properties>
-          <option name="timeStamp" value="512" />
+          <option name="timeStamp" value="566" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/FilteringColumnVisitor.cs</url>
+          <line>60</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\FilteringColumnVisitor.cs" containingFunctionPresentation="Method 'ExplicitVisit'">
+            <startOffsets>
+              <option value="1795" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1796" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="568" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/FilteringColumnVisitor.cs</url>
+          <line>130</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\FilteringColumnVisitor.cs" containingFunctionPresentation="Method 'ExtractFilteringColumn'">
+            <startOffsets>
+              <option value="3609" />
+            </startOffsets>
+            <endOffsets>
+              <option value="3662" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="569" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/FilteringColumnVisitor.cs</url>
+          <line>105</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\FilteringColumnVisitor.cs" containingFunctionPresentation="Method 'ExplicitVisit'">
+            <startOffsets>
+              <option value="2888" />
+            </startOffsets>
+            <endOffsets>
+              <option value="2920" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="570" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/DefaultScopedSqlFragmentVisitor.cs</url>
+          <line>56</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\DefaultScopedSqlFragmentVisitor.cs" containingFunctionPresentation="Method 'ExplicitVisit'">
+            <startOffsets>
+              <option value="1710" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1754" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="571" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/FilteringColumnVisitor.cs</url>
+          <line>51</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\FilteringColumnVisitor.cs" containingFunctionPresentation="Method 'ExplicitVisit'">
+            <startOffsets>
+              <option value="1457" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1586" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="573" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/ScopedSqlFragmentVisitor.cs</url>
+          <line>46</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\ScopedSqlFragmentVisitor.cs" containingFunctionPresentation="Method 'RegisterTableAlias'">
+            <startOffsets>
+              <option value="1794" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1888" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="574" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/DefaultScopedSqlFragmentVisitor.cs</url>
+          <line>90</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\DefaultScopedSqlFragmentVisitor.cs" containingFunctionPresentation="Method 'RegisterTableReference'">
+            <startOffsets>
+              <option value="2465" />
+            </startOffsets>
+            <endOffsets>
+              <option value="2595" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="575" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/ScopedSqlFragmentVisitor.cs</url>
+          <line>40</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\ScopedSqlFragmentVisitor.cs" containingFunctionPresentation="Method 'RegisterTableAlias'">
+            <startOffsets>
+              <option value="1476" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1558" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="577" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/ScopedSqlFragmentVisitor.cs</url>
+          <line>47</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\ScopedSqlFragmentVisitor.cs" containingFunctionPresentation="Method 'RegisterTableAlias'">
+            <startOffsets>
+              <option value="1901" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1990" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="578" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -795,6 +927,7 @@
         <PinnedItemInfo parentTag="Type#Microsoft.SqlServer.Management.SqlParser.SqlCodeDom.SqlTableDefinition" memberName="Children" />
         <PinnedItemInfo parentTag="Type#Microsoft.SqlServer.TransactSql.ScriptDom.CreateTableStatement" memberName="SchemaObjectName" />
         <PinnedItemInfo parentTag="Type#Microsoft.SqlServer.TransactSql.ScriptDom.InPredicate" memberName="Expression" />
+        <PinnedItemInfo parentTag="Type#DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.FilteringColumnVisitor" memberName="FilteringColumns" />
         <PinnedItemInfo parentTag="Type#Microsoft.SqlServer.Management.SqlParser.SqlCodeDom.SqlCreateAlterProcedureStatementBase" memberName="TargetObjectType" />
         <PinnedItemInfo parentTag="Type#Microsoft.SqlServer.TransactSql.ScriptDom.StringLiteral" memberName="LiteralType" />
         <PinnedItemInfo parentTag="Type#Microsoft.SqlServer.TransactSql.ScriptDom.ForeignKeyConstraintDefinition" memberName="ReferencedTableColumns" />
@@ -819,6 +952,7 @@
       </configuration>
       <configuration name="RiderUnitTests">
         <watch expression="new System.Collections.Generic.ICollectionDebugView&lt;Microsoft.SqlServer.TransactSql.ScriptDom.ConstraintDefinition&gt;(statement.Definition.TableConstraints).Items[0]" />
+        <watch expression="this.Scopes" language="C#" />
       </configuration>
     </watches-manager>
   </component>
