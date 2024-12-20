@@ -87,8 +87,18 @@ public abstract class DefaultScopedSqlFragmentVisitor : ScopedSqlFragmentVisitor
 
     private void RegisterTableReference(NamedTableReference node)
     {
+        var sourceType = SourceType.TableOrView;
+        if (node.SchemaObject.Identifiers.Count == 1) // maybe it's a CTE
+        {
+            var objectName = node.SchemaObject.Identifiers[0].Value;
+            if (Scopes.IsCommonTableExpressionName(objectName))
+            {
+                sourceType = SourceType.Cte;
+            }
+        }
+
         var alias = node.Alias?.Value;
-        Scopes.CurrentScope.RegisterTableAlias(alias, node.SchemaObject, CurrentDatabaseName!, DefaultSchemaName, SourceType.TableOrView);
+        Scopes.CurrentScope.RegisterTableAlias(alias, node.SchemaObject, CurrentDatabaseName!, DefaultSchemaName, sourceType);
     }
 
     /*

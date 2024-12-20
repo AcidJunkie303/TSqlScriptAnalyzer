@@ -22,14 +22,22 @@ public abstract class ScopedSqlFragmentVisitor : DatabaseAwareFragmentVisitor
 
     protected sealed class Scope
     {
+        private readonly HashSet<string> _commonTableExpressionNames = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, TableAndAlias> _tableReferencesByFullNameOrAlias = new(StringComparer.OrdinalIgnoreCase);
 
         public IReadOnlyDictionary<string, TableAndAlias> TableReferencesByFullNameOrAlias => _tableReferencesByFullNameOrAlias;
+        public IReadOnlySet<string> CommonTableExpressionNames => _commonTableExpressionNames;
         public TSqlFragment Owner { get; }
 
         public Scope(TSqlFragment owner)
         {
             Owner = owner;
+        }
+
+        public Scope RegisterCommonTableExpressionName(string expressionName)
+        {
+            _commonTableExpressionNames.Add(expressionName);
+            return this;
         }
 
         public Scope RegisterTableAlias(string? alias, SchemaObjectName schemaObjectName, string currentDatabaseName, string defaultSchemaName, SourceType sourceType)
@@ -58,6 +66,9 @@ public abstract class ScopedSqlFragmentVisitor : DatabaseAwareFragmentVisitor
         public Scope CurrentScope => _scopes.Peek();
         public IEnumerable<TableAndAlias> AllTableAndAliases => _scopes.SelectMany(scope => scope.TableReferencesByFullNameOrAlias.Values);
 
+#pragma warning disable MA0002 // underlying collection is hashset
+        public bool IsCommonTableExpressionName(string expressionName) => _scopes.Any(scope => scope.CommonTableExpressionNames.Contains(expressionName));
+#pragma warning restore MA0002
         public IDisposable BeginNewScope(TSqlFragment owner)
         {
             _scopes.Push(new Scope(owner));

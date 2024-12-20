@@ -149,46 +149,33 @@ public sealed class FilteringColumnVisitorTests(ITestOutputHelper testOutputHelp
                                 WHERE   Name = N'Uribubu'
                             )
                             SELECT  *
-                            FROM    CTE
-                            WHERE   Name2 = N'Uribubu2';
+                            FROM    CTE c
+                            WHERE   c.Name2 = N'Uribubu2';
                             """;
 
         // arrange
         var script = CreateScript(code);
         var sut = new FilteringColumnVisitor("dbo");
-        var sut2 = new MyVisitor();
+
         // act
-        script.ParsedScript.Accept(sut2);
         script.ParsedScript.Accept(sut);
-        //sut.ExplicitVisit(script.ParsedScript);
 
         // assert
-        true.Should().BeTrue();
-        /*
         sut.FilteringColumns.Should().ContainEquivalentOf(
-            new FilteringColumnVisitor.FilteringColumn("MyDb", "dbo", "Person", "Name", null!),
-            options => options.Excluding(p => p.Fragment));
-        sut.FilteringColumns.Should().ContainEquivalentOf(
-            new FilteringColumnVisitor.FilteringColumn("MyDb", "dbo", "Person", "DepartmentId", null!),
-            options => options.Excluding(p => p.Fragment));
-        sut.FilteringColumns.Should().ContainEquivalentOf(
-            new FilteringColumnVisitor.FilteringColumn("MyDb", "dbo", "Department", "DepartmentId", null!),
+            new FilteringColumnVisitor.FilteringColumn("MyDb", "dbo", "T1", "Name", ScopedSqlFragmentVisitor.SourceType.TableOrView, null!),
             options => options.Excluding(p => p.Fragment));
 
-        sut.FilteringColumns.Should().HaveCount(3);
-        */
+        sut.FilteringColumns.Should().ContainEquivalentOf(
+            new FilteringColumnVisitor.FilteringColumn("MyDb", "dbo", "CTE", "Name2", ScopedSqlFragmentVisitor.SourceType.Cte, null!),
+            options => options.Excluding(p => p.Fragment));
+
+        sut.FilteringColumns.Should().HaveCount(2);
     }
 
     [Fact]
     public void WithCte_()
     {
         const string code = """
-                            ;WITH Standard_CTE AS (
-                                SELECT * FROM T1
-                            )
-                            SELECT * FROM Standard_CTE;
-
-                            -- Sequential CTE
                             ;WITH CTE1 AS (
                                 SELECT * FROM T1
                             ),

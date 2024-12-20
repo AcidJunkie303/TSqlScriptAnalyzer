@@ -49,6 +49,7 @@ internal sealed class FilteringColumnVisitor : DefaultScopedSqlFragmentVisitor
             return;
         }
 
+        Scopes.CurrentScope.RegisterCommonTableExpressionName(node.ExpressionName.Value);
         Scopes.CurrentScope.RegisterTableAlias(null, CurrentDatabaseName!, DefaultSchemaName, node.ExpressionName.Value, SourceType.Cte);
 
         using var scope = Scopes.BeginNewScope(node);
