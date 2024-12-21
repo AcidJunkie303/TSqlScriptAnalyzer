@@ -81,6 +81,59 @@ public static class SqlFragmentExtensions
     public static TSqlFragment? GetParent(this TSqlFragment fragment, IParentFragmentProvider parentFragmentProvider)
         => parentFragmentProvider.GetParent(fragment);
 
+    /// <summary>
+    ///     Retrieves the preceding sibling fragments of the specified T-SQL fragment
+    ///     within its parent fragment.
+    /// </summary>
+    /// <param name="fragment">
+    ///     The T-SQL fragment for which the previous sibling fragments are to be retrieved.
+    /// </param>
+    /// <param name="script">
+    ///     The <see cref="TSqlScript" /> the fragment originated from.
+    /// </param>
+    /// <returns>
+    ///     An enumerable collection of TSqlFragment objects that represent the previous
+    ///     sibling fragments of the specified fragment.
+    ///     The order is as the siblings appear in the AST.
+    /// </returns>
+    public static IEnumerable<TSqlFragment> GetPrecedingSiblings(this TSqlFragment fragment, TSqlScript script)
+        => fragment.GetPrecedingSiblings(script.CreateParentFragmentProvider());
+
+    /// <summary>
+    ///     Retrieves the preceding sibling fragments of the specified T-SQL fragment
+    ///     within its parent fragment.
+    /// </summary>
+    /// <param name="fragment">
+    ///     The T-SQL fragment for which the previous sibling fragments are to be retrieved.
+    /// </param>
+    /// <param name="parentFragmentProvider">
+    ///     An implementation of IParentFragmentProvider that provides parent fragment information
+    ///     for the specified T-SQL fragment.
+    /// </param>
+    /// <returns>
+    ///     An enumerable collection of TSqlFragment objects that represent the previous
+    ///     sibling fragments of the specified fragment.
+    ///     The order is as the siblings appear in the AST.
+    /// </returns>
+    public static IEnumerable<TSqlFragment> GetPrecedingSiblings(this TSqlFragment fragment, IParentFragmentProvider parentFragmentProvider)
+    {
+        var parent = fragment.GetParent(parentFragmentProvider);
+        if (parent is null)
+        {
+            yield break;
+        }
+
+        foreach (var sibling in parent.GetChildren(recursive: false))
+        {
+            if (ReferenceEquals(sibling, fragment))
+            {
+                yield break;
+            }
+
+            yield return sibling;
+        }
+    }
+
     public static TSqlFragment? TryGetSqlFragmentAtPosition(this TSqlScript script, TSqlParserToken token)
         => script.TryGetSqlFragmentAtPosition(token.Line, token.Column);
 
@@ -129,4 +182,7 @@ public static class SqlFragmentExtensions
             return codeRegion.IsAround(lineNumber, columnNumber);
         }
     }
+
+    public static string FindCurrentDatabaseNameAtFragment(this TSqlFragment fragment, TSqlScript script)
+        => CurrentDatabaseNameFinder.FindCurrentDatabaseNameAtFragment(fragment, script);
 }

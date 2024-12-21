@@ -10,7 +10,7 @@ public static class ParentFragmentProviderFactory
         var visitor = new Visitor();
         visitor.ExplicitVisit(script);
 
-        return new Provider(script, visitor.ParentByChild.ToFrozenDictionary());
+        return new Provider(script, visitor.ParentByChild);
     }
 
     private sealed class Provider : IParentFragmentProvider
@@ -29,10 +29,11 @@ public static class ParentFragmentProviderFactory
 
     private sealed class Visitor : TSqlConcreteFragmentVisitor
     {
+        private readonly Dictionary<TSqlFragment, TSqlFragment?> _parentByChild = [];
         private readonly Stack<TSqlFragment> _stack = new();
         private readonly HashSet<TSqlFragment> _visited = [];
 
-        public Dictionary<TSqlFragment, TSqlFragment?> ParentByChild { get; } = [];
+        public FrozenDictionary<TSqlFragment, TSqlFragment?> ParentByChild => _parentByChild.ToFrozenDictionary();
 
         public override void Visit(TSqlFragment fragment)
         {
@@ -44,7 +45,7 @@ public static class ParentFragmentProviderFactory
             _stack.TryPeek(out var parent);
             _stack.Push(fragment);
 
-            ParentByChild[fragment] = parent;
+            _parentByChild[fragment] = parent;
 
             fragment.AcceptChildren(this);
 

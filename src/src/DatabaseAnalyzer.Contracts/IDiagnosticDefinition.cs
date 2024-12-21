@@ -1,6 +1,6 @@
 namespace DatabaseAnalyzer.Contracts;
 
-public interface IDiagnosticDefinition
+public interface IDiagnosticDefinition : IEquatable<IDiagnosticDefinition>
 {
     string DiagnosticId { get; }
     IssueType IssueType { get; }

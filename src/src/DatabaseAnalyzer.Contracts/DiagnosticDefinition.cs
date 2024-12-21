@@ -1,8 +1,6 @@
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Services;
+namespace DatabaseAnalyzer.Contracts;
 
-namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
-
-public sealed class DiagnosticDefinition : IDiagnosticDefinition, IEquatable<IDiagnosticDefinition>, IEquatable<DiagnosticDefinition>
+public sealed class DiagnosticDefinition : IDiagnosticDefinition
 {
     public DiagnosticDefinition(string diagnosticId, IssueType issueType, string title, string messageTemplate)
     {
@@ -19,8 +17,6 @@ public sealed class DiagnosticDefinition : IDiagnosticDefinition, IEquatable<IDi
     public string MessageTemplate { get; }
     public int RequiredInsertionStringCount { get; }
 
-    public bool Equals(DiagnosticDefinition? other) => Equals((IDiagnosticDefinition?)other);
-
     public bool Equals(IDiagnosticDefinition? other)
     {
         if (other is null)
@@ -34,17 +30,14 @@ public sealed class DiagnosticDefinition : IDiagnosticDefinition, IEquatable<IDi
         }
 
         return (RequiredInsertionStringCount == other.RequiredInsertionStringCount)
+               && (IssueType == other.IssueType)
                && string.Equals(DiagnosticId, other.DiagnosticId, StringComparison.Ordinal)
-               && string.Equals(MessageTemplate, other.MessageTemplate, StringComparison.Ordinal)
-               && (IssueType == other.IssueType);
+               && string.Equals(MessageTemplate, other.MessageTemplate, StringComparison.Ordinal);
     }
 
     public override bool Equals(object? obj)
-    {
-        return ReferenceEquals(this, obj)
-               || (obj is DiagnosticDefinition other1 && Equals(other1))
-               || (obj is IDiagnosticDefinition other2 && Equals(other2));
-    }
+        => ReferenceEquals(this, obj) || (obj is IDiagnosticDefinition other2 && Equals(other2));
 
-    public override int GetHashCode() => HashCode.Combine(RequiredInsertionStringCount, DiagnosticId, MessageTemplate, (int)IssueType);
+    public override int GetHashCode()
+        => HashCode.Combine(RequiredInsertionStringCount, DiagnosticId, MessageTemplate, (int)IssueType);
 }

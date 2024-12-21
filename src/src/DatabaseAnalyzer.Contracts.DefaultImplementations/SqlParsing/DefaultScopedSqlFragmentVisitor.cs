@@ -18,7 +18,7 @@ public abstract class DefaultScopedSqlFragmentVisitor : ScopedSqlFragmentVisitor
             return;
         }
 
-        // Visit the FromClause first, if it exists
+        // Visit the FromClause first, if it exist(s
         // this is necessary because we need to know the source table first before diving into the other parts
         node.FromClause?.Accept(this);
 
@@ -60,13 +60,29 @@ public abstract class DefaultScopedSqlFragmentVisitor : ScopedSqlFragmentVisitor
         base.ExplicitVisit(node);
     }
 
+    public override void ExplicitVisit(InsertStatement node)
+    {
+        using var scope = Scopes.BeginNewScope(node);
+
+        base.ExplicitVisit(node);
+    }
+
+    public override void ExplicitVisit(UpdateStatement node)
+    {
+        using var scope = Scopes.BeginNewScope(node);
+
+        base.ExplicitVisit(node);
+    }
+
+    public override void ExplicitVisit(DeleteStatement node)
+    {
+        using var scope = Scopes.BeginNewScope(node);
+
+        base.ExplicitVisit(node);
+    }
+
     public override void ExplicitVisit(SelectStatement node)
     {
-        if (!TrackNodeAndCheck(node))
-        {
-            return;
-        }
-
         using var scope = Scopes.BeginNewScope(node);
 
         base.ExplicitVisit(node);
@@ -88,10 +104,14 @@ public abstract class DefaultScopedSqlFragmentVisitor : ScopedSqlFragmentVisitor
     private void RegisterTableReference(NamedTableReference node)
     {
         var sourceType = SourceType.TableOrView;
-        if (node.SchemaObject.Identifiers.Count == 1) // maybe it's a CTE
+        if (node.SchemaObject.Identifiers.Count == 1) // maybe it's a CTE or a temp table
         {
             var objectName = node.SchemaObject.Identifiers[0].Value;
-            if (Scopes.IsCommonTableExpressionName(objectName))
+            if (objectName.StartsWith('#'))
+            {
+                sourceType = SourceType.TempTable;
+            }
+            else if (Scopes.IsCommonTableExpressionName(objectName))
             {
                 sourceType = SourceType.Cte;
             }

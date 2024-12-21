@@ -16,6 +16,14 @@ public static class SqlScriptExtensions
         return visitor.Nodes;
     }
 
+    public static bool HasStatements(this TSqlScript script)
+        => script
+            .GetChildren(recursive: false)
+            .Count > 0;
+
+    public static bool IsUseDatabaseCalledBeforeAnyOtherStatement(this TSqlScript script)
+        => ScriptComplianceChecker.IsUseDatabaseCalledBeforeAnyOtherStatement(script);
+
     private sealed class GetTopLevelDescendantVisitor<T> : TSqlFragmentVisitor
         where T : TSqlFragment
     {

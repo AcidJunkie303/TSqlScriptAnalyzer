@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 
-namespace DatabaseAnalyzer.Core;
+namespace DatabaseAnalyzer.Core.Services;
 
 internal sealed class IssueReporter : IIssueReporter
 {

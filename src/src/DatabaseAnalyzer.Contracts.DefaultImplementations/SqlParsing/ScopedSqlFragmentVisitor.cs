@@ -64,6 +64,7 @@ public abstract class ScopedSqlFragmentVisitor : DatabaseAwareFragmentVisitor
         private readonly Stack<Scope> _scopes = new();
 
         public Scope CurrentScope => _scopes.Peek();
+        public Scope RootScope => _scopes.Last();
         public IEnumerable<TableAndAlias> AllTableAndAliases => _scopes.SelectMany(scope => scope.TableReferencesByFullNameOrAlias.Values);
 
 #pragma warning disable MA0002 // underlying collection is hashset

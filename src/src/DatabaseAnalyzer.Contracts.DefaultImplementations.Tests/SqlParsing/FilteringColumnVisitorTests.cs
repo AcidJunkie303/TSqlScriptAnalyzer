@@ -136,6 +136,135 @@ public sealed class FilteringColumnVisitorTests(ITestOutputHelper testOutputHelp
     }
 
     [Fact]
+    public void Test___()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            delete t1
+                            FROM Table1 t1
+                            inner join Table2 t2 on t2.Id = t1.id
+                            where t2.Value2 = 303
+
+                            """;
+
+        // arrange
+        var script = CreateScript(code);
+        var filteringColumnExpressionFinder = new FilteringColumnExpressionFinder("dbo", script.ParsedScript);
+        filteringColumnExpressionFinder.ExplicitVisit(script.ParsedScript);
+        var filteringColumns = filteringColumnExpressionFinder.Columns;
+        filteringColumns.Should().NotBeNull();
+/*
+        var resolver = new ColumnResolver(script.ParsedScript);
+        foreach (var filteringColumn in filteringColumns)
+        {
+            var column = resolver.ResolveColumnSource(filteringColumn.Column);
+            if (column.ObjectName is null)
+            {
+                continue;
+            }
+
+            testOutputHelper.WriteLine($"{filteringColumn.Column.MultiPartIdentifier.ToUnquotedIdentifier()}    ->    {column.DatabaseName}.{column.SchemaName}.{column.ObjectName}");
+        }
+*/
+        // assert
+    }
+
+    [Fact]
+    public void ToDo()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            DELETE T1
+                            WHERE ID = 303
+
+                            DELETE FROM T1
+                            WHERE ID = 1
+
+                            INSERT INTO T1
+                            SELECT * FROM T2
+
+                            select
+                            *
+                            from T1 table1
+                            WHERE Value1 = (
+                            	SELECT TOP 1 Value2
+                            	FROM T2 table2
+                            	WHERE table1.Id = 3
+                            )
+
+                            UPDATE t
+                            SET t.Value = 303
+                            FROM Table1 t
+                            WHERE t.Id = 909
+
+                            --SELECT  303 AS Id
+                            --INTO    #t
+
+                            SELECT  *
+                            FROM    #t
+                            WHERE   Id = 303
+
+                            SELECT  *
+                            FROM    Table1         t1
+                            INNER   JOIN Table2   t2 ON t1.Id = t2.Id
+                            WHERE   t2.Id = 303
+
+                            """;
+
+        // arrange
+        var script = CreateScript(code);
+        var sut = new FilteringColumnVisitor("dbo");
+
+        // act
+        sut.ExplicitVisit(script.ParsedScript);
+
+        // assert
+        true.Should().BeTrue();
+    }
+
+    [Fact]
+    public void ToDo_VariousFormsOfDelete()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            DELETE  Table1
+                            WHERE   ID = 303
+
+                            DELETE
+                            FROM    Table1
+                            WHERE   ID = 1
+
+                            DELETE  t1
+                            FROM    Table1 t1
+                            INNER   JOIN Table2 t2 on t2.Id = t1.id
+                            WHERE   t2.Value2 = 303
+
+                            DELETE  t1
+                            FROM    Table1 t1
+                            INNER   JOIN Table2 t2 on t2.Id = t1.id
+                            INNER   JOIN Table3 t3 on t3.Id = t2.id
+                            WHERE   t3.Value3 = 303
+
+                            """;
+
+        // arrange
+        var script = CreateScript(code);
+        var sut = new FilteringColumnVisitor("dbo");
+
+        // act
+        sut.ExplicitVisit(script.ParsedScript);
+
+        // assert
+        true.Should().BeTrue();
+    }
+
+    [Fact]
     public void WithCte_WithInnerFilter_WithOuterFilter_ThenResultContainsBothFilteringColumn()
     {
         const string code = """

@@ -4,51 +4,16 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing;
 
-internal sealed class FilteringColumnExpressionFinder : DatabaseAwareFragmentVisitor
-{
-    private readonly List<(string DatabaseName, ColumnReferenceExpression Column)> _columns = [];
-    private readonly IParentFragmentProvider _parentFragmentProvider;
-
-    public IReadOnlyList<(string DatabaseName, ColumnReferenceExpression Column)> Columns => _columns;
-
-    public FilteringColumnExpressionFinder(string defaultSchemaName, TSqlScript script) : this(defaultSchemaName, script.CreateParentFragmentProvider())
-    {
-    }
-
-    public FilteringColumnExpressionFinder(string defaultSchemaName, IParentFragmentProvider parentFragmentProvider) : base(defaultSchemaName)
-    {
-        _parentFragmentProvider = parentFragmentProvider;
-    }
-
-    public override void Visit(ColumnReferenceExpression node)
-    {
-        if (IsImmediateParentComparison(node))
-        {
-            _columns.Add((CurrentDatabaseName!, node));
-        }
-
-        base.Visit(node);
-
-        bool IsImmediateParentComparison(TSqlFragment fragment)
-        {
-            var parent = fragment.GetParent(_parentFragmentProvider);
-            if (parent is FunctionCall)
-            {
-                return IsImmediateParentComparison(parent);
-            }
-
-            return parent is BooleanComparisonExpression or InPredicate;
-        }
-    }
-}
+// TODO: remove
+#pragma warning disable S125
 
 [SuppressMessage("Minor Code Smell", "S4136:Method overloads should be grouped together")]
-internal sealed class FilteringColumnVisitor : DefaultScopedSqlFragmentVisitor
+internal sealed class FilteringColumnVisitorOld : DefaultScopedSqlFragmentVisitor
 {
     private readonly List<FilteringColumn> _filteringColumns = [];
     public IReadOnlyList<FilteringColumn> FilteringColumns => _filteringColumns;
 
-    public FilteringColumnVisitor(string defaultSchemaName) : base(defaultSchemaName)
+    public FilteringColumnVisitorOld(string defaultSchemaName) : base(defaultSchemaName)
     {
     }
 
@@ -90,6 +55,7 @@ internal sealed class FilteringColumnVisitor : DefaultScopedSqlFragmentVisitor
         using var scope = Scopes.BeginNewScope(node);
 
         base.ExplicitVisit(node);
+        //node.AcceptChildren(this);
     }
 
     public override void ExplicitVisit(WithCtesAndXmlNamespaces node)
@@ -108,6 +74,26 @@ internal sealed class FilteringColumnVisitor : DefaultScopedSqlFragmentVisitor
         {
             return;
         }
+        /*
+        if (!TrackNodeAndCheck(node))
+        {
+            return;
+        }
+
+        using var scope = Scopes.BeginNewScope(node);
+
+        if (node.Into is not null)
+        {
+            if ((node.Into.Identifiers.Count == 1) && node.Into.Identifiers[0].Value.StartsWith('#'))
+            {
+                // since temp tables have a wider scope (session), we need to register it in the root scope
+                Scopes.RootScope.RegisterTableAlias(null, CurrentDatabaseName!, DefaultSchemaName, node.Into.Identifiers[0].Value, SourceType.TempTable);
+                Scopes.CurrentScope.RegisterTableAlias(null, CurrentDatabaseName!, DefaultSchemaName, node.Into.Identifiers[0].Value, SourceType.TempTable);
+            }
+        }
+
+        base.ExplicitVisit(node);
+         */
 
         using var scope = Scopes.BeginNewScope(node);
 
@@ -129,6 +115,7 @@ internal sealed class FilteringColumnVisitor : DefaultScopedSqlFragmentVisitor
             }
         }
 
+        //this.ExplicitVisit(node);
         base.ExplicitVisit(node);
     }
 
@@ -194,6 +181,8 @@ internal sealed class FilteringColumnVisitor : DefaultScopedSqlFragmentVisitor
             case 1: // column
             {
                 var allTablesAndAliases = Scopes.CurrentScope.TableReferencesByFullNameOrAlias.Values.ToList();
+                //Scopes.AllTableAndAliases.ToList();
+
                 if (allTablesAndAliases.Count > 1)
                 {
                     // TODO:    Raise diagnostic because we cannot be sure for which table the columns refers to without having the DB schema
