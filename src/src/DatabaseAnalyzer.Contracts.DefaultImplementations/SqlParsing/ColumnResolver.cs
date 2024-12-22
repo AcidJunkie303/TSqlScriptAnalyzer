@@ -109,6 +109,9 @@ public class ColumnResolver
                 DeleteSpecification deleteSpecification => Check(deleteSpecification, columnReferenceExpression),
                 FromClause fromClause => Check(fromClause, columnReferenceExpression),
                 QuerySpecification querySpecification => Check(querySpecification, columnReferenceExpression),
+                UpdateSpecification updateSpecification => Check(updateSpecification, columnReferenceExpression),
+                MergeSpecification mergeSpecification => Check(mergeSpecification, columnReferenceExpression),
+                MergeActionClause mergeActionClause => Check(mergeActionClause, columnReferenceExpression),
                 _ => null
             };
 
@@ -119,6 +122,53 @@ public class ColumnResolver
         }
 
         return null;
+    }
+
+    private Column? Check(MergeActionClause mergeActionClause, ColumnReferenceExpression columnReference)
+    {
+        Console.WriteLine();
+        Console.WriteLine();
+
+        return null;
+    }
+
+    private Column? Check(MergeSpecification mergeSpecification, ColumnReferenceExpression columnReference)
+    {
+        // The Alias is stored separately from the target table
+        // to make our logic work, we do:
+        //      targetNamedTableReference.Alias = mergeSpecification.TableAlias;
+        if (mergeSpecification.Target is NamedTableReference targetNamedTableReference)
+        {
+            if (targetNamedTableReference.Alias is null && mergeSpecification.TableAlias is not null)
+            {
+                targetNamedTableReference.Alias = mergeSpecification.TableAlias;
+            }
+        }
+
+        if (mergeSpecification.TableReference is not null)
+        {
+            var column = CheckTableReference(mergeSpecification.TableReference as NamedTableReference, columnReference);
+            if (column is not null)
+            {
+                return column;
+            }
+        }
+
+        return CheckTableReference(mergeSpecification.Target as NamedTableReference, columnReference);
+    }
+
+    private Column? Check(UpdateSpecification updateSpecification, ColumnReferenceExpression columnReference)
+    {
+        if (updateSpecification.FromClause is not null)
+        {
+            var column = Check(updateSpecification.FromClause, columnReference);
+            if (column is not null)
+            {
+                return column;
+            }
+        }
+
+        return CheckTableReference(updateSpecification.Target as NamedTableReference, columnReference);
     }
 
     private Column? Check(QuerySpecification querySpecification, ColumnReferenceExpression columnReference)

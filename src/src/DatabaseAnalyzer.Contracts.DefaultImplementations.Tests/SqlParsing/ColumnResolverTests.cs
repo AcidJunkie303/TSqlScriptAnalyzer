@@ -9,8 +9,8 @@ using Xunit.Abstractions;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Tests.SqlParsing;
 
-// TODO: remove
-#pragma warning disable S125
+// TODO:
+// do CTEs
 
 public sealed class ColumnResolverTests(ITestOutputHelper testOutputHelper)
 {
@@ -246,6 +246,39 @@ public sealed class ColumnResolverTests(ITestOutputHelper testOutputHelper)
     }
 
     [Fact]
+    public void WhenSelect_WithNestedJoin_WithFilteringInWhereClause_WithoutAlias()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            SELECT  *
+                            FROM    Table1
+                            WHERE   █Id█ =
+                            (
+                                SELECT TOP 1 ID
+                                FROM Table2
+                                WHERE Value2 = 'Hello'
+                            )
+                            """;
+
+        // arrange
+        var (script, columnReference) = CreateScript(code);
+        var issueReporter = new FakeIssueReporter();
+        var sut = new ColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
+
+        // act
+        var column = sut.Resolve(columnReference);
+
+        // assert
+        column.Should().NotBeNull();
+        column!.DatabaseName.Should().Be("MyDb");
+        column.SchemaName.Should().Be("dbo");
+        column.ObjectName.Should().Be("Table1");
+        column.ColumnName.Should().Be("Id");
+    }
+
+    [Fact]
     public void WhenSelect_WithJoin_WithFilteringInJoinCondition_WithoutAlias()
     {
         const string code = """
@@ -274,6 +307,256 @@ public sealed class ColumnResolverTests(ITestOutputHelper testOutputHelper)
         column.SchemaName.Should().Be("dbo");
         column.ObjectName.Should().Be("Table3");
         column.ColumnName.Should().Be("ID");
+    }
+
+    [Fact]
+    public void WhenInsertSelect_WithSingleTable_WithFilteringInWhereClause_WithoutAlias()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            INSERT  INTO Table1
+                            SELECT  *
+                            FROM    Table2
+                            WHERE   █Id█ = 303
+                            """;
+
+        // arrange
+        var (script, columnReference) = CreateScript(code);
+        var issueReporter = new FakeIssueReporter();
+        var sut = new ColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
+
+        // act
+        var column = sut.Resolve(columnReference);
+
+        // assert
+        column.Should().NotBeNull();
+        column!.DatabaseName.Should().Be("MyDb");
+        column.SchemaName.Should().Be("dbo");
+        column.ObjectName.Should().Be("Table2");
+        column.ColumnName.Should().Be("Id");
+    }
+
+    [Fact]
+    public void WhenUpdate_WithSingleTable_WithFilteringInWhereClause_WithoutAlias()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            UPDATE  Table1
+                            SET     Value1 = 'Hello'
+                            WHERE   █Id█ = 303
+                            """;
+
+        // arrange
+        var (script, columnReference) = CreateScript(code);
+        var issueReporter = new FakeIssueReporter();
+        var sut = new ColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
+
+        // act
+        var column = sut.Resolve(columnReference);
+
+        // assert
+        column.Should().NotBeNull();
+        column!.DatabaseName.Should().Be("MyDb");
+        column.SchemaName.Should().Be("dbo");
+        column.ObjectName.Should().Be("Table1");
+        column.ColumnName.Should().Be("Id");
+    }
+
+    [Fact]
+    public void WhenUpdate_WithSingleTable_WithFilteringInWhereClause_WithAlias()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            UPDATE  t1
+                            SET     t1.Value1 = 'Hello'
+                            FROM    Table1 t1
+                            WHERE   █Id█ = 303
+                            """;
+
+        // arrange
+        var (script, columnReference) = CreateScript(code);
+        var issueReporter = new FakeIssueReporter();
+        var sut = new ColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
+
+        // act
+        var column = sut.Resolve(columnReference);
+
+        // assert
+        column.Should().NotBeNull();
+        column!.DatabaseName.Should().Be("MyDb");
+        column.SchemaName.Should().Be("dbo");
+        column.ObjectName.Should().Be("Table1");
+        column.ColumnName.Should().Be("Id");
+    }
+
+    [Fact]
+    public void WhenUpdate_WithJoin_WithFilteringInWhereClause_WithAlias()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            UPDATE  t1
+                            SET     t1.Value1 = 'Hello'
+                            FROM    Table1 t1
+                            INNER   JOIN Table2 t2 ON t2.Id = t1.Id
+                            WHERE   █t2.Value2█ = 303
+                            """;
+
+        // arrange
+        var (script, columnReference) = CreateScript(code);
+        var issueReporter = new FakeIssueReporter();
+        var sut = new ColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
+
+        // act
+        var column = sut.Resolve(columnReference);
+
+        // assert
+        column.Should().NotBeNull();
+        column!.DatabaseName.Should().Be("MyDb");
+        column.SchemaName.Should().Be("dbo");
+        column.ObjectName.Should().Be("Table2");
+        column.ColumnName.Should().Be("Value2");
+    }
+
+    [Fact]
+    public void WhenUpdate_WithJoin_WithFilteringInJoinCondition_WithAlias()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            UPDATE  t1
+                            SET     t1.Value1 = 'Hello'
+                            FROM    Table1 t1
+                            INNER   JOIN Table2 t2 ON t2.Id = █t1.Id█
+                            WHERE   t2.Value2 = 303
+                            """;
+
+        // arrange
+        var (script, columnReference) = CreateScript(code);
+        var issueReporter = new FakeIssueReporter();
+        var sut = new ColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
+
+        // act
+        var column = sut.Resolve(columnReference);
+
+        // assert
+        column.Should().NotBeNull();
+        column!.DatabaseName.Should().Be("MyDb");
+        column.SchemaName.Should().Be("dbo");
+        column.ObjectName.Should().Be("Table1");
+        column.ColumnName.Should().Be("Id");
+    }
+
+    [Fact]
+    public void WhenMerge_01()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            MERGE       INTO Table1 AS t1
+                            USING       Table2      AS t2
+                            ON          t1.Id = █t2.Id█
+                            WHEN MATCHED THEN
+                                UPDATE SET t1.Value1 = t2.Value2
+                            WHEN NOT MATCHED BY TARGET THEN
+                                INSERT (Id, Value1) VALUES (t2.Id, t2.Value2)
+                            WHEN NOT MATCHED BY SOURCE THEN
+                                DELETE;
+                            """;
+
+        // arrange
+        var (script, columnReference) = CreateScript(code);
+        var issueReporter = new FakeIssueReporter();
+        var sut = new ColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
+
+        // act
+        var column = sut.Resolve(columnReference);
+
+        // assert
+        column.Should().NotBeNull();
+        column!.DatabaseName.Should().Be("MyDb");
+        column.SchemaName.Should().Be("dbo");
+        column.ObjectName.Should().Be("Table2");
+        column.ColumnName.Should().Be("Id");
+    }
+
+    [Fact]
+    public void WhenMerge_WithFilteringInMergeActionClause()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            MERGE INTO  Table1 AS t1
+                            USING       Table2 AS t2
+                            ON          t1.Id = t2.Id
+                            WHEN MATCHED AND t1.Status <> t2.Status THEN
+                                UPDATE SET t1.Status = t2.Status, t1.LastUpdated = GETDATE()
+                            WHEN NOT MATCHED BY TARGET THEN
+                                INSERT (id, Name, Status, CreatedDate)
+                                VALUES (t2.Id, t2.Name, t2.Status, GETDATE())
+                            WHEN NOT MATCHED BY SOURCE AND █t1.IsActive█ = 1 THEN
+                                DELETE;
+                            """;
+
+        // arrange
+        var (script, columnReference) = CreateScript(code);
+        var issueReporter = new FakeIssueReporter();
+        var sut = new ColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
+
+        // act
+        var column = sut.Resolve(columnReference);
+
+        // assert
+        column.Should().NotBeNull();
+        column!.DatabaseName.Should().Be("MyDb");
+        column.SchemaName.Should().Be("dbo");
+        column.ObjectName.Should().Be("Table1");
+        column.ColumnName.Should().Be("IsActive");
+    }
+
+    [Fact]
+    public void WhenMerge_WithFilteringInMergeActionClause2()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            MERGE INTO  Table1 AS t1
+                            USING       Table2 AS t2
+                            ON          t1.Id = t2.Id
+                            WHEN MATCHED AND █t1.Status█ <> t2.Status THEN
+                                UPDATE SET t1.Status = t2.Status, t1.LastUpdated = GETDATE()
+                            WHEN NOT MATCHED BY TARGET THEN
+                                INSERT (id, Name, Status, CreatedDate)
+                                VALUES (t2.Id, t2.Name, t2.Status, GETDATE())
+                            WHEN NOT MATCHED BY SOURCE AND t1.IsActive = 1 THEN
+                                DELETE;
+                            """;
+
+        // arrange
+        var (script, columnReference) = CreateScript(code);
+        var issueReporter = new FakeIssueReporter();
+        var sut = new ColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
+
+        // act
+        var column = sut.Resolve(columnReference);
+
+        // assert
+        column.Should().NotBeNull();
+        column!.DatabaseName.Should().Be("MyDb");
+        column.SchemaName.Should().Be("dbo");
+        column.ObjectName.Should().Be("Table1");
+        column.ColumnName.Should().Be("Status");
     }
 
     private (ScriptModel ScriptModel, ColumnReferenceExpression ColumnReference) CreateScript(string code)
@@ -318,6 +601,7 @@ public sealed class ColumnResolverTests(ITestOutputHelper testOutputHelper)
                 throw new ArgumentException("The SQL code does not contain contain two markup markers '█'", nameof(code));
             }
 
+            // currently, this only works if start and end marker are on the same line
             var (startLineNumber, startColumnNumber) = code.GetLineAndColumnNumber(startIndex);
             var (endLineNumber, endColumnNumber) = code.GetLineAndColumnNumber(endIndex - 1); // -1 because we'll remove the start and end marker
             var codeRegion = CodeRegion.Create(startLineNumber, startColumnNumber, endLineNumber, endColumnNumber);
@@ -326,14 +610,4 @@ public sealed class ColumnResolverTests(ITestOutputHelper testOutputHelper)
             return (markupFreeSql, codeRegion);
         }
     }
-
-    // TODO:
-    continue here...
-
-    // TODO:
-    // complete select
-    // do insert
-    // do update
-    // do merge
-    // do CTEs
 }
