@@ -294,4 +294,5 @@
 	<s:String x:Key="/Default/Housekeeping/OptionsDialog/SelectedPageId/@EntryValue">CSharpOtherPage</s:String>
 	<s:Boolean x:Key="/Default/Housekeeping/RefactoringsMru/RenameRefactoring/DoRenameType/@EntryValue">False</s:Boolean>
 	<s:Int64 x:Key="/Default/Housekeeping/UnitTestingMru/UnitTestSessionDefault/OutputLineNumberLimit/@EntryValue">99999</s:Int64>
-	<s:Boolean x:Key="/Default/RiderDebugger/RiderRestoreDecompile/RestoreDecompileSetting/@EntryValue">False</s:Boolean></wpf:ResourceDictionary>
+	<s:Boolean x:Key="/Default/RiderDebugger/RiderRestoreDecompile/RestoreDecompileSetting/@EntryValue">False</s:Boolean>
+</wpf:ResourceDictionary>

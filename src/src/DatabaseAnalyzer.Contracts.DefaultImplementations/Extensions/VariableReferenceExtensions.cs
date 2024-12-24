@@ -5,10 +5,15 @@ namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 public static class VariableReferenceExtensions
 {
     public static DeclareVariableElement? TryGetVariableDeclaration(this VariableReference reference, IScriptModel script)
-        => reference.TryGetVariableDeclaration(script.ParentFragmentProvider);
+    {
+        ArgumentNullException.ThrowIfNull(script);
+        return reference.TryGetVariableDeclaration(script.ParentFragmentProvider);
+    }
 
     public static DeclareVariableElement? TryGetVariableDeclaration(this VariableReference reference, IParentFragmentProvider parentFragmentProvider)
     {
+        ArgumentNullException.ThrowIfNull(parentFragmentProvider);
+
         var rootFragment = reference
             .GetParents(parentFragmentProvider)
             .FirstOrDefault(IsStoppingFragment);

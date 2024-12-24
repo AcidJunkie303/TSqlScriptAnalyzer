@@ -98,8 +98,7 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
 
                 return table with
                 {
-                    ForeignKeys = [..table.ForeignKeys, .. tableForeignKeyConstraints],
-                    Indices = [..table.Indices, .. tableIndices]
+                    ForeignKeys = [..table.ForeignKeys, .. tableForeignKeyConstraints], Indices = [..table.Indices, .. tableIndices]
                 };
             })
             .ToList();

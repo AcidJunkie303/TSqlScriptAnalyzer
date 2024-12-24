@@ -2,10 +2,10 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing;
 
-internal sealed record FilteringColumn(
+public sealed record ColumnReference(
     string DatabaseName,
     string SchemaName,
-    string? TableName,
+    string TableName,
     string ColumnName,
     TableSourceType SourceType,
     TSqlFragment Fragment

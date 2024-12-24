@@ -1,8 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <!-- CA1515     Consider making public types internal -> fires constantly in this project although the output type is library and not exe -->
+        <NoWarn>CA1515</NoWarn>
+    </PropertyGroup>
+
     <ItemGroup>
         <ProjectReference Include="..\DatabaseAnalyzer.Common\DatabaseAnalyzer.Common.csproj"/>
         <ProjectReference Include="..\DatabaseAnalyzer.Contracts\DatabaseAnalyzer.Contracts.csproj"/>
     </ItemGroup>
+
     <ItemGroup>
         <Compile Remove="SqlParsing\TrackingSqlConcreteFragmentVisitor.generated.cs"/>
         <Compile Remove="SqlParsing\TrackingSqlFragmentVisitor.generated.cs"/>

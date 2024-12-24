@@ -1,3 +1,12 @@
 *.user
 obj
 bin
+workspace.xml
+usage.statistics.xml
+.idea/*
+!.idea/codeStyles/
+!.idea/dictionaries/
+!.idea/runConfigurations/
+!.idea/vcs.xml
+!.idea/misc.xml
+!.idea/modules.xml

@@ -9,7 +9,7 @@ namespace DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing;
 internal sealed class FilteringColumnFinder
 {
     private readonly string _defaultSchemaName;
-    private readonly List<FilteringColumn> _filteringColumns = [];
+    private readonly List<ColumnReference> _filteringColumns = [];
     private readonly IIssueReporter _issueReporter;
     private readonly IParentFragmentProvider _parentFragmentProvider;
     private readonly string _relativeScriptFilePath;
@@ -29,9 +29,9 @@ internal sealed class FilteringColumnFinder
         _parentFragmentProvider = parentFragmentProvider;
     }
 
-    public IEnumerable<FilteringColumn> Find(TSqlScript script)
+    public IEnumerable<ColumnReference> Find(TSqlScript script)
     {
-        var columnResolver = new ColumnResolver(_issueReporter, _script, _relativeScriptFilePath, _parentFragmentProvider, _defaultSchemaName);
+        var columnResolver = new TableColumnResolver(_issueReporter, _script, _relativeScriptFilePath, _parentFragmentProvider, _defaultSchemaName);
         var columnReferences = script.GetChildren<ColumnReferenceExpression>(recursive: true);
         foreach (var columnReference in columnReferences)
         {
@@ -41,7 +41,7 @@ internal sealed class FilteringColumnFinder
             }
 
             var column = columnResolver.Resolve(columnReference);
-            yield return column;
+            yield return new ColumnReference(column.DatabaseName, column.SchemaName, column.TableName, column.ColumnName, TableSourceType.NotDetermined, columnReference);
         }
     }
 
