@@ -1,3 +1,10 @@
 obj
 bin
 *.user
+.idea/*
+!.idea/codeStyles/
+!.idea/dictionaries/
+!.idea/runConfigurations/
+!.idea/vcs.xml
+!.idea/misc.xml
+!.idea/modules.xml
