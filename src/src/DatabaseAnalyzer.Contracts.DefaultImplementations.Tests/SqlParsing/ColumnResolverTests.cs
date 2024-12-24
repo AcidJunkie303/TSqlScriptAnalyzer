@@ -456,6 +456,42 @@ public sealed class ColumnResolverTests(ITestOutputHelper testOutputHelper)
     }
 
     [Fact]
+    public void WhenSelectWithCte_()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            ;WITH CTE AS
+                            (
+                                SELECT  *
+                                FROM    Table1
+                                WHERE   Value1 = 'Hello'
+                            )
+                            SELECT  *
+                            FROM    CTE c
+                            WHERE   █c.Value1█ = 'World';
+                            """;
+
+        // arrange
+        var (script, columnReference) = CreateScript(code);
+        var issueReporter = new FakeIssueReporter();
+        var sut = new ColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
+
+        // act
+        var column = sut.Resolve(columnReference);
+
+        // assert
+        column.Should().NotBeNull();
+        column!.DatabaseName.Should().Be("MyDb");
+        column.SchemaName.Should().Be("dbo");
+        column.ObjectName.Should().Be("CTE");
+        column.ColumnName.Should().Be("Value1");
+
+        // TDOO: the column class should have an additional property called 'SourceType' which in this case would indicate that it is a CTE and not a table
+    }
+
+    [Fact]
     public void WhenMerge_01()
     {
         const string code = """

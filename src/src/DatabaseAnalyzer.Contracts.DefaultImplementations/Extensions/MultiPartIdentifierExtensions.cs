@@ -12,17 +12,17 @@ public static class MultiPartIdentifierExtensions
             ? identifier.Identifiers[1].Value
             : defaultSchemaName;
 
-    public static (string? DatabaseName, string? SchemaName, string? ObjectName) GetIdentifierParts(this MultiPartIdentifier identifier)
+    public static (string? DatabaseName, string? SchemaName, string ObjectName) GetIdentifierParts(this MultiPartIdentifier identifier)
         => identifier.Count switch
         {
-            0 => (null, null, null),
-            1 => (null, null, identifier.Identifiers[0].Value),
-            2 => (null, identifier.Identifiers[0].Value, identifier.Identifiers[1].Value),
-            3 => (identifier.Identifiers[0].Value, identifier.Identifiers[1].Value, identifier.Identifiers[2].Value),
+            0 => throw new ArgumentException("The provided multi-part identifier has no elements", nameof(identifier)),
+            1 => (null, null, identifier.Identifiers[0].Value!),
+            2 => (null, identifier.Identifiers[0].Value, identifier.Identifiers[1].Value!),
+            3 => (identifier.Identifiers[0].Value, identifier.Identifiers[1].Value, identifier.Identifiers[2].Value!),
             _ => throw new ArgumentException($"The provided multi-part identifier has more than 3 parts: {identifier.Identifiers.Select(a => a.Value).StringJoin(".")}", nameof(identifier))
         };
 
-    public static (string? TableNameOrAlias, string? ColumnName) GetColumnReferenceParts(this MultiPartIdentifier identifier)
+    public static (string? TableNameOrAlias, string ColumnName) GetColumnReferenceParts(this MultiPartIdentifier identifier)
         => identifier.Count switch
         {
             0 => throw new ArgumentException("The provided multi-part identifier for a column is empty", nameof(identifier)),

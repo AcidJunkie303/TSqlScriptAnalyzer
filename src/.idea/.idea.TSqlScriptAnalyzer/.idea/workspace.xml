@@ -9,10 +9,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bc5c4f41-9446-4faf-a8e5-3c6d90b660d2" name="Changes" comment="partially implemented ColumnResolver">
+    <list default="true" id="bc5c4f41-9446-4faf-a8e5-3c6d90b660d2" name="Changes" comment="completed ColumnResolver">
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/FilteringColumn.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/TableSourceType.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TSqlScriptAnalyzer/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TSqlScriptAnalyzer/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/ColumnResolverTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations.Tests/SqlParsing/ColumnResolverTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/MultiPartIdentifierExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/Extensions/MultiPartIdentifierExtensions.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/ColumnResolver.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/ColumnResolver.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/FilteringColumnFinder.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/FilteringColumnFinder.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/FilteringColumnVisitor.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/FilteringColumnVisitorOld.cs" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -138,6 +144,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5a497ef51b924bcb82a5215076ef5ef5f2820/e3/612cf853/CollectionUtilities.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/9bec9f9b2c37455aa613b1130b4dcf614800/c9/e8c5c098/TableConfiguration.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/c73b3c6c598640c592fd3c6fa226c286e90908/ab/99c5b28a/List`1.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/c73b3c6c598640c592fd3c6fa226c286e90908/d0/9149ce9c/IReadOnlyList`1.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/cfa44797eaa14dc8ac0607480b08bb7cdc930/3c/06a47cdc/FrozenDictionary.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/0e/0099ef95/ParseUtils.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/df025c10c8a544d2ab5dbb9cc5a85d8d81d420/19/20629951/SqlCodeObjectRecursiveVisitor.cs" root0="FORCE_HIGHLIGHTING" />
@@ -191,6 +198,7 @@
     <setting file="mock://C:/projects/TSqlScriptAnalyzer/src/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/DefaultScopedSqlFragmentVisitor.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock://C:/projects/TSqlScriptAnalyzer/src/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/DefaultScopedSqlFragmentVisitor.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock://C:/projects/TSqlScriptAnalyzer/src/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/DefaultScopedSqlFragmentVisitor.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/projects/TSqlScriptAnalyzer/src/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/FilteringColumnFinder.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock://C:/projects/TSqlScriptAnalyzer/src/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/FilteringColumnVisitor.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock://C:/projects/TSqlScriptAnalyzer/src/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/FilteringColumnVisitor.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock://C:/projects/TSqlScriptAnalyzer/src/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/FilteringColumnVisitor.cs" root0="SKIP_HIGHLIGHTING" />
@@ -334,7 +342,7 @@
       <workItem from="1734550413050" duration="16832000" />
       <workItem from="1734597288445" duration="11568000" />
       <workItem from="1734622988545" duration="15664000" />
-      <workItem from="1734670175631" duration="71671000" />
+      <workItem from="1734670175631" duration="73931000" />
     </task>
     <task id="LOCAL-00001" summary="daily commit">
       <option name="closed" value="true" />
@@ -680,7 +688,15 @@
       <option name="project" value="LOCAL" />
       <updated>1734813614024</updated>
     </task>
-    <option name="localTasksCounter" value="44" />
+    <task id="LOCAL-00044" summary="completed ColumnResolver">
+      <option name="closed" value="true" />
+      <created>1734845762504</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1734845762504</updated>
+    </task>
+    <option name="localTasksCounter" value="45" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -719,7 +735,6 @@
   <component name="VcsManagerConfiguration">
     <option name="CHECK_NEW_TODO" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="simplified to analyze all at once" />
     <MESSAGE value="added:&#10;- double empty lines analyzer&#10;- tab character analyzer" />
     <MESSAGE value="added ObjectCreationWithoutOrAlterAnalyzer&#10;some cleanup" />
     <MESSAGE value="updated README.md" />
@@ -744,7 +759,8 @@
     <MESSAGE value="..." />
     <MESSAGE value="CTEs finally working (no cleanup done yet)" />
     <MESSAGE value="partially implemented ColumnResolver" />
-    <option name="LAST_COMMIT_MESSAGE" value="partially implemented ColumnResolver" />
+    <MESSAGE value="completed ColumnResolver" />
+    <option name="LAST_COMMIT_MESSAGE" value="completed ColumnResolver" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -829,198 +845,172 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/ColumnResolver.cs</url>
-          <line>433</line>
-          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\ColumnResolver.cs" containingFunctionPresentation="Method 'MatchesAliasOrTable'">
-            <startOffsets>
-              <option value="30869" />
-            </startOffsets>
-            <endOffsets>
-              <option value="30870" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="630" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/ColumnResolver.cs</url>
-          <line>416</line>
-          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\ColumnResolver.cs" containingFunctionPresentation="Method 'ResolveTarget'">
-            <startOffsets>
-              <option value="30163" />
-            </startOffsets>
-            <endOffsets>
-              <option value="30164" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="631" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/ColumnResolver.cs</url>
-          <line>102</line>
+          <line>35</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\ColumnResolver.cs" containingFunctionPresentation="Method 'Resolve'">
             <startOffsets>
-              <option value="17767" />
+              <option value="1573" />
             </startOffsets>
             <endOffsets>
-              <option value="17773" />
+              <option value="1579" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="640" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/ColumnResolver.cs</url>
-          <line>256</line>
+          <line>179</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\ColumnResolver.cs" containingFunctionPresentation="Method 'CheckTableReference'">
             <startOffsets>
-              <option value="23744" />
+              <option value="7207" />
             </startOffsets>
             <endOffsets>
-              <option value="23859" />
+              <option value="7309" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="646" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/ColumnResolver.cs</url>
-          <line>262</line>
+          <line>185</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\ColumnResolver.cs" containingFunctionPresentation="Method 'CheckTableReference'">
             <startOffsets>
-              <option value="24002" />
+              <option value="7452" />
             </startOffsets>
             <endOffsets>
-              <option value="24014" />
+              <option value="7464" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="647" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/ColumnResolver.cs</url>
-          <line>229</line>
+          <line>152</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\ColumnResolver.cs" containingFunctionPresentation="Method 'Check'">
             <startOffsets>
-              <option value="22423" />
+              <option value="5886" />
             </startOffsets>
             <endOffsets>
-              <option value="22446" />
+              <option value="5909" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="651" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/ColumnResolver.cs</url>
-          <line>105</line>
+          <line>38</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\ColumnResolver.cs" containingFunctionPresentation="Method 'Resolve'">
             <startOffsets>
-              <option value="17801" />
+              <option value="1607" />
             </startOffsets>
             <endOffsets>
-              <option value="18625" />
+              <option value="2323" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="663" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/ColumnResolver.cs</url>
-          <line>242</line>
+          <line>165</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\ColumnResolver.cs" containingFunctionPresentation="Method 'CheckTableReference'">
             <startOffsets>
-              <option value="22989" />
+              <option value="6452" />
             </startOffsets>
             <endOffsets>
-              <option value="23021" />
+              <option value="6484" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="667" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/ColumnResolver.cs</url>
-          <line>178</line>
+          <line>101</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\ColumnResolver.cs" containingFunctionPresentation="Method 'Check'">
             <startOffsets>
-              <option value="20795" />
+              <option value="4258" />
             </startOffsets>
             <endOffsets>
-              <option value="20859" />
+              <option value="4322" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="668" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/ColumnResolver.cs</url>
-          <line>210</line>
+          <line>133</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\ColumnResolver.cs" containingFunctionPresentation="Method 'Check'">
             <startOffsets>
-              <option value="21846" />
+              <option value="5309" />
             </startOffsets>
             <endOffsets>
-              <option value="21847" />
+              <option value="5310" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="669" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/ColumnResolver.cs</url>
-          <line>170</line>
+          <line>93</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\ColumnResolver.cs" containingFunctionPresentation="Method 'Check'">
             <startOffsets>
-              <option value="20367" />
+              <option value="3827" />
             </startOffsets>
             <endOffsets>
-              <option value="20458" />
+              <option value="3922" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="671" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/ColumnResolver.cs</url>
-          <line>131</line>
+          <line>73</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\ColumnResolver.cs" containingFunctionPresentation="Method 'Check'">
             <startOffsets>
-              <option value="18940" />
+              <option value="3246" />
             </startOffsets>
             <endOffsets>
-              <option value="18952" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="675" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/ColumnResolver.cs</url>
-          <line>150</line>
-          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\ColumnResolver.cs" containingFunctionPresentation="Method 'Check'">
-            <startOffsets>
-              <option value="19783" />
-            </startOffsets>
-            <endOffsets>
-              <option value="19806" />
+              <option value="3269" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="677" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/ColumnResolver.cs</url>
-          <line>156</line>
+          <line>79</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\ColumnResolver.cs" containingFunctionPresentation="Method 'Check'">
             <startOffsets>
-              <option value="19885" />
+              <option value="3348" />
             </startOffsets>
             <endOffsets>
-              <option value="19979" />
+              <option value="3442" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="678" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/ColumnResolver.cs</url>
-          <line>152</line>
+          <line>75</line>
           <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\ColumnResolver.cs" containingFunctionPresentation="Method 'Check'">
             <startOffsets>
-              <option value="19837" />
+              <option value="3300" />
             </startOffsets>
             <endOffsets>
-              <option value="19851" />
+              <option value="3314" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="679" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/DatabaseAnalyzer.Contracts.DefaultImplementations/SqlParsing/ColumnResolver.cs</url>
+          <line>97</line>
+          <properties documentPath="C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.Contracts.DefaultImplementations\SqlParsing\ColumnResolver.cs" containingFunctionPresentation="Method 'Check'">
+            <startOffsets>
+              <option value="4049" />
+            </startOffsets>
+            <endOffsets>
+              <option value="4149" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="680" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
