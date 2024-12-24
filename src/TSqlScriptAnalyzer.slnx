@@ -15,5 +15,5 @@
   <Project Path="src\DatabaseAnalyzer.Testing\DatabaseAnalyzer.Testing.csproj" Type="Classic C#" />
   <Project Path="src\DatabaseAnalyzers.DefaultAnalyzers.Tests\DatabaseAnalyzers.DefaultAnalyzers.Tests.csproj" Type="Classic C#" />
   <Project Path="src\DatabaseAnalyzers.DefaultAnalyzers\DatabaseAnalyzers.DefaultAnalyzers.csproj" Type="Classic C#" />
-  <Project Path="tests\DatabaseAnalyzer.Testing.Tests\DatabaseAnalyzer.Testing.Tests.csproj" Type="Classic C#" />
+  <Project Path="src\DatabaseAnalyzer.Testing.Tests\DatabaseAnalyzer.Testing.Tests.csproj" Type="Classic C#" />
 </Solution>
