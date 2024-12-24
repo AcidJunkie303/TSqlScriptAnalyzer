@@ -9,14 +9,17 @@ public sealed partial class DiagnosticSuppressionExtractor : IDiagnosticSuppress
     private static readonly char[] DiagnosticIdSeparators = [';', ',', ' ', '\t'];
 
     public IEnumerable<DiagnosticSuppression> ExtractSuppressions(TSqlScript script)
-        => script.ScriptTokenStream.SelectMany(Extract);
+    {
+        ArgumentNullException.ThrowIfNull(script);
+        return script.ScriptTokenStream.SelectMany(Extract);
+    }
 
     [GeneratedRegex(@"#pragma\s+diagnostic\s+((?<disable>(disable))|(?<restore>restore))\s+(?<ids>[A-Za-z0-9, ]+)(\s*-> \s*(?<reason>.*))?", RegexOptions.ExplicitCapture, 100)]
     private static partial Regex DiagnosticSuppressionActionFinder();
 
     private static IEnumerable<DiagnosticSuppression> Extract(TSqlParserToken token)
     {
-        if ((token.TokenType != TSqlTokenType.MultilineComment) && (token.TokenType != TSqlTokenType.SingleLineComment))
+        if (token.TokenType is not TSqlTokenType.MultilineComment and not TSqlTokenType.SingleLineComment)
         {
             yield break;
         }

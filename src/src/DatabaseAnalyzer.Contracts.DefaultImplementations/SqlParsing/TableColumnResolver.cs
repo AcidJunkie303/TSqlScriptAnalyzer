@@ -27,6 +27,8 @@ public sealed class TableColumnResolver
 
     public ColumnReference? Resolve(ColumnReferenceExpression columnReferenceExpression)
     {
+        ArgumentNullException.ThrowIfNull(columnReferenceExpression);
+
         TSqlFragment? fragment = columnReferenceExpression;
         while (true)
         {

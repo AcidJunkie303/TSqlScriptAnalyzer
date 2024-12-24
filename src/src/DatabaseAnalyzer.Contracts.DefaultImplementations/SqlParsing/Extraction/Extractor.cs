@@ -4,18 +4,18 @@ namespace DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extractio
 
 internal abstract class Extractor<T>
 {
-    protected string DefaultSchemaName { get; }
-
     protected Extractor(string defaultSchemaName)
     {
         DefaultSchemaName = defaultSchemaName;
     }
 
+    protected string DefaultSchemaName { get; }
+
     public IEnumerable<T> Extract(IEnumerable<IScriptModel> scripts)
-        => scripts.SelectMany(script => Extract(script));
+        => scripts.SelectMany(Extract);
 
     public IEnumerable<T> Extract(IEnumerable<TSqlScript> scripts)
-        => scripts.SelectMany(script => Extract(script));
+        => scripts.SelectMany(Extract);
 
     public IReadOnlyList<T> Extract(IScriptModel script)
         => ExtractCore(script.ParsedScript);

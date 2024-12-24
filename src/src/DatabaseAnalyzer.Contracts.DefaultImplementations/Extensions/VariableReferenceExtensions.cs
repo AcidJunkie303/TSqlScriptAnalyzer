@@ -12,6 +12,7 @@ public static class VariableReferenceExtensions
 
     public static DeclareVariableElement? TryGetVariableDeclaration(this VariableReference reference, IParentFragmentProvider parentFragmentProvider)
     {
+        ArgumentNullException.ThrowIfNull(reference);
         ArgumentNullException.ThrowIfNull(parentFragmentProvider);
 
         var rootFragment = reference
@@ -40,12 +41,12 @@ public static class VariableReferenceExtensions
     {
         private readonly string _variableName;
 
-        public DeclareVariableElement? VariableDeclaration { get; private set; }
-
         public Visitor(string variableName)
         {
             _variableName = variableName;
         }
+
+        public DeclareVariableElement? VariableDeclaration { get; private set; }
 
         public override void Visit(DeclareVariableElement node)
         {

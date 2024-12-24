@@ -46,12 +46,18 @@ public static class StringExtensions
         => string.Equals(value, other, StringComparison.OrdinalIgnoreCase);
 
     public static string SimpleUnquoteSql(this string value)
-        => value
+    {
+        ArgumentNullException.ThrowIfNull(value);
+
+        return value
             .Replace("[", string.Empty, StringComparison.Ordinal)
             .Replace("]", string.Empty, StringComparison.Ordinal);
+    }
 
     public static (int LineIndex, int ColumnIndex) GetLineAndColumnIndex(this string text, int index)
     {
+        ArgumentNullException.ThrowIfNull(text);
+
         if (index >= text.Length)
         {
             ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, text.Length);
@@ -59,7 +65,7 @@ public static class StringExtensions
 
         var lineIndex = 0;
         var columnIndex = 0;
-        for (var i = 0; (i < index) && (i < text.Length); i++)
+        for (var i = 0; i < index && i < text.Length; i++)
         {
             if (text[i] == '\n')
             {
@@ -72,7 +78,7 @@ public static class StringExtensions
             }
         }
 
-        if ((index == text.Length - 1) && (text[index] == '\n'))
+        if (index == text.Length - 1 && text[index] == '\n')
         {
             lineIndex++;
             columnIndex = 0;

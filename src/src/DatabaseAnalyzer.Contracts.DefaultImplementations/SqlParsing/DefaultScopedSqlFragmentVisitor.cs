@@ -13,12 +13,14 @@ public abstract class DefaultScopedSqlFragmentVisitor : ScopedSqlFragmentVisitor
 
     public override void ExplicitVisit(QuerySpecification node)
     {
+        ArgumentNullException.ThrowIfNull(node);
+
         if (!TrackNodeAndCheck(node))
         {
             return;
         }
 
-        // Visit the FromClause first, if it exist(s
+        // Visit the FromClause first, if it exists
         // this is necessary because we need to know the source table first before diving into the other parts
         node.FromClause?.Accept(this);
 
@@ -37,6 +39,8 @@ public abstract class DefaultScopedSqlFragmentVisitor : ScopedSqlFragmentVisitor
 
     public override void ExplicitVisit(QualifiedJoin node)
     {
+        ArgumentNullException.ThrowIfNull(node);
+
         if (node.FirstTableReference is NamedTableReference firstTable && TrackNodeAndCheck(firstTable))
         {
             RegisterTableReference(firstTable);
@@ -52,6 +56,7 @@ public abstract class DefaultScopedSqlFragmentVisitor : ScopedSqlFragmentVisitor
 
     public override void ExplicitVisit(FromClause node)
     {
+        ArgumentNullException.ThrowIfNull(node);
         foreach (var namedTableReference in node.TableReferences.OfType<NamedTableReference>())
         {
             RegisterTableReference(namedTableReference);
@@ -90,6 +95,8 @@ public abstract class DefaultScopedSqlFragmentVisitor : ScopedSqlFragmentVisitor
 
     public override void ExplicitVisit(StatementWithCtesAndXmlNamespaces node)
     {
+        ArgumentNullException.ThrowIfNull(node);
+
         if (!TrackNodeAndCheck(node))
         {
             return;

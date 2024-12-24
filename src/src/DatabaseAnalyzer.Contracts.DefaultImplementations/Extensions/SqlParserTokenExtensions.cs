@@ -6,6 +6,8 @@ public static class SqlParserTokenExtensions
 {
     public static CodeRegion GetCodeRegion(this TSqlParserToken token)
     {
+        ArgumentNullException.ThrowIfNull(token);
+
         if (token.Text is null)
         {
             return CodeRegion.Create(token.Line, token.Column, token.Line, token.Column);

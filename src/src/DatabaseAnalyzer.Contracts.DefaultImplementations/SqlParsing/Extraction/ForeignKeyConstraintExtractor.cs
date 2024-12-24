@@ -34,15 +34,7 @@ internal sealed class ForeignKeyConstraintExtractor : Extractor<ForeignKeyConstr
 
         var tableSchemaName = statement.SchemaObjectName.SchemaIdentifier?.Value ?? DefaultSchemaName;
         var tableName = statement.SchemaObjectName.BaseIdentifier.Value!;
-        var calculatedDatabaseName =
-            statement.SchemaObjectName.DatabaseIdentifier?.Value
-            ?? databaseName;
-
-        if (calculatedDatabaseName is null)
-        {
-            throw CreateUnableToDetermineTheDatabaseNameException("table", $"{tableSchemaName}.{tableName}", statement.GetCodeRegion());
-        }
-
+        var calculatedDatabaseName = statement.SchemaObjectName.DatabaseIdentifier?.Value ?? databaseName ?? throw CreateUnableToDetermineTheDatabaseNameException("table", $"{tableSchemaName}.{tableName}", statement.GetCodeRegion());
         if (statement.Definition.TableConstraints.IsNullOrEmpty())
         {
             return null;

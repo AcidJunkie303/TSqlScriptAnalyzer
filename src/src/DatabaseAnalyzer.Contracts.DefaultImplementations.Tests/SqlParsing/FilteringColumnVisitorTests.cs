@@ -1,14 +1,8 @@
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing;
-using DatabaseAnalyzer.Testing;
-using FluentAssertions;
-using Xunit.Abstractions;
+// TODO: remove
+#pragma warning disable
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Tests.SqlParsing;
-
-// TODO: remove
-#pragma warning disable S125
+/*
 
 public sealed class FilteringColumnVisitorTests(ITestOutputHelper testOutputHelper)
 {
@@ -135,40 +129,6 @@ public sealed class FilteringColumnVisitorTests(ITestOutputHelper testOutputHelp
         sut.FilteringColumns.Should().HaveCount(4);
     }
 
-    [Fact]
-    public void Test___()
-    {
-        const string code = """
-                            USE MyDb
-                            GO
-
-                            delete t1
-                            FROM Table1 t1
-                            inner join Table2 t2 on t2.Id = t1.id
-                            where t2.Value2 = 303
-
-                            """;
-
-        // arrange
-        var script = CreateScript(code);
-        var filteringColumnExpressionFinder = new FilteringColumnExpressionFinder("dbo", script.ParsedScript);
-        filteringColumnExpressionFinder.ExplicitVisit(script.ParsedScript);
-        var filteringColumns = filteringColumnExpressionFinder.Columns;
-        filteringColumns.Should().NotBeNull();
-/*
-        var resolver = new ColumnResolver(script.ParsedScript);
-        foreach (var filteringColumn in filteringColumns)
-        {
-            var column = resolver.ResolveColumnSource(filteringColumn.Column);
-            if (column.ObjectName is null)
-            {
-                continue;
-            }
-
-            testOutputHelper.WriteLine($"{filteringColumn.Column.MultiPartIdentifier.ToUnquotedIdentifier()}    ->    {column.DatabaseName}.{column.SchemaName}.{column.ObjectName}");
-        }
-*/
-        // assert
     }
 
     [Fact]
@@ -191,9 +151,9 @@ public sealed class FilteringColumnVisitorTests(ITestOutputHelper testOutputHelp
                             *
                             from T1 table1
                             WHERE Value1 = (
-                            	SELECT TOP 1 Value2
-                            	FROM T2 table2
-                            	WHERE table1.Id = 3
+                                SELECT TOP 1 Value2
+                                FROM T2 table2
+                                WHERE table1.Id = 3
                             )
 
                             UPDATE t
@@ -350,44 +310,45 @@ public sealed class FilteringColumnVisitorTests(ITestOutputHelper testOutputHelp
         );
     }
 
-    /* TEMPLATE
 
-    [Fact]
-    public void ToDo()
-    {
-        const string code = """
-                            USE MyDb
-                            GO
+// //  TEMPLATE
+//    [Fact]
+//    public void ToDo()
+//    {
+//        const string code = """
+//                            USE MyDb
+//                            GO
+//
+//                            SELECT
+//                                        p.Id            'PersonId',
+//                                        p.DepartmentId  'DepartmentId',
+//                                        p.Name          'PersonName',
+//                                        d.Name          'DepartmentName'
+//                            FROM        Person          p
+//                            INNER JOIN  Department      d ON p.DepartmentId = d.DepartmentId
+//                            WHERE       p.Name = N'Uribubu'
+//                            """;
+//
+//        // arrange
+//        var script = CreateScript(code);
+//        var sut = new FilteringColumnVisitor("dbo");
+//
+//        // act
+//        sut.ExplicitVisit(script.ParsedScript);
+//
+//        // assert
+//        sut.FilteringColumns.Should().ContainEquivalentOf(
+//            new FilteringColumnVisitor.FilteringColumn("MyDb", "dbo", "Person", "Name", null!),
+//            options => options.Excluding(p => p.Fragment));
+//        sut.FilteringColumns.Should().ContainEquivalentOf(
+//            new FilteringColumnVisitor.FilteringColumn("MyDb", "dbo", "Person", "DepartmentId", null!),
+//            options => options.Excluding(p => p.Fragment));
+//        sut.FilteringColumns.Should().ContainEquivalentOf(
+//            new FilteringColumnVisitor.FilteringColumn("MyDb", "dbo", "Department", "DepartmentId", null!),
+//            options => options.Excluding(p => p.Fragment));
+//
+//        sut.FilteringColumns.Should().HaveCount(3);
+//    }
 
-                            SELECT
-                                        p.Id            'PersonId',
-                                        p.DepartmentId  'DepartmentId',
-                                        p.Name          'PersonName',
-                                        d.Name          'DepartmentName'
-                            FROM        Person          p
-                            INNER JOIN  Department      d ON p.DepartmentId = d.DepartmentId
-                            WHERE       p.Name = N'Uribubu'
-                            """;
-
-        // arrange
-        var script = CreateScript(code);
-        var sut = new FilteringColumnVisitor("dbo");
-
-        // act
-        sut.ExplicitVisit(script.ParsedScript);
-
-        // assert
-        sut.FilteringColumns.Should().ContainEquivalentOf(
-            new FilteringColumnVisitor.FilteringColumn("MyDb", "dbo", "Person", "Name", null!),
-            options => options.Excluding(p => p.Fragment));
-        sut.FilteringColumns.Should().ContainEquivalentOf(
-            new FilteringColumnVisitor.FilteringColumn("MyDb", "dbo", "Person", "DepartmentId", null!),
-            options => options.Excluding(p => p.Fragment));
-        sut.FilteringColumns.Should().ContainEquivalentOf(
-            new FilteringColumnVisitor.FilteringColumn("MyDb", "dbo", "Department", "DepartmentId", null!),
-            options => options.Excluding(p => p.Fragment));
-
-        sut.FilteringColumns.Should().HaveCount(3);
-    }
-*/
 }
+*/

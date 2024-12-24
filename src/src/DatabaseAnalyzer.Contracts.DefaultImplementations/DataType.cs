@@ -7,6 +7,8 @@ public sealed class DataType : IDataType
 {
     public DataType(string name, int? argument1, int? argument2)
     {
+        ArgumentNullException.ThrowIfNull(name);
+
         var upperCaseName = name.ToUpperInvariant();
         Name = upperCaseName;
         Argument1 = argument1;

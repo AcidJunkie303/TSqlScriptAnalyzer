@@ -11,6 +11,8 @@ public static class SqlScriptExtensions
     public static IEnumerable<T> GetTopLevelDescendantsOfType<T>(this TSqlScript script)
         where T : TSqlFragment
     {
+        ArgumentNullException.ThrowIfNull(script);
+
         var visitor = new GetTopLevelDescendantVisitor<T>();
         script.Accept(visitor);
         return visitor.Nodes;

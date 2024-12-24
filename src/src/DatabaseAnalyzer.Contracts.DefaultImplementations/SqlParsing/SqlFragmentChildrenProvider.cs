@@ -10,6 +10,8 @@ public static class SqlFragmentChildrenProvider
     public static IReadOnlyList<T> GetChildren<T>(TSqlFragment fragment, bool recursive = false, Func<TSqlFragment, bool>? continueBranchRecursionPredicate = null)
         where T : TSqlFragment
     {
+        ArgumentNullException.ThrowIfNull(fragment);
+
         var visitor = new RecursiveVisitor<T>(fragment, recursive, continueBranchRecursionPredicate);
         fragment.Accept(visitor);
         return visitor.Children;
@@ -24,14 +26,14 @@ public static class SqlFragmentChildrenProvider
         private readonly HashSet<TSqlFragment> _visited = [];
         private int _currentDepth;
 
-        public List<T> Children { get; } = [];
-
         public RecursiveVisitor(TSqlFragment root, bool isRecursive, Func<TSqlFragment, bool>? continueBranchRecursionPredicate)
         {
             _root = root;
             _isRecursive = isRecursive;
             _continueBranchRecursionPredicate = continueBranchRecursionPredicate ?? (_ => true);
         }
+
+        public List<T> Children { get; } = [];
 
         public override void Visit(TSqlFragment fragment)
         {
@@ -52,7 +54,7 @@ public static class SqlFragmentChildrenProvider
                 return;
             }
 
-            if (!_isRecursive && (_currentDepth > 0))
+            if (!_isRecursive && _currentDepth > 0)
             {
                 return;
             }

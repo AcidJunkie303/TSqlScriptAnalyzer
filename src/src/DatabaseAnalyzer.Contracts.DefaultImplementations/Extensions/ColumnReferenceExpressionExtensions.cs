@@ -5,5 +5,9 @@ namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 public static class ColumnReferenceExpressionExtensions
 {
     public static string GetReferenceName(this ColumnReferenceExpression expression)
-        => string.Join(".", expression.MultiPartIdentifier.Identifiers.Select(a => a.Value));
+    {
+        ArgumentNullException.ThrowIfNull(expression);
+
+        return string.Join('.', expression.MultiPartIdentifier.Identifiers.Select(a => a.Value));
+    }
 }

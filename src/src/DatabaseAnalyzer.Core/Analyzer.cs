@@ -96,10 +96,10 @@ internal sealed class Analyzer : IAnalyzer
         var unsuppressedIssues = new List<IIssue>(issues.Count);
         var suppressedIssues = new List<SuppressedIssue>(issues.Count);
 
-        foreach (var scriptAndIssues in AggregateScriptsAndIssues(scripts, issues))
+        foreach (var (script, scriptIssues) in AggregateScriptsAndIssues(scripts, issues))
         {
             var (currentUnsuppressedIssues, currentSuppressedIssues)
-                = DiagnosticSuppressionFilterer.Filter(scriptAndIssues.Script, scriptAndIssues.Issues);
+                = DiagnosticSuppressionFilterer.Filter(script, scriptIssues);
             unsuppressedIssues.AddRange(currentUnsuppressedIssues);
             suppressedIssues.AddRange(currentSuppressedIssues);
         }

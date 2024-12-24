@@ -11,8 +11,11 @@ public static class CollectionExtensions
             .Where(a => a is not null)
             .Select(a => a!);
 
-    public static (T Item, int Index ) FirstOrDefaultWithIndex<T>(this IEnumerable<T> items, Predicate<T> predicate)
+    public static (T Item, int Index) FirstOrDefaultWithIndex<T>(this IEnumerable<T> items, Predicate<T> predicate)
     {
+        ArgumentNullException.ThrowIfNull(items);
+        ArgumentNullException.ThrowIfNull(predicate);
+
         var index = 0;
 
         foreach (var item in items)
@@ -42,11 +45,11 @@ public static class CollectionExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsNullOrEmpty<T>([NotNullWhen(false)] this IReadOnlyCollection<T>? items)
-        => items is null || (items.Count == 0);
+        => items is null || items.Count == 0;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsNullOrEmpty<T>([NotNullWhen(false)] this IList<T>? items)
-        => items is null || (items.Count == 0);
+        => items is null || items.Count == 0;
 
     public static string StringJoin<T>(this IEnumerable<T> items, string separator)
         => string.Join(separator, items);

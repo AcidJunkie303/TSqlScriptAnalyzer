@@ -10,6 +10,8 @@ public static class SqlFragmentExtensions
 {
     public static CodeRegion GetCodeRegion(this TSqlFragment fragment)
     {
+        ArgumentNullException.ThrowIfNull(fragment);
+
         var firstTokenRegion = fragment.ScriptTokenStream[fragment.FirstTokenIndex].GetCodeRegion();
         var lastTokenRegion = fragment.ScriptTokenStream[fragment.LastTokenIndex].GetCodeRegion();
 
@@ -25,6 +27,8 @@ public static class SqlFragmentExtensions
 
     public static string GetSql(this TSqlFragment fragment)
     {
+        ArgumentNullException.ThrowIfNull(fragment);
+
         var tokens = fragment.ScriptTokenStream;
         var startIndex = fragment.FirstTokenIndex;
         var endIndex = fragment.LastTokenIndex;
@@ -42,10 +46,17 @@ public static class SqlFragmentExtensions
     }
 
     public static string? TryGetFirstClassObjectName(this TSqlFragment fragment, IAnalysisContext context, IScriptModel script)
-        => fragment.TryGetFirstClassObjectName(context.DefaultSchemaName, script.ParentFragmentProvider);
+    {
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(script);
+
+        return fragment.TryGetFirstClassObjectName(context.DefaultSchemaName, script.ParentFragmentProvider);
+    }
 
     public static string? TryGetFirstClassObjectName(this TSqlFragment fragment, string defaultSchemaName, IParentFragmentProvider parentFragmentProvider)
     {
+        ArgumentNullException.ThrowIfNull(parentFragmentProvider);
+
         foreach (var parent in parentFragmentProvider.GetParents(fragment).Prepend(fragment))
         {
             var name = TryGetFirstClassObjectNameCore(parent, defaultSchemaName);
@@ -70,16 +81,32 @@ public static class SqlFragmentExtensions
         };
 
     public static IEnumerable<TSqlFragment> GetParents(this TSqlFragment fragment, IScriptModel script)
-        => fragment.GetParents(script.ParentFragmentProvider);
+    {
+        ArgumentNullException.ThrowIfNull(script);
+
+        return fragment.GetParents(script.ParentFragmentProvider);
+    }
 
     public static IEnumerable<TSqlFragment> GetParents(this TSqlFragment fragment, IParentFragmentProvider parentFragmentProvider)
-        => parentFragmentProvider.GetParents(fragment);
+    {
+        ArgumentNullException.ThrowIfNull(parentFragmentProvider);
+
+        return parentFragmentProvider.GetParents(fragment);
+    }
 
     public static TSqlFragment? GetParent(this TSqlFragment fragment, IScriptModel script)
-        => fragment.GetParent(script.ParentFragmentProvider);
+    {
+        ArgumentNullException.ThrowIfNull(script);
+
+        return fragment.GetParent(script.ParentFragmentProvider);
+    }
 
     public static TSqlFragment? GetParent(this TSqlFragment fragment, IParentFragmentProvider parentFragmentProvider)
-        => parentFragmentProvider.GetParent(fragment);
+    {
+        ArgumentNullException.ThrowIfNull(parentFragmentProvider);
+
+        return parentFragmentProvider.GetParent(fragment);
+    }
 
     /// <summary>
     ///     Retrieves the preceding sibling fragments of the specified T-SQL fragment
@@ -135,7 +162,11 @@ public static class SqlFragmentExtensions
     }
 
     public static TSqlFragment? TryGetSqlFragmentAtPosition(this TSqlScript script, TSqlParserToken token)
-        => script.TryGetSqlFragmentAtPosition(token.Line, token.Column);
+    {
+        ArgumentNullException.ThrowIfNull(token);
+
+        return script.TryGetSqlFragmentAtPosition(token.Line, token.Column);
+    }
 
     public static TSqlFragment? TryGetSqlFragmentAtPosition(this TSqlScript script, int index)
     {
@@ -155,8 +186,8 @@ public static class SqlFragmentExtensions
         static bool IsIndexInsideFragment(int index, TSqlFragment fragment)
         {
             var fragmentEndOffset = fragment.StartOffset + fragment.FragmentLength;
-            return (index >= fragment.StartOffset)
-                   && (index <= fragmentEndOffset);
+            return index >= fragment.StartOffset
+                   && index <= fragmentEndOffset;
         }
     }
 

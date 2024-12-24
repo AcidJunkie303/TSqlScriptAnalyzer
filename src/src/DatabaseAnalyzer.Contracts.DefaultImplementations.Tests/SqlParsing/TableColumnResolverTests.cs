@@ -38,7 +38,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
         column.Should().NotBeNull();
         column!.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
-        column.ObjectName.Should().Be("Table1");
+        column.TableName.Should().Be("Table1");
         column.ColumnName.Should().Be("Value3");
     }
 
@@ -65,7 +65,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
         column.Should().NotBeNull();
         column!.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
-        column.ObjectName.Should().Be("Table1");
+        column.TableName.Should().Be("Table1");
         column.ColumnName.Should().Be("Value3");
     }
 
@@ -93,7 +93,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
         column.Should().NotBeNull();
         column!.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
-        column.ObjectName.Should().Be("Table1");
+        column.TableName.Should().Be("Table1");
         column.ColumnName.Should().Be("Value1");
     }
 
@@ -123,7 +123,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
         column.Should().NotBeNull();
         column!.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
-        column.ObjectName.Should().Be("Table3");
+        column.TableName.Should().Be("Table3");
         column.ColumnName.Should().Be("Value3");
     }
 
@@ -154,7 +154,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
         column.Should().NotBeNull();
         column!.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
-        column.ObjectName.Should().Be("Table2");
+        column.TableName.Should().Be("Table2");
         column.ColumnName.Should().Be("id");
     }
 
@@ -182,7 +182,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
         column.Should().NotBeNull();
         column!.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
-        column.ObjectName.Should().Be("Table1");
+        column.TableName.Should().Be("Table1");
         column.ColumnName.Should().Be("Value1");
     }
 
@@ -210,7 +210,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
         column.Should().NotBeNull();
         column!.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
-        column.ObjectName.Should().Be("Table1");
+        column.TableName.Should().Be("Table1");
         column.ColumnName.Should().Be("Value1");
     }
 
@@ -241,7 +241,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
         column.Should().NotBeNull();
         column!.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
-        column.ObjectName.Should().Be("Table4");
+        column.TableName.Should().Be("Table4");
         column.ColumnName.Should().Be("Value4");
     }
 
@@ -274,7 +274,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
         column.Should().NotBeNull();
         column!.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
-        column.ObjectName.Should().Be("Table1");
+        column.TableName.Should().Be("Table1");
         column.ColumnName.Should().Be("Id");
     }
 
@@ -305,7 +305,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
         column.Should().NotBeNull();
         column!.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
-        column.ObjectName.Should().Be("Table3");
+        column.TableName.Should().Be("Table3");
         column.ColumnName.Should().Be("ID");
     }
 
@@ -334,7 +334,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
         column.Should().NotBeNull();
         column!.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
-        column.ObjectName.Should().Be("Table2");
+        column.TableName.Should().Be("Table2");
         column.ColumnName.Should().Be("Id");
     }
 
@@ -362,7 +362,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
         column.Should().NotBeNull();
         column!.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
-        column.ObjectName.Should().Be("Table1");
+        column.TableName.Should().Be("Table1");
         column.ColumnName.Should().Be("Id");
     }
 
@@ -391,7 +391,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
         column.Should().NotBeNull();
         column!.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
-        column.ObjectName.Should().Be("Table1");
+        column.TableName.Should().Be("Table1");
         column.ColumnName.Should().Be("Id");
     }
 
@@ -421,7 +421,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
         column.Should().NotBeNull();
         column!.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
-        column.ObjectName.Should().Be("Table2");
+        column.TableName.Should().Be("Table2");
         column.ColumnName.Should().Be("Value2");
     }
 
@@ -451,7 +451,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
         column.Should().NotBeNull();
         column!.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
-        column.ObjectName.Should().Be("Table1");
+        column.TableName.Should().Be("Table1");
         column.ColumnName.Should().Be("Id");
     }
 
@@ -485,7 +485,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
         column.Should().NotBeNull();
         column!.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
-        column.ObjectName.Should().Be("CTE");
+        column.TableName.Should().Be("CTE");
         column.ColumnName.Should().Be("Value1");
 
         // TDOO: the column class should have an additional property called 'SourceType' which in this case would indicate that it is a CTE and not a table
@@ -521,7 +521,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
         column.Should().NotBeNull();
         column!.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
-        column.ObjectName.Should().Be("Table2");
+        column.TableName.Should().Be("Table2");
         column.ColumnName.Should().Be("Id");
     }
 
@@ -556,7 +556,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
         column.Should().NotBeNull();
         column!.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
-        column.ObjectName.Should().Be("Table1");
+        column.TableName.Should().Be("Table1");
         column.ColumnName.Should().Be("IsActive");
     }
 
@@ -591,7 +591,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
         column.Should().NotBeNull();
         column!.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
-        column.ObjectName.Should().Be("Table1");
+        column.TableName.Should().Be("Table1");
         column.ColumnName.Should().Be("Status");
     }
 
@@ -632,7 +632,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
         {
             var startIndex = code.IndexOf('█', StringComparison.Ordinal); // string comparision required because of analyzer
             var endIndex = code.IndexOf('█', startIndex + 1); // no overload for string comparision :(
-            if ((startIndex < 0) || (endIndex < 0))
+            if (startIndex < 0 || endIndex < 0)
             {
                 throw new ArgumentException("The SQL code does not contain contain two markup markers '█'", nameof(code));
             }

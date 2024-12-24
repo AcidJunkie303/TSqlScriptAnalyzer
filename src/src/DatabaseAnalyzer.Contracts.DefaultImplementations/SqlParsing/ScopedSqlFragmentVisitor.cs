@@ -14,25 +14,25 @@ public abstract class ScopedSqlFragmentVisitor : DatabaseAwareFragmentVisitor
         TempTable = 3
     }
 
-    protected ScopeCollection Scopes { get; } = new();
-
     protected ScopedSqlFragmentVisitor(string defaultSchemaName) : base(defaultSchemaName)
     {
     }
+
+    protected ScopeCollection Scopes { get; } = new();
 
     protected sealed class Scope
     {
         private readonly HashSet<string> _commonTableExpressionNames = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, TableAndAlias> _tableReferencesByFullNameOrAlias = new(StringComparer.OrdinalIgnoreCase);
 
-        public IReadOnlyDictionary<string, TableAndAlias> TableReferencesByFullNameOrAlias => _tableReferencesByFullNameOrAlias;
-        public IReadOnlySet<string> CommonTableExpressionNames => _commonTableExpressionNames;
-        public TSqlFragment Owner { get; }
-
         public Scope(TSqlFragment owner)
         {
             Owner = owner;
         }
+
+        public IReadOnlyDictionary<string, TableAndAlias> TableReferencesByFullNameOrAlias => _tableReferencesByFullNameOrAlias;
+        public IReadOnlySet<string> CommonTableExpressionNames => _commonTableExpressionNames;
+        public TSqlFragment Owner { get; }
 
         public Scope RegisterCommonTableExpressionName(string expressionName)
         {
@@ -42,6 +42,8 @@ public abstract class ScopedSqlFragmentVisitor : DatabaseAwareFragmentVisitor
 
         public Scope RegisterTableAlias(string? alias, SchemaObjectName schemaObjectName, string currentDatabaseName, string defaultSchemaName, SourceType sourceType)
         {
+            ArgumentNullException.ThrowIfNull(schemaObjectName);
+
             var databaseName = schemaObjectName.DatabaseIdentifier?.Value ?? currentDatabaseName;
             var schemaName = schemaObjectName.SchemaIdentifier?.Value ?? defaultSchemaName;
             var tableName = schemaObjectName.BaseIdentifier.Value;

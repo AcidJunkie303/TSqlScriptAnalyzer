@@ -1,12 +1,9 @@
 using System.Collections.Immutable;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Services;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 
 public sealed class Issue : IIssue
 {
-    public string DatabaseName { get; }
-
     private Issue(
         IDiagnosticDefinition diagnosticDefinition,
         string databaseName,
@@ -25,6 +22,8 @@ public sealed class Issue : IIssue
         Message = message;
     }
 
+    public string DatabaseName { get; }
+
     public IDiagnosticDefinition DiagnosticDefinition { get; }
     public string RelativeScriptFilePath { get; }
     public string? ObjectName { get; }
@@ -34,6 +33,9 @@ public sealed class Issue : IIssue
 
     public static Issue Create(IDiagnosticDefinition diagnosticDefinition, string databaseName, string relativeScriptFilePath, string? fullObjectName, CodeRegion codeRegion, params IReadOnlyList<object> insertions)
     {
+        ArgumentNullException.ThrowIfNull(diagnosticDefinition);
+        ArgumentNullException.ThrowIfNull(insertions);
+
         var expectedInsertionCount = InsertionStringHelpers.CountInsertionStringPlaceholders(diagnosticDefinition.MessageTemplate);
         if (expectedInsertionCount != insertions.Count)
         {
