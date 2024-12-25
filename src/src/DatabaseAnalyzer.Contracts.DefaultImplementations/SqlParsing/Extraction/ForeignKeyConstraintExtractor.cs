@@ -4,13 +4,13 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction;
 
-internal sealed class ForeignKeyConstraintExtractor : Extractor<ForeignKeyConstraintInformation>
+public sealed class ForeignKeyConstraintExtractor : Extractor<ForeignKeyConstraintInformation>
 {
     public ForeignKeyConstraintExtractor(string defaultSchemaName) : base(defaultSchemaName)
     {
     }
 
-    protected override List<ForeignKeyConstraintInformation> ExtractCore(TSqlScript script)
+    protected override List<ForeignKeyConstraintInformation> ExtractCore(TSqlScript script, string relativeScriptFilePath)
     {
         var visitor = new ObjectExtractorVisitor<AlterTableAddTableElementStatement>(DefaultSchemaName);
         script.AcceptChildren(visitor);

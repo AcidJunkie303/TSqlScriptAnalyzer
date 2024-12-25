@@ -6,5 +6,6 @@ public sealed record TableInformation(
     string TableName,
     IReadOnlyList<ColumnInformation> Columns,
     IReadOnlyList<IndexInformation> Indices,
-    IReadOnlyList<ForeignKeyConstraintInformation> ForeignKeys
+    IReadOnlyList<ForeignKeyConstraintInformation> ForeignKeys,
+    string RelativeScriptFilePath
 ) : ISchemaBoundObject;

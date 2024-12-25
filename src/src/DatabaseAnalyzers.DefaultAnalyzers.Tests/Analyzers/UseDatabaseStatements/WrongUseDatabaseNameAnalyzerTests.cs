@@ -43,6 +43,6 @@ public sealed class WrongUseDatabaseNameAnalyzerTests(ITestOutputHelper testOutp
             ExcludedFilePathPatterns = ["main.sql"]
         }.ToSettings();
 
-        Verify(code, settings);
+        Verify(settings, code);
     }
 }

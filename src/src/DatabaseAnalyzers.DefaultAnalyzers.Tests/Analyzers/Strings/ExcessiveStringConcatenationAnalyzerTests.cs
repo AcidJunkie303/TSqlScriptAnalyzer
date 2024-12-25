@@ -65,7 +65,7 @@ public sealed class ExcessiveStringConcatenationAnalyzerTests(ITestOutputHelper 
 
         var settings = new Aj5001Settings(1);
 
-        Verify(code, settings);
+        Verify(settings, code);
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public sealed class ExcessiveStringConcatenationAnalyzerTests(ITestOutputHelper 
 
         var settings = new Aj5001Settings(1);
 
-        Verify(code, settings);
+        Verify(settings, code);
     }
 
     [Fact]

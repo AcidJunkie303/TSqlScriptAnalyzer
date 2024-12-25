@@ -4,21 +4,21 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction;
 
-internal sealed class TableExtractor : Extractor<TableInformation>
+public sealed class TableExtractor : Extractor<TableInformation>
 {
     public TableExtractor(string defaultSchemaName) : base(defaultSchemaName)
     {
     }
 
-    protected override List<TableInformation> ExtractCore(TSqlScript script)
+    protected override List<TableInformation> ExtractCore(TSqlScript script, string relativeScriptFilePath)
     {
         var visitor = new ObjectExtractorVisitor<CreateTableStatement>(DefaultSchemaName);
         script.AcceptChildren(visitor);
 
-        return visitor.Objects.ConvertAll(a => GetTable(a.Object, a.DatabaseName));
+        return visitor.Objects.ConvertAll(a => GetTable(a.Object, a.DatabaseName, relativeScriptFilePath));
     }
 
-    private TableInformation GetTable(CreateTableStatement statement, string? databaseName)
+    private TableInformation GetTable(CreateTableStatement statement, string? databaseName, string relativeScriptFilePath)
     {
         var tableSchemaName = statement.SchemaObjectName.SchemaIdentifier?.Value ?? DefaultSchemaName;
         var tableName = statement.SchemaObjectName.BaseIdentifier.Value!;
@@ -50,7 +50,8 @@ internal sealed class TableExtractor : Extractor<TableInformation>
                 .Select(a => GetColumn(a, calculatedDatabaseName, tableSchemaName, tableName))
                 .ToList(),
             GetIndices(statement, calculatedDatabaseName, tableSchemaName, tableName).Concat(uniqueColumnIndices).ToList(),
-            GetForeignKeyConstraints(statement, calculatedDatabaseName, tableSchemaName, tableName).ToList()
+            GetForeignKeyConstraints(statement, calculatedDatabaseName, tableSchemaName, tableName).ToList(),
+            relativeScriptFilePath
         );
     }
 

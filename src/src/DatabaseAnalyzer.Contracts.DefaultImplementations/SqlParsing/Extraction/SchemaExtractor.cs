@@ -9,7 +9,7 @@ internal sealed class SchemaExtractor : Extractor<SchemaInformation>
     {
     }
 
-    protected override List<SchemaInformation> ExtractCore(TSqlScript script)
+    protected override List<SchemaInformation> ExtractCore(TSqlScript script, string relativeScriptFilePath)
     {
         var visitor = new ObjectExtractorVisitor<CreateSchemaStatement>(DefaultSchemaName);
         script.AcceptChildren(visitor);

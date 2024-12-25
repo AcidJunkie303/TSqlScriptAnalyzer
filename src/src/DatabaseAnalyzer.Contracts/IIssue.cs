@@ -6,7 +6,7 @@ public interface IIssue
     string RelativeScriptFilePath { get; }
     string? ObjectName { get; }
     CodeRegion CodeRegion { get; }
-    IReadOnlyList<string> MessageInsertionStrings { get; }
+    IReadOnlyList<object> MessageInsertions { get; }
     string Message { get; }
     public string FullObjectNameOrFileName => ObjectName ?? Path.GetFileName(RelativeScriptFilePath) ?? "Unknown";
 }

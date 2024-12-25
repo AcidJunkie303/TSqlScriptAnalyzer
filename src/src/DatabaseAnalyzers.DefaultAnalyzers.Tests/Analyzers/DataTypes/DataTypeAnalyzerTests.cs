@@ -37,7 +37,7 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper)
                             );
                             """;
 
-        Verify(code, Settings);
+        Verify(Settings, code);
     }
 
     [Fact]
@@ -75,7 +75,7 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper)
                             )
                             """;
 
-        Verify(code, Settings);
+        Verify(Settings, code);
     }
 
     [Fact]
@@ -96,7 +96,7 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper)
                             END
                             """;
 
-        Verify(code, Settings);
+        Verify(Settings, code);
     }
 
     [Fact]
@@ -114,7 +114,7 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper)
                             END
                             """;
 
-        Verify(code, Settings);
+        Verify(Settings, code);
     }
 
     [Fact]
@@ -144,7 +144,7 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper)
                             END
                             """;
 
-        Verify(code, Settings);
+        Verify(Settings, code);
     }
 
     [Fact]
@@ -154,7 +154,7 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper)
                             DECLARE @Var INT
                             """;
 
-        Verify(code, Settings);
+        Verify(Settings, code);
     }
 
     [Fact]
@@ -166,6 +166,6 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper)
                             DECLARE █AJ5006░main.sql░░BIGINT░variables███@Var BIGINT█
                             """;
 
-        Verify(code, Settings);
+        Verify(Settings, code);
     }
 }

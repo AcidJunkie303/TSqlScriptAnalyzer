@@ -8,12 +8,14 @@ namespace DatabaseAnalyzer.Testing;
 public abstract class ScriptAnalyzerTestsBase<TAnalyzer>
     where TAnalyzer : class, IScriptAnalyzer, new()
 {
-    protected ITestOutputHelper TestOutputHelper { get; }
+    private int _scriptCounter;
 
     protected ScriptAnalyzerTestsBase(ITestOutputHelper testOutputHelper)
     {
         TestOutputHelper = testOutputHelper;
     }
+
+    protected ITestOutputHelper TestOutputHelper { get; }
 
     protected static ScriptAnalyzerTesterBuilder<TAnalyzer> GetDefaultTesterBuilder(string sql)
         => ScriptAnalyzerTesterBuilder
@@ -39,17 +41,46 @@ public abstract class ScriptAnalyzerTestsBase<TAnalyzer>
 
     protected void Verify(string sql) => Verify(GetDefaultTesterBuilder(sql).Build());
 
-    protected void Verify<TSettings>(string sql, TSettings settings)
-        where TSettings : class, ISettings<TSettings>
+    protected void Verify(params string[] scripts)
     {
-        var tester = GetDefaultTesterBuilder(sql)
-            .WithSettings(settings)
-            .Build();
+        if (scripts.Length == 0)
+        {
+            throw new ArgumentException("At least one script is required", nameof(scripts));
+        }
 
+        var builder = GetDefaultTesterBuilder(scripts[0]);
+        foreach (var scriptContent in scripts.Skip(1))
+        {
+            var scriptName = $"Script{_scriptCounter++}";
+            builder.AddAdditionalScriptFile(scriptContent, scriptName, "Db1");
+        }
+
+        var tester = builder.Build();
         Verify(tester);
     }
 
-    protected void VerifyWithDefaultSettings<TSettings>(string sql)
+    protected void Verify<TSettings>(TSettings settings, params string[] scripts)
         where TSettings : class, ISettings<TSettings>
-        => Verify(sql, TSettings.Default);
+    {
+        if (scripts.Length == 0)
+        {
+            throw new ArgumentException("At least one script is required", nameof(scripts));
+        }
+
+        var builder = GetDefaultTesterBuilder(scripts[0]);
+        foreach (var scriptContent in scripts.Skip(1))
+        {
+            var scriptName = $"Script{_scriptCounter++}";
+            builder.AddAdditionalScriptFile(scriptContent, scriptName, "Db1");
+        }
+
+        builder.WithSettings(settings);
+
+        var tester = builder.Build();
+        Verify(tester);
+    }
+
+    protected void VerifyWithDefaultSettings<TSettings>(params string[] scripts)
+        where TSettings : class, ISettings<TSettings>
+        => Verify(TSettings.Default, scripts);
 }

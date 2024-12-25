@@ -5,16 +5,16 @@ namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 
 public static class SqlScriptExtensions
 {
-    public static IParentFragmentProvider CreateParentFragmentProvider(this TSqlScript script)
-        => ParentFragmentProviderFactory.Build(script);
+    public static IParentFragmentProvider CreateParentFragmentProvider(this TSqlFragment fragment)
+        => ParentFragmentProviderFactory.Build(fragment);
 
-    public static IEnumerable<T> GetTopLevelDescendantsOfType<T>(this TSqlScript script)
+    public static IEnumerable<T> GetTopLevelDescendantsOfType<T>(this TSqlFragment fragment)
         where T : TSqlFragment
     {
-        ArgumentNullException.ThrowIfNull(script);
+        ArgumentNullException.ThrowIfNull(fragment);
 
         var visitor = new GetTopLevelDescendantVisitor<T>();
-        script.Accept(visitor);
+        fragment.Accept(visitor);
         return visitor.Nodes;
     }
 

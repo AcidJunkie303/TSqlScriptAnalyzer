@@ -30,7 +30,7 @@ public sealed class FunctionExtractorTests
         var sut = new FunctionExtractor(defaultSchema);
 
         // act
-        var functions = sut.Extract(script);
+        var functions = sut.Extract(script, "main.sql");
 
         // assert
         functions.Should().HaveCount(1);

@@ -26,7 +26,7 @@ public sealed class IndexExtractorTests
         var sut = new IndexExtractor(defaultSchema);
 
         // act
-        var indices = sut.Extract(script);
+        var indices = sut.Extract(script, "main.sql");
 
         // assert
         indices.Should().HaveCount(1);

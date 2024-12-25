@@ -1,5 +1,3 @@
-using System.Collections.Immutable;
-
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 
 public sealed class Issue : IIssue
@@ -10,7 +8,7 @@ public sealed class Issue : IIssue
         string relativeScriptFilePath,
         string? objectName,
         CodeRegion codeRegion,
-        IReadOnlyList<string> messageInsertionStrings,
+        IReadOnlyList<object> messageInsertionStrings,
         string message)
     {
         DiagnosticDefinition = diagnosticDefinition;
@@ -18,7 +16,7 @@ public sealed class Issue : IIssue
         RelativeScriptFilePath = relativeScriptFilePath;
         ObjectName = objectName;
         CodeRegion = codeRegion;
-        MessageInsertionStrings = messageInsertionStrings;
+        MessageInsertions = messageInsertionStrings;
         Message = message;
     }
 
@@ -28,7 +26,7 @@ public sealed class Issue : IIssue
     public string RelativeScriptFilePath { get; }
     public string? ObjectName { get; }
     public CodeRegion CodeRegion { get; }
-    public IReadOnlyList<string> MessageInsertionStrings { get; }
+    public IReadOnlyList<object> MessageInsertions { get; }
     public string Message { get; }
 
     public static Issue Create(IDiagnosticDefinition diagnosticDefinition, string databaseName, string relativeScriptFilePath, string? fullObjectName, CodeRegion codeRegion, params IReadOnlyList<object> insertions)
@@ -42,13 +40,10 @@ public sealed class Issue : IIssue
             throw new ArgumentException($"Expected {expectedInsertionCount} insertions, but got {insertions.Count}.", nameof(insertions));
         }
 
-        var messageInsertionStrings = ToStringArray(insertions);
+        var messageInsertionStrings = insertions
+            .Select(a => a.ToString() ?? string.Empty)
+            .ToList();
         var message = InsertionStringHelpers.FormatMessage(diagnosticDefinition.MessageTemplate, messageInsertionStrings);
         return new Issue(diagnosticDefinition, databaseName, relativeScriptFilePath, fullObjectName, codeRegion, messageInsertionStrings, message);
     }
-
-    private static ImmutableArray<string> ToStringArray(IReadOnlyCollection<object> insertionStrings)
-        => insertionStrings
-            .Select(a => a.ToString() ?? string.Empty)
-            .ToImmutableArray();
 }

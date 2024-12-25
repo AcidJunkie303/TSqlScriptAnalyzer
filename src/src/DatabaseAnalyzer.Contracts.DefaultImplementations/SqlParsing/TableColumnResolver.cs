@@ -11,7 +11,8 @@ public sealed class TableColumnResolver
     private readonly string _relativeScriptFilePath;
     private readonly TSqlScript _script;
 
-    public TableColumnResolver(IIssueReporter issueReporter, TSqlScript script, string relativeScriptFilePath, string defaultSchemaName) : this(issueReporter, script, relativeScriptFilePath, script.CreateParentFragmentProvider(), defaultSchemaName)
+    public TableColumnResolver(IIssueReporter issueReporter, TSqlScript script, string relativeScriptFilePath, string defaultSchemaName)
+        : this(issueReporter, script, relativeScriptFilePath, script.CreateParentFragmentProvider(), defaultSchemaName)
     {
         _relativeScriptFilePath = relativeScriptFilePath;
     }

@@ -26,7 +26,7 @@ public sealed class ProcedureExtractorTests
         var sut = new ProcedureExtractor(defaultSchema);
 
         // act
-        var procedures = sut.Extract(script);
+        var procedures = sut.Extract(script, "main.sql");
 
         // assert
         var procedure = procedures.Single();

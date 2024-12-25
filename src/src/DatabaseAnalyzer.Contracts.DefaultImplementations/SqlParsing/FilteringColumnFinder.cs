@@ -1,15 +1,12 @@
-// TODO: remove
-
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 #pragma warning disable
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing;
 
-internal sealed class FilteringColumnFinder
+public sealed class FilteringColumnFinder
 {
     private readonly string _defaultSchemaName;
-    private readonly List<ColumnReference> _filteringColumns = [];
     private readonly IIssueReporter _issueReporter;
     private readonly IParentFragmentProvider _parentFragmentProvider;
     private readonly string _relativeScriptFilePath;
@@ -29,10 +26,10 @@ internal sealed class FilteringColumnFinder
         _parentFragmentProvider = parentFragmentProvider;
     }
 
-    public IEnumerable<ColumnReference> Find(TSqlScript script)
+    public IEnumerable<ColumnReference> Find(TSqlFragment searchRoot)
     {
         var columnResolver = new TableColumnResolver(_issueReporter, _script, _relativeScriptFilePath, _parentFragmentProvider, _defaultSchemaName);
-        var columnReferences = script.GetChildren<ColumnReferenceExpression>(recursive: true);
+        var columnReferences = searchRoot.GetChildren<ColumnReferenceExpression>(recursive: true);
         foreach (var columnReference in columnReferences)
         {
             if (!IsUsedInComparison(columnReference))

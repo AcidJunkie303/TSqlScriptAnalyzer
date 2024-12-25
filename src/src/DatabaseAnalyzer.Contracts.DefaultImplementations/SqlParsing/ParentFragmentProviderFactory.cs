@@ -5,12 +5,14 @@ namespace DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing;
 
 public static class ParentFragmentProviderFactory
 {
-    public static IParentFragmentProvider Build(TSqlScript script)
+    public static IParentFragmentProvider Build(TSqlFragment root)
     {
-        var visitor = new Visitor();
-        visitor.ExplicitVisit(script);
+        ArgumentNullException.ThrowIfNull(root);
 
-        return new Provider(script, visitor.ParentByChild);
+        var visitor = new Visitor();
+        root.Accept(visitor);
+
+        return new Provider(root, visitor.ParentByChild);
     }
 
     private sealed class Provider : IParentFragmentProvider

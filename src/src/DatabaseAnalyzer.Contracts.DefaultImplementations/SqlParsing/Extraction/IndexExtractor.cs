@@ -4,13 +4,13 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction;
 
-internal sealed class IndexExtractor : Extractor<IndexInformation>
+public sealed class IndexExtractor : Extractor<IndexInformation>
 {
     public IndexExtractor(string defaultSchemaName) : base(defaultSchemaName)
     {
     }
 
-    protected override List<IndexInformation> ExtractCore(TSqlScript script)
+    protected override List<IndexInformation> ExtractCore(TSqlScript script, string relativeScriptFilePath)
     {
         var visitor = new ObjectExtractorVisitor<CreateIndexStatement>(DefaultSchemaName);
         script.AcceptChildren(visitor);

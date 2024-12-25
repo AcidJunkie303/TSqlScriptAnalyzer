@@ -22,7 +22,7 @@ public sealed class ForeignKeyConstraintExtractorTests
         var sut = new ForeignKeyConstraintExtractor(defaultSchema);
 
         // act
-        var fkConstraints = sut.Extract(script);
+        var fkConstraints = sut.Extract(script, "main.sql");
 
         // assert
         fkConstraints.Should().NotBeNull();
