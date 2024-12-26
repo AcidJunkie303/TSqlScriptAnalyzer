@@ -1,3 +1,7 @@
+using System.Collections.Frozen;
+using System.Collections.Immutable;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
+
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction.Models;
 
 public sealed record IndexInformation(
@@ -6,6 +10,17 @@ public sealed record IndexInformation(
     string TableName,
     string? IndexName,
     TableColumnIndexType IndexType,
-    IReadOnlyList<string> ColumnNames,
-    IReadOnlyList<string> IncludedColumnNames
-) : ISchemaBoundObject;
+    FrozenSet<string> ColumnNames,
+    FrozenSet<string> IncludedColumnNames,
+    TSqlFragment CreationStatement,
+    string RelativeScriptFilePath
+) : ISchemaBoundObject
+{
+    public string ObjectName { get; } = IndexName ?? string.Empty;
+
+    public IReadOnlyList<string> FullNameParts { get; } = new[]
+    {
+        DatabaseName,
+        IndexName ?? string.Empty
+    }.ToImmutableArray();
+}

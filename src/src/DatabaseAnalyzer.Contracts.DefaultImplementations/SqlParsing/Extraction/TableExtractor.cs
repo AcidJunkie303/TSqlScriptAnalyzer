@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction.Models;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
@@ -25,7 +26,7 @@ public sealed class TableExtractor : Extractor<TableInformation>
 
         var calculatedDatabaseName = statement.SchemaObjectName.DatabaseIdentifier?.Value ?? databaseName ?? throw CreateUnableToDetermineTheDatabaseNameException("table", $"{tableSchemaName}.{tableName}", statement.GetCodeRegion());
         var columns = statement.Definition.ColumnDefinitions
-            .Select(a => GetColumn(a, calculatedDatabaseName, tableSchemaName, tableName))
+            .Select(a => GetColumn(a, calculatedDatabaseName, tableSchemaName, tableName, relativeScriptFilePath))
             .ToList();
 
         var uniqueColumnIndices = columns
@@ -37,8 +38,10 @@ public sealed class TableExtractor : Extractor<TableInformation>
                 tableName,
                 null,
                 TableColumnIndexType.Unique,
-                [a.ColumnName],
-                []
+                [a.ObjectName],
+                [],
+                a.ColumnDefinition,
+                relativeScriptFilePath
             ));
 
         return new TableInformation
@@ -47,27 +50,28 @@ public sealed class TableExtractor : Extractor<TableInformation>
             tableSchemaName,
             tableName,
             statement.Definition.ColumnDefinitions
-                .Select(a => GetColumn(a, calculatedDatabaseName, tableSchemaName, tableName))
+                .Select(a => GetColumn(a, calculatedDatabaseName, tableSchemaName, tableName, relativeScriptFilePath))
                 .ToList(),
-            GetIndices(statement, calculatedDatabaseName, tableSchemaName, tableName).Concat(uniqueColumnIndices).ToList(),
-            GetForeignKeyConstraints(statement, calculatedDatabaseName, tableSchemaName, tableName).ToList(),
+            GetIndices(statement, calculatedDatabaseName, tableSchemaName, tableName, relativeScriptFilePath).Concat(uniqueColumnIndices).ToList(),
+            GetForeignKeyConstraints(statement, calculatedDatabaseName, tableSchemaName, tableName, relativeScriptFilePath).ToList(),
+            statement,
             relativeScriptFilePath
         );
     }
 
-    private static IEnumerable<IndexInformation> GetIndices(CreateTableStatement statement, string databaseName, string tableSchemaName, string tableName)
+    private static IEnumerable<IndexInformation> GetIndices(CreateTableStatement statement, string databaseName, string tableSchemaName, string tableName, string relativeScriptFilePath)
     {
         return statement.Definition.TableConstraints
             .OfType<UniqueConstraintDefinition>()
-            .Select(a => GetIndex(a, databaseName, tableSchemaName, tableName));
+            .Select(a => GetIndex(a, databaseName, tableSchemaName, tableName, relativeScriptFilePath));
     }
 
-    private IEnumerable<ForeignKeyConstraintInformation> GetForeignKeyConstraints(CreateTableStatement statement, string databaseName, string tableSchemaName, string tableName)
+    private IEnumerable<ForeignKeyConstraintInformation> GetForeignKeyConstraints(CreateTableStatement statement, string databaseName, string tableSchemaName, string tableName, string relativeScriptFilePath)
         => statement.Definition.TableConstraints
             .OfType<ForeignKeyConstraintDefinition>()
-            .Select(a => GetForeignKeyConstraint(a, databaseName, tableSchemaName, tableName));
+            .Select(a => GetForeignKeyConstraint(a, databaseName, tableSchemaName, tableName, relativeScriptFilePath));
 
-    private ForeignKeyConstraintInformation GetForeignKeyConstraint(ForeignKeyConstraintDefinition constraint, string databaseName, string tableSchemaName, string tableName)
+    private ForeignKeyConstraintInformation GetForeignKeyConstraint(ForeignKeyConstraintDefinition constraint, string databaseName, string tableSchemaName, string tableName, string relativeScriptFilePath)
     {
         var name = constraint.ConstraintIdentifier?.Value ?? "Unknown";
 
@@ -75,15 +79,28 @@ public sealed class TableExtractor : Extractor<TableInformation>
             databaseName,
             tableSchemaName,
             tableName,
-            name,
             constraint.Columns[0].Value,
+            name,
             constraint.ReferenceTableName.SchemaIdentifier?.Value ?? DefaultSchemaName,
             constraint.ReferenceTableName.BaseIdentifier.Value!,
-            constraint.ReferencedTableColumns[0].Value
+            constraint.ReferencedTableColumns[0].Value,
+            constraint,
+            relativeScriptFilePath
         );
+        /*
+            string DatabaseName,
+            string SchemaName,
+            string TableName,
+            string ColumnName,
+            string ObjectName,
+            string ReferencedTableSchemaName,
+            string ReferencedTableName,
+            string ReferencedTableColumnName,
+            TSqlFragment CreationStatement,
+        */
     }
 
-    private static IndexInformation GetIndex(UniqueConstraintDefinition constraint, string databaseName, string tableSchemaName, string tableName)
+    private static IndexInformation GetIndex(UniqueConstraintDefinition constraint, string databaseName, string tableSchemaName, string tableName, string relativeScriptFilePath)
     {
         var extractedType = constraint.IndexType.IndexTypeKind ?? IndexTypeKind.NonClustered;
 
@@ -107,12 +124,14 @@ public sealed class TableExtractor : Extractor<TableInformation>
             indexType,
             constraint.Columns
                 .Select(a => a.Column.MultiPartIdentifier.Identifiers[0].Value)
-                .ToList(),
-            []
+                .ToFrozenSet(StringComparer.OrdinalIgnoreCase),
+            [],
+            constraint,
+            relativeScriptFilePath
         );
     }
 
-    private static ColumnInformation GetColumn(ColumnDefinition column, string databaseName, string tableSchemaName, string tableName)
+    private static ColumnInformation GetColumn(ColumnDefinition column, string databaseName, string tableSchemaName, string tableName, string relativeScriptFilePath)
     {
         var isNullable = column.Constraints
             .OfType<NullableConstraintDefinition>()
@@ -130,7 +149,9 @@ public sealed class TableExtractor : Extractor<TableInformation>
             column.ColumnIdentifier.Value,
             isNullable,
             isUnique,
-            column.DataType
+            column,
+            column,
+            relativeScriptFilePath
         );
     }
 }

@@ -1,3 +1,6 @@
+using System.Collections.Immutable;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
+
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction.Models;
 
 public sealed record ForeignKeyConstraintInformation(
@@ -5,8 +8,19 @@ public sealed record ForeignKeyConstraintInformation(
     string SchemaName,
     string TableName,
     string ColumnName,
-    string ConstraintName,
+    string ObjectName,
     string ReferencedTableSchemaName,
     string ReferencedTableName,
-    string ReferencedTableColumnName
-) : ISchemaBoundObject;
+    string ReferencedTableColumnName,
+    TSqlFragment CreationStatement,
+    string RelativeScriptFilePath
+) : ISchemaBoundObject
+{
+    public string FullColumnName { get; } = $"{DatabaseName}.{SchemaName}.{TableName}.{ColumnName}";
+
+    public IReadOnlyList<string> FullNameParts { get; } = new[]
+    {
+        DatabaseName,
+        ObjectName
+    }.ToImmutableArray();
+}

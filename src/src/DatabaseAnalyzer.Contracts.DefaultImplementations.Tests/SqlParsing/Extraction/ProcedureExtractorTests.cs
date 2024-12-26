@@ -32,7 +32,7 @@ public sealed class ProcedureExtractorTests
         var procedure = procedures.Single();
         procedure.DatabaseName.Should().Be("MyDb");
         procedure.SchemaName.Should().Be("dbo");
-        procedure.ProcedureName.Should().Be("P1");
+        procedure.ObjectName.Should().Be("P1");
         procedure.Parameters.Should().HaveCount(1);
     }
 }

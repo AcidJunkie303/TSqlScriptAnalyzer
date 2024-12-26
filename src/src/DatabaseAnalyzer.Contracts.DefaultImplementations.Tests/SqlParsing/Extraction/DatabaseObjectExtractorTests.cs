@@ -1,6 +1,7 @@
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Tests.Fakes;
 using FluentAssertions;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Tests.SqlParsing.Extraction;
@@ -57,7 +58,7 @@ public sealed class DatabaseObjectExtractorTests
 
                             """;
         // arrange
-        var sut = new DatabaseObjectExtractor();
+        var sut = new DatabaseObjectExtractor(new FakeIssueReporter());
         var script = ParseScript("DB-1", code);
 
         // act
@@ -73,34 +74,34 @@ public sealed class DatabaseObjectExtractorTests
 
         var schema = db.SchemasByName["dbo"];
         schema.DatabaseName.Should().Be("DB-1");
-        schema.SchemaName.Should().Be("dbo");
+        schema.ObjectName.Should().Be("dbo");
         schema.FunctionsByName.Should().HaveCount(1);
 
         var function = schema.FunctionsByName["F1"];
         function.DatabaseName.Should().Be("DB-1");
         function.SchemaName.Should().Be("dbo");
-        function.FunctionName.Should().Be("F1");
+        function.ObjectName.Should().Be("F1");
 
         schema.TablesByName.Should().HaveCount(2);
 
         var t1 = schema.TablesByName["T1"];
         t1.DatabaseName.Should().Be("DB-1");
         t1.SchemaName.Should().Be("dbo");
-        t1.TableName.Should().Be("T1");
+        t1.ObjectName.Should().Be("T1");
         t1.Indices.Should().HaveCount(2); // Id & Status
         t1.ForeignKeys.Should().HaveCount(1);
 
         var t2 = schema.TablesByName["T2"];
         t2.DatabaseName.Should().Be("DB-1");
         t2.SchemaName.Should().Be("dbo");
-        t2.TableName.Should().Be("T2");
+        t2.ObjectName.Should().Be("T2");
         t2.Indices.Should().HaveCount(1); // Name
 
         schema.ProceduresByName.Should().HaveCount(1);
         var p1 = schema.ProceduresByName["P1"];
         p1.DatabaseName.Should().Be("DB-1");
         p1.SchemaName.Should().Be("dbo");
-        p1.ProcedureName.Should().Be("P1");
+        p1.ObjectName.Should().Be("P1");
         p1.Parameters.Should().HaveCount(1);
     }
 

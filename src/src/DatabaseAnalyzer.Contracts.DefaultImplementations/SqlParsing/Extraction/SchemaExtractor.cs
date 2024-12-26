@@ -14,11 +14,11 @@ internal sealed class SchemaExtractor : Extractor<SchemaInformation>
         var visitor = new ObjectExtractorVisitor<CreateSchemaStatement>(DefaultSchemaName);
         script.AcceptChildren(visitor);
 
-        return visitor.Objects.ConvertAll(a => GetSchema(a.Object, a.DatabaseName));
+        return visitor.Objects.ConvertAll(a => GetSchema(a.Object, a.DatabaseName, relativeScriptFilePath));
     }
 
     // ReSharper disable once UnusedParameter.Local
-    private static SchemaInformation GetSchema(CreateSchemaStatement statement, string? databaseName)
+    private static SchemaInformation GetSchema(CreateSchemaStatement statement, string? databaseName, string relativeScriptFilePath)
     {
         // TODO: make sure databaseName is not null
 
@@ -28,6 +28,6 @@ internal sealed class SchemaExtractor : Extractor<SchemaInformation>
             Console.WriteLine(databaseName);
         }
 
-        return new SchemaInformation(databaseName!, statement.Name.Value);
+        return new SchemaInformation(databaseName!, statement.Name.Value, statement, relativeScriptFilePath);
     }
 }

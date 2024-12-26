@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction.Models;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
@@ -15,10 +16,10 @@ public sealed class IndexExtractor : Extractor<IndexInformation>
         var visitor = new ObjectExtractorVisitor<CreateIndexStatement>(DefaultSchemaName);
         script.AcceptChildren(visitor);
 
-        return visitor.Objects.ConvertAll(a => GetIndex(a.Object, a.DatabaseName));
+        return visitor.Objects.ConvertAll(a => GetIndex(a.Object, a.DatabaseName, relativeScriptFilePath));
     }
 
-    private IndexInformation GetIndex(CreateIndexStatement statement, string? databaseName)
+    private IndexInformation GetIndex(CreateIndexStatement statement, string? databaseName, string relativeScriptFilePath)
     {
         var indexType = TableColumnIndexType.None;
         if (statement.Unique)
@@ -48,10 +49,12 @@ public sealed class IndexExtractor : Extractor<IndexInformation>
             indexType,
             statement.Columns
                 .Select(a => a.Column.MultiPartIdentifier.ToUnquotedIdentifier())
-                .ToList(),
+                .ToFrozenSet(StringComparer.OrdinalIgnoreCase),
             statement.IncludeColumns
                 .Select(a => a.MultiPartIdentifier.ToUnquotedIdentifier())
-                .ToList()
+                .ToFrozenSet(StringComparer.OrdinalIgnoreCase),
+            statement,
+            relativeScriptFilePath
         );
     }
 }

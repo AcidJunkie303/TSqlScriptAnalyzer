@@ -10,11 +10,6 @@ internal static class Program
 {
     private static int Main(string[] args)
     {
-        if (DateTime.UtcNow.Year == 2024)
-        {
-            return 0;
-        }
-
         var settingsFileOption = new Option<string>(
             ["-f", "--file"],
             "The settings file.")

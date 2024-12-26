@@ -9,23 +9,78 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
 
 public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.FilteringColumnNotIndexed];
+    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.FilteringColumnNotIndexed, DiagnosticDefinitions.ForeignKeyColumnNotIndexed];
 
     public void Analyze(IAnalysisContext context)
     {
+        var databasesByName = new DatabaseObjectExtractor(context.IssueReporter)
+            .Extract(context.Scripts, context.DefaultSchemaName);
+
+        AnalyzeModules(context, databasesByName);
+        AnalyzeForeignKeys(context, databasesByName);
+    }
+
+    private static void AnalyzeForeignKeys(IAnalysisContext context, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
+    {
+        var settings = context.DiagnosticSettingsRetriever.GetSettings<Aj5017Settings>();
+
+        var tables = databasesByName
+            .SelectMany(db => db.Value.SchemasByName.Values)
+            .SelectMany(schema => schema.TablesByName.Values);
+
+        foreach (var table in tables)
+        {
+            foreach (var foreignKey in table.ForeignKeys)
+            {
+                if (table.Indices.Any(index => index.ColumnNames.Contains(foreignKey.ColumnName)))
+                {
+                    continue;
+                }
+
+                if (settings.MissingIndexOnForeignKeyColumnSuppressions.Any(a => a.FullColumnNamePattern.IsMatch(foreignKey.FullColumnName)))
+                {
+                    continue;
+                }
+
+                var column = table.Columns.FirstOrDefault(a => a.ObjectName.EqualsOrdinalIgnoreCase(foreignKey.ColumnName));
+                if (column is null)
+                {
+                    continue;
+                }
+
+                context.IssueReporter.Report(DiagnosticDefinitions.ForeignKeyColumnNotIndexed,
+                    column.DatabaseName,
+                    table.RelativeScriptFilePath,
+                    table.FullName,
+                    column.ColumnDefinition.GetCodeRegion(),
+                    column.DatabaseName,
+                    column.SchemaName,
+                    column.TableName,
+                    column.ObjectName
+                );
+            }
+        }
+    }
+
+    private static void AnalyzeModules(IAnalysisContext context, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
+    {
         var settings = context.DiagnosticSettingsRetriever.GetSettings<Aj5015Settings>();
-        var databasesByName = new DatabaseObjectExtractor().Extract(context.Scripts, context.DefaultSchemaName);
 
         foreach (var script in context.Scripts)
         {
-            IEnumerable<StatementList> statementLists =
+            IEnumerable<StatementList?> statementLists =
             [
-                .. script.ParsedScript.GetChildren<ProcedureStatementBody>(recursive: true).Select(a => a.StatementList),
-                .. script.ParsedScript.GetChildren<FunctionStatementBody>(recursive: true).Select(a => a.StatementList)
+                .. script.ParsedScript.GetChildren<ProcedureStatementBody>(true).Select(a => a.StatementList),
+                .. script.ParsedScript.GetChildren<FunctionStatementBody>(true).Select(a => a.StatementList)
             ];
 
             foreach (var statementList in statementLists)
             {
+                if (statementList is null)
+                {
+                    continue;
+                }
+
                 AnalyzeStatements(context, settings, script, statementList, databasesByName);
             }
         }
@@ -47,7 +102,7 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
                 continue;
             }
 
-            if (table.Indices.Any(a => a.ColumnNames.Contains(filteringColumn.ColumnName, StringComparer.OrdinalIgnoreCase)))
+            if (table.Indices.Any(a => a.ColumnNames.Contains(filteringColumn.ColumnName)))
             {
                 return;
             }
@@ -86,7 +141,7 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
             "AJ5015",
             IssueType.MissingIndex,
             "Missing Index",
-            "The column '{0}.{1}.{2}.{3}' defined in script '{4}' is not indexed but used as column filtering predicate"
+            "The column '{0}.{1}.{2}.{3}' defined in script '{4}' is not indexed but used as column filtering predicate."
         );
 
         /* Insertions Description:
@@ -101,7 +156,7 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
             "AJ5017",
             IssueType.MissingIndex,
             "Missing Index",
-            "The foreign-key column '{0}.{1}.{2}.{3}' defined in script '{4}' is not indexed. Although this columns might not be used for filtering directly, it is still recommended to create an index on it because it will improve performance checking for referential integrity when deleting columns from the table being referenced."
+            "The foreign-key column '{0}.{1}.{2}.{3}' is not indexed. Although this columns might not be used for filtering directly, it is still recommended to create an index on it because it will improve performance when checking for referential integrity when deleting columns from the table being referenced for example."
         );
     }
 

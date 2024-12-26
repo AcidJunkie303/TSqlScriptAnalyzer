@@ -26,7 +26,7 @@ public sealed class ForeignKeyConstraintExtractorTests
 
         // assert
         fkConstraints.Should().NotBeNull();
-        fkConstraints[0].ConstraintName.Should().Be("FK_T1_T2");
+        fkConstraints[0].ObjectName.Should().Be("FK_T1_T2");
         fkConstraints[0].DatabaseName.Should().Be("MyDb");
         fkConstraints[0].SchemaName.Should().Be("aaa");
         fkConstraints[0].TableName.Should().Be("T1");

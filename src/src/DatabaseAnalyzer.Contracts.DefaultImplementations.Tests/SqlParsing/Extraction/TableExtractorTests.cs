@@ -2,6 +2,7 @@ using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction.Models;
 using FluentAssertions;
+using FluentAssertions.Execution;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Tests.SqlParsing.Extraction;
 
@@ -216,8 +217,12 @@ public sealed class TableExtractorTests
         tables.Should().HaveCount(1);
         tables[0].Indices.Should().NotBeNull();
         tables[0].Indices.Should().HaveCount(2);
-        tables[0].Indices!.Should().ContainEquivalentOf(new IndexInformation("MyDb", "dbo", "T1", "PK_T1", TableColumnIndexType.Clustered | TableColumnIndexType.PrimaryKey, ["Id"], []));
-        tables[0].Indices!.Should().ContainEquivalentOf(new IndexInformation("MyDb", "dbo", "T1", null, TableColumnIndexType.Unique, ["Email"], []));
+        tables[0].Indices!.Should().ContainEquivalentOf(
+            new IndexInformation("MyDb", "dbo", "T1", "PK_T1", TableColumnIndexType.Clustered | TableColumnIndexType.PrimaryKey, ["Id"], [], null!, "main.sql"),
+            options => options.Excluding(x => x.CreationStatement));
+        tables[0].Indices!.Should().ContainEquivalentOf(
+            new IndexInformation("MyDb", "dbo", "T1", null, TableColumnIndexType.Unique, ["Email"], [], null!, "main.sql"),
+            options => options.Excluding(x => x.CreationStatement));
     }
 
     [Fact]
@@ -234,6 +239,8 @@ public sealed class TableExtractorTests
                             """;
 
         // arrange
+        AssertionOptions.FormattingOptions.MaxDepth = 2;
+        AssertionScope.Current.FormattingOptions.MaxDepth = 2;
         var script = code.ParseSqlScript();
         var sut = new TableExtractor("dbo");
 
@@ -243,8 +250,14 @@ public sealed class TableExtractorTests
         // assert
         tables.Should().HaveCount(1);
 
+        var expectedForeignKey = new ForeignKeyConstraintInformation("MyDb", "dbo", "T1", "OtherId", "FK_T1_T2", "dbo", "T2", "T2_Id", null!, "main.sql");
         tables[0].ForeignKeys.Should().NotBeNullOrEmpty();
         tables[0].ForeignKeys.Should().HaveCount(1);
-        tables[0].ForeignKeys.Should().ContainEquivalentOf(new ForeignKeyConstraintInformation("MyDb", "dbo", "T1", "FK_T1_T2", "OtherId", "dbo", "T2", "T2_Id"));
+        tables[0].ForeignKeys.Should().ContainEquivalentOf(
+            expectedForeignKey,
+            options => options
+                .Excluding(x => x.CreationStatement)
+                .IgnoringCyclicReferences()
+        );
     }
 }

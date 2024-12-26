@@ -27,5 +27,5 @@ public abstract class Extractor<T>
     protected abstract IReadOnlyList<T> ExtractCore(TSqlScript script, string relativeScriptFilePath);
 
     protected static InvalidOperationException CreateUnableToDetermineTheDatabaseNameException(string objectType, string objectName, CodeRegion codeRegion)
-        => new($"Unable to determine the database name for {objectType} '{objectName}' because neither the object creation statement nor the script contains a preceding 'USE <db-name>' statement. Location: {codeRegion}");
+        => new($"Unable to determine the database name for {objectType} '{objectName}' because the script contains no preceding 'USE <db-name>' statement. Location: {codeRegion}");
 }

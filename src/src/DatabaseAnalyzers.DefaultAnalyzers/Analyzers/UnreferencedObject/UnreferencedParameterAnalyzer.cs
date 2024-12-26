@@ -1,6 +1,5 @@
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.UnreferencedObject;
@@ -18,7 +17,7 @@ public sealed class UnreferencedParameterAnalyzer : IScriptAnalyzer
         Analyze(context, script, functions, a => a.Parameters, a => a.StatementList);
     }
 
-    private static void Analyze<T>(IAnalysisContext context, IScriptModel script, IEnumerable<T> creationStatements, Func<T, IList<ProcedureParameter>> parametersProvider, Func<T, StatementList> statementListProvider)
+    private static void Analyze<T>(IAnalysisContext context, IScriptModel script, IEnumerable<T> creationStatements, Func<T, IList<ProcedureParameter>> parametersProvider, Func<T, StatementList?> statementListProvider)
         where T : TSqlFragment
     {
         foreach (var creationStatement in creationStatements)
@@ -27,10 +26,15 @@ public sealed class UnreferencedParameterAnalyzer : IScriptAnalyzer
         }
     }
 
-    private static void Analyze<T>(IAnalysisContext context, IScriptModel script, T creationStatement, Func<T, IList<ProcedureParameter>> parametersProvider, Func<T, StatementList> statementListProvider)
+    private static void Analyze<T>(IAnalysisContext context, IScriptModel script, T creationStatement, Func<T, IList<ProcedureParameter>> parametersProvider, Func<T, StatementList?> statementListProvider)
         where T : TSqlFragment
     {
         var statementList = statementListProvider(creationStatement);
+        if (statementList is null)
+        {
+            return;
+        }
+
         var referencedVariableNames = GetReferencedVariableNames(statementList);
 
         foreach (var parameter in parametersProvider(creationStatement))
@@ -47,7 +51,7 @@ public sealed class UnreferencedParameterAnalyzer : IScriptAnalyzer
 
     private static HashSet<string> GetReferencedVariableNames(StatementList statementList)
         => statementList
-            .GetChildren<VariableReference>(recursive: true)
+            .GetChildren<VariableReference>(true)
             .Select(a => a.Name)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 

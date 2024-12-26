@@ -17,12 +17,12 @@ internal sealed class FunctionExtractor : Extractor<FunctionInformation>
         script.AcceptChildren(visitor);
 
         return visitor.Objects
-            .Select(a => GetFunction(a.Object, a.DatabaseName))
+            .Select(a => GetFunction(a.Object, a.DatabaseName, relativeScriptFilePath))
             .WhereNotNull()
             .ToList();
     }
 
-    private FunctionInformation GetFunction(FunctionStatementBody statement, string? databaseName)
+    private FunctionInformation GetFunction(FunctionStatementBody statement, string? databaseName, string relativeScriptFilePath)
     {
         // TODO: make sure databaseName is not null
 
@@ -35,7 +35,8 @@ internal sealed class FunctionExtractor : Extractor<FunctionInformation>
             statement.Name.SchemaIdentifier?.Value ?? DefaultSchemaName,
             statement.Name.BaseIdentifier.Value,
             parameters,
-            statement
+            statement,
+            relativeScriptFilePath
         );
     }
 

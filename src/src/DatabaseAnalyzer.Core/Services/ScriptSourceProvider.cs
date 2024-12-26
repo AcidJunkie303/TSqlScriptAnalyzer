@@ -28,8 +28,10 @@ internal sealed class ScriptSourceSourceProvider : IScriptSourceProvider
         };
 
         return _settings.DatabaseScriptsRootPathByDatabaseName
+#if !DEBUG
             .AsParallel()
             .WithExecutionMode(ParallelExecutionMode.ForceParallelism)
+#endif
             .Select(a => (DatabaseName: a.Key, ScriptRootPath: a.Value))
             .Select(a => (FilePaths: Directory.GetFiles(a.ScriptRootPath, "*.sql", options), a.DatabaseName, a.ScriptRootPath))
             .SelectMany(a => a.FilePaths.Select(scriptPath => new SourceScript(scriptPath, a.DatabaseName)))

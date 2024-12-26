@@ -127,15 +127,17 @@ internal sealed class Analyzer : IAnalyzer
         var sourceScripts = GetScriptFilePaths();
         var basicScripts = LoadScriptFiles(sourceScripts);
         return basicScripts
+#if !DEBUG
             .AsParallel()
             .WithExecutionMode(ParallelExecutionMode.ForceParallelism)
+#endif
             .Select(ParseScript)
             .ToImmutableArray();
 
         IScriptModel ParseScript(BasicScriptInformation script)
         {
             var parser = TSqlParser.CreateParser(SqlVersion.Sql170, false);
-            using var reader = new StreamReader(script.Contents);
+            using var reader = new StringReader(script.Contents);
             var parsedScript = parser.Parse(reader, out var parserErrors) as TSqlScript ?? new TSqlScript();
             var errorMessages = parserErrors
                 .Select(a => $"{a.Message} at {CodeRegion.Create(a.Line, a.Column, a.Line, a.Column)}")
@@ -160,9 +162,11 @@ internal sealed class Analyzer : IAnalyzer
             using var _ = _progressCallback.OnProgressWithAutoEndActionNotification("Loading SQL script files");
 
             return scripts
+#if !DEBUG
                 .AsParallel()
                 .WithExecutionMode(ParallelExecutionMode.ForceParallelism)
                 .WithDegreeOfParallelism(4)
+#endif
                 .Select(_scriptLoader.LoadScript)
                 .ToList();
         }

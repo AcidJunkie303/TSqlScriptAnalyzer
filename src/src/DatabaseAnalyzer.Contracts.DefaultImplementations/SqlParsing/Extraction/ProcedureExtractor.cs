@@ -17,12 +17,12 @@ internal sealed class ProcedureExtractor : Extractor<ProcedureInformation>
         script.AcceptChildren(visitor);
 
         return visitor.Objects
-            .Select(a => GetFunction(a.Object, a.DatabaseName))
+            .Select(a => GetFunction(a.Object, a.DatabaseName, relativeScriptFilePath))
             .WhereNotNull()
             .ToList();
     }
 
-    private ProcedureInformation GetFunction(ProcedureStatementBody statement, string? databaseName)
+    private ProcedureInformation GetFunction(ProcedureStatementBody statement, string? databaseName, string relativeScriptFilePath)
     {
         // TODO: make sure databaseName is not null
 
@@ -35,7 +35,8 @@ internal sealed class ProcedureExtractor : Extractor<ProcedureInformation>
             statement.ProcedureReference.Name.SchemaIdentifier?.Value ?? DefaultSchemaName,
             statement.ProcedureReference.Name.BaseIdentifier.Value,
             parameters,
-            statement
+            statement,
+            relativeScriptFilePath
         );
     }
 

@@ -8,12 +8,10 @@ public sealed class Aj5015SettingsRaw : IRawSettings<Aj5015Settings>
     // ReSharper disable UnusedAutoPropertyAccessor.Global -> used during deserialization
     public IReadOnlyList<MissingIndexSuppressionSettingsRaw>? MissingIndexSuppressions { get; set; }
 
-    public Aj5015Settings ToSettings() => new
-    (
-        (MissingIndexSuppressions ?? [])
-        .Select(a => a.ToSettings())
-        .ToImmutableArray()
-    );
+    public Aj5015Settings ToSettings()
+        => MissingIndexSuppressions is null
+            ? Aj5015Settings.Default
+            : new Aj5015Settings(MissingIndexSuppressions.Select(a => a.ToSettings()).ToImmutableArray());
 }
 
 public sealed record Aj5015Settings(
