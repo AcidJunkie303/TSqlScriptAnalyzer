@@ -79,7 +79,7 @@ public sealed class PlaygroundTests(ITestOutputHelper testOutputHelper)
                                """;
 
         var tester = GetDefaultTesterBuilder(code)
-            .AddAdditionalScriptFile(script2, "script2.sql", "database1")
+            .WithScriptFile(script2, "database1")
             .Build();
         Verify(tester);
     }

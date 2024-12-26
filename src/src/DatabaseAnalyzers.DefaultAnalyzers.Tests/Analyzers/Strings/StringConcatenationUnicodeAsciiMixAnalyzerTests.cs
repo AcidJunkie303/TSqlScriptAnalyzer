@@ -37,7 +37,7 @@ public class StringConcatenationUnicodeAsciiMixAnalyzerTests(ITestOutputHelper t
         const string code = """
                             USE MyDb
                             GO
-                            SET @x = █AJ5002░main.sql░███N'a' + 'b'█
+                            SET @x = █AJ5002░script_0.sql░███N'a' + 'b'█
                             """;
 
         Verify(code);
@@ -61,7 +61,7 @@ public class StringConcatenationUnicodeAsciiMixAnalyzerTests(ITestOutputHelper t
         const string code = """
                             USE MyDb
                             GO
-                            SET @x = █AJ5002░main.sql░███N'a' + CONVERT(VARCHAR(999), N'b')█
+                            SET @x = █AJ5002░script_0.sql░███N'a' + CONVERT(VARCHAR(999), N'b')█
                             """;
 
         Verify(code);
@@ -73,7 +73,7 @@ public class StringConcatenationUnicodeAsciiMixAnalyzerTests(ITestOutputHelper t
         const string code = """
                             USE MyDb
                             GO
-                            SET @x = █AJ5002░main.sql░███N'a' + CAST(N'b' AS VARCHAR(999))█
+                            SET @x = █AJ5002░script_0.sql░███N'a' + CAST(N'b' AS VARCHAR(999))█
                             """;
 
         Verify(code);

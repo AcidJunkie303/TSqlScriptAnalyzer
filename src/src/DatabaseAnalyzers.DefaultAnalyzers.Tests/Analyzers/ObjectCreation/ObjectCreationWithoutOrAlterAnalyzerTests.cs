@@ -26,7 +26,7 @@ public sealed class ObjectCreationWithoutOrAlterAnalyzerTests(ITestOutputHelper 
         const string code = """
                             USE MyDb
                             GO
-                            █AJ5009░main.sql░MyDb.dbo.V1███CREATE VIEW dbo.V1
+                            █AJ5009░script_0.sql░MyDb.dbo.V1███CREATE VIEW dbo.V1
                             AS
                             SELECT 1 AS Expr1█
                             """;
@@ -56,7 +56,7 @@ public sealed class ObjectCreationWithoutOrAlterAnalyzerTests(ITestOutputHelper 
         const string code = """
                             USE MyDb
                             GO
-                            █AJ5009░main.sql░MyDb.dbo.P1███CREATE PROCEDURE P1
+                            █AJ5009░script_0.sql░MyDb.dbo.P1███CREATE PROCEDURE P1
                             AS
                             BEGIN
                                 SELECT 1
@@ -89,7 +89,7 @@ public sealed class ObjectCreationWithoutOrAlterAnalyzerTests(ITestOutputHelper 
         const string code = """
                             USE MyDb
                             GO
-                            █AJ5009░main.sql░MyDb.dbo.F1███CREATE FUNCTION F1()
+                            █AJ5009░script_0.sql░MyDb.dbo.F1███CREATE FUNCTION F1()
                             RETURNS INT
                             AS
                             BEGIN
@@ -121,7 +121,7 @@ public sealed class ObjectCreationWithoutOrAlterAnalyzerTests(ITestOutputHelper 
                             USE MyDb
                             GO
 
-                            █AJ5009░main.sql░MyDb.dbo.P1███CREATE PROCEDURE dbo.P1
+                            █AJ5009░script_0.sql░MyDb.dbo.P1███CREATE PROCEDURE dbo.P1
                             AS EXTERNAL NAME A.B.C█
                             """;
 

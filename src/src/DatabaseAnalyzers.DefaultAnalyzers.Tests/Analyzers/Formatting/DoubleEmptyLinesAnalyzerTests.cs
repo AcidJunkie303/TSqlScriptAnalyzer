@@ -26,7 +26,7 @@ public sealed class DoubleEmptyLinesAnalyzerTests(ITestOutputHelper testOutputHe
         const string code = """
                             USE MyDb
                             GO
-                            PRINT 303█AJ5007░main.sql░███
+                            PRINT 303█AJ5007░script_0.sql░███
 
 
                             █PRINT 909

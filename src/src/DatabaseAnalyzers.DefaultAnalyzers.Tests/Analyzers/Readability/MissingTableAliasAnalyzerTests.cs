@@ -60,7 +60,7 @@ public sealed class MissingTableAliasAnalyzerTests(ITestOutputHelper testOutputH
                             SELECT      t1.Name
                             FROM        Table1  t1
                             INNER JOIN  Table2  t2 ON t1.Id = t2.OtherId
-                            WHERE       █AJ5016░main.sql░░DepartmentName███DepartmentName█ = 'Uribubu'
+                            WHERE       █AJ5016░script_0.sql░░DepartmentName███DepartmentName█ = 'Uribubu'
                             """;
         Verify(code);
     }

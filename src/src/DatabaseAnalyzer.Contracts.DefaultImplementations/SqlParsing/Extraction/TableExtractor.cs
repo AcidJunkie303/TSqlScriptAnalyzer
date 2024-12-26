@@ -73,7 +73,7 @@ public sealed class TableExtractor : Extractor<TableInformation>
 
     private ForeignKeyConstraintInformation GetForeignKeyConstraint(ForeignKeyConstraintDefinition constraint, string databaseName, string tableSchemaName, string tableName, string relativeScriptFilePath)
     {
-        var name = constraint.ConstraintIdentifier?.Value ?? "Unknown";
+        var name = constraint.ConstraintIdentifier?.Value ?? "Unknown"; // Unique key constraints don't have a name
 
         return new ForeignKeyConstraintInformation(
             databaseName,
@@ -87,17 +87,6 @@ public sealed class TableExtractor : Extractor<TableInformation>
             constraint,
             relativeScriptFilePath
         );
-        /*
-            string DatabaseName,
-            string SchemaName,
-            string TableName,
-            string ColumnName,
-            string ObjectName,
-            string ReferencedTableSchemaName,
-            string ReferencedTableName,
-            string ReferencedTableColumnName,
-            TSqlFragment CreationStatement,
-        */
     }
 
     private static IndexInformation GetIndex(UniqueConstraintDefinition constraint, string databaseName, string tableSchemaName, string tableName, string relativeScriptFilePath)

@@ -29,7 +29,7 @@ public sealed class WrongUseDatabaseNameAnalyzerTests(ITestOutputHelper testOutp
 
                             PRINT 'Hello World'
 
-                            █AJ5003░main.sql░░master░MyDb███USE [master]█
+                            █AJ5003░script_0.sql░░master░MyDb███USE [master]█
                             PRINT 'Hello World'
                             """;
 
@@ -48,7 +48,7 @@ public sealed class WrongUseDatabaseNameAnalyzerTests(ITestOutputHelper testOutp
 
         var settings = new Aj5003SettingsRaw
         {
-            ExcludedFilePathPatterns = ["main.sql"]
+            ExcludedFilePathPatterns = ["script_0.sql"]
         }.ToSettings();
 
         Verify(settings, code);

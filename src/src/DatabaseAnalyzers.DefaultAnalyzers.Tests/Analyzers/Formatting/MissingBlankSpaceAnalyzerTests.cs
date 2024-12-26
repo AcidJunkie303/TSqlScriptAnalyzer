@@ -25,7 +25,7 @@ public sealed class MissingBlankSpaceAnalyzerTests(ITestOutputHelper testOutputH
                             USE MyDb
                             GO
                             -- SELECT 1,2
-                            SELECT 1█AJ5010░main.sql░░after░,███,█2
+                            SELECT 1█AJ5010░script_0.sql░░after░,███,█2
                             """;
         Verify(code);
     }
@@ -48,7 +48,7 @@ public sealed class MissingBlankSpaceAnalyzerTests(ITestOutputHelper testOutputH
                             USE MyDb
                             GO
                             -- SET @a = 1+ 2
-                            SET @a = 1█AJ5010░main.sql░░before░+███+█ 2
+                            SET @a = 1█AJ5010░script_0.sql░░before░+███+█ 2
                             """;
         Verify(code);
     }
@@ -60,7 +60,7 @@ public sealed class MissingBlankSpaceAnalyzerTests(ITestOutputHelper testOutputH
                             USE MyDb
                             GO
                             -- SET @a = 1 +2
-                            SET @a = 1 █AJ5010░main.sql░░after░+███+█2
+                            SET @a = 1 █AJ5010░script_0.sql░░after░+███+█2
                             """;
         Verify(code);
     }

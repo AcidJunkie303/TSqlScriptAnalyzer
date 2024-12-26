@@ -39,7 +39,7 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper)
                             CREATE TABLE Employee
                             (
                                 Id INT NOT NULL,
-                                █AJ5006░main.sql░MyDb.dbo.Employee░FLOAT░table columns███Value1 FLOAT█
+                                █AJ5006░script_0.sql░MyDb.dbo.Employee░FLOAT░table columns███Value1 FLOAT█
                             );
                             """;
 
@@ -77,7 +77,7 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper)
 
                             CREATE FUNCTION F1
                             (
-                                █AJ5006░main.sql░MyDb.dbo.F1░VARCHAR(MAX)░function parameters███@Param1 VARCHAR(MAX)█
+                                █AJ5006░script_0.sql░MyDb.dbo.F1░VARCHAR(MAX)░function parameters███@Param1 VARCHAR(MAX)█
                             )
                             RETURNS TABLE
                             AS
@@ -99,7 +99,7 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper)
 
                             CREATE FUNCTION F1
                             (
-                                █AJ5006░main.sql░MyDb.dbo.F1░VARCHAR(MAX)░function parameters███@Param1 VARCHAR(MAX)█
+                                █AJ5006░script_0.sql░MyDb.dbo.F1░VARCHAR(MAX)░function parameters███@Param1 VARCHAR(MAX)█
                             )
                             RETURNS @Result TABLE
                             (
@@ -123,7 +123,7 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper)
 
                             CREATE FUNCTION F1
                             (
-                                █AJ5006░main.sql░MyDb.dbo.F1░VARCHAR(MAX)░function parameters███@Param1 VARCHAR(MAX)█
+                                █AJ5006░script_0.sql░MyDb.dbo.F1░VARCHAR(MAX)░function parameters███@Param1 VARCHAR(MAX)█
                             )
                             RETURNS INT
                             AS
@@ -161,7 +161,7 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper)
                             GO
 
                             CREATE PROCEDURE P1
-                                █AJ5006░main.sql░MyDb.dbo.P1░UNIQUEIDENTIFIER░procedure parameters███@Param1 UNIQUEIDENTIFIER█
+                                █AJ5006░script_0.sql░MyDb.dbo.P1░UNIQUEIDENTIFIER░procedure parameters███@Param1 UNIQUEIDENTIFIER█
                             AS
                             BEGIN
                                 SELECT 1
@@ -193,7 +193,7 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper)
                             USE MyDb
                             GO
 
-                            DECLARE █AJ5006░main.sql░░BIGINT░variables███@Var BIGINT█
+                            DECLARE █AJ5006░script_0.sql░░BIGINT░variables███@Var BIGINT█
                             """;
 
         Verify(Settings, code);

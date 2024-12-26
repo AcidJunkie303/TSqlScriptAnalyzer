@@ -26,7 +26,7 @@ public sealed class UnreferencedVariableAnalyzerTests(ITestOutputHelper testOutp
         const string code = """
                             USE MyDb
                             GO
-                            DECLARE █AJ5012░main.sql░░@Var1███@Var1 INT = 303█
+                            DECLARE █AJ5012░script_0.sql░░@Var1███@Var1 INT = 303█
                             PRINT 'Hello'
                             """;
         Verify(code);
@@ -39,7 +39,7 @@ public sealed class UnreferencedVariableAnalyzerTests(ITestOutputHelper testOutp
                             USE MyDb
                             GO
                             -- Variable not referenced in this batch
-                            DECLARE █AJ5012░main.sql░░@Var1███@Var1 INT = 303█
+                            DECLARE █AJ5012░script_0.sql░░@Var1███@Var1 INT = 303█
                             PRINT 'Hello'
                             GO
 
@@ -63,7 +63,7 @@ public sealed class UnreferencedVariableAnalyzerTests(ITestOutputHelper testOutp
                             GO
 
                             -- Variable not referenced in this batch
-                            DECLARE █AJ5012░main.sql░░@Var1███@Var1 INT = 303█
+                            DECLARE █AJ5012░script_0.sql░░@Var1███@Var1 INT = 303█
                             PRINT 'Hello'
                             """;
         Verify(code);

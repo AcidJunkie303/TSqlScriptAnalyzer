@@ -26,7 +26,7 @@ public sealed class TabCharacterAnalyzerTests(ITestOutputHelper testOutputHelper
         const string code = """
                             USE MyDb
                             GO
-                            PRINT█AJ5008░main.sql░███	█909 -- code is a tab character
+                            PRINT█AJ5008░script_0.sql░███	█909 -- code is a tab character
                             """;
         Verify(code);
     }

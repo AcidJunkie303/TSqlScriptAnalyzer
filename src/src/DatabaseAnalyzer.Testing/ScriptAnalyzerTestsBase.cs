@@ -8,8 +8,6 @@ namespace DatabaseAnalyzer.Testing;
 public abstract class ScriptAnalyzerTestsBase<TAnalyzer>
     where TAnalyzer : class, IScriptAnalyzer, new()
 {
-    private int _scriptCounter;
-
     protected ScriptAnalyzerTestsBase(ITestOutputHelper testOutputHelper)
     {
         TestOutputHelper = testOutputHelper;
@@ -20,7 +18,7 @@ public abstract class ScriptAnalyzerTestsBase<TAnalyzer>
     protected static ScriptAnalyzerTesterBuilder<TAnalyzer> GetDefaultTesterBuilder(string sql)
         => ScriptAnalyzerTesterBuilder
             .Create<TAnalyzer>()
-            .WithMainScriptFile(sql);
+            .WithScriptFile(sql, "MyDb");
 
     protected void Verify(ScriptAnalyzerTester tester)
     {
@@ -51,8 +49,7 @@ public abstract class ScriptAnalyzerTestsBase<TAnalyzer>
         var builder = GetDefaultTesterBuilder(scripts[0]);
         foreach (var scriptContent in scripts.Skip(1))
         {
-            var scriptName = $"Script{_scriptCounter++}";
-            builder.AddAdditionalScriptFile(scriptContent, scriptName, "MyDb");
+            builder.WithScriptFile(scriptContent, "MyDb");
         }
 
         var tester = builder.Build();
@@ -70,8 +67,7 @@ public abstract class ScriptAnalyzerTestsBase<TAnalyzer>
         var builder = GetDefaultTesterBuilder(scripts[0]);
         foreach (var scriptContent in scripts.Skip(1))
         {
-            var scriptName = $"Script{_scriptCounter++}";
-            builder.AddAdditionalScriptFile(scriptContent, scriptName, "MyDb");
+            builder.WithScriptFile(scriptContent, "MyDb");
         }
 
         builder.WithSettings(settings);

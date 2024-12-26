@@ -18,18 +18,14 @@ public static class ScriptAnalyzerTesterBuilder
 public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
     where TAnalyzer : class, IScriptAnalyzer, new()
 {
-    private const string DefaultDatabaseName = "MyDb";
-
-    private readonly Dictionary<string, (string Contents, string DatabaseName)> _additionalScriptsByFilePath = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, (string Contents, string DatabaseName)> _scriptContentsByFilePath = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, object?> _settingsDiagnosticId = new(StringComparer.OrdinalIgnoreCase);
     private string _defaultSchemaName = "dbo";
-    private string? _mainScriptContents;
-    private string? _mainScriptFileFullPath;
 
-    public ScriptAnalyzerTesterBuilder<TAnalyzer> WithMainScriptFile(string mainScriptContents, string mainScriptFileFullPath = "main.sql")
+    public ScriptAnalyzerTesterBuilder<TAnalyzer> WithScriptFile(string contents, string databaseName)
     {
-        _mainScriptContents = mainScriptContents;
-        _mainScriptFileFullPath = mainScriptFileFullPath;
+        var filePath = $"script_{_scriptContentsByFilePath.Count}.sql";
+        _scriptContentsByFilePath.Add(filePath, (contents, databaseName));
         return this;
     }
 
@@ -46,23 +42,58 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
         return this;
     }
 
-    public ScriptAnalyzerTesterBuilder<TAnalyzer> AddAdditionalScriptFile(string contents, string scriptFileFullPath, string databaseName)
-    {
-        _additionalScriptsByFilePath.Add(scriptFileFullPath, (contents, databaseName));
-        return this;
-    }
-
     public ScriptAnalyzerTester Build()
     {
-        if (_mainScriptContents is null)
+        if (_scriptContentsByFilePath.Count == 0)
         {
-            throw new InvalidOperationException($"{nameof(WithMainScriptFile)}() has not been called");
+            throw new InvalidOperationException($"{nameof(WithScriptFile)}() has not been called");
         }
 
         var analyzer = new TAnalyzer();
         var diagnosticSettingsProvider = new FakeDiagnosticSettingsRetriever(_settingsDiagnosticId);
         var diagnosticDefinitionRegistry = new DiagnosticDefinitionRegistry(analyzer.SupportedDiagnostics);
-        var (markupFreeSql, expectedIssues) = new TestCodeProcessor(diagnosticDefinitionRegistry).ParseTestCode(_mainScriptContents!);
+        var testCodeProcessor = new TestCodeProcessor(diagnosticDefinitionRegistry);
+
+        var processedScripts = _scriptContentsByFilePath
+            .Select(a =>
+            {
+                var testCode = testCodeProcessor.ParseTestCode(a.Value.Contents);
+
+                return new
+                {
+                    testCode.MarkupFreeSql,
+                    testCode.ExpectedIssues,
+                    ScriptModel = ParseScript(a.Key, testCode.MarkupFreeSql, a.Value.DatabaseName)
+                };
+            })
+            .ToList();
+
+        var allScripts = processedScripts.ConvertAll(a => a.ScriptModel);
+        var expectedIssues = processedScripts.SelectMany(a => a.ExpectedIssues).ToList();
+        var allScriptsByDatabaseName = allScripts
+            .GroupBy(a => a.DatabaseName, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(
+                a => a.Key,
+                a => (IReadOnlyList<IScriptModel>)a.ToList(),
+                StringComparer.OrdinalIgnoreCase);
+
+        var analysisContext = new AnalysisContext(
+            _defaultSchemaName,
+            allScripts,
+            allScriptsByDatabaseName,
+            diagnosticSettingsProvider,
+            new IssueReporter());
+
+        return new ScriptAnalyzerTester(
+            analysisContext,
+            analyzer,
+            allScripts[0],
+            expectedIssues
+        );
+
+        // TODO: remove
+#pragma warning disable S125
+        /*
         var mainScript = ParseScript(_mainScriptFileFullPath!, markupFreeSql, DefaultDatabaseName);
 
         var otherScripts = _additionalScriptsByFilePath
@@ -90,6 +121,8 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
             mainScript,
             expectedIssues
         );
+        */
+#pragma warning restore S125
     }
 
     private static ScriptModel ParseScript(string relativeScriptFilePath, string scriptContents, string databaseName)

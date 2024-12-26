@@ -31,7 +31,7 @@ public sealed class UnreferencedParameterAnalyzerTests(ITestOutputHelper testOut
                             USE MyDb
                             GO
                             CREATE PROCEDURE [dbo].[P1]
-                                █AJ5011░main.sql░MyDb.dbo.P1░@Param1███@Param1 VARCHAR(MAX)█
+                                █AJ5011░script_0.sql░MyDb.dbo.P1░@Param1███@Param1 VARCHAR(MAX)█
                             AS
                             BEGIN
                                     PRINT 'Hello'
@@ -69,7 +69,7 @@ public sealed class UnreferencedParameterAnalyzerTests(ITestOutputHelper testOut
                             GO
                             CREATE FUNCTION F1
                             (
-                                █AJ5011░main.sql░MyDb.dbo.F1░@Param1███@Param1 VARCHAR(MAX)█
+                                █AJ5011░script_0.sql░MyDb.dbo.F1░@Param1███@Param1 VARCHAR(MAX)█
                             )
                             RETURNS INT
                             AS
