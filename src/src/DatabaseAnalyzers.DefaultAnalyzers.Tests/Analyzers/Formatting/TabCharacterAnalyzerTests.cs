@@ -10,6 +10,9 @@ public sealed class TabCharacterAnalyzerTests(ITestOutputHelper testOutputHelper
     public void WhenNoTabFound_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
+
                             PRINT 303
                             """;
 
@@ -21,6 +24,8 @@ public sealed class TabCharacterAnalyzerTests(ITestOutputHelper testOutputHelper
     {
         // had to be done this way because the IDE replaces tabs with spaces...
         const string code = """
+                            USE MyDb
+                            GO
                             PRINT█AJ5008░main.sql░███	█909 -- code is a tab character
                             """;
         Verify(code);

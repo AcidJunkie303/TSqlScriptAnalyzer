@@ -9,10 +9,11 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
 
 public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
+    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.FilteringColumnNotIndexed];
 
     public void Analyze(IAnalysisContext context)
     {
+        var settings = context.DiagnosticSettingsRetriever.GetSettings<Aj5015Settings>();
         var databasesByName = new DatabaseObjectExtractor().Extract(context.Scripts, context.DefaultSchemaName);
 
         foreach (var script in context.Scripts)
@@ -25,12 +26,12 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
 
             foreach (var statementList in statementLists)
             {
-                AnalyzeStatements(context, script, statementList, databasesByName);
+                AnalyzeStatements(context, settings, script, statementList, databasesByName);
             }
         }
     }
 
-    private static void AnalyzeStatements(IAnalysisContext context, IScriptModel script, TSqlFragment fragment, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
+    private static void AnalyzeStatements(IAnalysisContext context, Aj5015Settings settings, IScriptModel script, TSqlFragment fragment, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
     {
         var finder = new FilteringColumnFinder(context.IssueReporter, script.ParsedScript, script.RelativeScriptFilePath, context.DefaultSchemaName, script.ParentFragmentProvider);
 
@@ -51,8 +52,13 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
                 return;
             }
 
-            var fullObjectName = fragment.TryGetFirstClassObjectName(context.DefaultSchemaName, script.ParentFragmentProvider);
-            context.IssueReporter.Report(DiagnosticDefinitions.Default,
+            if (settings.MissingIndexSuppressions.Any(a => a.FullColumnNamePattern.IsMatch(filteringColumn.FullName)))
+            {
+                return;
+            }
+
+            var fullObjectName = fragment.TryGetFirstClassObjectName(context.DefaultSchemaName, script.ParsedScript, script.ParentFragmentProvider);
+            context.IssueReporter.Report(DiagnosticDefinitions.FilteringColumnNotIndexed,
                 filteringColumn.DatabaseName,
                 script.RelativeScriptFilePath,
                 fullObjectName,
@@ -61,29 +67,42 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
                 filteringColumn.SchemaName,
                 filteringColumn.TableName,
                 filteringColumn.ColumnName,
-                "script.sql",
-                "Db1.dbo.Employee.Email"
+                script.RelativeScriptFilePath
             );
         }
     }
 
     private static class DiagnosticDefinitions
     {
-        public static DiagnosticDefinition Default { get; } = new
-        (
-            "AJ5015",
-            IssueType.MissingIndex,
-            "Missing Index",
-            "The column '{0}.{1}.{2}.{3}' defined in script '{4}' is not indexed but used as query filtering predicate in '{5}'."
-        );
         /* Insertions Description:
             0 -> Database name
             1 -> Schema name
             2 -> Table name
             3 -> Column name
             4 -> Relative script file name containing the table creation statement
-            5 -> Full object name or script file name (script file name is used in case object name is null)
         */
+        public static DiagnosticDefinition FilteringColumnNotIndexed { get; } = new
+        (
+            "AJ5015",
+            IssueType.MissingIndex,
+            "Missing Index",
+            "The column '{0}.{1}.{2}.{3}' defined in script '{4}' is not indexed but used as column filtering predicate"
+        );
+
+        /* Insertions Description:
+            0 -> Database name
+            1 -> Schema name
+            2 -> Table name
+            3 -> Column name
+            4 -> Relative script file name containing the table creation statement
+        */
+        public static DiagnosticDefinition ForeignKeyColumnNotIndexed { get; } = new
+        (
+            "AJ5017",
+            IssueType.MissingIndex,
+            "Missing Index",
+            "The foreign-key column '{0}.{1}.{2}.{3}' defined in script '{4}' is not indexed. Although this columns might not be used for filtering directly, it is still recommended to create an index on it because it will improve performance checking for referential integrity when deleting columns from the table being referenced."
+        );
     }
 
 #pragma warning disable S125 // False positive

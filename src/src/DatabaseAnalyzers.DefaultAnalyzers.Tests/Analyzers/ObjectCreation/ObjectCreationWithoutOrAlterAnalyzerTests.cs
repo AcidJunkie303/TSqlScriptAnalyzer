@@ -10,6 +10,8 @@ public sealed class ObjectCreationWithoutOrAlterAnalyzerTests(ITestOutputHelper 
     public void WhenCreatingView_WhenOrAlterIsSpecified_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             CREATE OR ALTER VIEW dbo.V1
                             AS
                             SELECT 1 AS Expr1
@@ -22,7 +24,9 @@ public sealed class ObjectCreationWithoutOrAlterAnalyzerTests(ITestOutputHelper 
     public void WhenCreatingView_WhenNoOrAlterIsSpecified_ThenDiagnose()
     {
         const string code = """
-                            █AJ5009░main.sql░dbo.V1███CREATE VIEW dbo.V1
+                            USE MyDb
+                            GO
+                            █AJ5009░main.sql░MyDb.dbo.V1███CREATE VIEW dbo.V1
                             AS
                             SELECT 1 AS Expr1█
                             """;
@@ -34,6 +38,8 @@ public sealed class ObjectCreationWithoutOrAlterAnalyzerTests(ITestOutputHelper 
     public void WhenCreatingProcedure_WhenOrAlterIsSpecified_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             CREATE OR ALTER PROCEDURE P1
                             AS
                             BEGIN
@@ -48,7 +54,9 @@ public sealed class ObjectCreationWithoutOrAlterAnalyzerTests(ITestOutputHelper 
     public void WhenCreatingProcedure_WhenNoOrAlterIsSpecified_ThenDiagnose()
     {
         const string code = """
-                            █AJ5009░main.sql░dbo.P1███CREATE PROCEDURE P1
+                            USE MyDb
+                            GO
+                            █AJ5009░main.sql░MyDb.dbo.P1███CREATE PROCEDURE P1
                             AS
                             BEGIN
                                 SELECT 1
@@ -62,6 +70,8 @@ public sealed class ObjectCreationWithoutOrAlterAnalyzerTests(ITestOutputHelper 
     public void WhenCreatingFunction_WhenOrAlterIsSpecified_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             CREATE OR ALTER FUNCTION F1()
                             RETURNS INT
                             AS
@@ -77,7 +87,9 @@ public sealed class ObjectCreationWithoutOrAlterAnalyzerTests(ITestOutputHelper 
     public void WhenCreatingFunction_WhenNoOrAlterIsSpecified_ThenDiagnose()
     {
         const string code = """
-                            █AJ5009░main.sql░dbo.F1███CREATE FUNCTION F1()
+                            USE MyDb
+                            GO
+                            █AJ5009░main.sql░MyDb.dbo.F1███CREATE FUNCTION F1()
                             RETURNS INT
                             AS
                             BEGIN
@@ -92,6 +104,9 @@ public sealed class ObjectCreationWithoutOrAlterAnalyzerTests(ITestOutputHelper 
     public void WhenCreatingClrFunction_WhenOrAlterIsSpecified_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
+
                             CREATE OR ALTER PROCEDURE dbo.P1
                             AS EXTERNAL NAME A.B.C;
                             """;
@@ -103,7 +118,10 @@ public sealed class ObjectCreationWithoutOrAlterAnalyzerTests(ITestOutputHelper 
     public void WhenCreatingClrFunction_WhenNoOrAlterIsSpecified_ThenDiagnose()
     {
         const string code = """
-                            █AJ5009░main.sql░dbo.P1███CREATE PROCEDURE dbo.P1
+                            USE MyDb
+                            GO
+
+                            █AJ5009░main.sql░MyDb.dbo.P1███CREATE PROCEDURE dbo.P1
                             AS EXTERNAL NAME A.B.C█
                             """;
 

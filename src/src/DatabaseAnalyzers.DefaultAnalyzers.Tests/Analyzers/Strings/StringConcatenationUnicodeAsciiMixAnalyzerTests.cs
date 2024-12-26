@@ -10,6 +10,9 @@ public class StringConcatenationUnicodeAsciiMixAnalyzerTests(ITestOutputHelper t
     public void WhenStringsAreAllAscii_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
+
                             SET @x = 'a' + 'b'
                             """;
 
@@ -20,6 +23,8 @@ public class StringConcatenationUnicodeAsciiMixAnalyzerTests(ITestOutputHelper t
     public void WhenStringsAreAllUnicode_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             SET @x = N'a' + N'b'
                             """;
 
@@ -30,6 +35,8 @@ public class StringConcatenationUnicodeAsciiMixAnalyzerTests(ITestOutputHelper t
     public void WhenConcatenatingUnicodeAndAsciiStrings_ThenDiagnose()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             SET @x = █AJ5002░main.sql░███N'a' + 'b'█
                             """;
 
@@ -40,6 +47,8 @@ public class StringConcatenationUnicodeAsciiMixAnalyzerTests(ITestOutputHelper t
     public void WhenConvertingPartToSameStringType_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             SET @x = N'a' + CONVERT(NVARCHAR(MAX), 'b')
                             """;
 
@@ -50,6 +59,8 @@ public class StringConcatenationUnicodeAsciiMixAnalyzerTests(ITestOutputHelper t
     public void WhenConvertingPartToDifferentStringType_ThenDiagnose()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             SET @x = █AJ5002░main.sql░███N'a' + CONVERT(VARCHAR(999), N'b')█
                             """;
 
@@ -60,6 +71,8 @@ public class StringConcatenationUnicodeAsciiMixAnalyzerTests(ITestOutputHelper t
     public void WhenCastingPartToDifferentStringType_ThenDiagnose()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             SET @x = █AJ5002░main.sql░███N'a' + CAST(N'b' AS VARCHAR(999))█
                             """;
 

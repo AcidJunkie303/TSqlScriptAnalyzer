@@ -144,8 +144,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
 
         // arrange
         var (script, columnReference) = CreateScript(code);
-        var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new TableColumnResolver(new FakeIssueReporter(), script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
         var column = sut.Resolve(columnReference);

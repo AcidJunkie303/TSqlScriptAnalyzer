@@ -19,8 +19,7 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
     where TAnalyzer : class, IGlobalAnalyzer, new()
 {
     private readonly Dictionary<string, (string Contents, string DatabaseName)> _scriptContentsByFilePath = new(StringComparer.OrdinalIgnoreCase);
-
-    private readonly Dictionary<string, object?> _settingsDiagnosticId = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, object?> _settingsByDiagnosticId = new(StringComparer.OrdinalIgnoreCase);
     private string _defaultSchemaName = "dbo";
 
     public GlobalAnalyzerTesterBuilder<TAnalyzer> WithScriptFile(string contents, string databaseName)
@@ -33,7 +32,7 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
     public GlobalAnalyzerTesterBuilder<TAnalyzer> WithSettings<TSettings>(TSettings settings)
         where TSettings : class, ISettings<TSettings>
     {
-        _settingsDiagnosticId.Add(TSettings.DiagnosticId, settings);
+        _settingsByDiagnosticId.Add(TSettings.DiagnosticId, settings);
         return this;
     }
 
@@ -51,7 +50,7 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
         }
 
         var analyzer = new TAnalyzer();
-        var diagnosticSettingsProvider = new FakeDiagnosticSettingsRetriever(_settingsDiagnosticId);
+        var diagnosticSettingsProvider = new FakeDiagnosticSettingsRetriever(_settingsByDiagnosticId);
         var diagnosticDefinitionRegistry = new DiagnosticDefinitionRegistry(analyzer.SupportedDiagnostics);
         var testCodeProcessor = new TestCodeProcessor(diagnosticDefinitionRegistry);
 

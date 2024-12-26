@@ -16,6 +16,9 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper)
     public void WhenCreatingTable_WithoutBannedDataType_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
+
                             CREATE TABLE Employee
                             (
                                 Id INT NOT NULL,
@@ -30,10 +33,13 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper)
     public void WhenCreatingTable_WithBannedDataType_ThenDiagnose()
     {
         const string code = """
+                            USE MyDb
+                            GO
+
                             CREATE TABLE Employee
                             (
                                 Id INT NOT NULL,
-                                █AJ5006░main.sql░dbo.Employee░FLOAT░table columns███Value1 FLOAT█
+                                █AJ5006░main.sql░MyDb.dbo.Employee░FLOAT░table columns███Value1 FLOAT█
                             );
                             """;
 
@@ -44,6 +50,9 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper)
     public void WhenCreatingInlineTableValuedFunction_WithoutBannedDataType_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
+
                             CREATE FUNCTION dbo.F1
                             (
                                 @Param1 INT
@@ -63,9 +72,12 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper)
     public void WhenCreatingInlineTableValuedFunction_WithBannedDataType_ThenDiagnose()
     {
         const string code = """
+                            USE MyDb
+                            GO
+
                             CREATE FUNCTION F1
                             (
-                                █AJ5006░main.sql░dbo.F1░VARCHAR(MAX)░function parameters███@Param1 VARCHAR(MAX)█
+                                █AJ5006░main.sql░MyDb.dbo.F1░VARCHAR(MAX)░function parameters███@Param1 VARCHAR(MAX)█
                             )
                             RETURNS TABLE
                             AS
@@ -82,9 +94,12 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper)
     public void WhenCreatingMultiStatementTableValuedFunction_WithBannedDataType_ThenDiagnose()
     {
         const string code = """
+                            USE MyDb
+                            GO
+
                             CREATE FUNCTION F1
                             (
-                                █AJ5006░main.sql░dbo.F1░VARCHAR(MAX)░function parameters███@Param1 VARCHAR(MAX)█
+                                █AJ5006░main.sql░MyDb.dbo.F1░VARCHAR(MAX)░function parameters███@Param1 VARCHAR(MAX)█
                             )
                             RETURNS @Result TABLE
                             (
@@ -103,9 +118,12 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper)
     public void WhenCreatingScalarValuedFunction_WithBannedDataType_ThenDiagnose()
     {
         const string code = """
+                            USE MyDb
+                            GO
+
                             CREATE FUNCTION F1
                             (
-                                █AJ5006░main.sql░dbo.F1░VARCHAR(MAX)░function parameters███@Param1 VARCHAR(MAX)█
+                                █AJ5006░main.sql░MyDb.dbo.F1░VARCHAR(MAX)░function parameters███@Param1 VARCHAR(MAX)█
                             )
                             RETURNS INT
                             AS
@@ -121,6 +139,9 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper)
     public void WhenCreatingProcedure_WithoutBannedDataType_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
+
                             CREATE PROCEDURE P1
                                @Param1 INT
                             AS
@@ -136,8 +157,11 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper)
     public void WhenCreatingProcedure_WithBannedDataType_ThenDiagnose()
     {
         const string code = """
+                            USE MyDb
+                            GO
+
                             CREATE PROCEDURE P1
-                                █AJ5006░main.sql░dbo.P1░UNIQUEIDENTIFIER░procedure parameters███@Param1 UNIQUEIDENTIFIER█
+                                █AJ5006░main.sql░MyDb.dbo.P1░UNIQUEIDENTIFIER░procedure parameters███@Param1 UNIQUEIDENTIFIER█
                             AS
                             BEGIN
                                 SELECT 1
@@ -151,6 +175,9 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper)
     public void WhenVariableDeclaration_WithoutBannedDataType_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
+
                             DECLARE @Var INT
                             """;
 
@@ -163,6 +190,9 @@ public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper)
         // since the provided parser doesn't support CLR stored procedures, and we are doing the parsing our own in a simple way,
         // we use the whole statement as code region
         const string code = """
+                            USE MyDb
+                            GO
+
                             DECLARE █AJ5006░main.sql░░BIGINT░variables███@Var BIGINT█
                             """;
 

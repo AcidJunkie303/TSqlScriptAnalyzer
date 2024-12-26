@@ -8,5 +8,9 @@ public sealed record ColumnReference(
     string TableName,
     string ColumnName,
     TableSourceType SourceType,
-    TSqlFragment Fragment
-);
+    TSqlFragment Fragment,
+    string UsedIn
+)
+{
+    public string FullName { get; } = $"{DatabaseName}.{SchemaName}.{TableName}.{ColumnName}";
+}

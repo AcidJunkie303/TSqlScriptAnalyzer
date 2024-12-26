@@ -117,6 +117,7 @@ dotnet_diagnostic.ide0052.severity = error
 dotnet_diagnostic.ide0058.severity = none # this would pollute our code with warning suppressions or value discards. See https://github.com/dotnet/roslyn/issues/47832 if they come up with an ignore-list in the future
 dotnet_diagnostic.ide0059.severity = error
 dotnet_diagnostic.ide0060.severity = error
+dotnet_diagnostic.ide0061.severity = none # Use expression body for local functions -> We don't want to force it
 dotnet_diagnostic.ide0063.severity = error
 dotnet_diagnostic.ide0065.severity = error
 dotnet_diagnostic.ide0070.severity = error

@@ -10,6 +10,9 @@ public sealed class DoubleEmptyLinesAnalyzerTests(ITestOutputHelper testOutputHe
     public void WhenOnlySingleEmptyLine_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
+
                             PRINT 303
 
                             PRINT 909
@@ -21,6 +24,8 @@ public sealed class DoubleEmptyLinesAnalyzerTests(ITestOutputHelper testOutputHe
     public void WhenDoubleEmptyLines_ThenDiagnose()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             PRINT 303█AJ5007░main.sql░███
 
 
@@ -34,7 +39,8 @@ public sealed class DoubleEmptyLinesAnalyzerTests(ITestOutputHelper testOutputHe
     public void WhenSingleEmptyLineAtEnd_ThenOk()
     {
         const string code = """
-
+                            USE MyDb
+                            GO
                             PRINT 303
 
                             """;

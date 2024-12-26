@@ -52,7 +52,7 @@ public abstract class ScriptAnalyzerTestsBase<TAnalyzer>
         foreach (var scriptContent in scripts.Skip(1))
         {
             var scriptName = $"Script{_scriptCounter++}";
-            builder.AddAdditionalScriptFile(scriptContent, scriptName, "Db1");
+            builder.AddAdditionalScriptFile(scriptContent, scriptName, "MyDb");
         }
 
         var tester = builder.Build();
@@ -71,7 +71,7 @@ public abstract class ScriptAnalyzerTestsBase<TAnalyzer>
         foreach (var scriptContent in scripts.Skip(1))
         {
             var scriptName = $"Script{_scriptCounter++}";
-            builder.AddAdditionalScriptFile(scriptContent, scriptName, "Db1");
+            builder.AddAdditionalScriptFile(scriptContent, scriptName, "MyDb");
         }
 
         builder.WithSettings(settings);

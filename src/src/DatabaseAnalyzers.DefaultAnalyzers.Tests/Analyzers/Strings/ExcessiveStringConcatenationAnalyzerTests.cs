@@ -11,6 +11,9 @@ public sealed class ExcessiveStringConcatenationAnalyzerTests(ITestOutputHelper 
     public void WhenTwoStringConcatenation_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
+
                             SET @x = 'a' + 'b' + 'c'
                             """;
         VerifyWithDefaultSettings<Aj5001Settings>(code);
@@ -20,6 +23,8 @@ public sealed class ExcessiveStringConcatenationAnalyzerTests(ITestOutputHelper 
     public void WhenMoreThanTwoStringConcatenation_ThenDiagnose()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             SET @x = █AJ5001░main.sql░░2███N'a' + N'b' + N'c' + N'd'█ -- 2 is the default max allowed string concatenation count
                             """;
         VerifyWithDefaultSettings<Aj5001Settings>(code);
@@ -29,6 +34,8 @@ public sealed class ExcessiveStringConcatenationAnalyzerTests(ITestOutputHelper 
     public void WhenMoreThanTwoNumberAdditions_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             SET @x = 1 + 2 + 3 + 4
                             """;
 
@@ -39,6 +46,8 @@ public sealed class ExcessiveStringConcatenationAnalyzerTests(ITestOutputHelper 
     public void WhenMoreThanTwoStringVariableConcatenation_ThenDiagnose()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             DECLARE @a NVARCHAR(MAX) = N'a'
                             SET @x = █AJ5001░main.sql░░2███a + @a + @a + @a█
                             """;
@@ -49,6 +58,8 @@ public sealed class ExcessiveStringConcatenationAnalyzerTests(ITestOutputHelper 
     public void WhenMoreThanTwoVariableConcatenation_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             DECLARE @a INT = 1
                             SET @x = @a + @a + @a + @a
                             """;
@@ -60,6 +71,8 @@ public sealed class ExcessiveStringConcatenationAnalyzerTests(ITestOutputHelper 
     public void WithSettings_MaxAllowedConcatenationsIsOne_WhenSettingsWhenOneConcatenation_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             SET @x = 'a' + 'b'
                             """;
 
@@ -72,6 +85,8 @@ public sealed class ExcessiveStringConcatenationAnalyzerTests(ITestOutputHelper 
     public void WithSettings_MaxAllowedConcatenationsIsOne_WhenSettingsWhenTwoConcatenations_ThenDiagnose()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             SET @x = █AJ5001░main.sql░░1███'a' + 'b' + 'c'█
                             """;
 
@@ -84,11 +99,13 @@ public sealed class ExcessiveStringConcatenationAnalyzerTests(ITestOutputHelper 
     public void WhenVariableIsParameter_WhenMoreThanTwoStringConcatenation_ThenDiagnose()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             CREATE PROCEDURE xxx.P1
                                    @Param1 NVARCHAR(MAX)
                             AS
                             BEGIN
-                                   SET @x  = █AJ5001░main.sql░xxx.P1░2███Param1 + @Param1 + @Param1 + @Param1█
+                                   SET @x  = █AJ5001░main.sql░MyDb.xxx.P1░2███Param1 + @Param1 + @Param1 + @Param1█
                             END
                             """;
 
