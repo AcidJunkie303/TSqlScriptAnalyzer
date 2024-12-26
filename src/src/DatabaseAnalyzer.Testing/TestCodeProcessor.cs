@@ -15,15 +15,14 @@ internal sealed partial class TestCodeProcessor
     }
 
     // examples:
-    // █AJ5000░file.sql░object.name██RINT 303█                -> has object name;     no insertions: [],                  region: "PRINT 303"
-    // █AJ5000░file.sql░██RINT 303█                           -> no object name;      no insertions: [],                  region: "PRINT 303"
-    // █AJ5000░file.sql░object.name░██RINT 303█               -> has object name;     1 insertion: [""],                  region: "PRINT 303"
-    // █AJ5000░file.sql░schema.name░hello██RINT 303█          -> has object name;     1 insertion: ["hello"],             region: "PRINT 303"
-    // █AJ5000░file.sql░schema.name░hello░██RINT 303█         -> has object name;     2 insertion: ["hello", ""],         region: "PRINT 303"
-    // █AJ5000░file.sql░schema.name░hello░world██RINT 303█    -> has object name;     2 insertion: ["hello", "world"],    region: "PRINT 303"
-    // █AJ5000░file.sql░░hello░world██RINT 303█               -> no object name;      2 insertion: ["hello", "world"],    region: "PRINT 303"
+    // █AJ5000░file.sql░object.name██PRINT 303█                -> has object name;     no insertions: [],                  region: "PRINT 303"
+    // █AJ5000░file.sql░██PRINT 303█                           -> no object name;      no insertions: [],                  region: "PRINT 303"
+    // █AJ5000░file.sql░object.name░██PRINT 303█               -> has object name;     1 insertion: [""],                  region: "PRINT 303"
+    // █AJ5000░file.sql░schema.name░hello██PRINT 303█          -> has object name;     1 insertion: ["hello"],             region: "PRINT 303"
+    // █AJ5000░file.sql░schema.name░hello░██PRINT 303█         -> has object name;     2 insertion: ["hello", ""],         region: "PRINT 303"
+    // █AJ5000░file.sql░schema.name░hello░world██PRINT 303█    -> has object name;     2 insertion: ["hello", "world"],    region: "PRINT 303"
+    // █AJ5000░file.sql░░hello░world██PRINT 303█               -> no object name;      2 insertion: ["hello", "world"],    region: "PRINT 303"
     // please note that the object-name is optional and can be empty. E.g. when the code is not within a CREATE PROCEDURE statement for example
-    //[GeneratedRegex(@"\{\{(?<id>[^░]+)░(?<parts>[^\|]+)\|\|\|(?<code>.*?)\}\}", RegexOptions.Compiled | RegexOptions.Singleline, 1000)]
     [GeneratedRegex(@"█(?<header>[^█]+)███(?<code>[^█]+)█", RegexOptions.Compiled | RegexOptions.ExplicitCapture, 1000)]
     private static partial Regex MarkupRegex();
 
@@ -70,7 +69,7 @@ internal sealed partial class TestCodeProcessor
             }
 
             var location = CodeRegion.Create(startLineNumber, startColumnNumber, endLineNumber, endColumnNumber);
-            var issue = Issue.Create(_diagnosticRegistry.GetDefinition(id), "db1", fileName, fullObjectName, location, insertions);
+            var issue = Issue.Create(_diagnosticRegistry.GetDefinition(id), "MyDb", fileName, fullObjectName, location, insertions);
             issues.Add(issue);
 
             return affectedCode;

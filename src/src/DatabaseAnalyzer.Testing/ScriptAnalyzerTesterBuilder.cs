@@ -18,7 +18,7 @@ public static class ScriptAnalyzerTesterBuilder
 public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
     where TAnalyzer : class, IScriptAnalyzer, new()
 {
-    private const string DefaultDatabaseName = "db1";
+    private const string DefaultDatabaseName = "MyDb";
 
     private readonly Dictionary<string, (string Contents, string DatabaseName)> _additionalScriptsByFilePath = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, object?> _settingsDiagnosticId = new(StringComparer.OrdinalIgnoreCase);

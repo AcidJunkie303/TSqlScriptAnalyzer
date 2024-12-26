@@ -10,6 +10,9 @@ public sealed class MissingBlankSpaceAnalyzerTests(ITestOutputHelper testOutputH
     public void WhenBlankSpaceAfterComma_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
+
                             SELECT 1, 2
                             """;
         Verify(code);
@@ -19,6 +22,8 @@ public sealed class MissingBlankSpaceAnalyzerTests(ITestOutputHelper testOutputH
     public void WhenNoBlankSpaceAfterComma_ThenDiagnose()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             -- SELECT 1,2
                             SELECT 1█AJ5010░main.sql░░after░,███,█2
                             """;
@@ -29,6 +34,8 @@ public sealed class MissingBlankSpaceAnalyzerTests(ITestOutputHelper testOutputH
     public void WhenBlankSpaceBeforeOperator_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             SET @a = 1 + 2
                             """;
         Verify(code);
@@ -38,6 +45,8 @@ public sealed class MissingBlankSpaceAnalyzerTests(ITestOutputHelper testOutputH
     public void WhenNoBlankSpaceBeforeOperator_ThenDiagnose()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             -- SET @a = 1+ 2
                             SET @a = 1█AJ5010░main.sql░░before░+███+█ 2
                             """;
@@ -48,6 +57,8 @@ public sealed class MissingBlankSpaceAnalyzerTests(ITestOutputHelper testOutputH
     public void WhenNoBlankSpaceAfterOperator_ThenDiagnose()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             -- SET @a = 1 +2
                             SET @a = 1 █AJ5010░main.sql░░after░+███+█2
                             """;

@@ -34,7 +34,7 @@ public sealed class TableColumnResolver
         while (true)
         {
             fragment = fragment.GetParent(_parentFragmentProvider);
-            if (fragment is null || IsStatementTopmostFragment(fragment))
+            if (fragment is null)
             {
                 break;
             }
@@ -53,6 +53,11 @@ public sealed class TableColumnResolver
             if (column is not null)
             {
                 return column;
+            }
+
+            if (IsStatementTopmostFragment(fragment))
+            {
+                return null;
             }
         }
 
@@ -180,7 +185,8 @@ public sealed class TableColumnResolver
         // Therefore, we assume that this is the table we're looking for
         if (tableNameOrAlias is null)
         {
-            return new ColumnReference(currentDatabaseName, tableReferenceSchemaName, tableReferenceTableName, columnName, TableSourceType.NotDetermined, columnReferenceExpression);
+            var fullObjectName = GetFullObjectName();
+            return new ColumnReference(currentDatabaseName, tableReferenceSchemaName, tableReferenceTableName, columnName, TableSourceType.NotDetermined, columnReferenceExpression, fullObjectName);
         }
 
         var tableReferenceAlias = namedTableReference.Alias?.Value;
@@ -190,8 +196,11 @@ public sealed class TableColumnResolver
         }
 
         return tableReferenceAlias.EqualsOrdinalIgnoreCase(tableNameOrAlias)
-            ? new ColumnReference(currentDatabaseName ?? "Unknown", tableReferenceSchemaName, tableReferenceTableName, columnName, TableSourceType.NotDetermined, columnReferenceExpression)
+            ? new ColumnReference(currentDatabaseName ?? "Unknown", tableReferenceSchemaName, tableReferenceTableName, columnName, TableSourceType.NotDetermined, columnReferenceExpression, GetFullObjectName())
             : null;
+
+        string GetFullObjectName()
+            => columnReferenceExpression.TryGetFirstClassObjectName(_defaultSchemaName, _script, _parentFragmentProvider) ?? _relativeScriptFilePath;
     }
 
     private static bool IsStatementTopmostFragment(TSqlFragment fragment)
@@ -205,7 +214,7 @@ public sealed class TableColumnResolver
     private void ReportMissingAlias(ColumnReferenceExpression columnReference)
     {
         var currentDatabaseName = columnReference.FindCurrentDatabaseNameAtFragment(_script);
-        var fullObjectName = columnReference.TryGetFirstClassObjectName(_defaultSchemaName, _parentFragmentProvider);
+        var fullObjectName = columnReference.TryGetFirstClassObjectName(_defaultSchemaName, _script, _parentFragmentProvider);
         _issueReporter.Report(WellKnownDiagnosticDefinitions.MissingAlias, currentDatabaseName ?? "Unknown", _relativeScriptFilePath, fullObjectName, columnReference.GetCodeRegion(), columnReference.GetSql());
     }
 }

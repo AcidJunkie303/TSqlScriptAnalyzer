@@ -25,11 +25,14 @@ public sealed class ParameterReferenceWithDifferentCasingAnalyzerTests(ITestOutp
     public void WithProcedure_WhenParameterReferenceHasDifferentCasing_ThenDiagnose()
     {
         const string code = """
+                            USE MyDb
+                            GO
+
                             CREATE PROCEDURE [dbo].[P1]
                                     @Param1 VARCHAR(MAX)
                             AS
                             BEGIN
-                                 PRINT █AJ5013░main.sql░dbo.P1░@PARAM1░@Param1███@PARAM1█
+                                 PRINT █AJ5013░main.sql░MyDb.dbo.P1░@PARAM1░@Param1███@PARAM1█
                             END
                             """;
         Verify(code);
@@ -39,6 +42,9 @@ public sealed class ParameterReferenceWithDifferentCasingAnalyzerTests(ITestOutp
     public void WithScalarFunction_WhenParameterReferenceHasSameCasing_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
+
                             CREATE FUNCTION F1
                             (
                                 @Param1 VARCHAR(MAX)
@@ -57,6 +63,9 @@ public sealed class ParameterReferenceWithDifferentCasingAnalyzerTests(ITestOutp
     public void WithScalarFunction_WhenParameterReferenceHasDifferentCasing_ThenDiagnose()
     {
         const string code = """
+                            USE MyDb
+                            GO
+
                             CREATE FUNCTION F1
                             (
                                 @Param1 VARCHAR(MAX)
@@ -64,7 +73,7 @@ public sealed class ParameterReferenceWithDifferentCasingAnalyzerTests(ITestOutp
                             RETURNS INT
                             AS
                             BEGIN
-                                    PRINT █AJ5013░main.sql░dbo.F1░@PARAM1░@Param1███@PARAM1█
+                                    PRINT █AJ5013░main.sql░MyDb.dbo.F1░@PARAM1░@Param1███@PARAM1█
                                     RETURN 1
                             END
                             """;

@@ -50,19 +50,25 @@ public static class SqlFragmentExtensions
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(script);
 
-        return fragment.TryGetFirstClassObjectName(context.DefaultSchemaName, script.ParentFragmentProvider);
+        return fragment.TryGetFirstClassObjectName(context.DefaultSchemaName, script.ParsedScript, script.ParentFragmentProvider);
     }
 
-    public static string? TryGetFirstClassObjectName(this TSqlFragment fragment, string defaultSchemaName, IParentFragmentProvider parentFragmentProvider)
+    public static string? TryGetFirstClassObjectName(this TSqlFragment fragment, string defaultSchemaName, TSqlScript script, IParentFragmentProvider parentFragmentProvider)
     {
         ArgumentNullException.ThrowIfNull(parentFragmentProvider);
 
         foreach (var parent in parentFragmentProvider.GetParents(fragment).Prepend(fragment))
         {
+            if (parent is TSqlScript or TSqlBatch) // there's no point of continuing with those fragment types
+            {
+                return null;
+            }
+
+            var databaseName = parent.FindCurrentDatabaseNameAtFragment(script);
             var name = TryGetFirstClassObjectNameCore(parent, defaultSchemaName);
             if (!name.IsNullOrWhiteSpace())
             {
-                return name;
+                return $"{databaseName}.{name}";
             }
         }
 

@@ -11,6 +11,9 @@ public sealed class UnreferencedVariableAnalyzerTests(ITestOutputHelper testOutp
     public void WhenVariableIsReferenced_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
+
                             DECLARE @Var1 INT = 303
                             PRINT @Var1
                             """;
@@ -21,6 +24,8 @@ public sealed class UnreferencedVariableAnalyzerTests(ITestOutputHelper testOutp
     public void WhenVariableIsNotReferenced_ThenDiagnose()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             DECLARE █AJ5012░main.sql░░@Var1███@Var1 INT = 303█
                             PRINT 'Hello'
                             """;
@@ -31,6 +36,8 @@ public sealed class UnreferencedVariableAnalyzerTests(ITestOutputHelper testOutp
     public void WhenSameVariableIsDefinedInDifferentBatches1_ThenTreatEveryBatchSeparately()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             -- Variable not referenced in this batch
                             DECLARE █AJ5012░main.sql░░@Var1███@Var1 INT = 303█
                             PRINT 'Hello'
@@ -39,7 +46,6 @@ public sealed class UnreferencedVariableAnalyzerTests(ITestOutputHelper testOutp
                             -- Variable referenced in this batch
                             DECLARE @Var1 INT = 303
                             PRINT @Var1
-
                             """;
         Verify(code);
     }
@@ -48,6 +54,8 @@ public sealed class UnreferencedVariableAnalyzerTests(ITestOutputHelper testOutp
     public void WhenSameVariableIsDefinedInDifferentBatches2_ThenTreatEveryBatchSeparately()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             -- Variable referenced in this batch
                             DECLARE @Var1 INT = 303
                             PRINT @Var1
@@ -65,6 +73,8 @@ public sealed class UnreferencedVariableAnalyzerTests(ITestOutputHelper testOutp
     public void WhenParameterNotUsed_ThenOk_BecauseItIsNotVariable()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             CREATE PROCEDURE P1
                                @Param1 INT
                             AS

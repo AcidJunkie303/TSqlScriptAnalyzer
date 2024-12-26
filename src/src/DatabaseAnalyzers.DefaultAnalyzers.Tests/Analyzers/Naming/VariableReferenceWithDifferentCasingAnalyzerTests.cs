@@ -11,6 +11,8 @@ public sealed class VariableReferenceWithDifferentCasingAnalyzerTests(ITestOutpu
     public void WhenVariableReferenceHasSameCasing_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             DECLARE @Var1 INT = 303
                             PRINT @Var1
                             """;
@@ -21,6 +23,8 @@ public sealed class VariableReferenceWithDifferentCasingAnalyzerTests(ITestOutpu
     public void WhenVariableReferenceHasDifferentCasing_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             DECLARE @Var1 INT = 303
                             PRINT █AJ5014░main.sql░░@VAR1░@Var1███@VAR1█
                             """;
@@ -31,6 +35,8 @@ public sealed class VariableReferenceWithDifferentCasingAnalyzerTests(ITestOutpu
     public void WhenVariableIsDefinedInBatch_AndReferencedInDifferentBatchWithDifferentCasing_ThenOK()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             DECLARE @Var1 INT
 
                             GO
@@ -47,6 +53,9 @@ public sealed class VariableReferenceWithDifferentCasingAnalyzerTests(ITestOutpu
         // this is handled by a different analyzer (unreferenced parameter)
         // this is to make sure, we don't intersect the logic
         const string code = """
+                            USE MyDb
+                            GO
+
                             CREATE PROCEDURE P1
                                @Param1 INT
                             AS

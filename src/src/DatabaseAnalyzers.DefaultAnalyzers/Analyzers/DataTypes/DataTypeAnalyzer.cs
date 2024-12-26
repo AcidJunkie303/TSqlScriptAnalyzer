@@ -1,7 +1,6 @@
 using System.Text.RegularExpressions;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.DataTypes;
@@ -74,7 +73,7 @@ public sealed class DataTypeAnalyzer : IScriptAnalyzer
             return;
         }
 
-        var fullObjectName = parameter.TryGetFirstClassObjectName(context.DefaultSchemaName, script.ParentFragmentProvider);
+        var fullObjectName = parameter.TryGetFirstClassObjectName(context.DefaultSchemaName, script.ParsedScript, script.ParentFragmentProvider);
 
         context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, parameter, dataTypeName, pluralObjectType);
     }

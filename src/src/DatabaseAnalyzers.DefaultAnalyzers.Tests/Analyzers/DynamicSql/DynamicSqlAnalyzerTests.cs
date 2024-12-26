@@ -10,6 +10,9 @@ public sealed class DynamicSqlAnalyzerTests(ITestOutputHelper testOutputHelper) 
     public void WhenUsingExecAndCallingStoredProcedure_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
+
                             EXEC dbo.P1
                             """;
         Verify(code);
@@ -19,6 +22,9 @@ public sealed class DynamicSqlAnalyzerTests(ITestOutputHelper testOutputHelper) 
     public void WhenUsingExecWithBrackets_ThenDiagnose()
     {
         const string code = """
+                            USE MyDb
+                            GO
+
                             █AJ5000░main.sql░███EXEC ('SELECT 1')█
                             """;
 
@@ -29,6 +35,9 @@ public sealed class DynamicSqlAnalyzerTests(ITestOutputHelper testOutputHelper) 
     public void WhenUsingExecWithSpExecuteSqlAndCallingStringProvidedCommand_ThenDiagnose()
     {
         const string code = """
+                            USE MyDb
+                            GO
+
                             █AJ5000░main.sql░███EXEC sp_executeSql 'dbo.P1'█
                             """;
 
@@ -39,6 +48,9 @@ public sealed class DynamicSqlAnalyzerTests(ITestOutputHelper testOutputHelper) 
     public void WhenUsingExecWithSpExecuteSqlAndCallingVariableProvidedCommand_ThenDiagnose()
     {
         const string code = """
+                            USE MyDb
+                            GO
+
                             DECLARE @sql NVARCHAR = N'SELECT 1'
                             █AJ5000░main.sql░███EXEC sp_executeSql @sql█
                             """;
@@ -50,6 +62,9 @@ public sealed class DynamicSqlAnalyzerTests(ITestOutputHelper testOutputHelper) 
     public void WhenUsingDirectProcedureInvocation_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
+
                             dbo.P1 @param1 = 123
                             """;
 

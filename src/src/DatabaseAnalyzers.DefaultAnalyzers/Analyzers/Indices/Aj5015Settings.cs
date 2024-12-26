@@ -1,26 +1,32 @@
-using System.Collections.Frozen;
+using System.Collections.Immutable;
 using DatabaseAnalyzer.Contracts;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
 
 public sealed class Aj5015SettingsRaw : IRawSettings<Aj5015Settings>
 {
     // ReSharper disable UnusedAutoPropertyAccessor.Global -> used during deserialization
-    public IReadOnlyDictionary<string, string?>? SuppressionReasonByFullColumnName { get; set; }
+    public IReadOnlyList<MissingIndexSuppressionSettingsRaw>? MissingIndexSuppressions { get; set; }
 
     public Aj5015Settings ToSettings() => new
     (
-        (SuppressionReasonByFullColumnName ?? FrozenDictionary<string, string?>.Empty)
-        .Where(a => !a.Value.IsNullOrWhiteSpace())
-        .ToFrozenDictionary(a => a.Key, a => a.Value!.Trim(), StringComparer.OrdinalIgnoreCase)
+        (MissingIndexSuppressions ?? [])
+        .Select(a => a.ToSettings())
+        .ToImmutableArray()
     );
 }
 
 public sealed record Aj5015Settings(
-    FrozenDictionary<string, string> SuppressionReasonByFullColumnName
+    IReadOnlyList<MissingIndexSuppressionSettings> MissingIndexSuppressions
 ) : ISettings<Aj5015Settings>
 {
-    public static Aj5015Settings Default { get; } = new(FrozenDictionary<string, string>.Empty);
+    public static Aj5015Settings Default { get; } = new Aj5015SettingsRaw
+    {
+        MissingIndexSuppressions =
+        [
+            new MissingIndexSuppressionSettingsRaw { FullColumnNamePattern = "*.sys.*", SuppressionReason = "Built-in schema" }
+        ]
+    }.ToSettings();
+
     public static string DiagnosticId => "Aj5015";
 }

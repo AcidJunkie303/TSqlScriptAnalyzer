@@ -32,7 +32,7 @@ public sealed class TestCodeProcessorTests
         // arrange
         var sut = new TestCodeProcessor(DiagnosticDefinitionRegistry);
         const string code = """
-                            aaa█TE0000░file.sql░dbo.p1███bbb█ccc
+                            aaa█TE0000░file.sql░MyDb.dbo.p1███bbb█ccc
                             """;
 
         // act
@@ -40,7 +40,7 @@ public sealed class TestCodeProcessorTests
 
         // assert
         var expectedLocation = CodeRegion.Create(1, 4, 1, 7);
-        var expectedIssue = Issue.Create(TestDiagnosticDefinitions.TestDiagnostic0, "db1", "file.sql", "dbo.p1", expectedLocation);
+        var expectedIssue = Issue.Create(TestDiagnosticDefinitions.TestDiagnostic0, "MyDb", "file.sql", "MyDb.dbo.p1", expectedLocation);
 
         result.ExpectedIssues.Should().ContainEquivalentOf(expectedIssue);
         result.ExpectedIssues.Should().HaveCount(1);
@@ -54,7 +54,7 @@ public sealed class TestCodeProcessorTests
         // arrange
         var sut = new TestCodeProcessor(DiagnosticDefinitionRegistry);
         const string code = """
-                            aaa█TE0001░file.sql░dbo.p1░X███bbb█ccc
+                            aaa█TE0001░file.sql░MyDb.dbo.p1░X███bbb█ccc
                             """;
 
         // act
@@ -62,7 +62,7 @@ public sealed class TestCodeProcessorTests
 
         // assert
         var expectedLocation = CodeRegion.Create(1, 4, 1, 7);
-        var expectedIssue = Issue.Create(TestDiagnosticDefinitions.TestDiagnostic1, "db1", "file.sql", "dbo.p1", expectedLocation, "X");
+        var expectedIssue = Issue.Create(TestDiagnosticDefinitions.TestDiagnostic1, "MyDb", "file.sql", "MyDb.dbo.p1", expectedLocation, "X");
 
         result.ExpectedIssues.Should().ContainEquivalentOf(expectedIssue);
         result.ExpectedIssues.Should().HaveCount(1);
@@ -76,7 +76,7 @@ public sealed class TestCodeProcessorTests
         // arrange
         var sut = new TestCodeProcessor(DiagnosticDefinitionRegistry);
         const string code = """
-                            aaa█TE0002░file.sql░dbo.p1░X░Y███bbb█ccc
+                            aaa█TE0002░file.sql░MyDb.dbo.p1░X░Y███bbb█ccc
                             """;
 
         // act
@@ -84,7 +84,7 @@ public sealed class TestCodeProcessorTests
 
         // assert
         var expectedLocation = CodeRegion.Create(1, 4, 1, 7);
-        var expectedIssue = Issue.Create(TestDiagnosticDefinitions.TestDiagnostic2, "db1", "file.sql", "dbo.p1", expectedLocation, "X", "Y");
+        var expectedIssue = Issue.Create(TestDiagnosticDefinitions.TestDiagnostic2, "MyDb", "file.sql", "MyDb.dbo.p1", expectedLocation, "X", "Y");
 
         result.ExpectedIssues.Should().ContainEquivalentOf(expectedIssue);
         result.ExpectedIssues.Should().HaveCount(1);
@@ -98,7 +98,7 @@ public sealed class TestCodeProcessorTests
         // arrange
         var sut = new TestCodeProcessor(DiagnosticDefinitionRegistry);
         const string code = """
-                            aaa█TE0000░file.sql░dbo.p1███---
+                            aaa█TE0000░file.sql░MyDb.dbo.p1███---
                             ---
                             ---bbb█ccc
                             """;
@@ -108,7 +108,7 @@ public sealed class TestCodeProcessorTests
 
         // assert
         var expectedLocation = CodeRegion.Create(1, 4, 3, 7);
-        var expectedIssue = Issue.Create(TestDiagnosticDefinitions.TestDiagnostic0, "db1", "file.sql", "dbo.p1", expectedLocation);
+        var expectedIssue = Issue.Create(TestDiagnosticDefinitions.TestDiagnostic0, "MyDb", "file.sql", "MyDb.dbo.p1", expectedLocation);
 
         result.ExpectedIssues.Should().ContainEquivalentOf(expectedIssue);
         result.ExpectedIssues.Should().HaveCount(1);
@@ -126,7 +126,7 @@ public sealed class TestCodeProcessorTests
         // arrange
         var sut = new TestCodeProcessor(DiagnosticDefinitionRegistry);
         const string code = """
-                            aaa█TE0000░file.sql░dbo.p1███---
+                            aaa█TE0000░file.sql░MyDb.dbo.p1███---
                             ---
                             █ccc
                             """;
@@ -136,7 +136,7 @@ public sealed class TestCodeProcessorTests
 
         // assert
         var expectedLocation = CodeRegion.Create(1, 4, 3, 1);
-        var expectedIssue = Issue.Create(TestDiagnosticDefinitions.TestDiagnostic0, "db1", "file.sql", "dbo.p1", expectedLocation);
+        var expectedIssue = Issue.Create(TestDiagnosticDefinitions.TestDiagnostic0, "MyDb", "file.sql", "MyDb.dbo.p1", expectedLocation);
 
         result.ExpectedIssues.Should().ContainEquivalentOf(expectedIssue);
         result.ExpectedIssues.Should().HaveCount(1);

@@ -22,7 +22,7 @@ public abstract class GlobalAnalyzerTestsBase<TAnalyzer>
 
         foreach (var scriptContent in scriptsContents)
         {
-            builder.WithScriptFile(scriptContent, "db1");
+            builder.WithScriptFile(scriptContent, "MyDb");
         }
 
         return builder;

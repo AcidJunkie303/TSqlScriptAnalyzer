@@ -11,6 +11,9 @@ public sealed class UnreferencedParameterAnalyzerTests(ITestOutputHelper testOut
     public void WithProcedure_WhenParameterIsReferenced_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
+
                             CREATE PROCEDURE [dbo].[P1]
                                 @Param1 VARCHAR(MAX)
                             AS
@@ -25,8 +28,10 @@ public sealed class UnreferencedParameterAnalyzerTests(ITestOutputHelper testOut
     public void WithProcedure_WhenParameterIsNotReferenced_ThenDiagnose()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             CREATE PROCEDURE [dbo].[P1]
-                                █AJ5011░main.sql░dbo.P1░@Param1███@Param1 VARCHAR(MAX)█
+                                █AJ5011░main.sql░MyDb.dbo.P1░@Param1███@Param1 VARCHAR(MAX)█
                             AS
                             BEGIN
                                     PRINT 'Hello'
@@ -40,6 +45,8 @@ public sealed class UnreferencedParameterAnalyzerTests(ITestOutputHelper testOut
     public void WithScalarFunction_WhenParameterIsReferenced_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             CREATE FUNCTION F1
                             (
                                 @Param1 VARCHAR(MAX)
@@ -58,9 +65,11 @@ public sealed class UnreferencedParameterAnalyzerTests(ITestOutputHelper testOut
     public void WithScalarFunction_WhenParameterIsNotReferenced_ThenDiagnose()
     {
         const string code = """
+                            USE MyDb
+                            GO
                             CREATE FUNCTION F1
                             (
-                                █AJ5011░main.sql░dbo.F1░@Param1███@Param1 VARCHAR(MAX)█
+                                █AJ5011░main.sql░MyDb.dbo.F1░@Param1███@Param1 VARCHAR(MAX)█
                             )
                             RETURNS INT
                             AS

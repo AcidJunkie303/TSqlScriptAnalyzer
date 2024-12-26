@@ -11,8 +11,10 @@ public sealed class WrongUseDatabaseNameAnalyzerTests(ITestOutputHelper testOutp
     public void WhenUsingCorrectDatabaseName_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
+
                             PRINT 'Hello World'
-                            USE [db1]
                             """;
 
         VerifyWithDefaultSettings<Aj5003Settings>(code);
@@ -22,10 +24,13 @@ public sealed class WrongUseDatabaseNameAnalyzerTests(ITestOutputHelper testOutp
     public void WhenUsingWrongDatabaseName_ThenDiagnose()
     {
         const string code = """
+                            USE MyDb
+                            GO
+
                             PRINT 'Hello World'
-                            USE [db1]
+
+                            █AJ5003░main.sql░░master░MyDb███USE [master]█
                             PRINT 'Hello World'
-                            █AJ5003░main.sql░░master░db1███USE [master]█
                             """;
 
         VerifyWithDefaultSettings<Aj5003Settings>(code);
@@ -35,6 +40,9 @@ public sealed class WrongUseDatabaseNameAnalyzerTests(ITestOutputHelper testOutp
     public void WhenUsingWrongDatabaseButFileIsExcluded_ThenOk()
     {
         const string code = """
+                            USE MyDb
+                            GO
+
                             USE master
                             """;
 
