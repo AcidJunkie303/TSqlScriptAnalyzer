@@ -9,8 +9,7 @@ using Xunit.Abstractions;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Tests.SqlParsing;
 
-// TODO:
-// do CTEs
+// TODO: CTEs
 
 public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
 {

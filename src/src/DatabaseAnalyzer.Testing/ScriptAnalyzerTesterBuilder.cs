@@ -90,39 +90,6 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
             allScripts[0],
             expectedIssues
         );
-
-        // TODO: remove
-#pragma warning disable S125
-        /*
-        var mainScript = ParseScript(_mainScriptFileFullPath!, markupFreeSql, DefaultDatabaseName);
-
-        var otherScripts = _additionalScriptsByFilePath
-            .Select(a => ParseScript(a.Key, a.Value.Contents, a.Value.DatabaseName))
-            .ToList();
-
-        List<IScriptModel> allScripts = [mainScript, .. otherScripts];
-        var allScriptsByDatabaseName = allScripts
-            .GroupBy(a => a.DatabaseName, StringComparer.OrdinalIgnoreCase)
-            .ToDictionary(
-                a => a.Key,
-                a => (IReadOnlyList<IScriptModel>)a.ToList(),
-                StringComparer.OrdinalIgnoreCase);
-
-        var analysisContext = new AnalysisContext(
-            _defaultSchemaName,
-            allScripts,
-            allScriptsByDatabaseName,
-            diagnosticSettingsProvider,
-            new IssueReporter());
-
-        return new ScriptAnalyzerTester(
-            analysisContext,
-            analyzer,
-            mainScript,
-            expectedIssues
-        );
-        */
-#pragma warning restore S125
     }
 
     private static ScriptModel ParseScript(string relativeScriptFilePath, string scriptContents, string databaseName)

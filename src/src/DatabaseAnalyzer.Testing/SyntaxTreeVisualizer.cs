@@ -5,9 +5,6 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Testing;
 
-// TODO: remove
-#pragma warning disable
-
 [SuppressMessage("Maintainability", "CA1515:Consider making public types internal")]
 public static class SyntaxTreeVisualizer
 {
@@ -55,7 +52,7 @@ public static class SyntaxTreeVisualizer
                 return;
             }
 
-            var codeRegion = (fragment.StartLine >= 0) && (fragment.StartColumn >= 0)
+            var codeRegion = fragment.StartLine >= 0 && fragment.StartColumn >= 0
                 ? fragment.GetCodeRegion().ToString()
                 : "Unknown";
 

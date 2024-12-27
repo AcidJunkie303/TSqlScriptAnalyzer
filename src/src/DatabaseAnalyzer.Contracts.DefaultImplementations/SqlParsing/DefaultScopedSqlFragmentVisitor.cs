@@ -2,9 +2,6 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing;
 
-// TODO: Remove
-#pragma warning disable S125
-
 public abstract class DefaultScopedSqlFragmentVisitor : ScopedSqlFragmentVisitor
 {
     protected DefaultScopedSqlFragmentVisitor(string defaultSchemaName) : base(defaultSchemaName)
