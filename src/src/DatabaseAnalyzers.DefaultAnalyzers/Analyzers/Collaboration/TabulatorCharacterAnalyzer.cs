@@ -19,9 +19,12 @@ public sealed class TabulatorCharacterAnalyzer : IScriptAnalyzer
                 continue;
             }
 
-            var fragmentAtPosition = script.ParsedScript.TryGetSqlFragmentAtPosition(i);
-            var fullObjectName = fragmentAtPosition?.TryGetFirstClassObjectName(context, script);
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, fragmentAtPosition ?? script.ParsedScript);
+            var fullObjectName = script.ParsedScript
+                .TryGetSqlFragmentAtPosition(i)
+                ?.TryGetFirstClassObjectName(context, script);
+            var (lineNumber, columnNumber) = sql.GetLineAndColumnNumber(i);
+            var codeRegion = CodeRegion.Create(lineNumber, columnNumber, lineNumber, columnNumber + 1);
+            context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, codeRegion);
         }
     }
 

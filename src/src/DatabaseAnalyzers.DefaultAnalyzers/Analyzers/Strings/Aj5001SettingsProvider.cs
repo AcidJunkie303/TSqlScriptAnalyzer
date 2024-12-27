@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Strings;
 
-public sealed class Aj5000SettingsProvider : IDiagnosticSettingsProvider
+public sealed class Aj5001SettingsProvider : IDiagnosticSettingsProvider
 {
     public string DiagnosticId => "AJ5001";
 

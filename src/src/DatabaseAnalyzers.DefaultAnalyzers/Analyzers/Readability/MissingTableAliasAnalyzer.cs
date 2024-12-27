@@ -4,9 +4,6 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Readability;
 
-// TODO: remove
-#pragma warning disable
-
 public sealed class MissingTableAliasAnalyzer : IScriptAnalyzer
 {
     public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
@@ -37,7 +34,7 @@ public sealed class MissingTableAliasAnalyzer : IScriptAnalyzer
         }
 
         var tableReferences = querySpecification.FromClause.TableReferences;
-        var hasMultipleTableReferencesOrJoins = (tableReferences.Count > 1) || tableReferences.OfType<JoinTableReference>().Any();
+        var hasMultipleTableReferencesOrJoins = tableReferences.Count > 1 || tableReferences.OfType<JoinTableReference>().Any();
         if (hasMultipleTableReferencesOrJoins)
         {
             var databaseName = columnReference.FindCurrentDatabaseNameAtFragment(script.ParsedScript);
