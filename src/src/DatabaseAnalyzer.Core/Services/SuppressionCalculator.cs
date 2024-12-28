@@ -16,7 +16,7 @@ internal sealed class SuppressionMap
     public IReadOnlyList<DiagnosticSuppression> GetActiveSuppressionsAtLocation(int lineNumber, int columnNumber)
     {
         return _suppressions
-            .FirstOrDefault(a => a.LineNumber <= lineNumber && a.ColumnNumber <= columnNumber)
+            .FirstOrDefault(a => (a.LineNumber == lineNumber && a.ColumnNumber <= columnNumber) || a.LineNumber < lineNumber )
             ?.DisabledDiagnostics ?? [];
     }
 
