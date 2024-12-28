@@ -7,7 +7,7 @@ public static class CurrentDatabaseNameFinder
 {
     public static string FindCurrentDatabaseNameAtFragment(TSqlFragment fragment, TSqlScript script)
     {
-        var visitor = new Visitor(fragment);
+        var visitor = new DatabaseNameVisitorForFragment(fragment);
         visitor.ExplicitVisit(script);
 
         if (visitor.DatabaseNameAtFragment is not null)
@@ -21,16 +21,16 @@ public static class CurrentDatabaseNameFinder
         throw new InvalidOperationException(message);
     }
 
-    private sealed class Visitor : DatabaseAwareFragmentVisitor
+    private sealed class DatabaseNameVisitorForFragment : DatabaseAwareFragmentVisitor
     {
         private readonly TSqlFragment _fragmentToCheckCurrentDatabaseName;
 
-        public string? DatabaseNameAtFragment { get; private set; }
-
-        public Visitor(TSqlFragment fragmentToCheckCurrentDatabaseName) : base("dbo") // defaultSchemaName is not necessary here, so we use dbo
+        public DatabaseNameVisitorForFragment(TSqlFragment fragmentToCheckCurrentDatabaseName) : base("dbo") // defaultSchemaName is not necessary here, so we use dbo
         {
             _fragmentToCheckCurrentDatabaseName = fragmentToCheckCurrentDatabaseName;
         }
+
+        public string? DatabaseNameAtFragment { get; private set; }
 
         public override void Visit(TSqlFragment fragment)
         {
