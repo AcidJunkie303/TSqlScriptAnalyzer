@@ -51,7 +51,7 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
 
         foreach (var constraint in primaryKeyConstraints)
         {
-            Analyze(context, script, constraint, "primary key constraint", settings.PrimaryKeyConstraintNamePattern, a => a.ConstraintIdentifier.Value, a => a.ConstraintIdentifier);
+            Analyze(context, script, constraint, "primary key constraint", settings.PrimaryKeyConstraintNamePattern, a => a.ConstraintIdentifier?.Value, a => a.ConstraintIdentifier);
         }
 
         foreach (var procedure in procedures)

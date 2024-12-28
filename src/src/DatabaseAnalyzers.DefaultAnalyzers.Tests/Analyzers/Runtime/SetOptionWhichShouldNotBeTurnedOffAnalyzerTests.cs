@@ -4,8 +4,8 @@ using Xunit.Abstractions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Runtime;
 
-public sealed class SetOptionAnalyzerTests(ITestOutputHelper testOutputHelper)
-    : ScriptAnalyzerTestsBase<SetOptionAnalyzer>(testOutputHelper)
+public sealed class SetOptionWhichShouldNotBeTurnedOffAnalyzerTests(ITestOutputHelper testOutputHelper)
+    : ScriptAnalyzerTestsBase<SetOptionWhichShouldNotBeTurnedOffAnalyzer>(testOutputHelper)
 {
     [Fact]
     public void WhenSettingOptionsOn_ThenOk()
