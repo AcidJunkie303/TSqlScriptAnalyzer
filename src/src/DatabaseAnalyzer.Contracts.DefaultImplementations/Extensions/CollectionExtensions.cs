@@ -31,14 +31,34 @@ public static class CollectionExtensions
         return default;
     }
 
+    public static bool IsEmpty<T>(this IReadOnlyCollection<T> items)
+    {
+        ArgumentNullException.ThrowIfNull(items);
+
+        return items.Count == 0;
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [OverloadResolutionPriority(1)]
+    public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T>? items)
+        => items ?? [];
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [OverloadResolutionPriority(2)]
+    public static IReadOnlyCollection<T> EmptyIfNull<T>(this IReadOnlyCollection<T>? items)
+        => items ?? [];
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [OverloadResolutionPriority(3)]
     public static IReadOnlyList<T> NullIfEmpty<T>(this IReadOnlyList<T>? items)
         => items ?? [];
 
+    [OverloadResolutionPriority(2)]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IReadOnlyCollection<T> NullIfEmpty<T>(this IReadOnlyCollection<T>? items)
         => items ?? [];
 
+    [OverloadResolutionPriority(1)]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IEnumerable<T> NullIfEmpty<T>(this IEnumerable<T>? items)
         => items ?? [];
@@ -48,7 +68,7 @@ public static class CollectionExtensions
         => items is null || items.Count == 0;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsNullOrEmpty<T>([NotNullWhen(false)] this IList<T>? items)
+    public static bool IsNullOrEmpty<T>([NotNullWhen(false)] this ICollection<T>? items)
         => items is null || items.Count == 0;
 
     public static string StringJoin<T>(this IEnumerable<T> items, string separator)

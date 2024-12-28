@@ -28,7 +28,7 @@ internal sealed class DiagnosticSettingsRetriever : IDiagnosticSettingsRetriever
     {
         if (!_settingsByDiagnosticId.TryGetValue(TSettings.DiagnosticId, out var settings) || settings is null)
         {
-            throw new InvalidOperationException($"The settings provider for diagnostic '{TSettings.DiagnosticId}' returned null!");
+            throw new InvalidOperationException($"The settings provider for diagnostic '{TSettings.DiagnosticId}' returned null! Looks like the settings have not been registered.");
         }
 
         return (TSettings)settings;

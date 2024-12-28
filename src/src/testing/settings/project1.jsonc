@@ -18,7 +18,9 @@
       "MaxAllowedConcatenations": 2
     },
     "AJ5003": { // Wrong USE DATABASE name statement
-      "ExcludedFilePathPatterns": "0000 Create*.sql"
+      "ExcludedFilePathPatterns": [
+        "0000 Create*.sql"
+      ]
     },
     "AJ5006": { // Banned data types
       "BannedColumnDataTypes": [
@@ -33,6 +35,42 @@
         "decimal",
         "varchar"
       ]
+    },
+    "AJ5015": { // Missing index on column being filtered
+      "MissingIndexSuppressions": [
+        {
+          "FullColumnNamePattern": "MyDb.MySchema.MyTable.MyColumn",
+          "SuppressionReason": "<Your reason here>"
+        },
+        {
+          "FullColumnNamePattern": "MyDb2.MySchema2.MyTable2.MyColumn2",
+          "SuppressionReason": "<Your reason here>"
+        }
+      ]
+    },
+    "AJ5017": { // Missing index on foreign key column
+      "MissingIndexOnForeignKeyColumnSuppressions": [
+        {
+          "FullColumnNamePattern": "MyDb.MySchema.MyTable.ForeignKeyId",
+          "SuppressionReason": "<Your reason here>"
+        },
+        {
+          "FullColumnNamePattern": "MyDb2.MySchema2.MyTable2.ForeignKeyId2",
+          "SuppressionReason": "<Your reason here>"
+        }
+      ]
+    },
+    "AJ5022": { // Missing BEGIN/END blocks
+      "StatementTypesToIgnore": [
+        "goto",
+        "print",
+        "set"
+      ]
+    },
+    "AJ5023": { // Statements must begin on a new line
+      "ForRequiresBeginEndBlock": true,
+      "IfRequiresBeginEndBlock": true,
+      "WhileRequiresBeginEndBlock": true
     }
   }
 }

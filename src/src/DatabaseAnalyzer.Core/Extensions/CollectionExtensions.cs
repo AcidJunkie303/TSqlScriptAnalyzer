@@ -4,14 +4,6 @@ namespace DatabaseAnalyzer.Core.Extensions;
 
 public static class CollectionExtensions
 {
-    public static bool IsEmpty<T>(this IReadOnlyCollection<T> items) => items.Count == 0;
-
-    public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T>? value) => value ?? [];
-
-    public static IReadOnlyCollection<T> EmptyIfNull<T>(this IReadOnlyCollection<T>? value) => value ?? [];
-
-    public static IReadOnlyList<T> EmptyIfNull<T>(this IReadOnlyList<T>? value) => value ?? [];
-
     public static IReadOnlyDictionary<TKey, TValue> EmptyIfNull<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue>? value)
         where TKey : notnull
         => value ?? ImmutableDictionary<TKey, TValue>.Empty;

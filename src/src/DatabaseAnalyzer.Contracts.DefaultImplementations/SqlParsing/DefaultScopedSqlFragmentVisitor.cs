@@ -102,7 +102,6 @@ public abstract class DefaultScopedSqlFragmentVisitor : ScopedSqlFragmentVisitor
         using var scope = Scopes.BeginNewScope(node);
 
         node.AcceptChildren(this);
-        //base.ExplicitVisit(node);
     }
 
     private void RegisterTableReference(NamedTableReference node)
@@ -124,45 +123,4 @@ public abstract class DefaultScopedSqlFragmentVisitor : ScopedSqlFragmentVisitor
         var alias = node.Alias?.Value;
         Scopes.CurrentScope.RegisterTableAlias(alias, node.SchemaObject, CurrentDatabaseName!, DefaultSchemaName, sourceType);
     }
-
-    /*
-      base.AcceptChildren(visitor);
-      if (this.TopRowFilter is not  null)
-        this.TopRowFilter.Accept(visitor);
-      int index = 0;
-      for (int count = this.SelectElements.Count; index < count; ++index)
-        this.SelectElements[index].Accept(visitor);
-      if (this.FromClause is not  null)
-        this.FromClause.Accept(visitor);
-      if (this.WhereClause is not  null)
-        this.WhereClause.Accept(visitor);
-      if (this.GroupByClause is not  null)
-        this.GroupByClause.Accept(visitor);
-      if (this.HavingClause is not  null)
-        this.HavingClause.Accept(visitor);
-      if (this.WindowClause == null)
-        return;
-      this.WindowClause.Accept(visitor);
-     */
-
-    /*
-     *      base.AcceptChildren(visitor);
-      if (this.TopRowFilter is not  null)
-        this.TopRowFilter.Accept(visitor);
-      int index = 0;
-      for (int count = this.SelectElements.Count; index < count; ++index)
-        this.SelectElements[index].Accept(visitor);
-      if (this.FromClause is not  null)
-        this.FromClause.Accept(visitor);
-      if (this.WhereClause is not  null)
-        this.WhereClause.Accept(visitor);
-      if (this.GroupByClause is not  null)
-        this.GroupByClause.Accept(visitor);
-      if (this.HavingClause is not  null)
-        this.HavingClause.Accept(visitor);
-      if (this.WindowClause == null)
-        return;
-      this.WindowClause.Accept(visitor);
-     *
-     */
 }
