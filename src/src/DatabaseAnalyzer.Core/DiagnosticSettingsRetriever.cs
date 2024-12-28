@@ -10,7 +10,7 @@ internal sealed class DiagnosticSettingsRetriever : IDiagnosticSettingsRetriever
 
     public DiagnosticSettingsRetriever(IConfiguration configuration, IEnumerable<IDiagnosticSettingsProvider> diagnosticSettingsProviders)
     {
-        var diagnosticsSection = configuration.GetSection("Diagnostics:CustomDiagnosticSettings");
+        var diagnosticsSection = configuration.GetSection("Diagnostics");
 
         _settingsByDiagnosticId = diagnosticSettingsProviders
             .ToFrozenDictionary(
