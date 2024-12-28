@@ -78,11 +78,12 @@ public static class SqlFragmentExtensions
     private static string? TryGetFirstClassObjectNameCore(TSqlFragment fragment, string defaultSchemaName)
         => fragment switch
         {
-            CreateProcedureStatement s => s.ProcedureReference.Name.GetConcatenatedTwoPartObjectName(defaultSchemaName),
-            CreateFunctionStatement s => s.Name.GetConcatenatedTwoPartObjectName(defaultSchemaName),
+            ProcedureStatementBody s => s.ProcedureReference.Name.GetConcatenatedTwoPartObjectName(defaultSchemaName),
+            FunctionStatementBody s => s.Name.GetConcatenatedTwoPartObjectName(defaultSchemaName),
             CreateTableStatement s => s.SchemaObjectName.GetConcatenatedTwoPartObjectName(defaultSchemaName),
             CreateIndexStatement s => s.Name.Value,
-            CreateViewStatement s => s.SchemaObjectName.GetConcatenatedTwoPartObjectName(defaultSchemaName),
+            ViewStatementBody s => s.SchemaObjectName.GetConcatenatedTwoPartObjectName(defaultSchemaName),
+            TriggerStatementBody s => s.Name.GetConcatenatedTwoPartObjectName(defaultSchemaName),
             _ => null
         };
 
