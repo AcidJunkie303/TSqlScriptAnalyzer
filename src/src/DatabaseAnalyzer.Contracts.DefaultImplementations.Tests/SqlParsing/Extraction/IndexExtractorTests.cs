@@ -1,6 +1,6 @@
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction.Models;
+using DatabaseAnalyzer.Testing;
 using FluentAssertions;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Tests.SqlParsing.Extraction;
@@ -22,11 +22,11 @@ public sealed class IndexExtractorTests
                             """;
 
         // arrange
-        var script = code.ParseSqlScript();
+        var script = ScriptModelCreator.Create(code);
         var sut = new IndexExtractor(defaultSchema);
 
         // act
-        var indices = sut.Extract(script, "main.sql");
+        var indices = sut.Extract(script);
 
         // assert
         indices.Should().HaveCount(1);

@@ -1,6 +1,6 @@
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction.Models;
+using DatabaseAnalyzer.Testing;
 using FluentAssertions;
 using FluentAssertions.Execution;
 
@@ -22,11 +22,11 @@ public sealed class TableExtractorTests
                             """;
 
         // arrange
-        var script = code.ParseSqlScript();
+        var script = ScriptModelCreator.Create(code);
         var sut = new TableExtractor(defaultSchema);
 
         // act
-        var tables = sut.Extract(script, "main.sql");
+        var tables = sut.Extract(script);
 
         // assert
         tables.Should().HaveCount(1);
@@ -46,11 +46,11 @@ public sealed class TableExtractorTests
                             """;
 
         // arrange
-        var script = code.ParseSqlScript();
+        var script = ScriptModelCreator.Create(code);
         var sut = new TableExtractor("dbo");
 
         // act
-        var tables = sut.Extract(script, "main.sql");
+        var tables = sut.Extract(script);
 
         // assert
         tables.Should().HaveCount(1);
@@ -68,11 +68,11 @@ public sealed class TableExtractorTests
                             """;
 
         // arrange
-        var script = code.ParseSqlScript();
+        var script = ScriptModelCreator.Create(code);
         var sut = new TableExtractor("dbo");
 
         // act
-        var exception = Record.Exception(() => sut.Extract(script, "main.sql"));
+        var exception = Record.Exception(() => sut.Extract(script));
 
         // assert
         exception.Should().BeOfType<InvalidOperationException>();
@@ -93,11 +93,11 @@ public sealed class TableExtractorTests
                             """;
 
         // arrange
-        var script = code.ParseSqlScript();
+        var script = ScriptModelCreator.Create(code);
         var sut = new TableExtractor("dbo");
 
         // act
-        var tables = sut.Extract(script, "main.sql");
+        var tables = sut.Extract(script);
 
         // assert
         tables.Should().HaveCount(1);
@@ -123,11 +123,11 @@ public sealed class TableExtractorTests
                             """;
 
         // arrange
-        var script = code.ParseSqlScript();
+        var script = ScriptModelCreator.Create(code);
         var sut = new TableExtractor("dbo");
 
         // act
-        var tables = sut.Extract(script, "main.sql");
+        var tables = sut.Extract(script);
 
         // assert
         tables.Should().HaveCount(1);
@@ -147,11 +147,11 @@ public sealed class TableExtractorTests
                             """;
 
         // arrange
-        var script = code.ParseSqlScript();
+        var script = ScriptModelCreator.Create(code);
         var sut = new TableExtractor("dbo");
 
         // act
-        var tables = sut.Extract(script, "main.sql");
+        var tables = sut.Extract(script);
 
         // assert
         tables.Should().HaveCount(1);
@@ -175,18 +175,18 @@ public sealed class TableExtractorTests
                             """;
 
         // arrange
-        var script = code.ParseSqlScript();
+        var script = ScriptModelCreator.Create(code);
         var sut = new TableExtractor("dbo");
 
         // act
-        var tables = sut.Extract(script, "main.sql");
+        var tables = sut.Extract(script);
 
         // assert
         tables.Should().HaveCount(1);
         tables[0].Indices.Should().NotBeNull();
         tables[0].Indices.Should().HaveCount(1);
         tables[0].Indices![0].IndexName.Should().Be("PK_T1");
-        tables[0].Indices![0].IndexType.Should().Be(TableColumnIndexType.Clustered | TableColumnIndexType.PrimaryKey);
+        tables[0].Indices![0].IndexType.Should().Be(TableColumnIndexType.Clustered | TableColumnIndexType.PrimaryKey | TableColumnIndexType.Unique);
     }
 
     [Fact]
@@ -207,18 +207,18 @@ public sealed class TableExtractorTests
                             """;
 
         // arrange
-        var script = code.ParseSqlScript();
+        var script = ScriptModelCreator.Create(code);
         var sut = new TableExtractor("dbo");
 
         // act
-        var tables = sut.Extract(script, "main.sql");
+        var tables = sut.Extract(script);
 
         // assert
         tables.Should().HaveCount(1);
         tables[0].Indices.Should().NotBeNull();
         tables[0].Indices.Should().HaveCount(2);
         tables[0].Indices!.Should().ContainEquivalentOf(
-            new IndexInformation("MyDb", "dbo", "T1", "PK_T1", TableColumnIndexType.Clustered | TableColumnIndexType.PrimaryKey, ["Id"], [], null!, "main.sql"),
+            new IndexInformation("MyDb", "dbo", "T1", "PK_T1", TableColumnIndexType.Clustered | TableColumnIndexType.PrimaryKey | TableColumnIndexType.Unique, ["Id"], [], null!, "main.sql"),
             options => options.Excluding(x => x.CreationStatement));
         tables[0].Indices!.Should().ContainEquivalentOf(
             new IndexInformation("MyDb", "dbo", "T1", null, TableColumnIndexType.Unique, ["Email"], [], null!, "main.sql"),
@@ -241,11 +241,12 @@ public sealed class TableExtractorTests
         // arrange
         AssertionOptions.FormattingOptions.MaxDepth = 2;
         AssertionScope.Current.FormattingOptions.MaxDepth = 2;
-        var script = code.ParseSqlScript();
+
+        var script = ScriptModelCreator.Create(code);
         var sut = new TableExtractor("dbo");
 
         // act
-        var tables = sut.Extract(script, "main.sql");
+        var tables = sut.Extract(script);
 
         // assert
         tables.Should().HaveCount(1);

@@ -11,18 +11,18 @@ internal sealed class ProcedureExtractor : Extractor<ProcedureInformation>
     {
     }
 
-    protected override List<ProcedureInformation> ExtractCore(TSqlScript script, string relativeScriptFilePath)
+    protected override List<ProcedureInformation> ExtractCore(IScriptModel script)
     {
         var visitor = new ObjectExtractorVisitor<ProcedureStatementBody>(DefaultSchemaName);
-        script.AcceptChildren(visitor);
+        script.ParsedScript.AcceptChildren(visitor);
 
         return visitor.Objects
-            .Select(a => GetFunction(a.Object, a.DatabaseName, relativeScriptFilePath))
+            .Select(a => GetFunction(a.Object, a.DatabaseName, script))
             .WhereNotNull()
             .ToList();
     }
 
-    private ProcedureInformation GetFunction(ProcedureStatementBody statement, string? databaseName, string relativeScriptFilePath)
+    private ProcedureInformation GetFunction(ProcedureStatementBody statement, string? databaseName, IScriptModel script)
     {
         // TODO: make sure databaseName is not null
 
@@ -36,7 +36,7 @@ internal sealed class ProcedureExtractor : Extractor<ProcedureInformation>
             statement.ProcedureReference.Name.BaseIdentifier.Value,
             parameters,
             statement,
-            relativeScriptFilePath
+            script.RelativeScriptFilePath
         );
     }
 

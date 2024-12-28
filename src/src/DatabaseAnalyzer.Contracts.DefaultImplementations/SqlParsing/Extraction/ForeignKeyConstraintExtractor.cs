@@ -10,18 +10,18 @@ public sealed class ForeignKeyConstraintExtractor : Extractor<ForeignKeyConstrai
     {
     }
 
-    protected override List<ForeignKeyConstraintInformation> ExtractCore(TSqlScript script, string relativeScriptFilePath)
+    protected override List<ForeignKeyConstraintInformation> ExtractCore(IScriptModel script)
     {
         var visitor = new ObjectExtractorVisitor<AlterTableAddTableElementStatement>(DefaultSchemaName);
-        script.AcceptChildren(visitor);
+        script.ParsedScript.AcceptChildren(visitor);
 
         return visitor.Objects
-            .Select(a => GetForeignKeyConstraint(a.Object, a.DatabaseName, relativeScriptFilePath))
+            .Select(a => GetForeignKeyConstraint(a.Object, a.DatabaseName, script))
             .WhereNotNull()
             .ToList();
     }
 
-    private ForeignKeyConstraintInformation? GetForeignKeyConstraint(AlterTableAddTableElementStatement statement, string? databaseName, string relativeScriptFilePath)
+    private ForeignKeyConstraintInformation? GetForeignKeyConstraint(AlterTableAddTableElementStatement statement, string? databaseName, IScriptModel script)
     {
         var fkConstraint = statement.Definition.TableConstraints
             ?.OfType<ForeignKeyConstraintDefinition>()
@@ -51,7 +51,7 @@ public sealed class ForeignKeyConstraintExtractor : Extractor<ForeignKeyConstrai
             fkConstraint.ReferenceTableName.BaseIdentifier.Value ?? DefaultSchemaName,
             fkConstraint.ReferencedTableColumns[0].Value,
             statement,
-            relativeScriptFilePath
+            script.RelativeScriptFilePath
         );
     }
 }

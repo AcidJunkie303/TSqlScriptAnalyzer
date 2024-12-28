@@ -1,5 +1,5 @@
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction;
+using DatabaseAnalyzer.Testing;
 using FluentAssertions;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Tests.SqlParsing.Extraction;
@@ -26,11 +26,11 @@ public sealed class FunctionExtractorTests
                             """;
 
         // arrange
-        var script = code.ParseSqlScript();
+        var script = ScriptModelCreator.Create(code);
         var sut = new FunctionExtractor(defaultSchema);
 
         // act
-        var functions = sut.Extract(script, "main.sql");
+        var functions = sut.Extract(script);
 
         // assert
         functions.Should().HaveCount(1);

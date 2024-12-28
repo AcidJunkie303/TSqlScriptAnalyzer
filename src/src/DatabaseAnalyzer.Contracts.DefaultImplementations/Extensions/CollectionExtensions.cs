@@ -11,6 +11,11 @@ public static class CollectionExtensions
             .Where(a => a is not null)
             .Select(a => a!);
 
+    public static IEnumerable<string> WhereNotNullOrWhiteSpaceOnly(this IEnumerable<string?> items)
+        => items
+            .Where(a => !string.IsNullOrWhiteSpace(a))
+            .Select(a => a!);
+
     public static (T Item, int Index) FirstOrDefaultWithIndex<T>(this IEnumerable<T> items, Predicate<T> predicate)
     {
         ArgumentNullException.ThrowIfNull(items);

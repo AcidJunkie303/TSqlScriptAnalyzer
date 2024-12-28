@@ -4,7 +4,7 @@ using Xunit.Abstractions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Strings;
 
-public class StringConcatenationUnicodeAsciiMixAnalyzerTests(ITestOutputHelper testOutputHelper) : ScriptAnalyzerTestsBase<StringConcatenationUnicodeAsciiMixAnalyzer>(testOutputHelper)
+public sealed class StringConcatenationUnicodeAsciiMixAnalyzerTests(ITestOutputHelper testOutputHelper) : ScriptAnalyzerTestsBase<StringConcatenationUnicodeAsciiMixAnalyzer>(testOutputHelper)
 {
     [Fact]
     public void WhenStringsAreAllAscii_ThenOk()

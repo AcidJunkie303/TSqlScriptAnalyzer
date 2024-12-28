@@ -9,12 +9,12 @@ internal sealed class SchemaExtractor : Extractor<SchemaInformation>
     {
     }
 
-    protected override List<SchemaInformation> ExtractCore(TSqlScript script, string relativeScriptFilePath)
+    protected override List<SchemaInformation> ExtractCore(IScriptModel script)
     {
         var visitor = new ObjectExtractorVisitor<CreateSchemaStatement>(DefaultSchemaName);
-        script.AcceptChildren(visitor);
+        script.ParsedScript.AcceptChildren(visitor);
 
-        return visitor.Objects.ConvertAll(a => GetSchema(a.Object, a.DatabaseName, relativeScriptFilePath));
+        return visitor.Objects.ConvertAll(a => GetSchema(a.Object, a.DatabaseName, script.RelativeScriptFilePath));
     }
 
     // ReSharper disable once UnusedParameter.Local

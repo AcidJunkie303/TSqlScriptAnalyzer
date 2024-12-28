@@ -11,15 +11,15 @@ public sealed class IndexExtractor : Extractor<IndexInformation>
     {
     }
 
-    protected override List<IndexInformation> ExtractCore(TSqlScript script, string relativeScriptFilePath)
+    protected override List<IndexInformation> ExtractCore(IScriptModel script)
     {
         var visitor = new ObjectExtractorVisitor<CreateIndexStatement>(DefaultSchemaName);
-        script.AcceptChildren(visitor);
+        script.ParsedScript.AcceptChildren(visitor);
 
-        return visitor.Objects.ConvertAll(a => GetIndex(a.Object, a.DatabaseName, relativeScriptFilePath));
+        return visitor.Objects.ConvertAll(a => GetIndex(a.Object, a.DatabaseName, script));
     }
 
-    private IndexInformation GetIndex(CreateIndexStatement statement, string? databaseName, string relativeScriptFilePath)
+    private IndexInformation GetIndex(CreateIndexStatement statement, string? databaseName, IScriptModel script)
     {
         var indexType = TableColumnIndexType.None;
         if (statement.Unique)
@@ -54,7 +54,7 @@ public sealed class IndexExtractor : Extractor<IndexInformation>
                 .Select(a => a.MultiPartIdentifier.ToUnquotedIdentifier())
                 .ToFrozenSet(StringComparer.OrdinalIgnoreCase),
             statement,
-            relativeScriptFilePath
+            script.RelativeScriptFilePath
         );
     }
 }

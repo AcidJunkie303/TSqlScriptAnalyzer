@@ -159,34 +159,4 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
             "The foreign-key column '{0}.{1}.{2}.{3}' is not indexed. Although this columns might not be used for filtering directly, it is still recommended to create an index on it because it will improve performance when checking for referential integrity when deleting columns from the table being referenced for example."
         );
     }
-
-#pragma warning disable S125 // False positive
-    /*
-        required information about a missing index:
-            - diagnostic id
-            - issue type = MissingIndex
-            - database name (of table)
-            - schema name (of table)
-            - table name
-            - column name (in table)
-            - table creation script path (relative)
-            - Used By object (where the filtering was done (WHERE, join condition)
-                - object database name
-                - object schema name
-                - object name
-                - object type ( stored procedure, function, script)
-                - relative file path of object where the filtering was done
-                - code region (where the filtering was done)
-        ultimately, we will group the missing index entities by db, schema, table and column so the report shows all locations where the filtering is done
-
-        IIssue properties:
-        - IDiagnosticDefinition DiagnosticDefinition { get; }
-        - string RelativeScriptFilePath { get; }
-        - string? ObjectName { get; }
-        - CodeRegion CodeRegion { get; }
-        - IReadOnlyList<string> MessageInsertionStrings { get; }
-        - string Message { get; }
-        - public string FullObjectNameOrFileName => ObjectName ?? Path.GetFileName(RelativeScriptFilePath) ?? "Unknown";
-     */
-#pragma warning restore S125
 }

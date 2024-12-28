@@ -11,52 +11,82 @@ public sealed class TableExtractor : Extractor<TableInformation>
     {
     }
 
-    protected override List<TableInformation> ExtractCore(TSqlScript script, string relativeScriptFilePath)
+    protected override List<TableInformation> ExtractCore(IScriptModel script)
     {
         var visitor = new ObjectExtractorVisitor<CreateTableStatement>(DefaultSchemaName);
-        script.AcceptChildren(visitor);
+        script.ParsedScript.AcceptChildren(visitor);
 
-        return visitor.Objects.ConvertAll(a => GetTable(a.Object, a.DatabaseName, relativeScriptFilePath));
+        return visitor.Objects.ConvertAll(a => GetTable(a.Object, a.DatabaseName, script));
     }
 
-    private TableInformation GetTable(CreateTableStatement statement, string? databaseName, string relativeScriptFilePath)
+    private TableInformation GetTable(CreateTableStatement statement, string? databaseName, IScriptModel script)
     {
         var tableSchemaName = statement.SchemaObjectName.SchemaIdentifier?.Value ?? DefaultSchemaName;
         var tableName = statement.SchemaObjectName.BaseIdentifier.Value!;
-
         var calculatedDatabaseName = statement.SchemaObjectName.DatabaseIdentifier?.Value ?? databaseName ?? throw CreateUnableToDetermineTheDatabaseNameException("table", $"{tableSchemaName}.{tableName}", statement.GetCodeRegion());
         var columns = statement.Definition.ColumnDefinitions
-            .Select(a => GetColumn(a, calculatedDatabaseName, tableSchemaName, tableName, relativeScriptFilePath))
+            .Select(a => GetColumn(a, calculatedDatabaseName, tableSchemaName, tableName, script.RelativeScriptFilePath))
             .ToList();
 
-        var uniqueColumnIndices = columns
+        var directColumnIndices = columns
             .Where(a => a.IsUnique)
-            .Select(a => new IndexInformation
-            (
-                calculatedDatabaseName,
-                tableSchemaName,
-                tableName,
-                null,
-                TableColumnIndexType.Unique,
-                [a.ObjectName],
-                [],
-                a.ColumnDefinition,
-                relativeScriptFilePath
-            ));
+            .Select(a =>
+            {
+                var isPrimaryKey = a.ColumnDefinition.Constraints.Any(b => b is UniqueConstraintDefinition { IsPrimaryKey: true });
+                var isClustered = a.ColumnDefinition.Constraints.Any(b => b is UniqueConstraintDefinition { Clustered: true });
+                var indexType = TableColumnIndexType.None;
+
+                if (isPrimaryKey)
+                {
+                    indexType |= TableColumnIndexType.PrimaryKey | TableColumnIndexType.Unique;
+                }
+
+                if (isClustered)
+                {
+                    indexType |= TableColumnIndexType.Clustered;
+                }
+
+                if (a.IsUnique)
+                {
+                    indexType |= TableColumnIndexType.Unique;
+                }
+
+                return new IndexInformation
+                (
+                    calculatedDatabaseName,
+                    tableSchemaName,
+                    tableName,
+                    null,
+                    indexType,
+                    [a.ObjectName],
+                    [],
+                    a.ColumnDefinition,
+                    script.RelativeScriptFilePath
+                );
+            });
+
+        var allForeignKeyConstraints = GetForeignKeyConstraints(statement, calculatedDatabaseName, tableSchemaName, tableName, script.RelativeScriptFilePath).ToList();
+        var allIndices = GetIndices(statement, calculatedDatabaseName, tableSchemaName, tableName, script.RelativeScriptFilePath)
+            .Concat(directColumnIndices)
+            .ToList();
+        var allColumns = statement.Definition.ColumnDefinitions
+            .Select(a => GetColumn(a, calculatedDatabaseName, tableSchemaName, tableName, script.RelativeScriptFilePath))
+            .ToList();
 
         return new TableInformation
         (
             calculatedDatabaseName,
             tableSchemaName,
             tableName,
-            statement.Definition.ColumnDefinitions
-                .Select(a => GetColumn(a, calculatedDatabaseName, tableSchemaName, tableName, relativeScriptFilePath))
-                .ToList(),
-            GetIndices(statement, calculatedDatabaseName, tableSchemaName, tableName, relativeScriptFilePath).Concat(uniqueColumnIndices).ToList(),
-            GetForeignKeyConstraints(statement, calculatedDatabaseName, tableSchemaName, tableName, relativeScriptFilePath).ToList(),
+            allColumns,
+            allIndices,
+            allForeignKeyConstraints,
             statement,
-            relativeScriptFilePath
-        );
+            script.RelativeScriptFilePath
+        )
+        {
+            ScriptModel = script
+        };
     }
 
     private static IEnumerable<IndexInformation> GetIndices(CreateTableStatement statement, string databaseName, string tableSchemaName, string tableName, string relativeScriptFilePath)
@@ -91,11 +121,9 @@ public sealed class TableExtractor : Extractor<TableInformation>
 
     private static IndexInformation GetIndex(UniqueConstraintDefinition constraint, string databaseName, string tableSchemaName, string tableName, string relativeScriptFilePath)
     {
-        var extractedType = constraint.IndexType.IndexTypeKind ?? IndexTypeKind.NonClustered;
+        var indexType = TableColumnIndexType.Unique;
 
-        var indexType = TableColumnIndexType.None;
-
-        if (extractedType.HasFlag(IndexTypeKind.Clustered))
+        if (constraint.Clustered.GetValueOrDefault())
         {
             indexType |= TableColumnIndexType.Clustered;
         }

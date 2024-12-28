@@ -1,5 +1,5 @@
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction;
+using DatabaseAnalyzer.Testing;
 using FluentAssertions;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Tests.SqlParsing.Extraction;
@@ -18,11 +18,11 @@ public sealed class ForeignKeyConstraintExtractorTests
                             """;
 
         // arrange
-        var script = code.ParseSqlScript();
+        var script = ScriptModelCreator.Create(code);
         var sut = new ForeignKeyConstraintExtractor(defaultSchema);
 
         // act
-        var fkConstraints = sut.Extract(script, "main.sql");
+        var fkConstraints = sut.Extract(script);
 
         // assert
         fkConstraints.Should().NotBeNull();

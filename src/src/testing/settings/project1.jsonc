@@ -24,16 +24,16 @@
     },
     "AJ5006": { // Banned data types
       "BannedColumnDataTypes": [
-        "decimal",
-        "varchar"
+        "decimal", // use numeric because decimal is a synonym for numeric
+        "varchar" // use nvarchar instead
       ],
       "BannedFunctionParameterDataTypes": [
-        "decimal",
-        "varchar"
+        "decimal", // use numeric because decimal is a synonym for numeric
+        "varchar" // use nvarchar instead
       ],
       "BannedProcedureParameterDataTypes": [
-        "decimal",
-        "varchar"
+        "decimal", // use numeric because decimal is a synonym for numeric
+        "varchar" // use nvarchar instead
       ]
     },
     "AJ5015": { // Missing index on column being filtered
@@ -71,6 +71,20 @@
       "ForRequiresBeginEndBlock": true,
       "IfRequiresBeginEndBlock": true,
       "WhileRequiresBeginEndBlock": true
+    },
+    "AJ5026": { // Missing primary key
+      "FullTableNamesToIgnore": [
+        "MyDb*",
+        "MyDb.MySchema.*",
+        "MyDb.MySchema.My*"
+      ]
+    },
+    "AJ5027": { // Table has no clustered index
+      "FullTableNamesToIgnore": [
+        "MyDb*",
+        "MyDb.MySchema.*",
+        "MyDb.MySchema.My*"
+      ]
     }
   }
 }

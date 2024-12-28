@@ -26,5 +26,5 @@ public sealed record Aj5017Settings(
         ]
     }.ToSettings();
 
-    public static string DiagnosticId => "Aj5017";
+    public static string DiagnosticId => "AJ5017";
 }

@@ -15,6 +15,7 @@ public sealed record TableInformation(
 ) : ISchemaBoundObject
 {
     public string FullName { get; } = $"{DatabaseName}.{SchemaName}.{ObjectName}";
+    public required IScriptModel ScriptModel { get; init; }
 
     public IReadOnlyList<string> FullNameParts { get; } = new[]
     {
