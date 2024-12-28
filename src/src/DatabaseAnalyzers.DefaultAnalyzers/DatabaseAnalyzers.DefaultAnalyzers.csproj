@@ -18,7 +18,9 @@
 
     <Target Name="PreBuild" BeforeTargets="Build">
         <Exec Command="IF NOT EXIST $(SolutionDir)src\DatabaseAnalyzer.App\bin\$(Configuration)\$(TargetFramework)\Plugins\DefaultAnalyzers md $(SolutionDir)src\DatabaseAnalyzer.App\bin\$(Configuration)\$(TargetFramework)\Plugins\DefaultAnalyzers"/>
-        <Exec Command="copy /y $(SolutionDir)src\DatabaseAnalyzers.DefaultAnalyzers\bin\$(Configuration)\$(TargetFramework)\DatabaseAnalyzers.DefaultAnalyzers.* $(SolutionDir)src\DatabaseAnalyzer.App\bin\$(Configuration)\$(TargetFramework)\Plugins\DefaultAnalyzers"/>
+        <Exec Command="copy /y $(SolutionDir)src\DatabaseAnalyzers.DefaultAnalyzers\bin\$(Configuration)\$(TargetFramework)\DatabaseAnalyzers.DefaultAnalyzers.dll $(SolutionDir)src\DatabaseAnalyzer.App\bin\$(Configuration)\$(TargetFramework)\Plugins\DefaultAnalyzers"/>
+        <Exec Command="copy /y $(SolutionDir)src\DatabaseAnalyzers.DefaultAnalyzers\bin\$(Configuration)\$(TargetFramework)\DatabaseAnalyzers.DefaultAnalyzers.pdb $(SolutionDir)src\DatabaseAnalyzer.App\bin\$(Configuration)\$(TargetFramework)\Plugins\DefaultAnalyzers"/>
+        <Exec Command="copy /y $(SolutionDir)src\DatabaseAnalyzers.DefaultAnalyzers\bin\$(Configuration)\$(TargetFramework)\DatabaseAnalyzers.DefaultAnalyzers.deps.json $(SolutionDir)src\DatabaseAnalyzer.App\bin\$(Configuration)\$(TargetFramework)\Plugins\DefaultAnalyzers"/>
     </Target>
 
 </Project>
