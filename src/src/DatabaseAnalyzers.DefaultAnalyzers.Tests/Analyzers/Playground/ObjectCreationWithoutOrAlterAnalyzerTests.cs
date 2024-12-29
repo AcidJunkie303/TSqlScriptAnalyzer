@@ -14,12 +14,19 @@ public sealed class PlaygroundTests(ITestOutputHelper testOutputHelper)
                             USE MyDB
                             GO
 
-                            PRINT 1
-                            GOTO MyLabel
-                            PRINT 2
+                            SELECT value
+                            FROM STRING_SPLIT('string_to_split', 'delimiter');
 
-                            MyLabel:
-                            PRINT 3
+                            SELECT value
+                            from MY_VABLE
+
+                            SELECT value
+                            from dbo.MY_VABLE
+
+                            SELECT a.value
+                            from dbo.MY_VABLE
+
+
                             """;
 
         var tester = GetDefaultTesterBuilder(code).Build();
