@@ -107,7 +107,7 @@ public static class StringExtensions
 
     public static TSqlScript TryParseSqlScript(this string sqlScriptContents, out IReadOnlyList<string> errors)
     {
-        var parser = TSqlParser.CreateParser(SqlVersion.Sql170, false);
+        var parser = TSqlParser.CreateParser(SqlVersion.Sql170, true);
         using var reader = new StringReader(sqlScriptContents);
         var script = parser.Parse(reader, out var parserErrors) as TSqlScript ?? new TSqlScript();
 

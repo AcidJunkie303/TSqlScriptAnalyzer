@@ -22,8 +22,9 @@ A framework to analyze multiple T-SQL script files
 - All branches in a conditional structure should not have exactly the same implementation
 - Do not create nameless constraints (unique, primary key) which will have a random name when executing. Otherwise,
   schema comparison would yield lots of unnecessary deltas.
-- indices and trigger names should contain the table name and the table schema schema
--
+- indices and trigger names should contain the table name and the table schema name
+- create smart settings implementation so IDiagnosticSettingsProvider is not used anymore. Instead rely on
+  IRawSettings<out TSettings> and the type constraints to make it dynamic.
 
 ### Resiliency / Robustness
 

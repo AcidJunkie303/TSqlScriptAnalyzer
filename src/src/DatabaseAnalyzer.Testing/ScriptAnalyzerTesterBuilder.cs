@@ -3,6 +3,7 @@ using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Services;
+using Xunit.Abstractions;
 
 namespace DatabaseAnalyzer.Testing;
 
@@ -21,6 +22,7 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
     private readonly Dictionary<string, (string Contents, string DatabaseName)> _scriptContentsByFilePath = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, object?> _settingsDiagnosticId = new(StringComparer.OrdinalIgnoreCase);
     private string _defaultSchemaName = "dbo";
+    private ITestOutputHelper? _testOutputHelper;
 
     public ScriptAnalyzerTesterBuilder<TAnalyzer> WithScriptFile(string contents, string databaseName)
     {
@@ -33,6 +35,12 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
         where TSettings : class, ISettings<TSettings>
     {
         _settingsDiagnosticId.Add(TSettings.DiagnosticId, settings);
+        return this;
+    }
+
+    public ScriptAnalyzerTesterBuilder<TAnalyzer> WithTestOutputHelper(ITestOutputHelper testOutputHelper)
+    {
+        _testOutputHelper = testOutputHelper;
         return this;
     }
 
@@ -88,7 +96,8 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
             analysisContext,
             analyzer,
             allScripts[0],
-            expectedIssues
+            expectedIssues,
+            _testOutputHelper
         );
     }
 

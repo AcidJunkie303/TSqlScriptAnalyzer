@@ -1,6 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
 using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using FluentAssertions;
+using Xunit.Abstractions;
 
 namespace DatabaseAnalyzer.Testing;
 
@@ -9,21 +11,24 @@ public sealed class ScriptAnalyzerTester
 {
     private readonly IAnalysisContext _analysisContext;
     private readonly IScriptAnalyzer _analyzer;
-
-    public IScriptModel MainScript { get; }
-    public IReadOnlyList<IIssue> ExpectedIssues { get; }
+    private readonly ITestOutputHelper? _testOutputHelper;
 
     public ScriptAnalyzerTester(
         IAnalysisContext analysisContext,
         IScriptAnalyzer analyzer,
         IScriptModel mainScript,
-        IReadOnlyList<IIssue> expectedIssues)
+        IReadOnlyList<IIssue> expectedIssues,
+        ITestOutputHelper? testOutputHelper)
     {
         _analysisContext = analysisContext;
         _analyzer = analyzer;
+        _testOutputHelper = testOutputHelper;
         MainScript = mainScript;
         ExpectedIssues = expectedIssues;
     }
+
+    public IScriptModel MainScript { get; }
+    public IReadOnlyList<IIssue> ExpectedIssues { get; }
 
     public void Test()
     {
@@ -36,6 +41,37 @@ public sealed class ScriptAnalyzerTester
         _analyzer.AnalyzeScript(_analysisContext, MainScript);
 
         var reportedIssues = _analysisContext.IssueReporter.GetIssues();
-        reportedIssues.Should().BeEquivalentTo(ExpectedIssues);
+        WriteIssues(reportedIssues);
+
+        // sometimes the order is not the same, therefore we cannot use BeEquivalentTo()
+        reportedIssues.Should().HaveCount(ExpectedIssues.Count);
+        foreach (var expectedIssue in ExpectedIssues)
+        {
+            reportedIssues.Should().ContainEquivalentOf(expectedIssue);
+        }
+    }
+
+    private void WriteIssues(IReadOnlyList<IIssue> issues)
+    {
+        if (_testOutputHelper is null)
+        {
+            return;
+        }
+
+        if (issues.Count == 0)
+        {
+            _testOutputHelper.WriteLine("No issues reported");
+            return;
+        }
+
+        _testOutputHelper.WriteLine($"{issues.Count} issue{(issues.Count == 1 ? "" : "s")} reported:");
+        foreach (var issue in issues)
+        {
+            var insertionStrings = issue.MessageInsertions.Count == 0
+                ? "<none>"
+                : issue.MessageInsertions.StringJoin("░");
+            var message = $"""{issue.DiagnosticDefinition.DiagnosticId}    CodeRegion="{issue.CodeRegion}"    Insertions="{insertionStrings}""";
+            _testOutputHelper.WriteLine(message);
+        }
     }
 }

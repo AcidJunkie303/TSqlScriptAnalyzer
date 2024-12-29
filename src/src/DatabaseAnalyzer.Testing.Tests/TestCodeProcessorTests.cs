@@ -147,4 +147,55 @@ public sealed class TestCodeProcessorTests
                                          ccc
                                          """);
     }
+
+    [Fact]
+    public void WhenMultipleMarkupBlocksOnSameLine_ThenResultMustContainAllOfThem()
+    {
+        // arrange
+        var sut = new TestCodeProcessor(DiagnosticDefinitionRegistry);
+        const string code = """
+                            aaa█TE0002░file.sql░MyDb.dbo.p1░X░Y███bbb█cccddd█TE0002░file.sql░MyDb.dbo.p1░X░Y███eee█fff
+                            """;
+
+        // act
+        var result = sut.ParseTestCode(code);
+
+        // assert
+        var expectedRegion1 = CodeRegion.Create(1, 4, 1, 7);
+        var expectedRegion2 = CodeRegion.Create(1, 13, 1, 16);
+        var expectedIssue1 = Issue.Create(TestDiagnosticDefinitions.TestDiagnostic2, "MyDb", "file.sql", "MyDb.dbo.p1", expectedRegion1, "X", "Y");
+        var expectedIssue2 = Issue.Create(TestDiagnosticDefinitions.TestDiagnostic2, "MyDb", "file.sql", "MyDb.dbo.p1", expectedRegion2, "X", "Y");
+
+        result.ExpectedIssues.Should().ContainEquivalentOf(expectedIssue1);
+        result.ExpectedIssues.Should().ContainEquivalentOf(expectedIssue2);
+        result.ExpectedIssues.Should().HaveCount(2);
+
+        result.MarkupFreeSql.Should().Be("aaabbbcccdddeeefff");
+    }
+
+    [Fact]
+    public void WhenMultipleMarkupBlocksOnDifferentLines_ThenResultMustContainAllOfThem()
+    {
+        // arrange
+        var sut = new TestCodeProcessor(DiagnosticDefinitionRegistry);
+        const string code = """
+                            aaa█TE0002░file.sql░MyDb.dbo.p1░X░Y███bbb█ccc
+                            111█TE0002░file.sql░MyDb.dbo.p1░X░Y███222█333
+                            """;
+
+        // act
+        var result = sut.ParseTestCode(code);
+
+        // assert
+        var expectedRegion1 = CodeRegion.Create(1, 4, 1, 7);
+        var expectedRegion2 = CodeRegion.Create(2, 4, 2, 7);
+        var expectedIssue1 = Issue.Create(TestDiagnosticDefinitions.TestDiagnostic2, "MyDb", "file.sql", "MyDb.dbo.p1", expectedRegion1, "X", "Y");
+        var expectedIssue2 = Issue.Create(TestDiagnosticDefinitions.TestDiagnostic2, "MyDb", "file.sql", "MyDb.dbo.p1", expectedRegion2, "X", "Y");
+
+        result.ExpectedIssues.Should().ContainEquivalentOf(expectedIssue1);
+        result.ExpectedIssues.Should().ContainEquivalentOf(expectedIssue2);
+        result.ExpectedIssues.Should().HaveCount(2);
+
+        result.MarkupFreeSql.Should().Be("aaabbbccc\r\n111222333");
+    }
 }

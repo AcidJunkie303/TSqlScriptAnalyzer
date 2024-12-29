@@ -136,7 +136,7 @@ internal sealed class Analyzer : IAnalyzer
 
         IScriptModel ParseScript(BasicScriptInformation script)
         {
-            var parser = TSqlParser.CreateParser(SqlVersion.Sql170, false);
+            var parser = TSqlParser.CreateParser(SqlVersion.Sql170, true);
             using var reader = new StringReader(script.Contents);
             var parsedScript = parser.Parse(reader, out var parserErrors) as TSqlScript ?? new TSqlScript();
             var errorMessages = parserErrors

@@ -30,51 +30,66 @@ internal sealed partial class TestCodeProcessor
     {
         var issues = new List<IIssue>();
 
-        // locate, parse and remove markup code and extract issues to issues list
-        var markupFreeCode = MarkupRegex().Replace(code, match =>
+        var currentCode = code;
+        while (true)
         {
-            var parts = match.Groups["header"].Value
-                .Split('░')
-                .Select(x => x.Trim())
-                .ToList();
+            // locate, parse and remove markup code and extract issues to issues list
+            var processedCode = MarkupRegex()
+                .Replace(
+                    count: 1,
+                    input: currentCode,
+                    evaluator: match =>
+                    {
+                        var parts = match.Groups["header"].Value
+                            .Split('░')
+                            .Select(x => x.Trim())
+                            .ToList();
 
-            if (parts.Count < 3)
+                        if (parts.Count < 3)
+                        {
+                            throw new InvalidMarkupException("The header, separated by '░', must contain at least two parts.'");
+                        }
+
+                        var id = parts[0];
+                        var fileName = parts[1];
+                        var fullObjectName = parts[2].NullIfEmptyOrWhiteSpace();
+                        var innerCode = match.Groups["code"].Value;
+                        var insertions = parts.Count >= 4
+                            ? parts[3..]
+                            : [];
+
+                        // tricky part: the code can span across multiple lines
+                        var (startLineNumber, startColumnNumber) = currentCode.GetLineAndColumnNumber(match.Index);
+                        var (endLineNumberOffset, endColumnOffset) = innerCode.GetLineAndColumnIndex(innerCode.Length - 1);
+
+                        var endLineNumber = startLineNumber + endLineNumberOffset;
+
+                        var endColumnNumber = endLineNumberOffset == 0
+                            ? startColumnNumber + endColumnOffset
+                            : endColumnOffset + 1;
+
+                        endColumnNumber++; // because it's an offset
+
+                        if (innerCode.EndsWith('\n'))
+                        {
+                            endColumnNumber--;
+                        }
+
+                        var location = CodeRegion.Create(startLineNumber, startColumnNumber, endLineNumber, endColumnNumber);
+                        var issue = Issue.Create(_diagnosticRegistry.GetDefinition(id), "MyDb", fileName, fullObjectName, location, insertions);
+                        issues.Add(issue);
+
+                        return innerCode;
+                    });
+
+            if (processedCode.EqualsOrdinal(currentCode))
             {
-                throw new InvalidMarkupException("The header, separated by '░', must contain at least two parts.'");
+                break;
             }
 
-            var id = parts[0];
-            var fileName = parts[1];
-            var fullObjectName = parts[2].NullIfEmptyOrWhiteSpace();
-            var affectedCode = match.Groups["code"].Value;
-            var insertions = parts.Count >= 4
-                ? parts[3..]
-                : [];
+            currentCode = processedCode;
+        }
 
-            // tricky part: the code can span across multiple lines
-            var (startLineNumber, startColumnNumber) = code.GetLineAndColumnNumber(match.Index);
-            var (endLineNumberOffset, endColumnOffset) = affectedCode.GetLineAndColumnIndex(affectedCode.Length - 1);
-
-            var endLineNumber = startLineNumber + endLineNumberOffset;
-
-            var endColumnNumber = endLineNumberOffset == 0
-                ? startColumnNumber + endColumnOffset
-                : endColumnOffset + 1;
-
-            endColumnNumber++; // because it's an offset
-
-            if (affectedCode.EndsWith('\n'))
-            {
-                endColumnNumber--;
-            }
-
-            var location = CodeRegion.Create(startLineNumber, startColumnNumber, endLineNumber, endColumnNumber);
-            var issue = Issue.Create(_diagnosticRegistry.GetDefinition(id), "MyDb", fileName, fullObjectName, location, insertions);
-            issues.Add(issue);
-
-            return affectedCode;
-        });
-
-        return new TestCode(markupFreeCode, issues);
+        return new TestCode(currentCode, issues);
     }
 }

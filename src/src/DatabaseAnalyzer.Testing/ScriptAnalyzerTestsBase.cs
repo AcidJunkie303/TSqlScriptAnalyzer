@@ -70,9 +70,11 @@ public abstract class ScriptAnalyzerTestsBase<TAnalyzer>
             builder.WithScriptFile(scriptContent, "MyDb");
         }
 
-        builder.WithSettings(settings);
+        var tester = builder
+            .WithSettings(settings)
+            .WithTestOutputHelper(TestOutputHelper)
+            .Build();
 
-        var tester = builder.Build();
         Verify(tester);
     }
 
