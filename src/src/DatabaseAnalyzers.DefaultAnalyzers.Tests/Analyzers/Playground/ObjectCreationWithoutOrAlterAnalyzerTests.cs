@@ -11,76 +11,18 @@ public sealed class PlaygroundTests(ITestOutputHelper testOutputHelper)
     public void PlaygroundTests1()
     {
         const string code = """
-                            USE [database1]
-
-                            SET ANSI_NULLS ON
-                            SET QUOTED_IDENTIFIER ON
+                            USE MyDB
                             GO
 
-                            CREATE TABLE [dbo].[T2]
-                            (
-                                [Id] [int] NOT NULL,
-                                [Value] [nvarchar](50) NOT NULL,
-                                CONSTRAINT [PK_T2] PRIMARY KEY CLUSTERED
-                                (
-                                    [Id] ASC
-                                ) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-                            ) ON [PRIMARY]
+                            PRINT 1
+                            GOTO MyLabel
+                            PRINT 2
 
-                            GO
-
-                            SET ANSI_PADDING ON
-
-                            GO
-
-                            CREATE NONCLUSTERED INDEX [IX_T1_Value1] ON [dbo].[T1]
-                            (
-                                [Value1] ASC
-                            ) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-
-                            GO
-
-                            CREATE NONCLUSTERED INDEX [IX_T1_Value2_Value3] ON [dbo].[T1]
-                            (
-                                [Value2] ASC,
-                                [Value3] ASC
-                            ) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-                            GO
-
-                            ALTER TABLE [dbo].[T1]  WITH CHECK ADD  CONSTRAINT [FK_T1_T2] FOREIGN KEY([OtherId])
-                            REFERENCES [dbo].[T2] ([Id])
-
-                            GO
-
-                            ALTER TABLE [dbo].[T1] CHECK CONSTRAINT [FK_T1_T2]
+                            MyLabel:
+                            PRINT 3
                             """;
 
-        const string script2 = """
-                               USE [database1]
-
-                               GO
-
-                               SET ANSI_NULLS ON
-                               SET QUOTED_IDENTIFIER ON
-                               GO
-
-                               CREATE TABLE [dbo].[T1]
-                               (
-                                   [Id] [int] NOT NULL,
-                                   [Value1] [nvarchar](50) NOT NULL,
-                                   [Value2] [nchar](10) NULL,
-                                   [Value3] [nchar](10) NULL,
-                                   [OtherId] [int] NULL,
-                                   CONSTRAINT [PK_T1] PRIMARY KEY CLUSTERED
-                                   (
-                                       [Id] ASC
-                                   ) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-                               ) ON [PRIMARY]
-                               """;
-
-        var tester = GetDefaultTesterBuilder(code)
-            .WithScriptFile(script2, "database1")
-            .Build();
+        var tester = GetDefaultTesterBuilder(code).Build();
         Verify(tester);
     }
 }

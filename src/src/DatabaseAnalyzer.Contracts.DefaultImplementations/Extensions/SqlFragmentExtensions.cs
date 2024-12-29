@@ -141,8 +141,7 @@ public static class SqlFragmentExtensions
     ///     The T-SQL fragment for which the previous sibling fragments are to be retrieved.
     /// </param>
     /// <param name="parentFragmentProvider">
-    ///     An implementation of IParentFragmentProvider that provides parent fragment information
-    ///     for the specified T-SQL fragment.
+    ///     The provider used retrieve the parent of a given fragment.
     /// </param>
     /// <returns>
     ///     An enumerable collection of TSqlFragment objects that represent the previous
@@ -157,7 +156,7 @@ public static class SqlFragmentExtensions
             yield break;
         }
 
-        foreach (var sibling in parent.GetChildren(recursive: false))
+        foreach (var sibling in parent.GetChildren())
         {
             if (ReferenceEquals(sibling, fragment))
             {
@@ -165,6 +164,67 @@ public static class SqlFragmentExtensions
             }
 
             yield return sibling;
+        }
+    }
+
+    /// <summary>
+    ///     Retrieves the succeeding sibling fragments of the specified T-SQL fragment
+    ///     within its parent fragment.
+    /// </summary>
+    /// <param name="fragment">
+    ///     The T-SQL fragment for which the succeeding sibling fragments are to be retrieved.
+    /// </param>
+    /// <param name="script">
+    ///     The <see cref="IScriptModel" /> the fragment originated from.
+    /// </param>
+    /// <returns>
+    ///     An enumerable collection of TSqlFragment objects that represent the succeeding
+    ///     sibling fragments of the specified fragment.
+    ///     The order is as the siblings appear in the AST.
+    /// </returns>
+    public static IEnumerable<TSqlFragment> GetSucceedingSiblings(this TSqlFragment fragment, IScriptModel script)
+    {
+        ArgumentNullException.ThrowIfNull(script);
+
+        return fragment.GetSucceedingSiblings(script.ParentFragmentProvider);
+    }
+
+    /// <summary>
+    ///     Retrieves the succeeding sibling fragments of the specified T-SQL fragment
+    ///     within its parent fragment.
+    /// </summary>
+    /// <param name="fragment">
+    ///     The T-SQL fragment for which the succeeding sibling fragments are to be retrieved.
+    /// </param>
+    /// <param name="parentFragmentProvider">
+    ///     The provider used retrieve the parent of a given fragment.
+    /// </param>
+    /// <returns>
+    ///     An enumerable collection of TSqlFragment objects that represent the succeeding
+    ///     sibling fragments of the specified fragment.
+    ///     The order is as the siblings appear in the AST.
+    /// </returns>
+    public static IEnumerable<TSqlFragment> GetSucceedingSiblings(this TSqlFragment fragment, IParentFragmentProvider parentFragmentProvider)
+    {
+        var parent = fragment.GetParent(parentFragmentProvider);
+        if (parent is null)
+        {
+            yield break;
+        }
+
+        var foundSelf = false;
+        foreach (var sibling in parent.GetChildren())
+        {
+            if (foundSelf)
+            {
+                yield return sibling;
+                continue;
+            }
+
+            if (ReferenceEquals(sibling, fragment))
+            {
+                foundSelf = true;
+            }
         }
     }
 
@@ -179,7 +239,7 @@ public static class SqlFragmentExtensions
     {
         TSqlFragment? match = null;
 
-        foreach (var child in script.GetChildren(recursive: true))
+        foreach (var child in script.GetChildren(true))
         {
             if (IsIndexInsideFragment(index, child))
             {
@@ -203,7 +263,7 @@ public static class SqlFragmentExtensions
     {
         TSqlFragment? match = null;
 
-        foreach (var child in script.GetChildren(recursive: true))
+        foreach (var child in script.GetChildren(true))
         {
             if (IsInsideElement(child, lineNumber, columnNumber))
             {
