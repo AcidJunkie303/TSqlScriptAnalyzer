@@ -14,9 +14,24 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
 
         AnalyzeObjectCreations(context, script, settings.NameQuotingPolicyDuringObjectCreation);
         AnalyzeColumnReferences(context, script, settings.NameQuotingPolicyForColumnReferences);
+        // TODO: table references
     }
 
-    private static void AnalyzeColumnReferences(IAnalysisContext context, IScriptModel script, NameQuotingPolicy policy) => AnalyzeObjectCreations(context, script, policy);
+    private static void AnalyzeColumnReferences(IAnalysisContext context, IScriptModel script, NameQuotingPolicy policy)
+    {
+        if (policy == NameQuotingPolicy.Undefined)
+        {
+            return;
+        }
+
+        Analyze(
+            context,
+            script,
+            script.ParsedScript.GetChildren<ColumnReferenceExpression>(true),
+            a => a.MultiPartIdentifier.Identifiers.TakeLast(1).ToList(),
+            "column",
+            policy);
+    }
 
     private static void AnalyzeObjectCreations(IAnalysisContext context, IScriptModel script, NameQuotingPolicy policy)
     {
@@ -67,7 +82,7 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
     }
 
     private static void Analyze<T>(IAnalysisContext context, IScriptModel script, IEnumerable<T> statements, Func<T, IList<Identifier>> identifierGetter, string typeName, NameQuotingPolicy nameQuotingPolicy)
-        where T : TSqlStatement
+        where T : TSqlFragment
     {
         foreach (var statement in statements)
         {
@@ -76,7 +91,7 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
     }
 
     private static void Analyze<T>(IAnalysisContext context, IScriptModel script, T statement, Func<T, IList<Identifier>> identifierGetter, string typeName, NameQuotingPolicy nameQuotingPolicy)
-        where T : TSqlStatement
+        where T : TSqlFragment
     {
         foreach (var identifier in identifierGetter(statement))
         {
@@ -87,7 +102,7 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
             }
 
             var databaseName = identifier.FindCurrentDatabaseNameAtFragment(script.ParsedScript);
-            var fullObjectName = identifier.TryGetFirstClassObjectName(context, script) ?? "Unknown";
+            var fullObjectName = identifier.TryGetFirstClassObjectName(context, script);
             context.IssueReporter.Report(DiagnosticDefinitions.Default,
                 databaseName,
                 script.RelativeScriptFilePath,

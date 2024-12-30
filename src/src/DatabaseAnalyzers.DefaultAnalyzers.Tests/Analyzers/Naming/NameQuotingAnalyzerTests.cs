@@ -13,39 +13,39 @@ public sealed class NameQuotingAnalyzerTests(ITestOutputHelper testOutputHelper)
     : ScriptAnalyzerTestsBase<NameQuotingAnalyzer>(testOutputHelper)
 {
     [Theory]
-    [InlineData(NameQuotingPolicy.Undefined, """ /*                 0000 */ CREATE TABLE  dbo.T1                                                            (Id int) """)]
-    [InlineData(NameQuotingPolicy.Undefined, """ /*                 0001 */ CREATE TABLE  [dbo].T1                                                          (Id int) """)]
-    [InlineData(NameQuotingPolicy.Undefined, """ /*                 0002 */ CREATE TABLE  dbo.[T1]                                                          (Id int) """)]
-    [InlineData(NameQuotingPolicy.Undefined, """ /*                 0003 */ CREATE TABLE  "dbo".T1                                                          (Id int) """)]
-    [InlineData(NameQuotingPolicy.Undefined, """ /*                 0004 */ CREATE TABLE  dbo."T1"                                                          (Id int) """)]
+    [InlineData(NameQuotingPolicy.Undefined, """ /* 0000 */                 dbo.T1                                                            """)]
+    [InlineData(NameQuotingPolicy.Undefined, """ /* 0001 */                 [dbo].T1                                                          """)]
+    [InlineData(NameQuotingPolicy.Undefined, """ /* 0002 */                 dbo.[T1]                                                          """)]
+    [InlineData(NameQuotingPolicy.Undefined, """ /* 0003 */                 "dbo".T1                                                          """)]
+    [InlineData(NameQuotingPolicy.Undefined, """ /* 0004 */                 dbo."T1"                                                          """)]
     //
-    [InlineData(NameQuotingPolicy.Required, """  /*                 0010 */ CREATE TABLE  █AJ5038░script_0.sql░MyDb.dbo.T1░table░T1░[T1]███T1█              (Id int) """)]
-    [InlineData(NameQuotingPolicy.Required, """  /*                 0011 */ CREATE TABLE  [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░table░T1░[T1]███T1█        (Id int) """)]
-    [InlineData(NameQuotingPolicy.Required, """  /*                 0012 */ CREATE TABLE  "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░table░T1░[T1]███T1█        (Id int) """)]
-    [InlineData(NameQuotingPolicy.Required, """  /*                 0013 */ CREATE TABLE  [dbo].[T1]                                                        (Id int) """)]
-    [InlineData(NameQuotingPolicy.Required, """  /*                 0014 */ CREATE TABLE  "dbo"."T1"                                                        (Id int) """)]
+    [InlineData(NameQuotingPolicy.Required, """  /* 0010 */                 █AJ5038░script_0.sql░MyDb.dbo.T1░table░T1░[T1]███T1█              """)]
+    [InlineData(NameQuotingPolicy.Required, """  /* 0011 */                 [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░table░T1░[T1]███T1█        """)]
+    [InlineData(NameQuotingPolicy.Required, """  /* 0012 */                 "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░table░T1░[T1]███T1█        """)]
+    [InlineData(NameQuotingPolicy.Required, """  /* 0013 */                 [dbo].[T1]                                                        """)]
+    [InlineData(NameQuotingPolicy.Required, """  /* 0014 */                 "dbo"."T1"                                                        """)]
     //
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0020 */ CREATE TABLE  T1                                                                (Id int) """)]
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0021 */ CREATE TABLE  dbo.T1                                                            (Id int) """)]
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0022 */ CREATE TABLE  █AJ5038░script_0.sql░MyDb.dbo.T1░table░[dbo]░dbo███[dbo]█.T1      (Id int) """)]
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0023 */ CREATE TABLE  █AJ5038░script_0.sql░MyDb.dbo.T1░table░"dbo"░dbo███"dbo"█.T1      (Id int) """)]
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0024 */ CREATE TABLE  dbo.█AJ5038░script_0.sql░MyDb.dbo.T1░table░[T1]░T1███[T1]█        (Id int) """)]
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0025 */ CREATE TABLE  dbo.█AJ5038░script_0.sql░MyDb.dbo.T1░table░"T1"░T1███"T1"█        (Id int) """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0020 */               T1                                                                """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0021 */               dbo.T1                                                            """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0022 */               █AJ5038░script_0.sql░MyDb.dbo.T1░table░[dbo]░dbo███[dbo]█.T1      """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0023 */               █AJ5038░script_0.sql░MyDb.dbo.T1░table░"dbo"░dbo███"dbo"█.T1      """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0024 */               dbo.█AJ5038░script_0.sql░MyDb.dbo.T1░table░[T1]░T1███[T1]█        """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0025 */               dbo.█AJ5038░script_0.sql░MyDb.dbo.T1░table░"T1"░T1███"T1"█        """)]
     //
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0030 */ CREATE TABLE  █AJ5038░script_0.sql░MyDb.dbo.T1░table░T1░"T1"███T1█              (Id int) """)]
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0031 */ CREATE TABLE  "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░table░[T1]░"T1"███[T1]█    (Id int) """)]
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0032 */ CREATE TABLE  "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░table░T1░"T1"███T1█        (Id int) """)]
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0033 */ CREATE TABLE  "dbo"."T1"                                                        (Id int) """)]
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0034 */ CREATE TABLE  █AJ5038░script_0.sql░MyDb.dbo.T1░table░dbo░"dbo"███dbo█."T1"      (Id int) """)]
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0035 */ CREATE TABLE  █AJ5038░script_0.sql░MyDb.dbo.T1░table░[dbo]░"dbo"███[dbo]█."T1"  (Id int) """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0030 */     █AJ5038░script_0.sql░MyDb.dbo.T1░table░T1░"T1"███T1█              """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0031 */     "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░table░[T1]░"T1"███[T1]█    """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0032 */     "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░table░T1░"T1"███T1█        """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0033 */     "dbo"."T1"                                                        """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0034 */     █AJ5038░script_0.sql░MyDb.dbo.T1░table░dbo░"dbo"███dbo█."T1"      """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0035 */     █AJ5038░script_0.sql░MyDb.dbo.T1░table░[dbo]░"dbo"███[dbo]█."T1"  """)]
     //
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0040 */ CREATE TABLE  █AJ5038░script_0.sql░MyDb.dbo.T1░table░T1░[T1]███T1█              (Id int) """)]
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0041 */ CREATE TABLE  [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░table░"T1"░[T1]███"T1"█    (Id int) """)]
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0042 */ CREATE TABLE  [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░table░T1░[T1]███T1█        (Id int) """)]
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0043 */ CREATE TABLE  [dbo].[T1]                                                        (Id int) """)]
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0044 */ CREATE TABLE  █AJ5038░script_0.sql░MyDb.dbo.T1░table░dbo░[dbo]███dbo█.[T1]      (Id int) """)]
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0045 */ CREATE TABLE  █AJ5038░script_0.sql░MyDb.dbo.T1░table░"dbo"░[dbo]███"dbo"█.[T1]  (Id int) """)]
-    public void WithTableCreation_Theory(NameQuotingPolicy nameQuotingPolicy, string code)
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0040 */   █AJ5038░script_0.sql░MyDb.dbo.T1░table░T1░[T1]███T1█              """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0041 */   [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░table░"T1"░[T1]███"T1"█    """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0042 */   [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░table░T1░[T1]███T1█        """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0043 */   [dbo].[T1]                                                        """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0044 */   █AJ5038░script_0.sql░MyDb.dbo.T1░table░dbo░[dbo]███dbo█.[T1]      """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0045 */   █AJ5038░script_0.sql░MyDb.dbo.T1░table░"dbo"░[dbo]███"dbo"█.[T1]  """)]
+    public void WithTableCreation_Theory(NameQuotingPolicy nameQuotingPolicy, string tableNameCode)
     {
         Aj5038Settings settings = new
         (
@@ -55,50 +55,65 @@ public sealed class NameQuotingAnalyzerTests(ITestOutputHelper testOutputHelper)
             NameQuotingPolicyForSchemaNameReferences: NameQuotingPolicy.Undefined
         );
 
-        const string codePrefix = """
-                                  USE MyDb
-                                  GO
+        // we test the table name creation. We don't want the analyzer to yield also issues for the column naming
+        // therefore, we quote them as needed. There's a separate test
+        var columnName = nameQuotingPolicy switch
+        {
+            NameQuotingPolicy.Undefined => "Column1",
+            NameQuotingPolicy.Required => "[Column1]",
+            NameQuotingPolicy.DoubleQuotesRequired => "\"Column1\"",
+            NameQuotingPolicy.SquareBracketsRequired => "[Column1]",
+            NameQuotingPolicy.NotAllowed => "Column1",
+            _ => throw new ArgumentOutOfRangeException(nameof(nameQuotingPolicy), nameQuotingPolicy, null)
+        };
 
+        var code = $"""
+                    USE MyDb
+                    GO
 
-                                  """;
+                    CREATE TABLE {tableNameCode}
+                    (
+                        {columnName} INT
+                    )
+                    """;
 
-        Verify(settings, codePrefix + code);
+        Verify(settings, code);
     }
 
     [Theory]
-    [InlineData(NameQuotingPolicy.Undefined, """ /*                 0000 */ CREATE FUNCTION  dbo.T1                                                             () RETURNS INT AS BEGIN RETURN 1 END """)]
-    [InlineData(NameQuotingPolicy.Undefined, """ /*                 0001 */ CREATE FUNCTION  [dbo].T1                                                           () RETURNS INT AS BEGIN RETURN 1 END """)]
-    [InlineData(NameQuotingPolicy.Undefined, """ /*                 0002 */ CREATE FUNCTION  dbo.[T1]                                                           () RETURNS INT AS BEGIN RETURN 1 END """)]
-    [InlineData(NameQuotingPolicy.Undefined, """ /*                 0003 */ CREATE FUNCTION  "dbo".T1                                                           () RETURNS INT AS BEGIN RETURN 1 END """)]
-    [InlineData(NameQuotingPolicy.Undefined, """ /*                 0004 */ CREATE FUNCTION  dbo."T1"                                                           () RETURNS INT AS BEGIN RETURN 1 END """)]
+    [InlineData(NameQuotingPolicy.Undefined, """ /* 0000 */                 dbo.T1                                                              """)]
+    [InlineData(NameQuotingPolicy.Undefined, """ /* 0001 */                 [dbo].T1                                                            """)]
+    [InlineData(NameQuotingPolicy.Undefined, """ /* 0002 */                 dbo.[T1]                                                            """)]
+    [InlineData(NameQuotingPolicy.Undefined, """ /* 0003 */                 "dbo".T1                                                            """)]
+    [InlineData(NameQuotingPolicy.Undefined, """ /* 0004 */                 dbo."T1"                                                            """)]
     //
-    [InlineData(NameQuotingPolicy.Required, """  /*                 0010 */ CREATE FUNCTION  █AJ5038░script_0.sql░MyDb.dbo.T1░function░T1░[T1]███T1█               () RETURNS INT AS BEGIN RETURN 1 END """)]
-    [InlineData(NameQuotingPolicy.Required, """  /*                 0011 */ CREATE FUNCTION  [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░function░T1░[T1]███T1█         () RETURNS INT AS BEGIN RETURN 1 END """)]
-    [InlineData(NameQuotingPolicy.Required, """  /*                 0012 */ CREATE FUNCTION  "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░function░T1░[T1]███T1█         () RETURNS INT AS BEGIN RETURN 1 END """)]
-    [InlineData(NameQuotingPolicy.Required, """  /*                 0013 */ CREATE FUNCTION  [dbo].[T1]                                                         () RETURNS INT AS BEGIN RETURN 1 END """)]
-    [InlineData(NameQuotingPolicy.Required, """  /*                 0014 */ CREATE FUNCTION  "dbo"."T1"                                                         () RETURNS INT AS BEGIN RETURN 1 END """)]
+    [InlineData(NameQuotingPolicy.Required, """  /* 0010 */                 █AJ5038░script_0.sql░MyDb.dbo.T1░function░T1░[T1]███T1█             """)]
+    [InlineData(NameQuotingPolicy.Required, """  /* 0011 */                 [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░function░T1░[T1]███T1█       """)]
+    [InlineData(NameQuotingPolicy.Required, """  /* 0012 */                 "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░function░T1░[T1]███T1█       """)]
+    [InlineData(NameQuotingPolicy.Required, """  /* 0013 */                 [dbo].[T1]                                                          """)]
+    [InlineData(NameQuotingPolicy.Required, """  /* 0014 */                 "dbo"."T1"                                                          """)]
     //
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0020 */ CREATE FUNCTION  T1                                                                 () RETURNS INT AS BEGIN RETURN 1 END """)]
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0021 */ CREATE FUNCTION  dbo.T1                                                             () RETURNS INT AS BEGIN RETURN 1 END """)]
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0022 */ CREATE FUNCTION  █AJ5038░script_0.sql░MyDb.dbo.T1░function░[dbo]░dbo███[dbo]█.T1       () RETURNS INT AS BEGIN RETURN 1 END """)]
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0023 */ CREATE FUNCTION  █AJ5038░script_0.sql░MyDb.dbo.T1░function░"dbo"░dbo███"dbo"█.T1       () RETURNS INT AS BEGIN RETURN 1 END """)]
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0024 */ CREATE FUNCTION  dbo.█AJ5038░script_0.sql░MyDb.dbo.T1░function░[T1]░T1███[T1]█         () RETURNS INT AS BEGIN RETURN 1 END """)]
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0025 */ CREATE FUNCTION  dbo.█AJ5038░script_0.sql░MyDb.dbo.T1░function░"T1"░T1███"T1"█         () RETURNS INT AS BEGIN RETURN 1 END """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0020 */               T1                                                                  """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0021 */               dbo.T1                                                              """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0022 */               █AJ5038░script_0.sql░MyDb.dbo.T1░function░[dbo]░dbo███[dbo]█.T1     """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0023 */               █AJ5038░script_0.sql░MyDb.dbo.T1░function░"dbo"░dbo███"dbo"█.T1     """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0024 */               dbo.█AJ5038░script_0.sql░MyDb.dbo.T1░function░[T1]░T1███[T1]█       """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0025 */               dbo.█AJ5038░script_0.sql░MyDb.dbo.T1░function░"T1"░T1███"T1"█       """)]
     //
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0030 */ CREATE FUNCTION  █AJ5038░script_0.sql░MyDb.dbo.T1░function░T1░"T1"███T1█               () RETURNS INT AS BEGIN RETURN 1 END """)]
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0031 */ CREATE FUNCTION  "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░function░[T1]░"T1"███[T1]█     () RETURNS INT AS BEGIN RETURN 1 END """)]
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0032 */ CREATE FUNCTION  "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░function░T1░"T1"███T1█         () RETURNS INT AS BEGIN RETURN 1 END """)]
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0033 */ CREATE FUNCTION  "dbo"."T1"                                                         () RETURNS INT AS BEGIN RETURN 1 END """)]
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0034 */ CREATE FUNCTION  █AJ5038░script_0.sql░MyDb.dbo.T1░function░dbo░"dbo"███dbo█."T1"       () RETURNS INT AS BEGIN RETURN 1 END """)]
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0035 */ CREATE FUNCTION  █AJ5038░script_0.sql░MyDb.dbo.T1░function░[dbo]░"dbo"███[dbo]█."T1"   () RETURNS INT AS BEGIN RETURN 1 END """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0030 */     █AJ5038░script_0.sql░MyDb.dbo.T1░function░T1░"T1"███T1█             """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0031 */     "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░function░[T1]░"T1"███[T1]█   """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0032 */     "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░function░T1░"T1"███T1█       """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0033 */     "dbo"."T1"                                                          """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0034 */     █AJ5038░script_0.sql░MyDb.dbo.T1░function░dbo░"dbo"███dbo█."T1"     """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0035 */     █AJ5038░script_0.sql░MyDb.dbo.T1░function░[dbo]░"dbo"███[dbo]█."T1" """)]
     //
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0040 */ CREATE FUNCTION  █AJ5038░script_0.sql░MyDb.dbo.T1░function░T1░[T1]███T1█               () RETURNS INT AS BEGIN RETURN 1 END """)]
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0041 */ CREATE FUNCTION  [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░function░"T1"░[T1]███"T1"█     () RETURNS INT AS BEGIN RETURN 1 END """)]
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0042 */ CREATE FUNCTION  [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░function░T1░[T1]███T1█         () RETURNS INT AS BEGIN RETURN 1 END """)]
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0043 */ CREATE FUNCTION  [dbo].[T1]                                                         () RETURNS INT AS BEGIN RETURN 1 END """)]
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0044 */ CREATE FUNCTION  █AJ5038░script_0.sql░MyDb.dbo.T1░function░dbo░[dbo]███dbo█.[T1]       () RETURNS INT AS BEGIN RETURN 1 END """)]
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0045 */ CREATE FUNCTION  █AJ5038░script_0.sql░MyDb.dbo.T1░function░"dbo"░[dbo]███"dbo"█.[T1]   () RETURNS INT AS BEGIN RETURN 1 END """)]
-    public void WithFunctionCreation_Theory(NameQuotingPolicy nameQuotingPolicy, string code)
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0040 */   █AJ5038░script_0.sql░MyDb.dbo.T1░function░T1░[T1]███T1█             """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0041 */   [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░function░"T1"░[T1]███"T1"█   """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0042 */   [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░function░T1░[T1]███T1█       """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0043 */   [dbo].[T1]                                                          """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0044 */   █AJ5038░script_0.sql░MyDb.dbo.T1░function░dbo░[dbo]███dbo█.[T1]     """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0045 */   █AJ5038░script_0.sql░MyDb.dbo.T1░function░"dbo"░[dbo]███"dbo"█.[T1] """)]
+    public void WithFunctionCreation_Theory(NameQuotingPolicy nameQuotingPolicy, string functionNameCode)
     {
         Aj5038Settings settings = new
         (
@@ -108,50 +123,55 @@ public sealed class NameQuotingAnalyzerTests(ITestOutputHelper testOutputHelper)
             NameQuotingPolicyForSchemaNameReferences: NameQuotingPolicy.Undefined
         );
 
-        const string codePrefix = """
-                                  USE MyDb
-                                  GO
+        var code = $"""
+                    USE MyDb
+                    GO
 
+                    CREATE FUNCTION {functionNameCode} ()
+                    RETURNS INT
+                    AS
+                    BEGIN
+                      RETURN 1
+                    END
+                    """;
 
-                                  """;
-
-        Verify(settings, codePrefix + code);
+        Verify(settings, code);
     }
 
     [Theory]
-    [InlineData(NameQuotingPolicy.Undefined, """ /*                 0000 */ CREATE PROCEDURE  dbo.T1                                                             AS BEGIN SELECT 1 END """)]
-    [InlineData(NameQuotingPolicy.Undefined, """ /*                 0001 */ CREATE PROCEDURE  [dbo].T1                                                           AS BEGIN SELECT 1 END """)]
-    [InlineData(NameQuotingPolicy.Undefined, """ /*                 0002 */ CREATE PROCEDURE  dbo.[T1]                                                           AS BEGIN SELECT 1 END """)]
-    [InlineData(NameQuotingPolicy.Undefined, """ /*                 0003 */ CREATE PROCEDURE  "dbo".T1                                                           AS BEGIN SELECT 1 END """)]
-    [InlineData(NameQuotingPolicy.Undefined, """ /*                 0004 */ CREATE PROCEDURE  dbo."T1"                                                           AS BEGIN SELECT 1 END """)]
+    [InlineData(NameQuotingPolicy.Undefined, """ /* 0000 */ dbo.T1                                                                              """)]
+    [InlineData(NameQuotingPolicy.Undefined, """ /* 0001 */ [dbo].T1                                                                            """)]
+    [InlineData(NameQuotingPolicy.Undefined, """ /* 0002 */ dbo.[T1]                                                                            """)]
+    [InlineData(NameQuotingPolicy.Undefined, """ /* 0003 */ "dbo".T1                                                                            """)]
+    [InlineData(NameQuotingPolicy.Undefined, """ /* 0004 */ dbo."T1"                                                                            """)]
     //
-    [InlineData(NameQuotingPolicy.Required, """  /*                 0010 */ CREATE PROCEDURE  █AJ5038░script_0.sql░MyDb.dbo.T1░procedure░T1░[T1]███T1█               AS BEGIN SELECT 1 END """)]
-    [InlineData(NameQuotingPolicy.Required, """  /*                 0011 */ CREATE PROCEDURE  [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░procedure░T1░[T1]███T1█         AS BEGIN SELECT 1 END """)]
-    [InlineData(NameQuotingPolicy.Required, """  /*                 0012 */ CREATE PROCEDURE  "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░procedure░T1░[T1]███T1█         AS BEGIN SELECT 1 END """)]
-    [InlineData(NameQuotingPolicy.Required, """  /*                 0013 */ CREATE PROCEDURE  [dbo].[T1]                                                         AS BEGIN SELECT 1 END """)]
-    [InlineData(NameQuotingPolicy.Required, """  /*                 0014 */ CREATE PROCEDURE  "dbo"."T1"                                                         AS BEGIN SELECT 1 END """)]
+    [InlineData(NameQuotingPolicy.Required, """  /* 0010 */ █AJ5038░script_0.sql░MyDb.dbo.T1░procedure░T1░[T1]███T1█                            """)]
+    [InlineData(NameQuotingPolicy.Required, """  /* 0011 */ [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░procedure░T1░[T1]███T1█                      """)]
+    [InlineData(NameQuotingPolicy.Required, """  /* 0012 */ "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░procedure░T1░[T1]███T1█                      """)]
+    [InlineData(NameQuotingPolicy.Required, """  /* 0013 */ [dbo].[T1]                                                                          """)]
+    [InlineData(NameQuotingPolicy.Required, """  /* 0014 */ "dbo"."T1"                                                                          """)]
     //
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0020 */ CREATE PROCEDURE  T1                                                                 AS BEGIN SELECT 1 END """)]
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0021 */ CREATE PROCEDURE  dbo.T1                                                             AS BEGIN SELECT 1 END """)]
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0022 */ CREATE PROCEDURE  █AJ5038░script_0.sql░MyDb.dbo.T1░procedure░[dbo]░dbo███[dbo]█.T1       AS BEGIN SELECT 1 END """)]
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0023 */ CREATE PROCEDURE  █AJ5038░script_0.sql░MyDb.dbo.T1░procedure░"dbo"░dbo███"dbo"█.T1       AS BEGIN SELECT 1 END """)]
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0024 */ CREATE PROCEDURE  dbo.█AJ5038░script_0.sql░MyDb.dbo.T1░procedure░[T1]░T1███[T1]█         AS BEGIN SELECT 1 END """)]
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0025 */ CREATE PROCEDURE  dbo.█AJ5038░script_0.sql░MyDb.dbo.T1░procedure░"T1"░T1███"T1"█         AS BEGIN SELECT 1 END """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0020 */ T1                                                                                """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0021 */ dbo.T1                                                                            """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0022 */ █AJ5038░script_0.sql░MyDb.dbo.T1░procedure░[dbo]░dbo███[dbo]█.T1                  """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0023 */ █AJ5038░script_0.sql░MyDb.dbo.T1░procedure░"dbo"░dbo███"dbo"█.T1                  """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0024 */ dbo.█AJ5038░script_0.sql░MyDb.dbo.T1░procedure░[T1]░T1███[T1]█                    """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0025 */ dbo.█AJ5038░script_0.sql░MyDb.dbo.T1░procedure░"T1"░T1███"T1"█                    """)]
     //
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0030 */ CREATE PROCEDURE  █AJ5038░script_0.sql░MyDb.dbo.T1░procedure░T1░"T1"███T1█               AS BEGIN SELECT 1 END """)]
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0031 */ CREATE PROCEDURE  "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░procedure░[T1]░"T1"███[T1]█     AS BEGIN SELECT 1 END """)]
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0032 */ CREATE PROCEDURE  "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░procedure░T1░"T1"███T1█         AS BEGIN SELECT 1 END """)]
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0033 */ CREATE PROCEDURE  "dbo"."T1"                                                         AS BEGIN SELECT 1 END """)]
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0034 */ CREATE PROCEDURE  █AJ5038░script_0.sql░MyDb.dbo.T1░procedure░dbo░"dbo"███dbo█."T1"       AS BEGIN SELECT 1 END """)]
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0035 */ CREATE PROCEDURE  █AJ5038░script_0.sql░MyDb.dbo.T1░procedure░[dbo]░"dbo"███[dbo]█."T1"   AS BEGIN SELECT 1 END """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0030 */ █AJ5038░script_0.sql░MyDb.dbo.T1░procedure░T1░"T1"███T1█                """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0031 */ "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░procedure░[T1]░"T1"███[T1]█      """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0032 */ "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░procedure░T1░"T1"███T1█          """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0033 */ "dbo"."T1"                                                              """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0034 */ █AJ5038░script_0.sql░MyDb.dbo.T1░procedure░dbo░"dbo"███dbo█."T1"        """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0035 */ █AJ5038░script_0.sql░MyDb.dbo.T1░procedure░[dbo]░"dbo"███[dbo]█."T1"    """)]
     //
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0040 */ CREATE PROCEDURE  █AJ5038░script_0.sql░MyDb.dbo.T1░procedure░T1░[T1]███T1█               AS BEGIN SELECT 1 END """)]
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0041 */ CREATE PROCEDURE  [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░procedure░"T1"░[T1]███"T1"█     AS BEGIN SELECT 1 END """)]
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0042 */ CREATE PROCEDURE  [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░procedure░T1░[T1]███T1█         AS BEGIN SELECT 1 END """)]
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0043 */ CREATE PROCEDURE  [dbo].[T1]                                                         AS BEGIN SELECT 1 END """)]
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0044 */ CREATE PROCEDURE  █AJ5038░script_0.sql░MyDb.dbo.T1░procedure░dbo░[dbo]███dbo█.[T1]       AS BEGIN SELECT 1 END """)]
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0045 */ CREATE PROCEDURE  █AJ5038░script_0.sql░MyDb.dbo.T1░procedure░"dbo"░[dbo]███"dbo"█.[T1]   AS BEGIN SELECT 1 END """)]
-    public void WithProcedureCreation_Theory(NameQuotingPolicy nameQuotingPolicy, string code)
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0040 */ █AJ5038░script_0.sql░MyDb.dbo.T1░procedure░T1░[T1]███T1█              """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0041 */ [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░procedure░"T1"░[T1]███"T1"█    """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0042 */ [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░procedure░T1░[T1]███T1█        """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0043 */ [dbo].[T1]                                                            """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0044 */ █AJ5038░script_0.sql░MyDb.dbo.T1░procedure░dbo░[dbo]███dbo█.[T1]      """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0045 */ █AJ5038░script_0.sql░MyDb.dbo.T1░procedure░"dbo"░[dbo]███"dbo"█.[T1]  """)]
+    public void WithProcedureCreation_Theory(NameQuotingPolicy nameQuotingPolicy, string procedureNameCode)
     {
         Aj5038Settings settings = new
         (
@@ -161,50 +181,54 @@ public sealed class NameQuotingAnalyzerTests(ITestOutputHelper testOutputHelper)
             NameQuotingPolicyForSchemaNameReferences: NameQuotingPolicy.Undefined
         );
 
-        const string codePrefix = """
-                                  USE MyDb
-                                  GO
+        var code = $"""
+                    USE MyDb
+                    GO
 
+                    CREATE PROCEDURE {procedureNameCode}
+                    AS
+                    BEGIN
+                        SELECT 1 AS Column1
+                    END
+                    """;
 
-                                  """;
-
-        Verify(settings, codePrefix + code);
+        Verify(settings, code);
     }
 
     [Theory]
-    [InlineData(NameQuotingPolicy.Undefined, """ /*                 0000 */ CREATE VIEW  dbo.T1                                                             AS SELECT 1 AS Expr1 """)]
-    [InlineData(NameQuotingPolicy.Undefined, """ /*                 0001 */ CREATE VIEW  [dbo].T1                                                           AS SELECT 1 AS Expr1 """)]
-    [InlineData(NameQuotingPolicy.Undefined, """ /*                 0002 */ CREATE VIEW  dbo.[T1]                                                           AS SELECT 1 AS Expr1 """)]
-    [InlineData(NameQuotingPolicy.Undefined, """ /*                 0003 */ CREATE VIEW  "dbo".T1                                                           AS SELECT 1 AS Expr1 """)]
-    [InlineData(NameQuotingPolicy.Undefined, """ /*                 0004 */ CREATE VIEW  dbo."T1"                                                           AS SELECT 1 AS Expr1 """)]
+    [InlineData(NameQuotingPolicy.Undefined, """ /* 0000 */                 dbo.T1                                                          """)]
+    [InlineData(NameQuotingPolicy.Undefined, """ /* 0001 */                 [dbo].T1                                                        """)]
+    [InlineData(NameQuotingPolicy.Undefined, """ /* 0002 */                 dbo.[T1]                                                        """)]
+    [InlineData(NameQuotingPolicy.Undefined, """ /* 0003 */                 "dbo".T1                                                        """)]
+    [InlineData(NameQuotingPolicy.Undefined, """ /* 0004 */                 dbo."T1"                                                        """)]
     //
-    [InlineData(NameQuotingPolicy.Required, """  /*                 0010 */ CREATE VIEW  █AJ5038░script_0.sql░MyDb.dbo.T1░view░T1░[T1]███T1█                AS SELECT 1 AS Expr1 """)]
-    [InlineData(NameQuotingPolicy.Required, """  /*                 0011 */ CREATE VIEW  [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░view░T1░[T1]███T1█          AS SELECT 1 AS Expr1 """)]
-    [InlineData(NameQuotingPolicy.Required, """  /*                 0012 */ CREATE VIEW  "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░view░T1░[T1]███T1█          AS SELECT 1 AS Expr1 """)]
-    [InlineData(NameQuotingPolicy.Required, """  /*                 0013 */ CREATE VIEW  [dbo].[T1]                                                         AS SELECT 1 AS Expr1 """)]
-    [InlineData(NameQuotingPolicy.Required, """  /*                 0014 */ CREATE VIEW  "dbo"."T1"                                                         AS SELECT 1 AS Expr1 """)]
+    [InlineData(NameQuotingPolicy.Required, """  /* 0010 */                 █AJ5038░script_0.sql░MyDb.dbo.T1░view░T1░[T1]███T1█             """)]
+    [InlineData(NameQuotingPolicy.Required, """  /* 0011 */                 [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░view░T1░[T1]███T1█       """)]
+    [InlineData(NameQuotingPolicy.Required, """  /* 0012 */                 "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░view░T1░[T1]███T1█       """)]
+    [InlineData(NameQuotingPolicy.Required, """  /* 0013 */                 [dbo].[T1]                                                      """)]
+    [InlineData(NameQuotingPolicy.Required, """  /* 0014 */                 "dbo"."T1"                                                      """)]
     //
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0020 */ CREATE VIEW  T1                                                                 AS SELECT 1 AS Expr1 """)]
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0021 */ CREATE VIEW  dbo.T1                                                             AS SELECT 1 AS Expr1 """)]
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0022 */ CREATE VIEW  █AJ5038░script_0.sql░MyDb.dbo.T1░view░[dbo]░dbo███[dbo]█.T1        AS SELECT 1 AS Expr1 """)]
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0023 */ CREATE VIEW  █AJ5038░script_0.sql░MyDb.dbo.T1░view░"dbo"░dbo███"dbo"█.T1        AS SELECT 1 AS Expr1 """)]
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0024 */ CREATE VIEW  dbo.█AJ5038░script_0.sql░MyDb.dbo.T1░view░[T1]░T1███[T1]█          AS SELECT 1 AS Expr1 """)]
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0025 */ CREATE VIEW  dbo.█AJ5038░script_0.sql░MyDb.dbo.T1░view░"T1"░T1███"T1"█          AS SELECT 1 AS Expr1 """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0020 */               T1                                                              """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0021 */               dbo.T1                                                          """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0022 */               █AJ5038░script_0.sql░MyDb.dbo.T1░view░[dbo]░dbo███[dbo]█.T1     """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0023 */               █AJ5038░script_0.sql░MyDb.dbo.T1░view░"dbo"░dbo███"dbo"█.T1     """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0024 */               dbo.█AJ5038░script_0.sql░MyDb.dbo.T1░view░[T1]░T1███[T1]█       """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0025 */               dbo.█AJ5038░script_0.sql░MyDb.dbo.T1░view░"T1"░T1███"T1"█       """)]
     //
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0030 */ CREATE VIEW  █AJ5038░script_0.sql░MyDb.dbo.T1░view░T1░"T1"███T1█                AS SELECT 1 AS Expr1 """)]
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0031 */ CREATE VIEW  "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░view░[T1]░"T1"███[T1]█      AS SELECT 1 AS Expr1 """)]
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0032 */ CREATE VIEW  "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░view░T1░"T1"███T1█          AS SELECT 1 AS Expr1 """)]
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0033 */ CREATE VIEW  "dbo"."T1"                                                         AS SELECT 1 AS Expr1 """)]
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0034 */ CREATE VIEW  █AJ5038░script_0.sql░MyDb.dbo.T1░view░dbo░"dbo"███dbo█."T1"        AS SELECT 1 AS Expr1 """)]
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0035 */ CREATE VIEW  █AJ5038░script_0.sql░MyDb.dbo.T1░view░[dbo]░"dbo"███[dbo]█."T1"    AS SELECT 1 AS Expr1 """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0030 */     █AJ5038░script_0.sql░MyDb.dbo.T1░view░T1░"T1"███T1█             """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0031 */     "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░view░[T1]░"T1"███[T1]█   """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0032 */     "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░view░T1░"T1"███T1█       """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0033 */     "dbo"."T1"                                                      """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0034 */     █AJ5038░script_0.sql░MyDb.dbo.T1░view░dbo░"dbo"███dbo█."T1"     """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0035 */     █AJ5038░script_0.sql░MyDb.dbo.T1░view░[dbo]░"dbo"███[dbo]█."T1" """)]
     //
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0040 */ CREATE VIEW  █AJ5038░script_0.sql░MyDb.dbo.T1░view░T1░[T1]███T1█                AS SELECT 1 AS Expr1 """)]
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0041 */ CREATE VIEW  [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░view░"T1"░[T1]███"T1"█      AS SELECT 1 AS Expr1 """)]
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0042 */ CREATE VIEW  [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░view░T1░[T1]███T1█          AS SELECT 1 AS Expr1 """)]
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0043 */ CREATE VIEW  [dbo].[T1]                                                         AS SELECT 1 AS Expr1 """)]
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0044 */ CREATE VIEW  █AJ5038░script_0.sql░MyDb.dbo.T1░view░dbo░[dbo]███dbo█.[T1]        AS SELECT 1 AS Expr1 """)]
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0045 */ CREATE VIEW  █AJ5038░script_0.sql░MyDb.dbo.T1░view░"dbo"░[dbo]███"dbo"█.[T1]    AS SELECT 1 AS Expr1 """)]
-    public void WithViewCreation_Theory(NameQuotingPolicy nameQuotingPolicy, string code)
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0040 */   █AJ5038░script_0.sql░MyDb.dbo.T1░view░T1░[T1]███T1█             """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0041 */   [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░view░"T1"░[T1]███"T1"█   """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0042 */   [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░view░T1░[T1]███T1█       """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0043 */   [dbo].[T1]                                                      """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0044 */   █AJ5038░script_0.sql░MyDb.dbo.T1░view░dbo░[dbo]███dbo█.[T1]     """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0045 */   █AJ5038░script_0.sql░MyDb.dbo.T1░view░"dbo"░[dbo]███"dbo"█.[T1] """)]
+    public void WithViewCreation_Theory(NameQuotingPolicy nameQuotingPolicy, string viewCodeName)
     {
         Aj5038Settings settings = new
         (
@@ -214,50 +238,52 @@ public sealed class NameQuotingAnalyzerTests(ITestOutputHelper testOutputHelper)
             NameQuotingPolicyForSchemaNameReferences: NameQuotingPolicy.Undefined
         );
 
-        const string codePrefix = """
-                                  USE MyDb
-                                  GO
+        var code = $"""
+                    USE MyDb
+                    GO
 
+                    CREATE VIEW {viewCodeName}
+                    AS
+                        SELECT 1 AS Column1
+                    """;
 
-                                  """;
-
-        Verify(settings, codePrefix + code);
+        Verify(settings, code);
     }
 
     [Theory]
-    [InlineData(NameQuotingPolicy.Undefined, """ /*                 0000 */ CREATE TRIGGER  dbo.T1                                                             ON dbo.Table1 AFTER INSERT AS BEGIN PRINT 303 END """)]
-    [InlineData(NameQuotingPolicy.Undefined, """ /*                 0001 */ CREATE TRIGGER  [dbo].T1                                                           ON dbo.Table1 AFTER INSERT AS BEGIN PRINT 303 END """)]
-    [InlineData(NameQuotingPolicy.Undefined, """ /*                 0002 */ CREATE TRIGGER  dbo.[T1]                                                           ON dbo.Table1 AFTER INSERT AS BEGIN PRINT 303 END """)]
-    [InlineData(NameQuotingPolicy.Undefined, """ /*                 0003 */ CREATE TRIGGER  "dbo".T1                                                           ON dbo.Table1 AFTER INSERT AS BEGIN PRINT 303 END """)]
-    [InlineData(NameQuotingPolicy.Undefined, """ /*                 0004 */ CREATE TRIGGER  dbo."T1"                                                           ON dbo.Table1 AFTER INSERT AS BEGIN PRINT 303 END """)]
+    [InlineData(NameQuotingPolicy.Undefined, """ /* 0000 */                 dbo.T1                                                              """)]
+    [InlineData(NameQuotingPolicy.Undefined, """ /* 0001 */                 [dbo].T1                                                            """)]
+    [InlineData(NameQuotingPolicy.Undefined, """ /* 0002 */                 dbo.[T1]                                                            """)]
+    [InlineData(NameQuotingPolicy.Undefined, """ /* 0003 */                 "dbo".T1                                                            """)]
+    [InlineData(NameQuotingPolicy.Undefined, """ /* 0004 */                 dbo."T1"                                                            """)]
     //
-    [InlineData(NameQuotingPolicy.Required, """  /*                 0010 */ CREATE TRIGGER  █AJ5038░script_0.sql░MyDb.dbo.T1░trigger░T1░[T1]███T1█                ON dbo.Table1 AFTER INSERT AS BEGIN PRINT 303 END """)]
-    [InlineData(NameQuotingPolicy.Required, """  /*                 0011 */ CREATE TRIGGER  [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░trigger░T1░[T1]███T1█          ON dbo.Table1 AFTER INSERT AS BEGIN PRINT 303 END """)]
-    [InlineData(NameQuotingPolicy.Required, """  /*                 0012 */ CREATE TRIGGER  "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░trigger░T1░[T1]███T1█          ON dbo.Table1 AFTER INSERT AS BEGIN PRINT 303 END """)]
-    [InlineData(NameQuotingPolicy.Required, """  /*                 0013 */ CREATE TRIGGER  [dbo].[T1]                                                         ON dbo.Table1 AFTER INSERT AS BEGIN PRINT 303 END """)]
-    [InlineData(NameQuotingPolicy.Required, """  /*                 0014 */ CREATE TRIGGER  "dbo"."T1"                                                         ON dbo.Table1 AFTER INSERT AS BEGIN PRINT 303 END """)]
+    [InlineData(NameQuotingPolicy.Required, """  /* 0010 */                 █AJ5038░script_0.sql░MyDb.dbo.T1░trigger░T1░[T1]███T1█              """)]
+    [InlineData(NameQuotingPolicy.Required, """  /* 0011 */                 [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░trigger░T1░[T1]███T1█        """)]
+    [InlineData(NameQuotingPolicy.Required, """  /* 0012 */                 "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░trigger░T1░[T1]███T1█        """)]
+    [InlineData(NameQuotingPolicy.Required, """  /* 0013 */                 [dbo].[T1]                                                          """)]
+    [InlineData(NameQuotingPolicy.Required, """  /* 0014 */                 "dbo"."T1"                                                          """)]
     //
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0020 */ CREATE TRIGGER  T1                                                                 ON dbo.Table1 AFTER INSERT AS BEGIN PRINT 303 END """)]
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0021 */ CREATE TRIGGER  dbo.T1                                                             ON dbo.Table1 AFTER INSERT AS BEGIN PRINT 303 END """)]
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0022 */ CREATE TRIGGER  █AJ5038░script_0.sql░MyDb.dbo.T1░trigger░[dbo]░dbo███[dbo]█.T1        ON dbo.Table1 AFTER INSERT AS BEGIN PRINT 303 END """)]
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0023 */ CREATE TRIGGER  █AJ5038░script_0.sql░MyDb.dbo.T1░trigger░"dbo"░dbo███"dbo"█.T1        ON dbo.Table1 AFTER INSERT AS BEGIN PRINT 303 END """)]
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0024 */ CREATE TRIGGER  dbo.█AJ5038░script_0.sql░MyDb.dbo.T1░trigger░[T1]░T1███[T1]█          ON dbo.Table1 AFTER INSERT AS BEGIN PRINT 303 END """)]
-    [InlineData(NameQuotingPolicy.NotAllowed, """  /*               0025 */ CREATE TRIGGER  dbo.█AJ5038░script_0.sql░MyDb.dbo.T1░trigger░"T1"░T1███"T1"█          ON dbo.Table1 AFTER INSERT AS BEGIN PRINT 303 END """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0020 */               T1                                                                  """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0021 */               dbo.T1                                                              """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0022 */               █AJ5038░script_0.sql░MyDb.dbo.T1░trigger░[dbo]░dbo███[dbo]█.T1      """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0023 */               █AJ5038░script_0.sql░MyDb.dbo.T1░trigger░"dbo"░dbo███"dbo"█.T1      """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0024 */               dbo.█AJ5038░script_0.sql░MyDb.dbo.T1░trigger░[T1]░T1███[T1]█        """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """  /* 0025 */               dbo.█AJ5038░script_0.sql░MyDb.dbo.T1░trigger░"T1"░T1███"T1"█        """)]
     //
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0030 */ CREATE TRIGGER  █AJ5038░script_0.sql░MyDb.dbo.T1░trigger░T1░"T1"███T1█                ON dbo.Table1 AFTER INSERT AS BEGIN PRINT 303 END """)]
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0031 */ CREATE TRIGGER  "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░trigger░[T1]░"T1"███[T1]█      ON dbo.Table1 AFTER INSERT AS BEGIN PRINT 303 END """)]
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0032 */ CREATE TRIGGER  "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░trigger░T1░"T1"███T1█          ON dbo.Table1 AFTER INSERT AS BEGIN PRINT 303 END """)]
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0033 */ CREATE TRIGGER  "dbo"."T1"                                                         ON dbo.Table1 AFTER INSERT AS BEGIN PRINT 303 END """)]
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0034 */ CREATE TRIGGER  █AJ5038░script_0.sql░MyDb.dbo.T1░trigger░dbo░"dbo"███dbo█."T1"        ON dbo.Table1 AFTER INSERT AS BEGIN PRINT 303 END """)]
-    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /*     0035 */ CREATE TRIGGER  █AJ5038░script_0.sql░MyDb.dbo.T1░trigger░[dbo]░"dbo"███[dbo]█."T1"    ON dbo.Table1 AFTER INSERT AS BEGIN PRINT 303 END """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0030 */     █AJ5038░script_0.sql░MyDb.dbo.T1░trigger░T1░"T1"███T1█              """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0031 */     "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░trigger░[T1]░"T1"███[T1]█    """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0032 */     "dbo".█AJ5038░script_0.sql░MyDb.dbo.T1░trigger░T1░"T1"███T1█        """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0033 */     "dbo"."T1"                                                          """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0034 */     █AJ5038░script_0.sql░MyDb.dbo.T1░trigger░dbo░"dbo"███dbo█."T1"      """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """  /* 0035 */     █AJ5038░script_0.sql░MyDb.dbo.T1░trigger░[dbo]░"dbo"███[dbo]█."T1"  """)]
     //
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0040 */ CREATE TRIGGER  █AJ5038░script_0.sql░MyDb.dbo.T1░trigger░T1░[T1]███T1█                ON dbo.Table1 AFTER INSERT AS BEGIN PRINT 303 END """)]
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0041 */ CREATE TRIGGER  [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░trigger░"T1"░[T1]███"T1"█      ON dbo.Table1 AFTER INSERT AS BEGIN PRINT 303 END """)]
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0042 */ CREATE TRIGGER  [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░trigger░T1░[T1]███T1█          ON dbo.Table1 AFTER INSERT AS BEGIN PRINT 303 END """)]
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0043 */ CREATE TRIGGER  [dbo].[T1]                                                         ON dbo.Table1 AFTER INSERT AS BEGIN PRINT 303 END """)]
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0044 */ CREATE TRIGGER  █AJ5038░script_0.sql░MyDb.dbo.T1░trigger░dbo░[dbo]███dbo█.[T1]        ON dbo.Table1 AFTER INSERT AS BEGIN PRINT 303 END """)]
-    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /*   0045 */ CREATE TRIGGER  █AJ5038░script_0.sql░MyDb.dbo.T1░trigger░"dbo"░[dbo]███"dbo"█.[T1]    ON dbo.Table1 AFTER INSERT AS BEGIN PRINT 303 END """)]
-    public void WithTriggerCreation_Theory(NameQuotingPolicy nameQuotingPolicy, string code)
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0040 */   █AJ5038░script_0.sql░MyDb.dbo.T1░trigger░T1░[T1]███T1█              """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0041 */   [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░trigger░"T1"░[T1]███"T1"█    """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0042 */   [dbo].█AJ5038░script_0.sql░MyDb.dbo.T1░trigger░T1░[T1]███T1█        """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0043 */   [dbo].[T1]                                                          """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0044 */   █AJ5038░script_0.sql░MyDb.dbo.T1░trigger░dbo░[dbo]███dbo█.[T1]      """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0045 */   █AJ5038░script_0.sql░MyDb.dbo.T1░trigger░"dbo"░[dbo]███"dbo"█.[T1]  """)]
+    public void WithTriggerCreation_Theory(NameQuotingPolicy nameQuotingPolicy, string triggerNameCode)
     {
         Aj5038Settings settings = new
         (
@@ -267,15 +293,65 @@ public sealed class NameQuotingAnalyzerTests(ITestOutputHelper testOutputHelper)
             NameQuotingPolicyForSchemaNameReferences: NameQuotingPolicy.Undefined
         );
 
-        const string codePrefix = """
-                                  USE MyDb
-                                  GO
+        var code = $"""
+                    USE MyDb
+                    GO
 
+                    CREATE TRIGGER {triggerNameCode}
+                        ON dbo.Table1
+                        AFTER INSERT
+                        AS
+                            BEGIN PRINT 303
+                        END
+                    """;
 
-                                  """;
-
-        Verify(settings, codePrefix + code);
+        Verify(settings, code);
     }
-    continue here...
-    // test cases for column references
+
+    [Theory]
+    [InlineData(NameQuotingPolicy.Undefined, """ /* 0000 */                 Column1                                                         """)]
+    [InlineData(NameQuotingPolicy.Undefined, """ /* 0001 */                 "Column1"                                                       """)]
+    [InlineData(NameQuotingPolicy.Undefined, """ /* 0002 */                 [Column1]                                                       """)]
+    //
+    [InlineData(NameQuotingPolicy.Required, """ /* 0010 */                  █AJ5038░script_0.sql░░column░Column1░[Column1]███Column1█       """)]
+    [InlineData(NameQuotingPolicy.Required, """ /* 0011 */                  "Column1"                                                       """)]
+    [InlineData(NameQuotingPolicy.Required, """ /* 0012 */                  [Column1]                                                       """)]
+    //
+    [InlineData(NameQuotingPolicy.NotAllowed, """ /* 0020 */                Column1                                                         """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """ /* 0021 */                █AJ5038░script_0.sql░░column░"Column1"░Column1███"Column1"█     """)]
+    [InlineData(NameQuotingPolicy.NotAllowed, """ /* 0022 */                █AJ5038░script_0.sql░░column░[Column1]░Column1███[Column1]█     """)]
+    //
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """ /* 0030 */      █AJ5038░script_0.sql░░column░Column1░"Column1"███Column1█       """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """ /* 0031 */      "Column1"                                                       """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """ /* 0032 */      █AJ5038░script_0.sql░░column░[Column1]░"Column1"███[Column1]█   """)]
+    //
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """ /* 0040 */    █AJ5038░script_0.sql░░column░Column1░[Column1]███Column1█       """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """ /* 0041 */    █AJ5038░script_0.sql░░column░"Column1"░[Column1]███"Column1"█   """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """ /* 0042 */    [Column1]                                                       """)]
+    public void WithColumnReference_Theory(NameQuotingPolicy nameQuotingPolicy, string columnCode)
+    {
+        Aj5038Settings settings = new
+        (
+            NameQuotingPolicyDuringObjectCreation: NameQuotingPolicy.Undefined,
+            NameQuotingPolicyForColumnReferences: nameQuotingPolicy,
+            NameQuotingPolicyForTableAliases: NameQuotingPolicy.Undefined,
+            NameQuotingPolicyForSchemaNameReferences: NameQuotingPolicy.Undefined
+        );
+
+        var code = $"""
+                    USE MyDb
+                    GO
+
+                    SELECT
+                              {columnCode}
+                    FROM      Table1
+
+                    SELECT
+                              t1.{columnCode}
+                    FROM      Table1 AS t1
+
+                    """;
+
+        Verify(settings, code);
+    }
 }
