@@ -47,13 +47,7 @@ public sealed class NameQuotingAnalyzerTests(ITestOutputHelper testOutputHelper)
     [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0045 */   █AJ5038░script_0.sql░MyDb.dbo.T1░table░"dbo"░[dbo]███"dbo"█.[T1]  """)]
     public void WithTableCreation_Theory(NameQuotingPolicy nameQuotingPolicy, string tableNameCode)
     {
-        Aj5038Settings settings = new
-        (
-            NameQuotingPolicyDuringObjectCreation: nameQuotingPolicy,
-            NameQuotingPolicyForColumnReferences: NameQuotingPolicy.Undefined,
-            NameQuotingPolicyForTableAliases: NameQuotingPolicy.Undefined,
-            NameQuotingPolicyForSchemaNameReferences: NameQuotingPolicy.Undefined
-        );
+        var settings = Aj5038Settings.Default with { NameQuotingPolicyDuringObjectCreation = nameQuotingPolicy };
 
         // we test the table name creation. We don't want the analyzer to yield also issues for the column naming
         // therefore, we quote them as needed. There's a separate test
@@ -115,14 +109,7 @@ public sealed class NameQuotingAnalyzerTests(ITestOutputHelper testOutputHelper)
     [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0045 */   █AJ5038░script_0.sql░MyDb.dbo.T1░function░"dbo"░[dbo]███"dbo"█.[T1] """)]
     public void WithFunctionCreation_Theory(NameQuotingPolicy nameQuotingPolicy, string functionNameCode)
     {
-        Aj5038Settings settings = new
-        (
-            NameQuotingPolicyDuringObjectCreation: nameQuotingPolicy,
-            NameQuotingPolicyForColumnReferences: NameQuotingPolicy.Undefined,
-            NameQuotingPolicyForTableAliases: NameQuotingPolicy.Undefined,
-            NameQuotingPolicyForSchemaNameReferences: NameQuotingPolicy.Undefined
-        );
-
+        var settings = Aj5038Settings.Default with { NameQuotingPolicyDuringObjectCreation = nameQuotingPolicy };
         var code = $"""
                     USE MyDb
                     GO
@@ -173,14 +160,7 @@ public sealed class NameQuotingAnalyzerTests(ITestOutputHelper testOutputHelper)
     [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0045 */ █AJ5038░script_0.sql░MyDb.dbo.T1░procedure░"dbo"░[dbo]███"dbo"█.[T1]  """)]
     public void WithProcedureCreation_Theory(NameQuotingPolicy nameQuotingPolicy, string procedureNameCode)
     {
-        Aj5038Settings settings = new
-        (
-            NameQuotingPolicyDuringObjectCreation: nameQuotingPolicy,
-            NameQuotingPolicyForColumnReferences: NameQuotingPolicy.Undefined,
-            NameQuotingPolicyForTableAliases: NameQuotingPolicy.Undefined,
-            NameQuotingPolicyForSchemaNameReferences: NameQuotingPolicy.Undefined
-        );
-
+        var settings = Aj5038Settings.Default with { NameQuotingPolicyDuringObjectCreation = nameQuotingPolicy };
         var code = $"""
                     USE MyDb
                     GO
@@ -230,14 +210,7 @@ public sealed class NameQuotingAnalyzerTests(ITestOutputHelper testOutputHelper)
     [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0045 */   █AJ5038░script_0.sql░MyDb.dbo.T1░view░"dbo"░[dbo]███"dbo"█.[T1] """)]
     public void WithViewCreation_Theory(NameQuotingPolicy nameQuotingPolicy, string viewCodeName)
     {
-        Aj5038Settings settings = new
-        (
-            NameQuotingPolicyDuringObjectCreation: nameQuotingPolicy,
-            NameQuotingPolicyForColumnReferences: NameQuotingPolicy.Undefined,
-            NameQuotingPolicyForTableAliases: NameQuotingPolicy.Undefined,
-            NameQuotingPolicyForSchemaNameReferences: NameQuotingPolicy.Undefined
-        );
-
+        var settings = Aj5038Settings.Default with { NameQuotingPolicyDuringObjectCreation = nameQuotingPolicy };
         var code = $"""
                     USE MyDb
                     GO
@@ -285,14 +258,7 @@ public sealed class NameQuotingAnalyzerTests(ITestOutputHelper testOutputHelper)
     [InlineData(NameQuotingPolicy.SquareBracketsRequired, """  /* 0045 */   █AJ5038░script_0.sql░MyDb.dbo.T1░trigger░"dbo"░[dbo]███"dbo"█.[T1]  """)]
     public void WithTriggerCreation_Theory(NameQuotingPolicy nameQuotingPolicy, string triggerNameCode)
     {
-        Aj5038Settings settings = new
-        (
-            NameQuotingPolicyDuringObjectCreation: nameQuotingPolicy,
-            NameQuotingPolicyForColumnReferences: NameQuotingPolicy.Undefined,
-            NameQuotingPolicyForTableAliases: NameQuotingPolicy.Undefined,
-            NameQuotingPolicyForSchemaNameReferences: NameQuotingPolicy.Undefined
-        );
-
+        var settings = Aj5038Settings.Default with { NameQuotingPolicyDuringObjectCreation = nameQuotingPolicy };
         var code = $"""
                     USE MyDb
                     GO
@@ -330,14 +296,7 @@ public sealed class NameQuotingAnalyzerTests(ITestOutputHelper testOutputHelper)
     [InlineData(NameQuotingPolicy.SquareBracketsRequired, """ /* 0042 */    [Column1]                                                       """)]
     public void WithColumnReference_Theory(NameQuotingPolicy nameQuotingPolicy, string columnCode)
     {
-        Aj5038Settings settings = new
-        (
-            NameQuotingPolicyDuringObjectCreation: NameQuotingPolicy.Undefined,
-            NameQuotingPolicyForColumnReferences: nameQuotingPolicy,
-            NameQuotingPolicyForTableAliases: NameQuotingPolicy.Undefined,
-            NameQuotingPolicyForSchemaNameReferences: NameQuotingPolicy.Undefined
-        );
-
+        var settings = Aj5038Settings.Default with { NameQuotingPolicyForColumnReferences = nameQuotingPolicy };
         var code = $"""
                     USE MyDb
                     GO
@@ -350,6 +309,65 @@ public sealed class NameQuotingAnalyzerTests(ITestOutputHelper testOutputHelper)
                               t1.{columnCode}
                     FROM      Table1 AS t1
 
+                    """;
+
+        Verify(settings, code);
+    }
+
+    [Theory]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """ /* 0000 */     [Column1]                                                                                  """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """ /* 0001 */     █AJ5038░script_0.sql░MyDb.dbo.Table1░column definition░Column1░[Column1]███Column1█        """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """ /* 0002 */       █AJ5038░script_0.sql░MyDb.dbo.Table1░column definition░[Column1]░"Column1"███[Column1]█    """)]
+    public void WithColumnDefinition_Theory(NameQuotingPolicy nameQuotingPolicy, string columnNameCode)
+    {
+        var settings = Aj5038Settings.Default with { NameQuotingPolicyForColumnDefinitions = nameQuotingPolicy };
+
+        var code = $"""
+                    USE MyDb
+                    GO
+
+                    CREATE TABLE Table1
+                    (
+                        {columnNameCode} INT NOT NULL
+                    )
+                    """;
+
+        Verify(settings, code);
+    }
+
+    [Theory]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """ /* 0000 */     [Table1]                                                                           """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """ /* 0001 */     █AJ5038░script_0.sql░░table reference░Table1░[Table1]███Table1█     """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """ /* 0002 */       █AJ5038░script_0.sql░░table reference░[Table1]░"Table1"███[Table1]█ """)]
+    public void WithTableReference_Theory(NameQuotingPolicy nameQuotingPolicy, string tableReferenceCode)
+    {
+        var settings = Aj5038Settings.Default with { NameQuotingPolicyForTableReferences = nameQuotingPolicy };
+
+        var code = $"""
+                    USE MyDb
+                    GO
+
+                    SELECT      Column1
+                    FROM        {tableReferenceCode}
+                    """;
+
+        Verify(settings, code);
+    }
+
+    [Theory]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """ /* 0000 */     [int]                                                                                  """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """ /* 0001 */     [NVARCHAR](MAX)                                                                        """)]
+    [InlineData(NameQuotingPolicy.SquareBracketsRequired, """ /* 0002 */     █AJ5038░script_0.sql░░data type░NVARCHAR░[NVARCHAR]███NVARCHAR█(MAX)   """)]
+    [InlineData(NameQuotingPolicy.DoubleQuotesRequired, """ /* 0003 */       █AJ5038░script_0.sql░░data type░NVARCHAR░"NVARCHAR"███NVARCHAR█(MAX) """)]
+    public void WithDataTypeReference_Theory(NameQuotingPolicy nameQuotingPolicy, string typeCode)
+    {
+        var settings = Aj5038Settings.Default with { NameQuotingPolicyForDataTypes = nameQuotingPolicy };
+
+        var code = $"""
+                    USE MyDb
+                    GO
+
+                    DECLARE @myVar {typeCode}
                     """;
 
         Verify(settings, code);

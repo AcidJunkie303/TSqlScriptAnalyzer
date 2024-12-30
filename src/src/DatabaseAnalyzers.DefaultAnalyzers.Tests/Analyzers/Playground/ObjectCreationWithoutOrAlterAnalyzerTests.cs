@@ -14,18 +14,11 @@ public sealed class PlaygroundTests(ITestOutputHelper testOutputHelper)
                             USE MyDB
                             GO
 
-                            SELECT value
-                            FROM STRING_SPLIT('string_to_split', 'delimiter');
-
-                            SELECT value
-                            from MY_VABLE
-
-                            SELECT value
-                            from dbo.MY_VABLE
-
-                            SELECT a.value
-                            from dbo.MY_VABLE
-
+                            SELECT      t2.*
+                            FROM (
+                                SELECT      t1.C1, t1.C2
+                                FROM        dbo.Table1 t1
+                            ) AS t2
 
                             """;
 

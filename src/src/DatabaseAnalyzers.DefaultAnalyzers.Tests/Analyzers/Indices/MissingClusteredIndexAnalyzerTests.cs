@@ -33,7 +33,7 @@ public sealed class MissingClusteredIndexAnalyzerTests(ITestOutputHelper testOut
 
                             CREATE TABLE dbo.Table1
                             (
-                                Id            INT NOT NULL ,
+                                Id            INT NOT NULL,
                                 Value1        NVARCHAR(128) NOT NULL,
                                 CONSTRAINT PK_Table1 PRIMARY KEY CLUSTERED
                                 (

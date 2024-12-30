@@ -14,7 +14,60 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
 
         AnalyzeObjectCreations(context, script, settings.NameQuotingPolicyDuringObjectCreation);
         AnalyzeColumnReferences(context, script, settings.NameQuotingPolicyForColumnReferences);
-        // TODO: table references
+        AnalyzeColumnDefinitions(context, script, settings.NameQuotingPolicyForColumnDefinitions);
+        AnalyzeTableReferences(context, script, settings.NameQuotingPolicyForTableReferences);
+        AnalyzeDataTypeReferences(context, script, settings.NameQuotingPolicyForDataTypes);
+
+        // TODO: Identifiers in object creation (lots of types to check)
+        // TODO: Schema name references. Kinda hard...
+    }
+
+    private static void AnalyzeDataTypeReferences(IAnalysisContext context, IScriptModel script, NameQuotingPolicy policy)
+    {
+        if (policy == NameQuotingPolicy.Undefined)
+        {
+            return;
+        }
+
+        Analyze(
+            context,
+            script,
+            script.ParsedScript.GetChildren<SqlDataTypeReference>(true),
+            a => a.Name.Identifiers,
+            "data type",
+            policy);
+    }
+
+    private static void AnalyzeTableReferences(IAnalysisContext context, IScriptModel script, NameQuotingPolicy policy)
+    {
+        if (policy == NameQuotingPolicy.Undefined)
+        {
+            return;
+        }
+
+        Analyze(
+            context,
+            script,
+            script.ParsedScript.GetChildren<NamedTableReference>(true),
+            a => a.SchemaObject.Identifiers.TakeLast(1),
+            "table reference",
+            policy);
+    }
+
+    private static void AnalyzeColumnDefinitions(IAnalysisContext context, IScriptModel script, NameQuotingPolicy policy)
+    {
+        if (policy == NameQuotingPolicy.Undefined)
+        {
+            return;
+        }
+
+        Analyze(
+            context,
+            script,
+            script.ParsedScript.GetChildren<ColumnDefinition>(true),
+            a => [a.ColumnIdentifier],
+            "column definition",
+            policy);
     }
 
     private static void AnalyzeColumnReferences(IAnalysisContext context, IScriptModel script, NameQuotingPolicy policy)
@@ -28,7 +81,7 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
             context,
             script,
             script.ParsedScript.GetChildren<ColumnReferenceExpression>(true),
-            a => a.MultiPartIdentifier.Identifiers.TakeLast(1).ToList(),
+            a => a.MultiPartIdentifier.Identifiers.TakeLast(1),
             "column",
             policy);
     }
@@ -81,7 +134,7 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
             policy);
     }
 
-    private static void Analyze<T>(IAnalysisContext context, IScriptModel script, IEnumerable<T> statements, Func<T, IList<Identifier>> identifierGetter, string typeName, NameQuotingPolicy nameQuotingPolicy)
+    private static void Analyze<T>(IAnalysisContext context, IScriptModel script, IEnumerable<T> statements, Func<T, IEnumerable<Identifier>> identifierGetter, string typeName, NameQuotingPolicy nameQuotingPolicy)
         where T : TSqlFragment
     {
         foreach (var statement in statements)
@@ -90,7 +143,7 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
         }
     }
 
-    private static void Analyze<T>(IAnalysisContext context, IScriptModel script, T statement, Func<T, IList<Identifier>> identifierGetter, string typeName, NameQuotingPolicy nameQuotingPolicy)
+    private static void Analyze<T>(IAnalysisContext context, IScriptModel script, T statement, Func<T, IEnumerable<Identifier>> identifierGetter, string typeName, NameQuotingPolicy nameQuotingPolicy)
         where T : TSqlFragment
     {
         foreach (var identifier in identifierGetter(statement))
