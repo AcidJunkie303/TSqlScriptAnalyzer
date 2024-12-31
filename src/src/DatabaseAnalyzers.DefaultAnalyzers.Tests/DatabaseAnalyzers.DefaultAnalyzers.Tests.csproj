@@ -17,10 +17,4 @@
         <ProjectReference Include="..\DatabaseAnalyzers.DefaultAnalyzers\DatabaseAnalyzers.DefaultAnalyzers.csproj"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <Reference Include="DatabaseAnalyzers.DefaultAnalyzers">
-            <HintPath>bin\Debug\net9.0\DatabaseAnalyzers.DefaultAnalyzers.dll</HintPath>
-        </Reference>
-    </ItemGroup>
-
 </Project>

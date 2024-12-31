@@ -20,6 +20,12 @@ public sealed class PlaygroundTests(ITestOutputHelper testOutputHelper)
                                 FROM        dbo.Table1 t1
                             ) AS t2
 
+                            SELECT
+                            t1.*,
+                            t2.Value2
+                            FROM Table1 t1
+                            INNER JOIN Table2 t2 ON t2.Id = t1.Id
+
                             """;
 
         var tester = GetDefaultTesterBuilder(code).Build();

@@ -106,7 +106,7 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
             context,
             script,
             script.ParsedScript.GetChildren<ViewStatementBody>(recursive: true),
-            static a => a.SchemaObjectName.Identifiers.TakeLast(1),
+            static a => a.SchemaObjectName.Identifiers,
             "view",
             policy);
 
