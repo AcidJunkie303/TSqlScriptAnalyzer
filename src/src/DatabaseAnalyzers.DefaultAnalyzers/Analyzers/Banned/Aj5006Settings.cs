@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 
-namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.DataTypes;
+namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Banned;
 
 public sealed class Aj5006SettingsRaw : IRawSettings<Aj5006Settings>
 {

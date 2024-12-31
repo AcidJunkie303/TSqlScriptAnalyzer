@@ -6,7 +6,7 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Tests.SqlParsing;
 
-public sealed class ParentByChildMapBuilderTests
+public sealed class ParentFragmentProviderFactoryTests
 {
     [Fact]
     [SuppressMessage("Design", "MA0051:Method is too long")]

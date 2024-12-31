@@ -1,11 +1,11 @@
 using DatabaseAnalyzer.Testing;
-using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.DataTypes;
+using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Banned;
 using Xunit.Abstractions;
 
-namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.DataTypes;
+namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Banned;
 
-public sealed class DataTypeAnalyzerTests(ITestOutputHelper testOutputHelper)
-    : ScriptAnalyzerTestsBase<DataTypeAnalyzer>(testOutputHelper)
+public sealed class BannedDataTypeAnalyzerTests(ITestOutputHelper testOutputHelper)
+    : ScriptAnalyzerTestsBase<BannedDataTypeAnalyzer>(testOutputHelper)
 {
     private static readonly Aj5006Settings Settings = new Aj5006SettingsRaw
     {

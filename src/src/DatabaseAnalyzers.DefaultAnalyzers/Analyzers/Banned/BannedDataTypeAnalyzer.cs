@@ -3,9 +3,9 @@ using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
-namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.DataTypes;
+namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Banned;
 
-public sealed class DataTypeAnalyzer : IScriptAnalyzer
+public sealed class BannedDataTypeAnalyzer : IScriptAnalyzer
 {
     public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
 

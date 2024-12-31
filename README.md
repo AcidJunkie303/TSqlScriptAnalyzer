@@ -9,15 +9,13 @@ A framework to analyze multiple T-SQL script files
 - IIssueCollector should be on the IScriptModel. This way, we don't need to specify the relative script file path
 - sp_executeSql can be used with parameters, so check for it -> improvement
 - ToDo, not yet finished, open point finder
-- raiseerror finder
-- select *
+- Raiserror finder
+- select * finder
 - invoked stored procedure or function not found
 - Output parameters should be assigned (hard because we need to check all possible execution paths)
 - Queries that use "TOP" should have an "ORDER BY"
 - All branches in a conditional structure should not have exactly the same implementation
-  schema comparison would yield lots of unnecessary deltas.
 - indices and trigger names should contain the table name and the table schema name
-- usage banned functions like GETDATE(), use GETUTCDATE() instead etc. make it configurable
 
 ### Resiliency / Robustness
 
@@ -42,6 +40,8 @@ A framework to analyze multiple T-SQL script files
     - schema name
     - object name
 - Do not create nameless constraints (unique, primary key) which will have a random name when executing. Otherwise,
+  schema comparison would yield lots of unnecessary deltas.
+- usage banned functions like GETDATE(), use GETUTCDATE() instead etc. make it configurable
 
 ### Other
 

@@ -5,16 +5,11 @@ using DatabaseAnalyzer.Core.Models;
 
 namespace DatabaseAnalyzer.Core.Services;
 
-internal interface IScriptSourceProvider
-{
-    IReadOnlyList<SourceScript> GetScriptFilePaths(CancellationToken cancellationToken = default);
-}
-
-internal sealed class ScriptSourceSourceProvider : IScriptSourceProvider
+internal sealed class ScriptSourceProvider : IScriptSourceProvider
 {
     private readonly ScriptSourceSettings _settings;
 
-    public ScriptSourceSourceProvider(ScriptSourceSettings settings)
+    public ScriptSourceProvider(ScriptSourceSettings settings)
     {
         _settings = settings;
     }

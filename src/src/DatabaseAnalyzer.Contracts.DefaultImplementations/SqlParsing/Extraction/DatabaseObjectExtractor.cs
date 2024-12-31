@@ -6,11 +6,6 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction;
 
-public interface IDatabaseObjectExtractor
-{
-    IReadOnlyDictionary<string, DatabaseInformation> Extract(IReadOnlyCollection<IScriptModel> scripts, string defaultSchemaName);
-}
-
 public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
 {
     private readonly IIssueReporter _issueReporter;

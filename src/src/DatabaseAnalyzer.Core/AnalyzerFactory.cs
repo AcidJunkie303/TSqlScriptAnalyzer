@@ -31,7 +31,7 @@ public static class AnalyzerFactory
 
                 services.AddSingleton<IAnalyzer, Analyzer>();
                 services.AddSingleton<IScriptLoader, ScriptLoader>();
-                services.AddSingleton<IScriptSourceProvider, ScriptSourceSourceProvider>();
+                services.AddSingleton<IScriptSourceProvider, ScriptSourceProvider>();
                 services.AddSingleton<IDiagnosticSuppressionExtractor, DiagnosticSuppressionExtractor>();
 
                 var pluginAssemblies = PluginAssemblyLoader.LoadPlugins(services);
