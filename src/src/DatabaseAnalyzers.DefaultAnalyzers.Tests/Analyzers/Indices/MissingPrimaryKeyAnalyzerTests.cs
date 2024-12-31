@@ -1,5 +1,6 @@
 using DatabaseAnalyzer.Testing;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
+using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using Xunit.Abstractions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Indices;

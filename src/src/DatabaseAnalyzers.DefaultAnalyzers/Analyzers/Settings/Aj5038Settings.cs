@@ -1,6 +1,7 @@
 using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Naming;
 
-namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Naming;
+namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
 public sealed class Aj5038SettingsRaw : IRawSettings<Aj5038Settings>

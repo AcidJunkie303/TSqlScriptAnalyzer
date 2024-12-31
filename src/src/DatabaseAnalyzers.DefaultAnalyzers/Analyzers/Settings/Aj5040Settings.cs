@@ -2,7 +2,7 @@ using System.Collections.Frozen;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 
-namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Banned;
+namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
 public sealed class Aj5040SettingsRaw : IRawSettings<Aj5040Settings>

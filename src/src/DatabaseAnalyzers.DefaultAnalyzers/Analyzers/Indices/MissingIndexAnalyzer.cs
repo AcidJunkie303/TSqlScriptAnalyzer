@@ -3,6 +3,7 @@ using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction.Models;
+using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;

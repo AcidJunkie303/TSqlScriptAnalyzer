@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 
-namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.UseDatabaseStatements;
+namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
 public sealed class Aj5003SettingsRaw : IRawSettings<Aj5003Settings>

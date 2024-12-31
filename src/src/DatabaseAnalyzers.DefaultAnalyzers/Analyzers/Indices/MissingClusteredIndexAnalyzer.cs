@@ -2,6 +2,7 @@ using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction.Models;
+using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
 

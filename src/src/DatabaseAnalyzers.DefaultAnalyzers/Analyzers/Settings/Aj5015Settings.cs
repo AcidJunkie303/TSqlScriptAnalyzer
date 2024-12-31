@@ -1,7 +1,8 @@
 using System.Collections.Immutable;
 using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
 
-namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
+namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
 public sealed class Aj5015SettingsRaw : IRawSettings<Aj5015Settings>

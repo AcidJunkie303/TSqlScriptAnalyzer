@@ -25,7 +25,6 @@ A framework to analyze multiple T-SQL script files
   provide such handling!?
 
 ### Other
-
 - *none*
 
 # Done
