@@ -10,13 +10,13 @@ public sealed class MissingNoCountInProcedureOrTriggerAnalyzer : IScriptAnalyzer
 
     public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
-        foreach (var creationStatement in script.ParsedScript.GetChildren<ProcedureStatementBody>(true))
+        foreach (var creationStatement in script.ParsedScript.GetChildren<ProcedureStatementBody>(recursive: true))
         {
             var bodyStatements = GetStatements(creationStatement.StatementList);
             Analyze(context, script, creationStatement, bodyStatements);
         }
 
-        foreach (var creationStatement in script.ParsedScript.GetChildren<TriggerStatementBody>(true))
+        foreach (var creationStatement in script.ParsedScript.GetChildren<TriggerStatementBody>(recursive: true))
         {
             var bodyStatements = GetStatements(creationStatement.StatementList);
             Analyze(context, script, creationStatement, bodyStatements);
@@ -31,11 +31,11 @@ public sealed class MissingNoCountInProcedureOrTriggerAnalyzer : IScriptAnalyzer
         }
 
         var setOptionStatements = bodyStatements
-            .TakeWhile(a => a is PredicateSetStatement)
+            .TakeWhile(static a => a is PredicateSetStatement)
             .Cast<PredicateSetStatement>()
             .ToList();
 
-        if (setOptionStatements.Count > 0 || setOptionStatements.Any(a => a.IsOn && a.Options.HasFlag(SetOptions.NoCount)))
+        if (setOptionStatements.Count > 0 || setOptionStatements.Any(static a => a.IsOn && a.Options.HasFlag(SetOptions.NoCount)))
         {
             return;
         }
@@ -48,18 +48,22 @@ public sealed class MissingNoCountInProcedureOrTriggerAnalyzer : IScriptAnalyzer
 
     private static IList<TSqlStatement> GetStatements(StatementList? statementList)
     {
-        var statements = statementList?.Statements;
-        if (statements.IsNullOrEmpty())
+        while (true)
         {
-            return [];
-        }
+            var statements = statementList?.Statements;
+            if (statements.IsNullOrEmpty())
+            {
+                return [];
+            }
 
-        if (statements.Count == 1 && statements[0] is BeginEndBlockStatement beginEndBlockStatement)
-        {
-            return GetStatements(beginEndBlockStatement.StatementList);
-        }
+            if (statements.Count == 1 && statements[0] is BeginEndBlockStatement beginEndBlockStatement)
+            {
+                statementList = beginEndBlockStatement.StatementList;
+                continue;
+            }
 
-        return statements;
+            return statements;
+        }
     }
 
     private static class DiagnosticDefinitions

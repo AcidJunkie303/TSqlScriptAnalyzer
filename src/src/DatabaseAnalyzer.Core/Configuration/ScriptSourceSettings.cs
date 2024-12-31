@@ -20,7 +20,7 @@ internal sealed class ScriptSourceSettingsRaw
     {
         var databaseScriptsRootPathByDatabaseName = Guard.Against.Null(DatabaseScriptsRootPathByDatabaseName)
             .WhereValueNotNull()
-            .ToFrozenDictionary(a => a.Key, a => a.Value, StringComparer.OrdinalIgnoreCase);
+            .ToFrozenDictionary(static a => a.Key, static a => a.Value, StringComparer.OrdinalIgnoreCase);
 
         AssertNoDuplicateDatabaseOrScriptSourcePaths(databaseScriptsRootPathByDatabaseName);
         AssertNoOverlappingScriptSourcePaths(databaseScriptsRootPathByDatabaseName);
@@ -30,7 +30,7 @@ internal sealed class ScriptSourceSettingsRaw
             ExclusionFilters
                 .EmptyIfNull()
                 .WhereNotNullOrWhiteSpace()
-                .Select(a => a.ToRegexWithSimpleWildcards(true))
+                .Select(static a => a.ToRegexWithSimpleWildcards(caseSensitive: true))
                 .ToImmutableArray(),
             databaseScriptsRootPathByDatabaseName
         );
@@ -41,9 +41,9 @@ internal sealed class ScriptSourceSettingsRaw
         var paths = databaseScriptsRootPathByDatabaseName.Values.ToList();
 
         var firstOverlappingPath = paths
-            .Join(paths, a => a, a => a, (l, r) => (Left: l, Right: r), StringComparer.OrdinalIgnoreCase)
-            .Where(a => !ReferenceEquals(a.Left, a.Right))
-            .FirstOrDefault(a => a.Left.StartsWith(a.Right, StringComparison.OrdinalIgnoreCase) || a.Right.StartsWith(a.Left, StringComparison.OrdinalIgnoreCase));
+            .Join(paths, static a => a, static a => a, static (l, r) => (Left: l, Right: r), StringComparer.OrdinalIgnoreCase)
+            .Where(static a => !ReferenceEquals(a.Left, a.Right))
+            .FirstOrDefault(static a => a.Left.StartsWith(a.Right, StringComparison.OrdinalIgnoreCase) || a.Right.StartsWith(a.Left, StringComparison.OrdinalIgnoreCase));
 
         if (firstOverlappingPath == default)
         {
@@ -58,9 +58,9 @@ internal sealed class ScriptSourceSettingsRaw
         var firstDuplicate = databaseScriptsRootPathByDatabaseName.Keys
             .Concat(databaseScriptsRootPathByDatabaseName.Values)
             .Distinct(StringComparer.OrdinalIgnoreCase)
-            .GroupBy(a => a, StringComparer.OrdinalIgnoreCase)
-            .Where(a => a.Skip(1).Any())
-            .Select(a => a.Key)
+            .GroupBy(static a => a, StringComparer.OrdinalIgnoreCase)
+            .Where(static a => a.Skip(1).Any())
+            .Select(static a => a.Key)
             .FirstOrDefault();
 
         if (firstDuplicate is null)

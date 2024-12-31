@@ -30,7 +30,7 @@ public static class SqlFragmentChildrenProvider
         {
             _root = root;
             _isRecursive = isRecursive;
-            _continueBranchRecursionPredicate = continueBranchRecursionPredicate ?? (_ => true);
+            _continueBranchRecursionPredicate = continueBranchRecursionPredicate ?? (static _ => true);
         }
 
         public List<T> Children { get; } = [];

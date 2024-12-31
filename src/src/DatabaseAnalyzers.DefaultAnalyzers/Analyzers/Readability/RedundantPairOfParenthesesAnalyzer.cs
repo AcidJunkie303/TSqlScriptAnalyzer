@@ -10,7 +10,7 @@ public sealed class RedundantPairOfParenthesesAnalyzer : IScriptAnalyzer
 
     public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
-        foreach (var columnReference in script.ParsedScript.GetChildren<BooleanParenthesisExpression>(true))
+        foreach (var columnReference in script.ParsedScript.GetChildren<BooleanParenthesisExpression>(recursive: true))
         {
             Analyze(context, script, columnReference);
         }

@@ -16,7 +16,7 @@ internal sealed class SuppressionMap
     public IReadOnlyList<DiagnosticSuppression> GetActiveSuppressionsAtLocation(int lineNumber, int columnNumber)
     {
         return _suppressions
-            .FirstOrDefault(a => (a.LineNumber == lineNumber && a.ColumnNumber <= columnNumber) || a.LineNumber < lineNumber )
+            .FirstOrDefault(a => (a.LineNumber == lineNumber && a.ColumnNumber <= columnNumber) || a.LineNumber < lineNumber)
             ?.DisabledDiagnostics ?? [];
     }
 
@@ -64,10 +64,7 @@ internal sealed class SuppressionMap
             map.Add(entry);
         }
 
-        void RemoveLastSuppression(string diagnosticId)
-        {
-            activeSuppressions.RemoveLast(a => a.DiagnosticId.EqualsOrdinalIgnoreCase(diagnosticId));
-        }
+        void RemoveLastSuppression(string diagnosticId) => activeSuppressions.RemoveLast(a => a.DiagnosticId.EqualsOrdinalIgnoreCase(diagnosticId));
     }
 
     private sealed record SuppressionEntry(int LineNumber, int ColumnNumber, List<DiagnosticSuppression> DisabledDiagnostics);

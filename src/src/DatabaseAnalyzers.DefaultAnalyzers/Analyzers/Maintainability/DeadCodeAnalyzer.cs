@@ -21,7 +21,7 @@ public sealed class DeadCodeAnalyzer : IScriptAnalyzer
     private static void AnalyzeStatements<T>(IAnalysisContext context, IScriptModel script, string statementName)
         where T : TSqlStatement
     {
-        foreach (var statement in script.ParsedScript.GetChildren<T>(true))
+        foreach (var statement in script.ParsedScript.GetChildren<T>(recursive: true))
         {
             AnalyzeStatement(context, script, statement, statementName);
         }
@@ -44,7 +44,7 @@ public sealed class DeadCodeAnalyzer : IScriptAnalyzer
 
     private static void AnalyzeGoToStatements(IAnalysisContext context, IScriptModel script)
     {
-        foreach (var statement in script.ParsedScript.GetChildren<GoToStatement>(true))
+        foreach (var statement in script.ParsedScript.GetChildren<GoToStatement>(recursive: true))
         {
             AnalyzeGoToStatement(context, script, statement);
         }
@@ -80,7 +80,7 @@ public sealed class DeadCodeAnalyzer : IScriptAnalyzer
         }
 
         var targetLabel = batch
-            .GetChildren<LabelStatement>(true)
+            .GetChildren<LabelStatement>(recursive: true)
             .SingleOrDefault(a => a.Value.EqualsOrdinalIgnoreCase(labelName));
 
         if (targetLabel is null)

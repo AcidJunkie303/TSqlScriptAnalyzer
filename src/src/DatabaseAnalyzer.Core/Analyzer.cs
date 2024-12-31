@@ -110,14 +110,14 @@ internal sealed class Analyzer : IAnalyzer
     private static List<(IScriptModel Script, List<IIssue> Issues)> AggregateScriptsAndIssues(IEnumerable<IScriptModel> scripts, IEnumerable<IIssue> issues)
     {
         var issuesByFileName = issues
-            .GroupBy(a => a.RelativeScriptFilePath, StringComparer.OrdinalIgnoreCase);
+            .GroupBy(static a => a.RelativeScriptFilePath, StringComparer.OrdinalIgnoreCase);
 
         return scripts
             .Join(
                 issuesByFileName,
-                a => a.RelativeScriptFilePath,
-                a => a.Key,
-                (a, b) => (a, b.ToList()),
+                static a => a.RelativeScriptFilePath,
+                static a => a.Key,
+                static (a, b) => (a, b.ToList()),
                 StringComparer.OrdinalIgnoreCase)
             .ToList();
     }
@@ -136,7 +136,7 @@ internal sealed class Analyzer : IAnalyzer
 
         IScriptModel ParseScript(BasicScriptInformation script)
         {
-            var parser = TSqlParser.CreateParser(SqlVersion.Sql170, true);
+            var parser = TSqlParser.CreateParser(SqlVersion.Sql170, initialQuotedIdentifiers: true);
             using var reader = new StringReader(script.Contents);
             var parsedScript = parser.Parse(reader, out var parserErrors) as TSqlScript ?? new TSqlScript();
             var errorMessages = parserErrors

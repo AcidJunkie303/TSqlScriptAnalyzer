@@ -23,14 +23,14 @@ public sealed class WrongUseDatabaseNameAnalyzer : IScriptAnalyzer
         }
 
         var expectedDatabaseName = script.DatabaseName;
-        foreach (var useStatement in script.ParsedScript.Batches.SelectMany(a => a.GetChildren<UseStatement>(recursive: true)))
+        foreach (var useStatement in script.ParsedScript.Batches.SelectMany(static a => a.GetChildren<UseStatement>(recursive: true)))
         {
             if (expectedDatabaseName.EqualsOrdinalIgnoreCase(useStatement.DatabaseName.Value))
             {
                 continue;
             }
 
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, script, null, useStatement, useStatement.DatabaseName.Value, script.DatabaseName);
+            context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName: null, useStatement, useStatement.DatabaseName.Value, script.DatabaseName);
         }
     }
 

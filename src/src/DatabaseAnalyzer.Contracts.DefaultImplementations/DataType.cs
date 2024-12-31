@@ -13,8 +13,8 @@ public sealed class DataType : IDataType
         Name = upperCaseName;
         Argument1 = argument1;
         Argument2 = argument2;
-        FullName = GenerateFullName(upperCaseName, argument1, argument2, false);
-        QuotedFullName = GenerateFullName(upperCaseName, argument1, argument2, true);
+        FullName = GenerateFullName(upperCaseName, argument1, argument2, quote: false);
+        QuotedFullName = GenerateFullName(upperCaseName, argument1, argument2, quote: true);
         IsAsciiString = upperCaseName.EqualsOrdinal("VARCHAR");
         IsUnicodeString = upperCaseName.EqualsOrdinal("NVARCHAR");
         IsString = IsAsciiString || IsUnicodeString;

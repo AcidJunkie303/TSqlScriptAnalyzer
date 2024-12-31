@@ -19,7 +19,7 @@ public static class ApplicationSettingsProvider
 
         return new ConfigurationBuilder()
             .SetBasePath(Environment.CurrentDirectory)
-            .AddJsonFile(path, false)
+            .AddJsonFile(path, optional: false)
             .Build();
     }
 }

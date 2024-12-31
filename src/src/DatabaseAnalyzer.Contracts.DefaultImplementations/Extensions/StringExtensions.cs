@@ -98,16 +98,16 @@ public static class StringExtensions
         var script = sqlScriptContents.TryParseSqlScript(out var errors);
         if (!errors.IsNullOrEmpty())
         {
-            var message = $"Error parsing SQL script:\n{string.Join("\n", errors)}";
+            var message = $"Error parsing SQL script:\n{string.Join('\n', errors)}";
             throw new ArgumentException(message, nameof(sqlScriptContents));
         }
 
-        return script!;
+        return script;
     }
 
     public static TSqlScript TryParseSqlScript(this string sqlScriptContents, out IReadOnlyList<string> errors)
     {
-        var parser = TSqlParser.CreateParser(SqlVersion.Sql170, true);
+        var parser = TSqlParser.CreateParser(SqlVersion.Sql170, initialQuotedIdentifiers: true);
         using var reader = new StringReader(sqlScriptContents);
         var script = parser.Parse(reader, out var parserErrors) as TSqlScript ?? new TSqlScript();
 
@@ -118,7 +118,7 @@ public static class StringExtensions
         }
 
         errors = parserErrors
-            .Select(a => $"{a.Message} at {CodeRegion.Create(a.Line, a.Column, a.Line, a.Column)}")
+            .Select(static a => $"{a.Message} at {CodeRegion.Create(a.Line, a.Column, a.Line, a.Column)}")
             .ToList();
 
         return script;

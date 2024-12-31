@@ -14,8 +14,8 @@ public sealed class MissingPrimaryKeyAnalyzer : IGlobalAnalyzer
         var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5026Settings>();
         var allTables = new DatabaseObjectExtractor(context.IssueReporter)
             .Extract(context.Scripts, context.DefaultSchemaName)
-            .SelectMany(a => a.Value.SchemasByName)
-            .SelectMany(a => a.Value.TablesByName.Values);
+            .SelectMany(static a => a.Value.SchemasByName)
+            .SelectMany(static a => a.Value.TablesByName.Values);
 
         foreach (var table in allTables)
         {
@@ -25,7 +25,7 @@ public sealed class MissingPrimaryKeyAnalyzer : IGlobalAnalyzer
 
     private static void Analyze(IAnalysisContext context, Aj5026Settings settings, TableInformation table)
     {
-        if (table.Indices.Any(a => a.IndexType.HasFlag(TableColumnIndexType.PrimaryKey)))
+        if (table.Indices.Any(static a => a.IndexType.HasFlag(TableColumnIndexType.PrimaryKey)))
         {
             return;
         }

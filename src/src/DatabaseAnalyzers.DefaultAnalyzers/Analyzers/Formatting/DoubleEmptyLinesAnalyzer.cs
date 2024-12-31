@@ -1,6 +1,5 @@
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
@@ -13,7 +12,7 @@ public sealed class DoubleEmptyLinesAnalyzer : IScriptAnalyzer
     {
         foreach (var block in GetConsecutiveBlankSpaceTokens(script.ParsedScript.ScriptTokenStream))
         {
-            var newLineCharCount = block.Sum(a => a.Text.Count(x => x == '\n'));
+            var newLineCharCount = block.Sum(static a => a.Text.Count(static x => x == '\n'));
             if (newLineCharCount <= 2)
             {
                 continue;

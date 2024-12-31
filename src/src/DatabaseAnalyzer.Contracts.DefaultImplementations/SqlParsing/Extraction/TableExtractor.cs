@@ -56,7 +56,7 @@ public sealed class TableExtractor : Extractor<TableInformation>
                     calculatedDatabaseName,
                     tableSchemaName,
                     tableName,
-                    null,
+                    IndexName: null,
                     indexType,
                     [a.ObjectName],
                     [],
@@ -140,7 +140,7 @@ public sealed class TableExtractor : Extractor<TableInformation>
             constraint.ConstraintIdentifier?.Value,
             indexType,
             constraint.Columns
-                .Select(a => a.Column.MultiPartIdentifier.Identifiers[0].Value)
+                .Select(static a => a.Column.MultiPartIdentifier.Identifiers[0].Value)
                 .ToFrozenSet(StringComparer.OrdinalIgnoreCase),
             [],
             constraint,
@@ -152,7 +152,7 @@ public sealed class TableExtractor : Extractor<TableInformation>
     {
         var isNullable = column.Constraints
             .OfType<NullableConstraintDefinition>()
-            .FirstOrDefault(a => a.Nullable)
+            .FirstOrDefault(static a => a.Nullable)
             ?.Nullable ?? false;
         var isUnique = column.Constraints
             .OfType<UniqueConstraintDefinition>()

@@ -7,6 +7,6 @@ internal static class ReportRendererFactory
         {
             ConsoleReportType.Text => new TextReportRenderer(),
             ConsoleReportType.Json => new JsonReportRenderer(),
-            _ => throw new ArgumentOutOfRangeException(nameof(analysisResult), analysisResult, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(analysisResult), analysisResult, message: null)
         };
 }

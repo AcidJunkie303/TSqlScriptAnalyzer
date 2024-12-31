@@ -21,19 +21,19 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
             .ToList();
         var tables = script.ParsedScript.GetTopLevelDescendantsOfType<CreateTableStatement>();
         var triggers = script.ParsedScript.GetTopLevelDescendantsOfType<TriggerStatementBody>();
-        var primaryKeyConstraints = script.ParsedScript.GetTopLevelDescendantsOfType<UniqueConstraintDefinition>().Where(a => a.IsPrimaryKey);
+        var primaryKeyConstraints = script.ParsedScript.GetTopLevelDescendantsOfType<UniqueConstraintDefinition>().Where(static a => a.IsPrimaryKey);
         var variables = script.ParsedScript.GetTopLevelDescendantsOfType<DeclareVariableStatement>();
         var views = script.ParsedScript.GetTopLevelDescendantsOfType<ViewStatementBody>();
 
         IReadOnlyList<ProcedureParameter> parameters =
         [
-            .. functions.SelectMany(a => a.Parameters),
-            .. procedures.SelectMany(a => a.Parameters)
+            .. functions.SelectMany(static a => a.Parameters),
+            .. procedures.SelectMany(static a => a.Parameters)
         ];
 
         foreach (var view in views)
         {
-            Analyze(context, script, view, "view", settings.ViewNamePattern, a => a.SchemaObjectName.BaseIdentifier.Value, a => a.SchemaObjectName.BaseIdentifier);
+            Analyze(context, script, view, "view", settings.ViewNamePattern, static a => a.SchemaObjectName.BaseIdentifier.Value, static a => a.SchemaObjectName.BaseIdentifier);
         }
 
         foreach (var variable in variables)
@@ -45,42 +45,42 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
                     continue;
                 }
 
-                Analyze(context, script, declaration, "variable", settings.VariableNamePattern, a => a.VariableName.Value.Trim('@'), a => a.VariableName);
+                Analyze(context, script, declaration, "variable", settings.VariableNamePattern, static a => a.VariableName.Value.Trim('@'), static a => a.VariableName);
             }
         }
 
         foreach (var constraint in primaryKeyConstraints)
         {
-            Analyze(context, script, constraint, "primary key constraint", settings.PrimaryKeyConstraintNamePattern, a => a.ConstraintIdentifier?.Value, a => a.ConstraintIdentifier);
+            Analyze(context, script, constraint, "primary key constraint", settings.PrimaryKeyConstraintNamePattern, static a => a.ConstraintIdentifier?.Value, static a => a.ConstraintIdentifier);
         }
 
         foreach (var procedure in procedures)
         {
-            Analyze(context, script, procedure, "procedure", settings.ProcedureNamePattern, a => a.ProcedureReference.Name.BaseIdentifier.Value, a => a.ProcedureReference.Name.BaseIdentifier);
+            Analyze(context, script, procedure, "procedure", settings.ProcedureNamePattern, static a => a.ProcedureReference.Name.BaseIdentifier.Value, static a => a.ProcedureReference.Name.BaseIdentifier);
         }
 
         foreach (var function in functions)
         {
-            Analyze(context, script, function, "function", settings.FunctionNamePattern, a => a.Name.BaseIdentifier.Value, a => a.Name.BaseIdentifier);
+            Analyze(context, script, function, "function", settings.FunctionNamePattern, static a => a.Name.BaseIdentifier.Value, static a => a.Name.BaseIdentifier);
         }
 
         foreach (var parameter in parameters)
         {
-            Analyze(context, script, parameter, "parameter", settings.ParameterNamePattern, a => a.VariableName.Value.Trim('@'), a => a.VariableName);
+            Analyze(context, script, parameter, "parameter", settings.ParameterNamePattern, static a => a.VariableName.Value.Trim('@'), static a => a.VariableName);
         }
 
         foreach (var trigger in triggers)
         {
-            Analyze(context, script, trigger, "trigger", settings.TriggerNamePattern, a => a.Name.BaseIdentifier.Value, a => a.Name.BaseIdentifier);
+            Analyze(context, script, trigger, "trigger", settings.TriggerNamePattern, static a => a.Name.BaseIdentifier.Value, static a => a.Name.BaseIdentifier);
         }
 
         foreach (var table in tables)
         {
-            Analyze(context, script, table, "table", settings.TableNamePattern, a => a.SchemaObjectName.BaseIdentifier.Value, a => a.SchemaObjectName.BaseIdentifier);
+            Analyze(context, script, table, "table", settings.TableNamePattern, static a => a.SchemaObjectName.BaseIdentifier.Value, static a => a.SchemaObjectName.BaseIdentifier);
 
             foreach (var column in table.Definition.ColumnDefinitions)
             {
-                Analyze(context, script, column, "column", settings.ColumnNamePattern, a => a.ColumnIdentifier.Value, a => a.ColumnIdentifier);
+                Analyze(context, script, column, "column", settings.ColumnNamePattern, static a => a.ColumnIdentifier.Value, static a => a.ColumnIdentifier);
             }
         }
     }

@@ -17,7 +17,7 @@ public sealed class SetOptionWhichShouldNotBeTurnedOffAnalyzer : IScriptAnalyzer
 
     public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
-        foreach (var predicateStatement in script.ParsedScript.GetChildren<PredicateSetStatement>(true))
+        foreach (var predicateStatement in script.ParsedScript.GetChildren<PredicateSetStatement>(recursive: true))
         {
             Analyze(context, script, predicateStatement);
         }

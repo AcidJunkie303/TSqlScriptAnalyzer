@@ -39,7 +39,7 @@ public sealed class SqlFragmentChildrenProviderTests
         var batch = code.ParseSqlScript().Batches[0];
 
         // act
-        var children = SqlFragmentChildrenProvider.GetChildren(batch, true);
+        var children = SqlFragmentChildrenProvider.GetChildren(batch, recursive: true);
         children.Should().HaveCount(8);
     }
 
@@ -56,7 +56,7 @@ public sealed class SqlFragmentChildrenProviderTests
         var batch = code.ParseSqlScript().Batches[0];
 
         // act
-        var children = SqlFragmentChildrenProvider.GetChildren<SelectStatement>(batch, true);
+        var children = SqlFragmentChildrenProvider.GetChildren<SelectStatement>(batch, recursive: true);
         children.Should().HaveCount(1);
     }
 
@@ -73,7 +73,7 @@ public sealed class SqlFragmentChildrenProviderTests
         var batch = code.ParseSqlScript().Batches[0];
 
         // act
-        var children = SqlFragmentChildrenProvider.GetChildren<IntegerLiteral>(batch, true);
+        var children = SqlFragmentChildrenProvider.GetChildren<IntegerLiteral>(batch, recursive: true);
         children.Should().HaveCount(2);
     }
 }

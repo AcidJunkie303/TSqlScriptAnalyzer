@@ -10,7 +10,7 @@ public sealed class MultipleVariableDeclarationAnalyzer : IScriptAnalyzer
 
     public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
-        foreach (var statement in script.ParsedScript.GetChildren<DeclareVariableStatement>(true))
+        foreach (var statement in script.ParsedScript.GetChildren<DeclareVariableStatement>(recursive: true))
         {
             Analyze(context, script, statement);
         }

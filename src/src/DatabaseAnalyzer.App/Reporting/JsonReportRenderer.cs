@@ -15,14 +15,14 @@ internal sealed class JsonReportRenderer : IReportRenderer
         var report = new
         {
             analysisResult.DisabledDiagnostics,
-            Issues = analysisResult.Issues.Select(a => new
+            Issues = analysisResult.Issues.Select(static a => new
             {
                 a.DiagnosticDefinition.DiagnosticId,
                 a.Message,
                 a.RelativeScriptFilePath,
                 a.CodeRegion
             }),
-            SuppressedIssues = analysisResult.SuppressedIssues.Select(a => new
+            SuppressedIssues = analysisResult.SuppressedIssues.Select(static a => new
             {
                 a.Issue.DiagnosticDefinition.DiagnosticId,
                 a.Issue.Message,

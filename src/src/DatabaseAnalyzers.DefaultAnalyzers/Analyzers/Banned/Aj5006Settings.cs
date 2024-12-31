@@ -5,6 +5,7 @@ using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Banned;
 
+// ReSharper disable once UnusedMember.Global -> is used for setting deserialization
 public sealed class Aj5006SettingsRaw : IRawSettings<Aj5006Settings>
 {
     // ReSharper disable UnusedAutoPropertyAccessor.Global -> used during deserialization
@@ -25,7 +26,7 @@ public sealed class Aj5006SettingsRaw : IRawSettings<Aj5006Settings>
         => types
             .NullIfEmpty()
             .WhereNotNull()
-            .Select(a => a.ToRegexWithSimpleWildcards(compileRegex: true))
+            .Select(static a => a.ToRegexWithSimpleWildcards(compileRegex: true))
             .ToImmutableArray();
 }
 

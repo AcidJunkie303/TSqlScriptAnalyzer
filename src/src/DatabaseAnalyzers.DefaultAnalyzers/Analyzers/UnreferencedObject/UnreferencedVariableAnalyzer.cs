@@ -1,6 +1,5 @@
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.UnreferencedObject;
@@ -20,13 +19,13 @@ public sealed class UnreferencedVariableAnalyzer : IScriptAnalyzer
     private static void AnalyzeBatch(IAnalysisContext context, IScriptModel script, TSqlBatch batch)
     {
         var referencedVariableNames = batch
-            .GetChildren<VariableReference>(true)
-            .Select(a => a.Name)
+            .GetChildren<VariableReference>(recursive: true)
+            .Select(static a => a.Name)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         var variableDeclarations = batch
-            .GetChildren<DeclareVariableElement>(true)
-            .Where(a => a is not ProcedureParameter);
+            .GetChildren<DeclareVariableElement>(recursive: true)
+            .Where(static a => a is not ProcedureParameter);
 
         foreach (var variableDeclaration in variableDeclarations)
         {

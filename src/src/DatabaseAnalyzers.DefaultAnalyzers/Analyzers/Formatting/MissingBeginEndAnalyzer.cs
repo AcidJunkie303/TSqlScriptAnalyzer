@@ -10,12 +10,12 @@ public sealed class MissingBeginEndAnalyzer : IScriptAnalyzer
 
     public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
-        foreach (var statement in script.ParsedScript.GetChildren<WhileStatement>(true))
+        foreach (var statement in script.ParsedScript.GetChildren<WhileStatement>(recursive: true))
         {
             Analyze(context, script, statement);
         }
 
-        foreach (var statement in script.ParsedScript.GetChildren<IfStatement>(true))
+        foreach (var statement in script.ParsedScript.GetChildren<IfStatement>(recursive: true))
         {
             Analyze(context, script, statement.ThenStatement, "IF");
             if (statement.ElseStatement is not null)

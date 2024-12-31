@@ -16,13 +16,13 @@ public sealed class BannedDataTypeAnalyzer : IScriptAnalyzer
 
         var procedureParameters = parsedScript
             .GetChildren<CreateProcedureStatement>(recursive: true)
-            .SelectMany(a => a.Parameters);
+            .SelectMany(static a => a.Parameters);
         var functionParameters = parsedScript
             .GetChildren<CreateFunctionStatement>(recursive: true)
-            .SelectMany(a => a.Parameters);
+            .SelectMany(static a => a.Parameters);
         var tableColumns = parsedScript
             .GetChildren<CreateTableStatement>(recursive: true)
-            .SelectMany(a => a.Definition.ColumnDefinitions);
+            .SelectMany(static a => a.Definition.ColumnDefinitions);
         var variableDeclarations = parsedScript
             .GetChildren<DeclareVariableElement>(recursive: true);
 

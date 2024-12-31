@@ -4,7 +4,7 @@ internal static class ProgressCallbackExtensions
 {
     public static IDisposable OnProgressWithAutoEndActionNotification(this IProgressCallback callback, string messageTemplate, params string[] insertionStrings)
     {
-        callback.OnProgress(new ProgressCallbackArgs(true, messageTemplate, insertionStrings));
+        callback.OnProgress(new ProgressCallbackArgs(IsBeginOfAction: true, messageTemplate, insertionStrings));
         return new EndOfActionNotifier(callback, messageTemplate, insertionStrings);
     }
 
@@ -30,7 +30,7 @@ internal static class ProgressCallbackExtensions
             }
 
             _disposed = true;
-            _callback.OnProgress(new ProgressCallbackArgs(false, _messageTemplate, _insertionStrings));
+            _callback.OnProgress(new ProgressCallbackArgs(IsBeginOfAction: false, _messageTemplate, _insertionStrings));
         }
     }
 }

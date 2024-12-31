@@ -28,7 +28,7 @@ public sealed class SetOptionSeparatedByGoAnalyzer : IScriptAnalyzer
         var currentGroup = new List<TSqlBatch>();
         groups.Add(currentGroup);
 
-        foreach (var batch in script.GetChildren<TSqlBatch>(true))
+        foreach (var batch in script.GetChildren<TSqlBatch>(recursive: true))
         {
             var isBatchUsingSetOptionsOnly = IsBatchUsingSetOptionsOnly(batch);
             if (isBatchUsingSetOptionsOnly)
@@ -42,11 +42,11 @@ public sealed class SetOptionSeparatedByGoAnalyzer : IScriptAnalyzer
             }
         }
 
-        return groups.Where(a => a.Count > 1);
+        return groups.Where(static a => a.Count > 1);
     }
 
     private static bool IsBatchUsingSetOptionsOnly(TSqlBatch batch)
-        => batch.GetChildren().All(a => a is PredicateSetStatement);
+        => batch.GetChildren().All(static a => a is PredicateSetStatement);
 
     private static class DiagnosticDefinitions
     {

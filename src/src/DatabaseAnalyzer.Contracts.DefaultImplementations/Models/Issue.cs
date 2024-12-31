@@ -41,7 +41,7 @@ public sealed class Issue : IIssue
         }
 
         var messageInsertionStrings = insertions
-            .Select(a => a.ToString() ?? string.Empty)
+            .Select(static a => a.ToString() ?? string.Empty)
             .ToList();
         var message = InsertionStringHelpers.FormatMessage(diagnosticDefinition.MessageTemplate, messageInsertionStrings);
         return new Issue(diagnosticDefinition, databaseName, relativeScriptFilePath, fullObjectName, codeRegion, messageInsertionStrings, message);

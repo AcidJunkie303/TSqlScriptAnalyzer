@@ -48,10 +48,10 @@ public sealed class IndexExtractor : Extractor<IndexInformation>
             statement.Name.Value,
             indexType,
             statement.Columns
-                .Select(a => a.Column.MultiPartIdentifier.ToUnquotedIdentifier())
+                .Select(static a => a.Column.MultiPartIdentifier.ToUnquotedIdentifier())
                 .ToFrozenSet(StringComparer.OrdinalIgnoreCase),
             statement.IncludeColumns
-                .Select(a => a.MultiPartIdentifier.ToUnquotedIdentifier())
+                .Select(static a => a.MultiPartIdentifier.ToUnquotedIdentifier())
                 .ToFrozenSet(StringComparer.OrdinalIgnoreCase),
             statement,
             script.RelativeScriptFilePath

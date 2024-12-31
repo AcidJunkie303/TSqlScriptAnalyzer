@@ -4,6 +4,7 @@ using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Banned;
 
+// ReSharper disable once UnusedMember.Global -> is used for setting deserialization
 public sealed class Aj5040SettingsRaw : IRawSettings<Aj5040Settings>
 {
     // ReSharper disable UnusedAutoPropertyAccessor.Global -> used during deserialization
@@ -13,10 +14,10 @@ public sealed class Aj5040SettingsRaw : IRawSettings<Aj5040Settings>
     (
         BannedFunctionNamesByReason
             .EmptyIfNull()
-            .GroupBy(a => a.Key, StringComparer.OrdinalIgnoreCase)
+            .GroupBy(static a => a.Key, StringComparer.OrdinalIgnoreCase)
             .ToFrozenDictionary(
-                a => a.Key,
-                a => a.First().Value?.NullIfEmptyOrWhiteSpace() ?? "No reason provided",
+                static a => a.Key,
+                static a => a.First().Value?.NullIfEmptyOrWhiteSpace() ?? "No reason provided",
                 StringComparer.OrdinalIgnoreCase)
     );
 }

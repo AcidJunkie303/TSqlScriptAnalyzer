@@ -13,41 +13,41 @@ public sealed class ObjectCreationWithoutSchemaNameAnalyzer : IScriptAnalyzer
         Analyze(
             context,
             script,
-            script.ParsedScript.GetChildren<CreateTableStatement>(true),
-            s => s.SchemaObjectName.SchemaIdentifier?.Value,
-            s => s.SchemaObjectName.GetCodeRegion(),
+            script.ParsedScript.GetChildren<CreateTableStatement>(recursive: true),
+            static s => s.SchemaObjectName.SchemaIdentifier?.Value,
+            static s => s.SchemaObjectName.GetCodeRegion(),
             "table");
 
         Analyze(
             context,
             script,
-            script.ParsedScript.GetChildren<ViewStatementBody>(true),
-            s => s.SchemaObjectName.SchemaIdentifier?.Value,
-            s => s.SchemaObjectName.GetCodeRegion(),
+            script.ParsedScript.GetChildren<ViewStatementBody>(recursive: true),
+            static s => s.SchemaObjectName.SchemaIdentifier?.Value,
+            static s => s.SchemaObjectName.GetCodeRegion(),
             "view");
 
         Analyze(
             context,
             script,
-            script.ParsedScript.GetChildren<ProcedureStatementBody>(true),
-            s => s.ProcedureReference.Name.SchemaIdentifier?.Value,
-            s => s.ProcedureReference.Name.GetCodeRegion(),
+            script.ParsedScript.GetChildren<ProcedureStatementBody>(recursive: true),
+            static s => s.ProcedureReference.Name.SchemaIdentifier?.Value,
+            static s => s.ProcedureReference.Name.GetCodeRegion(),
             "procedure");
 
         Analyze(
             context,
             script,
             script.ParsedScript.GetChildren<FunctionStatementBody>(recursive: true),
-            s => s.Name.SchemaIdentifier?.Value,
-            s => s.Name.GetCodeRegion(),
+            static s => s.Name.SchemaIdentifier?.Value,
+            static s => s.Name.GetCodeRegion(),
             "function");
 
         Analyze(
             context,
             script,
             script.ParsedScript.GetChildren<TriggerStatementBody>(recursive: true),
-            s => s.Name.SchemaIdentifier?.Value,
-            s => s.Name.GetCodeRegion(),
+            static s => s.Name.SchemaIdentifier?.Value,
+            static s => s.Name.GetCodeRegion(),
             "trigger");
     }
 

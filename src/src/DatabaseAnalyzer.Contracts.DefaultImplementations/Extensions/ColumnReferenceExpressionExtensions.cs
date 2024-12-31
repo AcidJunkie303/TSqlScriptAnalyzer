@@ -8,6 +8,6 @@ public static class ColumnReferenceExpressionExtensions
     {
         ArgumentNullException.ThrowIfNull(expression);
 
-        return string.Join('.', expression.MultiPartIdentifier.Identifiers.Select(a => a.Value));
+        return string.Join('.', expression.MultiPartIdentifier.Identifiers.Select(static a => a.Value));
     }
 }

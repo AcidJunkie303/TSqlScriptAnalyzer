@@ -1,6 +1,5 @@
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Strings;
@@ -35,12 +34,12 @@ public sealed class StringConcatenationUnicodeAsciiMixAnalyzer : IScriptAnalyzer
     {
         private readonly IScriptModel _script;
 
-        public StringType StringTypesFound { get; private set; }
-
         public Visitor(IScriptModel script)
         {
             _script = script;
         }
+
+        public StringType StringTypesFound { get; private set; }
 
         public override void Visit(BinaryExpression node)
         {
@@ -64,12 +63,9 @@ public sealed class StringConcatenationUnicodeAsciiMixAnalyzer : IScriptAnalyzer
         private StringType GetStringType(VariableReference variableReference)
         {
             var dataType = variableReference.TryGetVariableDeclaration(_script)?.DataType;
-            if (dataType is null)
-            {
-                return StringType.None;
-            }
-
-            return GetStringType(dataType);
+            return dataType is null
+                ? StringType.None
+                : GetStringType(dataType);
         }
 
         private static StringType GetStringType(DataTypeReference dataType)

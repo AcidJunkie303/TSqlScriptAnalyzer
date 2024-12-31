@@ -67,7 +67,7 @@ public abstract class ScopedSqlFragmentVisitor : DatabaseAwareFragmentVisitor
 
         public Scope CurrentScope => _scopes.Peek();
         public Scope RootScope => _scopes.Last();
-        public IEnumerable<TableAndAlias> AllTableAndAliases => _scopes.SelectMany(scope => scope.TableReferencesByFullNameOrAlias.Values);
+        public IEnumerable<TableAndAlias> AllTableAndAliases => _scopes.SelectMany(static scope => scope.TableReferencesByFullNameOrAlias.Values);
 
 #pragma warning disable MA0002 // underlying collection is hashset
         public bool IsCommonTableExpressionName(string expressionName) => _scopes.Any(scope => scope.CommonTableExpressionNames.Contains(expressionName));

@@ -60,14 +60,14 @@ internal static class PluginAssemblyLoader
     private static IEnumerable<Type> GetPluginsOfType<TPlugin>(Assembly assembly)
         => assembly
             .GetTypes()
-            .Where(a =>
+            .Where(static a =>
             {
                 return a is
                 {
                     IsAbstract: false,
                     IsClass: true,
                     IsPublic: true
-                } && a.GetInterfaces().Any(x => x == typeof(TPlugin));
+                } && a.GetInterfaces().Any(static x => x == typeof(TPlugin));
             });
 
     private static string[] GetPluginAssemblyPaths()

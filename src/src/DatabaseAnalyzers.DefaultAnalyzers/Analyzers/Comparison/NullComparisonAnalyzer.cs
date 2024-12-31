@@ -10,7 +10,7 @@ public sealed class NullComparisonAnalyzer : IScriptAnalyzer
 
     public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
-        foreach (var comparison in script.ParsedScript.GetChildren<BooleanComparisonExpression>(true))
+        foreach (var comparison in script.ParsedScript.GetChildren<BooleanComparisonExpression>(recursive: true))
         {
             Analyze(context, script, comparison);
         }

@@ -45,7 +45,7 @@ public record struct CodeRegion(
             : result;
     }
 
-    public int CompareTo(object? obj)
+    public readonly int CompareTo(object? obj)
         => obj is CodeRegion other
             ? CompareTo(other)
             : throw new ArgumentException("obj is not a CodeRegion", nameof(obj));

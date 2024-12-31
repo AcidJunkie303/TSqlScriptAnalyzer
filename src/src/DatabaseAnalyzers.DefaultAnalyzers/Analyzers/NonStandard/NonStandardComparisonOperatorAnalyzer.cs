@@ -10,7 +10,7 @@ public sealed class NonStandardComparisonOperatorAnalyzer : IScriptAnalyzer
 
     public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
-        foreach (var expression in script.ParsedScript.GetChildren<BooleanComparisonExpression>(true))
+        foreach (var expression in script.ParsedScript.GetChildren<BooleanComparisonExpression>(recursive: true))
         {
             Analyze(context, script, expression);
         }
@@ -50,8 +50,8 @@ public sealed class NonStandardComparisonOperatorAnalyzer : IScriptAnalyzer
         }
 
         tokens = tokens
-            .OrderBy(a => a.Line)
-            .ThenBy(a => a.Column)
+            .OrderBy(static a => a.Line)
+            .ThenBy(static a => a.Column)
             .ToList();
 
         var firstOperatorTokenCodeRegion = tokens[0].GetCodeRegion();

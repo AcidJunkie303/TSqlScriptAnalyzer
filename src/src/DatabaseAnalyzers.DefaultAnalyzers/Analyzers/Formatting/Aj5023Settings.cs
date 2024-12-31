@@ -5,6 +5,7 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 
+// ReSharper disable once UnusedMember.Global -> is used for setting deserialization
 public sealed class Aj5023SettingsRaw : IRawSettings<Aj5023Settings>
 {
     public IReadOnlyCollection<string?>? StatementTypesToIgnore { get; set; }
@@ -13,11 +14,11 @@ public sealed class Aj5023SettingsRaw : IRawSettings<Aj5023Settings>
     (
         StatementTypesToIgnore.EmptyIfNull()
             .WhereNotNull()
-            .Select(a => Enum.TryParse<TSqlTokenType>(a, true, out var tokenType)
+            .Select(static a => Enum.TryParse<TSqlTokenType>(a, ignoreCase: true, out var tokenType)
                 ? tokenType
                 : (TSqlTokenType?)null)
-            .Where(a => a.HasValue)
-            .Select(a => a!.Value)
+            .Where(static a => a.HasValue)
+            .Select(static a => a!.Value)
             .ToFrozenSet()
     );
 }

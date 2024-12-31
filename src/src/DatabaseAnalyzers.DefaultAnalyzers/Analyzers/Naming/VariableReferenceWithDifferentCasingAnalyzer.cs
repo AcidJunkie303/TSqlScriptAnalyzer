@@ -1,6 +1,5 @@
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Naming;
@@ -20,11 +19,11 @@ public sealed class VariableReferenceWithDifferentCasingAnalyzer : IScriptAnalyz
     private static void AnalyzeBatch(IAnalysisContext context, IScriptModel script, TSqlBatch batch)
     {
         var variableDeclarationsByName = batch
-            .GetChildren<DeclareVariableStatement>(true)
-            .SelectMany(a => a.Declarations)
-            .GroupBy(a => a.VariableName.Value, StringComparer.OrdinalIgnoreCase)
-            .Select(a => a.First())
-            .ToDictionary(a => a.VariableName.Value, a => a, StringComparer.OrdinalIgnoreCase);
+            .GetChildren<DeclareVariableStatement>(recursive: true)
+            .SelectMany(static a => a.Declarations)
+            .GroupBy(static a => a.VariableName.Value, StringComparer.OrdinalIgnoreCase)
+            .Select(static a => a.First())
+            .ToDictionary(static a => a.VariableName.Value, static a => a, StringComparer.OrdinalIgnoreCase);
 
         foreach (var variableReference in batch.GetChildren<VariableReference>(recursive: true))
         {

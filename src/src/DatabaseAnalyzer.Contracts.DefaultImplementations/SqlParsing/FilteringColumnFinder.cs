@@ -29,8 +29,7 @@ public sealed class FilteringColumnFinder
     public IEnumerable<ColumnReference> Find(TSqlFragment searchRoot)
     {
         var columnResolver = new TableColumnResolver(_issueReporter, _script, _relativeScriptFilePath, _parentFragmentProvider, _defaultSchemaName);
-        var columnReferences = searchRoot.GetChildren<ColumnReferenceExpression>(recursive: true);
-        foreach (var columnReference in columnReferences)
+        foreach (var columnReference in searchRoot.GetChildren<ColumnReferenceExpression>(recursive: true))
         {
             if (!IsUsedInComparison(columnReference))
             {

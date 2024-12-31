@@ -32,8 +32,8 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
         Analyze(
             context,
             script,
-            script.ParsedScript.GetChildren<SqlDataTypeReference>(true),
-            a => a.Name.Identifiers,
+            script.ParsedScript.GetChildren<SqlDataTypeReference>(recursive: true),
+            static a => a.Name.Identifiers,
             "data type",
             policy);
     }
@@ -48,8 +48,8 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
         Analyze(
             context,
             script,
-            script.ParsedScript.GetChildren<NamedTableReference>(true),
-            a => a.SchemaObject.Identifiers.TakeLast(1),
+            script.ParsedScript.GetChildren<NamedTableReference>(recursive: true),
+            static a => a.SchemaObject.Identifiers.TakeLast(1),
             "table reference",
             policy);
     }
@@ -64,8 +64,8 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
         Analyze(
             context,
             script,
-            script.ParsedScript.GetChildren<ColumnDefinition>(true),
-            a => [a.ColumnIdentifier],
+            script.ParsedScript.GetChildren<ColumnDefinition>(recursive: true),
+            static a => [a.ColumnIdentifier],
             "column definition",
             policy);
     }
@@ -80,8 +80,8 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
         Analyze(
             context,
             script,
-            script.ParsedScript.GetChildren<ColumnReferenceExpression>(true),
-            a => a.MultiPartIdentifier.Identifiers.TakeLast(1),
+            script.ParsedScript.GetChildren<ColumnReferenceExpression>(recursive: true),
+            static a => a.MultiPartIdentifier.Identifiers.TakeLast(1),
             "column",
             policy);
     }
@@ -96,24 +96,24 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
         Analyze(
             context,
             script,
-            script.ParsedScript.GetChildren<CreateTableStatement>(true),
-            a => a.SchemaObjectName.Identifiers,
+            script.ParsedScript.GetChildren<CreateTableStatement>(recursive: true),
+            static a => a.SchemaObjectName.Identifiers,
             "table",
             policy);
 
         Analyze(
             context,
             script,
-            script.ParsedScript.GetChildren<ViewStatementBody>(true),
-            a => a.SchemaObjectName.Identifiers,
+            script.ParsedScript.GetChildren<ViewStatementBody>(recursive: true),
+            static a => a.SchemaObjectName.Identifiers,
             "view",
             policy);
 
         Analyze(
             context,
             script,
-            script.ParsedScript.GetChildren<ProcedureStatementBody>(true),
-            a => a.ProcedureReference.Name.Identifiers,
+            script.ParsedScript.GetChildren<ProcedureStatementBody>(recursive: true),
+            static a => a.ProcedureReference.Name.Identifiers,
             "procedure",
             policy);
 
@@ -121,7 +121,7 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
             context,
             script,
             script.ParsedScript.GetChildren<FunctionStatementBody>(recursive: true),
-            a => a.Name.Identifiers,
+            static a => a.Name.Identifiers,
             "function",
             policy);
 
@@ -129,7 +129,7 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
             context,
             script,
             script.ParsedScript.GetChildren<TriggerStatementBody>(recursive: true),
-            a => a.Name.Identifiers,
+            static a => a.Name.Identifiers,
             "trigger",
             policy);
     }

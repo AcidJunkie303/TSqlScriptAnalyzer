@@ -5,6 +5,7 @@ using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.UseDatabaseStatements;
 
+// ReSharper disable once UnusedMember.Global -> is used for setting deserialization
 public sealed class Aj5003SettingsRaw : IRawSettings<Aj5003Settings>
 {
     public IReadOnlyList<string?>? ExcludedFilePathPatterns { get; set; }
@@ -18,7 +19,7 @@ public sealed class Aj5003SettingsRaw : IRawSettings<Aj5003Settings>
 
         var patterns = ExcludedFilePathPatterns
             .WhereNotNull()
-            .Select(a => a.Trim().ToRegexWithSimpleWildcards(compileRegex: true))
+            .Select(static a => a.Trim().ToRegexWithSimpleWildcards(compileRegex: true))
             .ToImmutableArray();
 
         return new Aj5003Settings(patterns);

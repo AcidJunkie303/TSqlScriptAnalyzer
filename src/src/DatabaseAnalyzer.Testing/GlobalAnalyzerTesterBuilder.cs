@@ -74,7 +74,7 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
             .GroupBy(a => a.DatabaseName, StringComparer.OrdinalIgnoreCase)
             .ToDictionary(
                 a => a.Key,
-                a => (IReadOnlyList<IScriptModel>)a.ToList(),
+                IReadOnlyList<IScriptModel> (a) => a.ToList(),
                 StringComparer.OrdinalIgnoreCase);
 
         var analysisContext = new AnalysisContext(

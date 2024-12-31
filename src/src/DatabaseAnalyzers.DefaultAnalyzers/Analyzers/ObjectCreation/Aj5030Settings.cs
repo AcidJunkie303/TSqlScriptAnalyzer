@@ -5,6 +5,7 @@ using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 // ReSharper disable once CheckNamespace
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Naming;
 
+// ReSharper disable once UnusedMember.Global -> is used for setting deserialization
 public sealed class Aj5030SettingsRaw : IRawSettings<Aj5030Settings>
 {
     internal static Regex AlwaysMatchRegex { get; } = new(string.Empty, RegexOptions.Compiled, TimeSpan.FromMilliseconds(100)); // ReSharper disable UnusedAutoPropertyAccessor.Global -> used during deserialization

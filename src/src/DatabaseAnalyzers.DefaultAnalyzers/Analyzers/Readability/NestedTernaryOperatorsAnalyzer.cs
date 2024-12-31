@@ -10,7 +10,7 @@ public sealed class NestedTernaryOperatorsAnalyzer : IScriptAnalyzer
 
     public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
-        foreach (var expression in script.ParsedScript.GetChildren<IIfCall>(true))
+        foreach (var expression in script.ParsedScript.GetChildren<IIfCall>(recursive: true))
         {
             Analyze(context, script, expression);
         }

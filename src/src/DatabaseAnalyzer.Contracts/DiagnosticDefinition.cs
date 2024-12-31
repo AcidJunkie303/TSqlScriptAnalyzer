@@ -29,8 +29,8 @@ public sealed class DiagnosticDefinition : IDiagnosticDefinition
             return true;
         }
 
-        return (RequiredInsertionStringCount == other.RequiredInsertionStringCount)
-               && (IssueType == other.IssueType)
+        return RequiredInsertionStringCount == other.RequiredInsertionStringCount
+               && IssueType == other.IssueType
                && string.Equals(DiagnosticId, other.DiagnosticId, StringComparison.Ordinal)
                && string.Equals(MessageTemplate, other.MessageTemplate, StringComparison.Ordinal);
     }

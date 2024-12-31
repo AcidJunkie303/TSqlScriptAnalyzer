@@ -1,6 +1,5 @@
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Naming;
@@ -67,7 +66,7 @@ public sealed class ParameterReferenceWithDifferentCasingAnalyzer : IScriptAnaly
         Lazy<string?> lazyFullObjectName = new(() => parameter.TryGetFirstClassObjectName(context, script));
 
         var variableReferencesWithDifferentCasing = bodyStatementsList
-            .GetChildren<VariableReference>(true)
+            .GetChildren<VariableReference>(recursive: true)
             .Where(a => a.Name.IsEqualToButWithDifferentCasing(parameter.VariableName.Value));
 
         foreach (var reference in variableReferencesWithDifferentCasing)

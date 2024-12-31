@@ -240,7 +240,7 @@ public static class SqlFragmentExtensions
     {
         TSqlFragment? match = null;
 
-        foreach (var child in script.GetChildren(true))
+        foreach (var child in script.GetChildren(recursive: true))
         {
             if (IsIndexInsideFragment(index, child))
             {
@@ -264,7 +264,7 @@ public static class SqlFragmentExtensions
     {
         TSqlFragment? match = null;
 
-        foreach (var child in script.GetChildren(true))
+        foreach (var child in script.GetChildren(recursive: true))
         {
             if (IsInsideElement(child, lineNumber, columnNumber))
             {

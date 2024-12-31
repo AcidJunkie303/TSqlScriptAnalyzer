@@ -70,8 +70,8 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
         {
             IEnumerable<StatementList?> statementLists =
             [
-                .. script.ParsedScript.GetChildren<ProcedureStatementBody>(true).Select(a => a.StatementList),
-                .. script.ParsedScript.GetChildren<FunctionStatementBody>(true).Select(a => a.StatementList)
+                .. script.ParsedScript.GetChildren<ProcedureStatementBody>(recursive: true).Select(static a => a.StatementList),
+                .. script.ParsedScript.GetChildren<FunctionStatementBody>(recursive: true).Select(static a => a.StatementList)
             ];
 
             foreach (var statementList in statementLists)

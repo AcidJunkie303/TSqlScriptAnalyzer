@@ -35,12 +35,14 @@ public sealed class MissingTableAliasAnalyzer : IScriptAnalyzer
 
         var tableReferences = querySpecification.FromClause.TableReferences;
         var hasMultipleTableReferencesOrJoins = tableReferences.Count > 1 || tableReferences.OfType<JoinTableReference>().Any();
-        if (hasMultipleTableReferencesOrJoins)
+        if (!hasMultipleTableReferencesOrJoins)
         {
-            var databaseName = columnReference.FindCurrentDatabaseNameAtFragment(script.ParsedScript);
-            var fullObjectName = columnReference.TryGetFirstClassObjectName(context, script);
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, columnReference.GetCodeRegion(), columnReference.GetSql());
+            return;
         }
+
+        var databaseName = columnReference.FindCurrentDatabaseNameAtFragment(script.ParsedScript);
+        var fullObjectName = columnReference.TryGetFirstClassObjectName(context, script);
+        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, columnReference.GetCodeRegion(), columnReference.GetSql());
     }
 
     private static class DiagnosticDefinitions

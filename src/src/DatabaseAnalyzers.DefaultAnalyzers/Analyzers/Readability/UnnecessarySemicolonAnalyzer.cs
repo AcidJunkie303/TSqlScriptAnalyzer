@@ -67,15 +67,10 @@ public sealed class UnnecessarySemicolonAnalyzer : IScriptAnalyzer
                 }
 
                 var fragment = script.ParsedScript.TryGetSqlFragmentAtPosition(token.Line, token.Column);
-                if (fragment is null)
-                {
-                    return true; // to be on the safe side
-                }
-
-                var parentStatement = fragment
-                    .GetParents(script.ParentFragmentProvider)
+                var parentStatement = fragment?.GetParents(script.ParentFragmentProvider)
                     .OfType<TSqlStatement>()
                     .FirstOrDefault();
+
                 if (parentStatement is null)
                 {
                     return true; // to be on the safe side

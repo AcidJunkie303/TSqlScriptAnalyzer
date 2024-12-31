@@ -8,7 +8,7 @@ internal static class ReportFileRenderer
     public static void Render(IReportRenderer renderer, AnalysisResult analysisResult, string filePath, Encoding? encoding = null)
     {
         var directoryPath = Path.GetDirectoryName(filePath) ?? throw new InvalidOperationException("Unable to determine directory path");
-        if ((directoryPath.Length > 0) && !Directory.Exists(directoryPath))
+        if (directoryPath.Length > 0 && !Directory.Exists(directoryPath))
         {
             Directory.CreateDirectory(directoryPath);
         }

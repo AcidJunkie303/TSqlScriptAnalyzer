@@ -16,31 +16,31 @@ public sealed class BannedFunctionAnalyzer : IScriptAnalyzer
         var globalFunctions = script.ParsedScript.GetChildren<GlobalFunctionTableReference>(recursive: true);
         var scalarFunctions = script.ParsedScript
             .GetChildren<SelectScalarExpression>(recursive: true)
-            .Where(a => a.Expression is FunctionCall);
+            .Where(static a => a.Expression is FunctionCall);
 
         AnalyzeFunctionInvocation(
             context,
             script,
             settings,
             globalFunctions,
-            x => x.Name.Value,
-            x => x.Name.GetCodeRegion());
+            static x => x.Name.Value,
+            static x => x.Name.GetCodeRegion());
 
         AnalyzeFunctionInvocation(
             context,
             script,
             settings,
             scalarFunctions,
-            x => ((FunctionCall)x.Expression).FunctionName.Value,
-            x => ((FunctionCall)x.Expression).FunctionName.GetCodeRegion());
+            static x => ((FunctionCall)x.Expression).FunctionName.Value,
+            static x => ((FunctionCall)x.Expression).FunctionName.GetCodeRegion());
 
         AnalyzeFunctionInvocation(
             context,
             script,
             settings,
             schemaObjectFunctions,
-            x => x.SchemaObject.Identifiers.Select(a => a.Value).StringJoin("."),
-            x => x.SchemaObject.GetCodeRegion());
+            static x => x.SchemaObject.Identifiers.Select(static a => a.Value).StringJoin("."),
+            static x => x.SchemaObject.GetCodeRegion());
     }
 
     private static void AnalyzeFunctionInvocation<T>(IAnalysisContext context, IScriptModel script, Aj5040Settings settings, IEnumerable<T> functions, Func<T, string> functionNameGetter, Func<T, CodeRegion> nameLocationGetter)

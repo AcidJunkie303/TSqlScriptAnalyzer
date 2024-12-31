@@ -13,8 +13,8 @@ public sealed class UnreferencedParameterAnalyzer : IScriptAnalyzer
         var procedures = script.ParsedScript.GetTopLevelDescendantsOfType<ProcedureStatementBody>();
         var functions = script.ParsedScript.GetTopLevelDescendantsOfType<FunctionStatementBody>();
 
-        Analyze(context, script, procedures, a => a.Parameters, a => a.StatementList);
-        Analyze(context, script, functions, a => a.Parameters, a => a.StatementList);
+        Analyze(context, script, procedures, static a => a.Parameters, static a => a.StatementList);
+        Analyze(context, script, functions, static a => a.Parameters, static a => a.StatementList);
     }
 
     private static void Analyze<T>(IAnalysisContext context, IScriptModel script, IEnumerable<T> creationStatements, Func<T, IList<ProcedureParameter>> parametersProvider, Func<T, StatementList?> statementListProvider)
@@ -51,8 +51,8 @@ public sealed class UnreferencedParameterAnalyzer : IScriptAnalyzer
 
     private static HashSet<string> GetReferencedVariableNames(StatementList statementList)
         => statementList
-            .GetChildren<VariableReference>(true)
-            .Select(a => a.Name)
+            .GetChildren<VariableReference>(recursive: true)
+            .Select(static a => a.Name)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
     private static class DiagnosticDefinitions

@@ -58,7 +58,7 @@ public sealed class NameQuotingAnalyzerTests(ITestOutputHelper testOutputHelper)
             NameQuotingPolicy.DoubleQuotesRequired => "\"Column1\"",
             NameQuotingPolicy.SquareBracketsRequired => "[Column1]",
             NameQuotingPolicy.NotAllowed => "Column1",
-            _ => throw new ArgumentOutOfRangeException(nameof(nameQuotingPolicy), nameQuotingPolicy, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(nameQuotingPolicy), nameQuotingPolicy, message: null)
         };
 
         var code = $"""

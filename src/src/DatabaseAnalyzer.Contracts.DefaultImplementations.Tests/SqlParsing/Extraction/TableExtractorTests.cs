@@ -185,8 +185,8 @@ public sealed class TableExtractorTests
         tables.Should().HaveCount(1);
         tables[0].Indices.Should().NotBeNull();
         tables[0].Indices.Should().HaveCount(1);
-        tables[0].Indices![0].IndexName.Should().Be("PK_T1");
-        tables[0].Indices![0].IndexType.Should().Be(TableColumnIndexType.Clustered | TableColumnIndexType.PrimaryKey | TableColumnIndexType.Unique);
+        tables[0].Indices[0].IndexName.Should().Be("PK_T1");
+        tables[0].Indices[0].IndexType.Should().Be(TableColumnIndexType.Clustered | TableColumnIndexType.PrimaryKey | TableColumnIndexType.Unique);
     }
 
     [Fact]
@@ -217,12 +217,12 @@ public sealed class TableExtractorTests
         tables.Should().HaveCount(1);
         tables[0].Indices.Should().NotBeNull();
         tables[0].Indices.Should().HaveCount(2);
-        tables[0].Indices!.Should().ContainEquivalentOf(
+        tables[0].Indices.Should().ContainEquivalentOf(
             new IndexInformation("MyDb", "dbo", "T1", "PK_T1", TableColumnIndexType.Clustered | TableColumnIndexType.PrimaryKey | TableColumnIndexType.Unique, ["Id"], [], null!, "main.sql"),
-            options => options.Excluding(x => x.CreationStatement));
-        tables[0].Indices!.Should().ContainEquivalentOf(
+            static options => options.Excluding(static x => x.CreationStatement));
+        tables[0].Indices.Should().ContainEquivalentOf(
             new IndexInformation("MyDb", "dbo", "T1", null, TableColumnIndexType.Unique, ["Email"], [], null!, "main.sql"),
-            options => options.Excluding(x => x.CreationStatement));
+            static options => options.Excluding(static x => x.CreationStatement));
     }
 
     [Fact]
@@ -256,8 +256,8 @@ public sealed class TableExtractorTests
         tables[0].ForeignKeys.Should().HaveCount(1);
         tables[0].ForeignKeys.Should().ContainEquivalentOf(
             expectedForeignKey,
-            options => options
-                .Excluding(x => x.CreationStatement)
+            static options => options
+                .Excluding(static x => x.CreationStatement)
                 .IgnoringCyclicReferences()
         );
     }

@@ -27,7 +27,7 @@ public sealed class GlobalAnalyzerTester
 
     public void Test()
     {
-        var firstScriptError = _analysisContext.Scripts.SelectMany(script => script.Errors).FirstOrDefault();
+        var firstScriptError = _analysisContext.Scripts.SelectMany(static script => script.Errors).FirstOrDefault();
         if (firstScriptError is not null)
         {
             throw new InvalidOperationException($"Error in script: {firstScriptError}");

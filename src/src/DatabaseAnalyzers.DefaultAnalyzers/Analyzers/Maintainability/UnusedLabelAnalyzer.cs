@@ -19,11 +19,11 @@ public sealed class UnusedLabelAnalyzer : IScriptAnalyzer
     private static void AnalyzeBatch(IAnalysisContext context, IScriptModel script, TSqlBatch batch)
     {
         var referencedLabelNames = batch
-            .GetChildren<GoToStatement>(true)
-            .Select(a => a.LabelName.Value.TrimEnd(':'))
+            .GetChildren<GoToStatement>(recursive: true)
+            .Select(static a => a.LabelName.Value.TrimEnd(':'))
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var label in batch.GetChildren<LabelStatement>(true))
+        foreach (var label in batch.GetChildren<LabelStatement>(recursive: true))
         {
             var labelName = label.Value.TrimEnd(':');
             if (referencedLabelNames.Contains(labelName))

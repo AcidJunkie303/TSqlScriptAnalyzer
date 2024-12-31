@@ -80,14 +80,14 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
     private ISchemaBoundObject[] RemoveAndReportDuplicates(ISchemaBoundObject[] objects)
     {
         var indicesWithoutName = objects
-            .Where(a => a is IndexInformation { IndexName: null })
+            .Where(static a => a is IndexInformation { IndexName: null })
             .ToList();
 
         var objectsGroupedByName = objects
             // depending on the index type, some indices might not have a name
-            .Where(a => a is not IndexInformation { IndexName: null })
+            .Where(static a => a is not IndexInformation { IndexName: null })
             .GroupBy(a => a.FullNameParts.StringJoin(":::"), StringComparer.OrdinalIgnoreCase)
-            .Select(a => a.ToList())
+            .Select(static a => a.ToList())
             .ToList();
 
         foreach (var databaseObjects in objectsGroupedByName)
@@ -95,7 +95,7 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
             if (databaseObjects.Count > 1)
             {
                 var databaseObject = databaseObjects[0];
-                var scriptFilePaths = databaseObjects.Select(a => $"'{a.RelativeScriptFilePath}'").StringJoin(", ");
+                var scriptFilePaths = databaseObjects.Select(static a => $"'{a.RelativeScriptFilePath}'").StringJoin(", ");
 
                 _issueReporter.Report(WellKnownDiagnosticDefinitions.DuplicateObjectCreationStatement,
                     databaseObject.DatabaseName,
@@ -109,8 +109,8 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
         }
 
         return objectsGroupedByName
-            .Where(a => a.Count == 1)
-            .Select(a => a[0])
+            .Where(static a => a.Count == 1)
+            .Select(static a => a[0])
             .Concat(indicesWithoutName)
             .ToArray();
     }
