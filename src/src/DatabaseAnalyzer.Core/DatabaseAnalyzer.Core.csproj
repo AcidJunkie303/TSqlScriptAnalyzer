@@ -13,7 +13,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Runtime\Loader\"/>
         <Folder Include="SqlParsing\"/>
     </ItemGroup>
 

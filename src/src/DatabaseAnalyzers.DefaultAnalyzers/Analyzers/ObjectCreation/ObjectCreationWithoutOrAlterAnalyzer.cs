@@ -1,6 +1,5 @@
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.ObjectCreation;
@@ -11,13 +10,13 @@ public sealed class ObjectCreationWithoutOrAlterAnalyzer : IScriptAnalyzer
 
     public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
-        Report(context, script, script.ParsedScript.GetChildren<CreateViewStatement>(recursive: true));
-        Report(context, script, script.ParsedScript.GetChildren<CreateProcedureStatement>(recursive: true));
-        Report(context, script, script.ParsedScript.GetChildren<CreateFunctionStatement>(recursive: true));
-        Report(context, script, script.ParsedScript.GetChildren<CreateTriggerStatement>(recursive: true));
+        AnalyzeFragments(context, script, script.ParsedScript.GetChildren<CreateViewStatement>(recursive: true));
+        AnalyzeFragments(context, script, script.ParsedScript.GetChildren<CreateProcedureStatement>(recursive: true));
+        AnalyzeFragments(context, script, script.ParsedScript.GetChildren<CreateFunctionStatement>(recursive: true));
+        AnalyzeFragments(context, script, script.ParsedScript.GetChildren<CreateTriggerStatement>(recursive: true));
     }
 
-    private static void Report(IAnalysisContext context, IScriptModel script, IEnumerable<TSqlFragment> fragments)
+    private static void AnalyzeFragments(IAnalysisContext context, IScriptModel script, IEnumerable<TSqlFragment> fragments)
     {
         foreach (var fragment in fragments)
         {

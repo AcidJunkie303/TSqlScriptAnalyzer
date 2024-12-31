@@ -81,6 +81,7 @@ public static class SqlFragmentExtensions
             ProcedureStatementBody s => s.ProcedureReference.Name.GetConcatenatedTwoPartObjectName(defaultSchemaName),
             FunctionStatementBody s => s.Name.GetConcatenatedTwoPartObjectName(defaultSchemaName),
             CreateTableStatement s => s.SchemaObjectName.GetConcatenatedTwoPartObjectName(defaultSchemaName),
+            AlterTableStatement s => s.SchemaObjectName.GetConcatenatedTwoPartObjectName(defaultSchemaName),
             CreateIndexStatement s => s.Name.Value,
             ViewStatementBody s => s.SchemaObjectName.GetConcatenatedTwoPartObjectName(defaultSchemaName),
             TriggerStatementBody s => s.Name.GetConcatenatedTwoPartObjectName(defaultSchemaName),
