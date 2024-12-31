@@ -19,11 +19,35 @@ public static class DiagnosticsSettingsLoader
             }
 
             dynamic raw = diagnosticsConfigurationSection.GetSection(diagnosticId).Get(rawType) ?? Activator.CreateInstance(rawType)!;
-            var settings = raw.ToSettings();
+
+            var accessorType = typeof(SettingsAccessor<,>).MakeGenericType(rawType, finalType);
+            var accessor = (ISettingsAccessor)Activator.CreateInstance(accessorType, (object[]) [raw])!;
+            var settings = accessor.GetSettings();
 
             diagnosticSettingsById.Add(diagnosticId, settings);
         }
 
         return diagnosticSettingsById;
+    }
+
+    private interface ISettingsAccessor
+    {
+        object GetSettings();
+    }
+
+    private sealed class SettingsAccessor<TRaw, TFinal> : ISettingsAccessor
+        where TRaw : class, IRawSettings<TFinal>
+        where TFinal : class, ISettings<TFinal>
+    {
+        private readonly TRaw _rawSettings;
+
+#pragma warning disable S1144 // Unused private types or members should be removed -> ise used above through Activator.CreateInstance
+        public SettingsAccessor(TRaw rawSettings)
+        {
+            _rawSettings = rawSettings;
+        }
+#pragma warning restore S1144
+
+        public object GetSettings() => _rawSettings.ToSettings();
     }
 }

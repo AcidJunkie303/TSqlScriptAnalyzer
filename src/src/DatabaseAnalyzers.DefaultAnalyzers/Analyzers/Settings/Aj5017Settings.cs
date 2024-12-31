@@ -5,7 +5,7 @@ using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
-public sealed class Aj5017SettingsRaw : IRawSettings<Aj5017Settings>
+internal sealed class Aj5017SettingsRaw : IRawSettings<Aj5017Settings>
 {
     // ReSharper disable UnusedAutoPropertyAccessor.Global -> used during deserialization
     public IReadOnlyList<MissingIndexSuppressionSettingsRaw>? MissingIndexOnForeignKeyColumnSuppressions { get; set; }
@@ -16,7 +16,7 @@ public sealed class Aj5017SettingsRaw : IRawSettings<Aj5017Settings>
             : new Aj5017Settings(MissingIndexOnForeignKeyColumnSuppressions.Select(static a => a.ToSettings()).ToImmutableArray());
 }
 
-public sealed record Aj5017Settings(
+internal sealed record Aj5017Settings(
     IReadOnlyList<MissingIndexSuppressionSettings> MissingIndexOnForeignKeyColumnSuppressions
 ) : ISettings<Aj5017Settings>
 {

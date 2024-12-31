@@ -1,10 +1,10 @@
 using Ardalis.GuardClauses;
 using DatabaseAnalyzer.Contracts;
 
-namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Strings;
+namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
-public sealed class Aj5001SettingsRaw : IRawSettings<Aj5001Settings>
+internal sealed class Aj5001SettingsRaw : IRawSettings<Aj5001Settings>
 {
     public int MaxAllowedConcatenations { get; set; } = Aj5001Settings.Default.MaxAllowedConcatenations;
 
@@ -14,7 +14,7 @@ public sealed class Aj5001SettingsRaw : IRawSettings<Aj5001Settings>
     );
 }
 
-public sealed record Aj5001Settings(
+internal sealed record Aj5001Settings(
     int MaxAllowedConcatenations
 ) : ISettings<Aj5001Settings>
 {

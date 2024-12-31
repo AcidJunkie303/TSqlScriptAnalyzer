@@ -106,7 +106,7 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
             context,
             script,
             script.ParsedScript.GetChildren<ViewStatementBody>(recursive: true),
-            static a => a.SchemaObjectName.Identifiers,
+            static a => a.SchemaObjectName.Identifiers.TakeLast(1),
             "view",
             policy);
 
@@ -155,8 +155,8 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
                 continue;
             }
 
-            var databaseName = identifier.FindCurrentDatabaseNameAtFragment(script.ParsedScript);
-            var fullObjectName = identifier.TryGetFirstClassObjectName(context, script);
+            var databaseName = statement.FindCurrentDatabaseNameAtFragment(script.ParsedScript);
+            var fullObjectName = statement.TryGetFirstClassObjectName(context, script);
             context.IssueReporter.Report(DiagnosticDefinitions.Default,
                 databaseName,
                 script.RelativeScriptFilePath,
@@ -191,7 +191,7 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
             "AJ5038",
             IssueType.Warning,
             "Object name quoting",
-            "The {0} '{1}' quoted wrongly which does not comply with the configured policy. It should be: '{2}'."
+            "The {0} name part '{1}' is quoted wrongly which does not comply with the configured policy. It should be: '{2}'."
         );
     }
 }

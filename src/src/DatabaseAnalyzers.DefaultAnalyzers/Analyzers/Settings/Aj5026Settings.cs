@@ -6,7 +6,7 @@ using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
-public sealed class Aj5026SettingsRaw : IRawSettings<Aj5026Settings>
+internal sealed class Aj5026SettingsRaw : IRawSettings<Aj5026Settings>
 {
     // ReSharper disable UnusedAutoPropertyAccessor.Global -> used during deserialization
     public IReadOnlyList<string>? FullTableNamesToIgnore { get; set; }
@@ -21,7 +21,7 @@ public sealed class Aj5026SettingsRaw : IRawSettings<Aj5026Settings>
     );
 }
 
-public sealed record Aj5026Settings(
+internal sealed record Aj5026Settings(
     IReadOnlyList<Regex> FullTableNamesToIgnore
 ) : ISettings<Aj5026Settings>
 {
