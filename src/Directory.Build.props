@@ -48,11 +48,11 @@
 
     <!-- C# Analyzers -->
     <ItemGroup>
-        <PackageReference Include="Meziantou.Analyzer" Version="2.0.182">
+        <PackageReference Include="Meziantou.Analyzer" Version="2.0.184">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="SonarAnalyzer.CSharp" Version="10.3.0.106239">
+        <PackageReference Include="SonarAnalyzer.CSharp" Version="10.4.0.108396">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
@@ -60,11 +60,11 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Roslynator.Analyzers" Version="4.12.9">
+        <PackageReference Include="Roslynator.Analyzers" Version="4.12.10">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="4.12.9">
+        <PackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="4.12.10">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -82,9 +82,9 @@
         <PackageReference Include="FluentAssertions" Version="7.0.0"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0"/>
         <PackageReference Include="xunit" Version="2.9.2"/>
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" privateAssets="all"/>
-        <PackageReference Include="JunitXml.TestLogger" Version="4.1.0"/>
-        <PackageReference Include="coverlet.collector" Version="6.0.2">
+        <PackageReference Include="xunit.runner.visualstudio" Version="3.0.0" privateAssets="all"/>
+        <PackageReference Include="JunitXml.TestLogger" Version="5.0.0"/>
+        <PackageReference Include="coverlet.collector" Version="6.0.3">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
