@@ -6,10 +6,18 @@ A framework to analyze multiple T-SQL script files
 
 ### Analyzers not created yet
 
-- IIssueCollector should be on the IScriptModel. This way, we don't need to specify the relative script file path
+- IIssueCollector should be on the IScriptModel. This way, we don't need to specify the relative script file path.
+  However, it has nothing to do with the script model. Maybe a factory in IAnalysisContext which like:
+  ```
+  public interface IIssueReporterProvider
+  {
+      IIssueReporter GetFor(IScriptModel script);
+  }
+  ```
+  Wouldn't solve the problem as someone can pass in the wrong script model which would result in the wrong script name
+  in the issue.
 - sp_executeSql can be used with parameters, so check for it -> improvement
 - ToDo, not yet finished, open point finder
-- Raiserror finder
 - invoked stored procedure or function not found
 - Output parameters should be assigned (hard because we need to check all possible execution paths)
 - Queries that use "TOP" should have an "ORDER BY"
@@ -42,7 +50,7 @@ A framework to analyze multiple T-SQL script files
   schema comparison would yield lots of unnecessary deltas.
 - usage banned functions like GETDATE(), use GETUTCDATE() instead etc. make it configurable
 - "unsafe" select * finder
--
+- Raiserror finder
 
 ### Other
 

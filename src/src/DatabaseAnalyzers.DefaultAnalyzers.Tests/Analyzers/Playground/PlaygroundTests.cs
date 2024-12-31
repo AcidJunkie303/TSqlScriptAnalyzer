@@ -14,18 +14,10 @@ public sealed class PlaygroundTests(ITestOutputHelper testOutputHelper)
                             USE MyDB
                             GO
 
-                            SELECT      t2.*
-                            FROM (
-                                SELECT      t1.C1, t1.C2
-                                FROM        dbo.Table1 t1
-                            ) AS t2
-
-                            SELECT
-                            t1.*,
-                            t2.Value2
-                            FROM Table1 t1
-                            INNER JOIN Table2 t2 ON t2.Id = t1.Id
-
+                            RAISERROR (50005, -- Message ID.
+                                10, -- Severity,
+                                1, -- State,
+                                N'abcde');
                             """;
 
         var tester = GetDefaultTesterBuilder(code).Build();
