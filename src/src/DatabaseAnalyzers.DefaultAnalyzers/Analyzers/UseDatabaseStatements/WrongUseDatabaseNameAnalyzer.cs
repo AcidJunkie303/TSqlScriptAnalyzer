@@ -1,7 +1,6 @@
 using System.Text.RegularExpressions;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.UseDatabaseStatements;
@@ -43,7 +42,7 @@ public sealed class WrongUseDatabaseNameAnalyzer : IScriptAnalyzer
 
     private static IReadOnlyCollection<Regex> GetExcludedFileNamePatterns(IAnalysisContext context)
     {
-        var settings = context.DiagnosticSettingsRetriever.GetSettings<Aj5003Settings>();
+        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5003Settings>();
 
         return settings.ExcludedFilePathPatterns;
     }

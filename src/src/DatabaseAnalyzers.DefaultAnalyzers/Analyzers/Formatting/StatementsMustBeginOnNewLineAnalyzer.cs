@@ -10,7 +10,7 @@ public sealed class StatementsMustBeginOnNewLineAnalyzer : IScriptAnalyzer
 
     public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
-        var settings = context.DiagnosticSettingsRetriever.GetSettings<Aj5023Settings>();
+        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5023Settings>();
 
         foreach (var statement in script.ParsedScript.GetChildren<TSqlStatement>(true))
         {

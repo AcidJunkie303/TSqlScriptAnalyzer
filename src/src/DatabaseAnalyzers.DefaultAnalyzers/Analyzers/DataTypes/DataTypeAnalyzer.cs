@@ -11,7 +11,7 @@ public sealed class DataTypeAnalyzer : IScriptAnalyzer
 
     public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
-        var settings = context.DiagnosticSettingsRetriever.GetSettings<Aj5006Settings>();
+        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5006Settings>();
         var parsedScript = script.ParsedScript;
 
         var procedureParameters = parsedScript

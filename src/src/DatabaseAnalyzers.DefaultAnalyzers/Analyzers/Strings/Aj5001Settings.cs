@@ -3,7 +3,7 @@ using DatabaseAnalyzer.Contracts;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Strings;
 
-public sealed class Aj5001SettingsRaw
+public sealed class Aj5001SettingsRaw : IRawSettings<Aj5001Settings>
 {
     public int MaxAllowedConcatenations { get; set; } = Aj5001Settings.Default.MaxAllowedConcatenations;
 

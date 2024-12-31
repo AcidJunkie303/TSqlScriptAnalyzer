@@ -37,5 +37,5 @@ public sealed record Aj5038Settings(
         NameQuotingPolicy.Undefined
     );
 
-    public static string DiagnosticId => "AJ5039";
+    public static string DiagnosticId => "AJ5038";
 }

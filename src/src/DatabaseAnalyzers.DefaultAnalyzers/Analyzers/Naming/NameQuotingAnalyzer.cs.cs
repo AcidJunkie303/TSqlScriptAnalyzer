@@ -10,7 +10,7 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
 
     public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
-        var settings = context.DiagnosticSettingsRetriever.GetSettings<Aj5038Settings>();
+        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5038Settings>();
 
         AnalyzeObjectCreations(context, script, settings.NameQuotingPolicyDuringObjectCreation);
         AnalyzeColumnReferences(context, script, settings.NameQuotingPolicyForColumnReferences);

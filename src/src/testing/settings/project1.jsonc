@@ -96,6 +96,9 @@
       "TriggerNamePattern": "\\ATRG_[A-Za-z0-1]+",
       "VariableNamePattern": "\\A[A-Z][A-Za-z0-1]+",
       "ViewNamePattern": "\\AV_[A-Z][A-Za-z0-1]+"
+    },
+    "AJ5038":{
+      "NameQuotingPolicyDuringObjectCreation" : "NotAllowed"
     }
   }
 }

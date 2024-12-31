@@ -3,13 +3,26 @@ using System.Runtime.Loader;
 
 namespace DatabaseAnalyzer.Core.Plugins;
 
-internal sealed class PluginLoadContext : AssemblyLoadContext
+internal sealed class PluginLoadContext : AssemblyLoadContext, IDisposable
 {
     private readonly AssemblyDependencyResolver _resolver;
+    private bool _isDisposed;
 
     public PluginLoadContext(string pluginPath) : base(isCollectible: true)
     {
         _resolver = new AssemblyDependencyResolver(pluginPath);
+    }
+
+    public void Dispose()
+    {
+        if (_isDisposed)
+        {
+            return;
+        }
+
+        Unload();
+
+        _isDisposed = true;
     }
 
     protected override Assembly? Load(AssemblyName assemblyName)

@@ -5,6 +5,6 @@ public interface IAnalysisContext
     string DefaultSchemaName { get; }
     IReadOnlyList<IScriptModel> Scripts { get; }
     IReadOnlyDictionary<string, IReadOnlyList<IScriptModel>> ScriptsByDatabaseName { get; }
-    IDiagnosticSettingsRetriever DiagnosticSettingsRetriever { get; }
+    IDiagnosticSettingsProvider DiagnosticSettingsProvider { get; }
     IIssueReporter IssueReporter { get; }
 }

@@ -2,7 +2,7 @@ using DatabaseAnalyzer.Contracts;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 
-public sealed class Aj5022SettingsRaw
+public sealed class Aj5022SettingsRaw : IRawSettings<Aj5022Settings>
 {
     public bool ForRequiresBeginEndBlock { get; set; }
     public bool IfRequiresBeginEndBlock { get; set; }

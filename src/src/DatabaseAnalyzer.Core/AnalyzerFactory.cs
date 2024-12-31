@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Services;
 using DatabaseAnalyzer.Core.Configuration;
@@ -31,44 +32,55 @@ public static class AnalyzerFactory
                 services.AddSingleton<IAnalyzer, Analyzer>();
                 services.AddSingleton<IScriptLoader, ScriptLoader>();
                 services.AddSingleton<IScriptSourceProvider, ScriptSourceSourceProvider>();
-                services.AddSingleton<IDiagnosticSettingsRetriever, DiagnosticSettingsRetriever>();
                 services.AddSingleton<IDiagnosticSuppressionExtractor, DiagnosticSuppressionExtractor>();
 
-                RegisterPlugins(services);
+                var pluginAssemblies = PluginAssemblyLoader.LoadPlugins(services);
+                RegisterPlugins(services, pluginAssemblies);
+                RegisterDiagnosticsSettingsProvider(services, configuration, pluginAssemblies);
             });
 
-    private static void RegisterPlugins(IServiceCollection services)
+    private static void RegisterPlugins(IServiceCollection services, IReadOnlyList<PluginAssembly> pluginAssemblies)
     {
-#pragma warning disable CA2000 // Dispose objects before losing scope -> done via DI container or catch block below
-        var pluginManager = new PluginManager();
-#pragma warning restore CA2000
-        try
+        foreach (var pluginAssembly in pluginAssemblies)
         {
-            services.AddSingleton(pluginManager);
-            pluginManager.LoadPlugins();
-
-            foreach (var pluginAssembly in pluginManager.PluginAssemblies)
+            foreach (var type in pluginAssembly.ScriptAnalyzerTypes)
             {
-                foreach (var type in pluginAssembly.ScriptAnalyzerTypes)
-                {
-                    services.AddSingleton(typeof(IScriptAnalyzer), type);
-                }
+                services.AddSingleton(typeof(IScriptAnalyzer), type);
+            }
 
-                foreach (var type in pluginAssembly.GlobalAnalyzerTypes)
-                {
-                    services.AddSingleton(typeof(IGlobalAnalyzer), type);
-                }
+            foreach (var type in pluginAssembly.GlobalAnalyzerTypes)
+            {
+                services.AddSingleton(typeof(IGlobalAnalyzer), type);
+            }
 
-                foreach (var type in pluginAssembly.DiagnosticSettingsProviderTypes)
-                {
-                    services.AddSingleton(typeof(IDiagnosticSettingsProvider), type);
-                }
+            foreach (var type in pluginAssembly.DiagnosticSettingsProviderTypes)
+            {
+                services.AddSingleton(typeof(IDiagnosticSettingsProvider), type);
+            }
+
+            foreach (var pair in pluginAssembly.SettingsTypes)
+            {
+                services.AddSingleton(pair);
             }
         }
-        catch
+    }
+
+    private static void RegisterDiagnosticsSettingsProvider(IServiceCollection services, IConfiguration configuration, IReadOnlyList<PluginAssembly> pluginAssemblies)
+    {
+        var diagnosticsConfigurationSection = configuration.GetSection("Diagnostics");
+
+        var allDiagnosticsSettingsById = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var pluginAssembly in pluginAssemblies)
         {
-            pluginManager.Dispose();
-            throw;
+            var settingsByDiagnosticsId = DiagnosticsSettingsLoader.Load(pluginAssembly.SettingsTypes, diagnosticsConfigurationSection);
+            foreach (var (diagnosticId, settings) in settingsByDiagnosticsId)
+            {
+                allDiagnosticsSettingsById.Add(diagnosticId, settings);
+            }
         }
+
+        var provider = new DiagnosticSettingsProvider(allDiagnosticsSettingsById.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase));
+        services.AddSingleton<IDiagnosticSettingsProvider>(provider);
     }
 }

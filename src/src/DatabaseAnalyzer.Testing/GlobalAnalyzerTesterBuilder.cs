@@ -50,7 +50,7 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
         }
 
         var analyzer = new TAnalyzer();
-        var diagnosticSettingsProvider = new FakeDiagnosticSettingsRetriever(_settingsByDiagnosticId);
+        var diagnosticSettingsProvider = new FakeDiagnosticSettingsProvider(_settingsByDiagnosticId);
         var diagnosticDefinitionRegistry = new DiagnosticDefinitionRegistry(analyzer.SupportedDiagnostics);
         var testCodeProcessor = new TestCodeProcessor(diagnosticDefinitionRegistry);
 

@@ -5,7 +5,7 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 
-public sealed class Aj5023SettingsRaw
+public sealed class Aj5023SettingsRaw : IRawSettings<Aj5023Settings>
 {
     public IReadOnlyCollection<string?>? StatementTypesToIgnore { get; set; }
 

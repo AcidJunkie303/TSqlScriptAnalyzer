@@ -1,6 +1,5 @@
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Strings;
@@ -39,18 +38,19 @@ public sealed class ExcessiveStringConcatenationAnalyzer : IScriptAnalyzer
     }
 
     private static int GetMaxAllowedStringConcatenations(IAnalysisContext context)
-        => context.DiagnosticSettingsRetriever.GetSettings<Aj5001Settings>().MaxAllowedConcatenations;
+        => context.DiagnosticSettingsProvider.GetSettings<Aj5001Settings>().MaxAllowedConcatenations;
 
     private sealed class Visitor : TSqlFragmentVisitor
     {
         private readonly IParentFragmentProvider _parentFragmentProvider;
-        public int TotalConcatenations { get; private set; }
-        public bool AreStringsInvolved { get; private set; }
 
         public Visitor(IParentFragmentProvider parentFragmentProvider)
         {
             _parentFragmentProvider = parentFragmentProvider;
         }
+
+        public int TotalConcatenations { get; private set; }
+        public bool AreStringsInvolved { get; private set; }
 
         public override void Visit(BinaryExpression node)
         {

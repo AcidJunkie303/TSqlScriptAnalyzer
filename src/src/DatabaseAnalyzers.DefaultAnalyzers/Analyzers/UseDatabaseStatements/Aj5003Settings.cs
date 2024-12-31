@@ -5,7 +5,7 @@ using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.UseDatabaseStatements;
 
-public sealed class Aj5003SettingsRaw
+public sealed class Aj5003SettingsRaw : IRawSettings<Aj5003Settings>
 {
     public IReadOnlyList<string?>? ExcludedFilePathPatterns { get; set; }
 

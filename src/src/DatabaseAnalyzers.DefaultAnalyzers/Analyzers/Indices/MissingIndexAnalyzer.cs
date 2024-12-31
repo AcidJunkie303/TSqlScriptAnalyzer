@@ -22,7 +22,7 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
 
     private static void AnalyzeForeignKeys(IAnalysisContext context, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
     {
-        var settings = context.DiagnosticSettingsRetriever.GetSettings<Aj5017Settings>();
+        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5017Settings>();
 
         var tables = databasesByName
             .SelectMany(db => db.Value.SchemasByName.Values)
@@ -64,7 +64,7 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
 
     private static void AnalyzeModules(IAnalysisContext context, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
     {
-        var settings = context.DiagnosticSettingsRetriever.GetSettings<Aj5015Settings>();
+        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5015Settings>();
 
         foreach (var script in context.Scripts)
         {

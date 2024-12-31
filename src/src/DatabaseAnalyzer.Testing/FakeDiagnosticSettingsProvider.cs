@@ -2,11 +2,11 @@ using DatabaseAnalyzer.Contracts;
 
 namespace DatabaseAnalyzer.Testing;
 
-internal sealed class FakeDiagnosticSettingsRetriever : IDiagnosticSettingsRetriever
+internal sealed class FakeDiagnosticSettingsProvider : IDiagnosticSettingsProvider
 {
     private readonly IReadOnlyDictionary<string, object?> _settingsByDiagnosticId;
 
-    public FakeDiagnosticSettingsRetriever(IReadOnlyDictionary<string, object?> settingsByDiagnosticId)
+    public FakeDiagnosticSettingsProvider(IReadOnlyDictionary<string, object?> settingsByDiagnosticId)
     {
         _settingsByDiagnosticId = settingsByDiagnosticId;
     }

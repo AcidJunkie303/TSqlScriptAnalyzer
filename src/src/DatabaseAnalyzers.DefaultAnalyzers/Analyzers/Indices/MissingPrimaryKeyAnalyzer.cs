@@ -11,7 +11,7 @@ public sealed class MissingPrimaryKeyAnalyzer : IGlobalAnalyzer
 
     public void Analyze(IAnalysisContext context)
     {
-        var settings = context.DiagnosticSettingsRetriever.GetSettings<Aj5026Settings>();
+        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5026Settings>();
         var allTables = new DatabaseObjectExtractor(context.IssueReporter)
             .Extract(context.Scripts, context.DefaultSchemaName)
             .SelectMany(a => a.Value.SchemasByName)

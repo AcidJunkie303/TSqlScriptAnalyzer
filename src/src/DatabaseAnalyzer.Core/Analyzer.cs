@@ -14,7 +14,7 @@ namespace DatabaseAnalyzer.Core;
 internal sealed class Analyzer : IAnalyzer
 {
     private readonly ApplicationSettings _applicationSettings;
-    private readonly IDiagnosticSettingsRetriever _diagnosticSettingsProviderFactory;
+    private readonly IDiagnosticSettingsProvider _diagnosticSettingsProvider;
     private readonly IDiagnosticSuppressionExtractor _diagnosticSuppressionExtractor;
     private readonly IEnumerable<IGlobalAnalyzer> _globalAnalyzers;
     private readonly IProgressCallback _progressCallback;
@@ -28,7 +28,7 @@ internal sealed class Analyzer : IAnalyzer
         IScriptSourceProvider scriptSourceProvider,
         IScriptLoader scriptLoader,
         ApplicationSettings applicationSettings,
-        IDiagnosticSettingsRetriever diagnosticSettingsProviderFactory,
+        IDiagnosticSettingsProvider diagnosticSettingsProvider,
         IEnumerable<IScriptAnalyzer> scriptAnalyzers,
         IEnumerable<IGlobalAnalyzer> globalAnalyzers,
         IDiagnosticSuppressionExtractor diagnosticSuppressionExtractor)
@@ -37,7 +37,7 @@ internal sealed class Analyzer : IAnalyzer
         _scriptSourceProvider = scriptSourceProvider;
         _scriptLoader = scriptLoader;
         _applicationSettings = applicationSettings;
-        _diagnosticSettingsProviderFactory = diagnosticSettingsProviderFactory;
+        _diagnosticSettingsProvider = diagnosticSettingsProvider;
         _scriptAnalyzers = scriptAnalyzers;
         _globalAnalyzers = globalAnalyzers;
         _diagnosticSuppressionExtractor = diagnosticSuppressionExtractor;
@@ -56,7 +56,7 @@ internal sealed class Analyzer : IAnalyzer
             _applicationSettings.DefaultSchemaName,
             scripts,
             scriptByDatabaseName,
-            _diagnosticSettingsProviderFactory,
+            _diagnosticSettingsProvider,
             new IssueReporter()
         );
 

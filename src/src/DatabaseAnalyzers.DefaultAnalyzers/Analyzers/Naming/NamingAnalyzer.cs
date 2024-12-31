@@ -11,7 +11,7 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
 
     public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
-        var settings = context.DiagnosticSettingsRetriever.GetSettings<Aj5030Settings>();
+        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5030Settings>();
 
         var functions = script.ParsedScript
             .GetTopLevelDescendantsOfType<FunctionStatementBody>()

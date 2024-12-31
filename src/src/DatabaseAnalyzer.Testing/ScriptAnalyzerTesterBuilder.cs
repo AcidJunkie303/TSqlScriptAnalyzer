@@ -58,7 +58,7 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
         }
 
         var analyzer = new TAnalyzer();
-        var diagnosticSettingsProvider = new FakeDiagnosticSettingsRetriever(_settingsDiagnosticId);
+        var diagnosticSettingsProvider = new FakeDiagnosticSettingsProvider(_settingsDiagnosticId);
         var diagnosticDefinitionRegistry = new DiagnosticDefinitionRegistry(analyzer.SupportedDiagnostics);
         var testCodeProcessor = new TestCodeProcessor(diagnosticDefinitionRegistry);
 
