@@ -10,7 +10,6 @@ A framework to analyze multiple T-SQL script files
 - sp_executeSql can be used with parameters, so check for it -> improvement
 - ToDo, not yet finished, open point finder
 - Raiserror finder
-- select * finder
 - invoked stored procedure or function not found
 - Output parameters should be assigned (hard because we need to check all possible execution paths)
 - Queries that use "TOP" should have an "ORDER BY"
@@ -25,6 +24,7 @@ A framework to analyze multiple T-SQL script files
   provide such handling!?
 
 ### Other
+
 - *none*
 
 # Done
@@ -41,6 +41,8 @@ A framework to analyze multiple T-SQL script files
 - Do not create nameless constraints (unique, primary key) which will have a random name when executing. Otherwise,
   schema comparison would yield lots of unnecessary deltas.
 - usage banned functions like GETDATE(), use GETUTCDATE() instead etc. make it configurable
+- "unsafe" select * finder
+-
 
 ### Other
 
