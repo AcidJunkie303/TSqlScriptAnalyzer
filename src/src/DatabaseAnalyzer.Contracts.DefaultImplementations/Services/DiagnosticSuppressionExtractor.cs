@@ -11,7 +11,7 @@ public sealed partial class DiagnosticSuppressionExtractor : IDiagnosticSuppress
     public IEnumerable<DiagnosticSuppression> ExtractSuppressions(TSqlScript script)
     {
         ArgumentNullException.ThrowIfNull(script);
-        return script.Batches.IsNullOrEmpty() || script.ScriptTokenStream.IsNullOrEmpty()
+        return script.ScriptTokenStream is null
             ? []
             : script.ScriptTokenStream.SelectMany(Extract);
     }
