@@ -6,10 +6,12 @@ A framework to analyze multiple T-SQL script files
 
 ### Analyzers not created yet
 
-- ToDo, not yet finished, open point finder
+- ToDo, not yet finished, open point finder. Tags (only opening -> capture until end of line, or open and closing tag
+  can be configured)
 - Output parameters should be assigned (hard because we need to check all possible execution paths)
 - All branches in a conditional structure should not have exactly the same implementation (except 1=1)
-- indices and trigger names should contain the table name and the table schema name
+- Indices and trigger names should contain the table name and the table schema name
+- Stored procedure, functions etc. documentation header analyzer
 
 ### Resiliency / Robustness
 
