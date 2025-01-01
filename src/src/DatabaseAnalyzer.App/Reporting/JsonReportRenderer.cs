@@ -1,3 +1,4 @@
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using DatabaseAnalyzer.Core;
 
@@ -5,11 +6,6 @@ namespace DatabaseAnalyzer.App.Reporting;
 
 internal sealed class JsonReportRenderer : IReportRenderer
 {
-    private static readonly JsonSerializerOptions Options = new(JsonSerializerDefaults.Web)
-    {
-        WriteIndented = true
-    };
-
     public string RenderReport(AnalysisResult analysisResult)
     {
         var report = new
@@ -32,6 +28,16 @@ internal sealed class JsonReportRenderer : IReportRenderer
             })
         };
 
-        return JsonSerializer.Serialize(report, Options).Trim();
+        var options = CreateJsonSerializerOptions();
+        return JsonSerializer.Serialize(report, options).Trim();
+    }
+
+    private static JsonSerializerOptions CreateJsonSerializerOptions()
+    {
+        return new JsonSerializerOptions(JsonSerializerDefaults.Web)
+        {
+            WriteIndented = true,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        };
     }
 }

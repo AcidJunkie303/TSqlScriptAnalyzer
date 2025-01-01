@@ -16,7 +16,7 @@ AS
 
 GO
 
-CREATE    OR   ALTER VIEW dbo.V1
+CREATE    OR   ALTER VIEW dbo.V22
 AS
     SELECT          
         Column1,

@@ -60,35 +60,39 @@ internal sealed class Analyzer : IAnalyzer
             new IssueReporter()
         );
 
-        Parallel.ForEach(analysisContext.Scripts, script =>
+        using (_progressCallback.OnProgressWithAutoEndActionNotification("Running analyzers"))
         {
-            foreach (var analyzer in _scriptAnalyzers)
+            Parallel.ForEach(analysisContext.Scripts, script =>
             {
-                analyzer.AnalyzeScript(analysisContext, script);
-            }
-        });
+                foreach (var analyzer in _scriptAnalyzers)
+                {
+                    analyzer.AnalyzeScript(analysisContext, script);
+                }
+            });
 
-        Parallel.ForEach(_globalAnalyzers, analyzer => analyzer.Analyze(analysisContext));
+            Parallel.ForEach(_globalAnalyzers, analyzer => analyzer.Analyze(analysisContext));
+        }
 
-        var issues = analysisContext.IssueReporter.GetIssues();
+        using (_progressCallback.OnProgressWithAutoEndActionNotification("Calculating results"))
+        {
+            var issues = analysisContext.IssueReporter.GetIssues();
+            var (unsuppressedIssues, suppressedIssues) = SplitIssuesToSuppressedAndUnsuppressed(scripts, issues);
+            var issuesByObjectName = issues
+                .GroupBy(a => a.FullObjectNameOrFileName, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(
+                    a => a.Key,
+                    a => (IReadOnlyList<IIssue>)a.ToImmutableArray(),
+                    StringComparer.OrdinalIgnoreCase
+                );
 
-        var (unsuppressedIssues, suppressedIssues) = SplitIssuesToSuppressedAndUnsuppressed(scripts, issues);
-
-        var issuesByObjectName = issues
-            .GroupBy(a => a.FullObjectNameOrFileName, StringComparer.OrdinalIgnoreCase)
-            .ToDictionary(
-                a => a.Key,
-                a => (IReadOnlyList<IIssue>)a.ToImmutableArray(),
-                StringComparer.OrdinalIgnoreCase
+            return new AnalysisResult(
+                _applicationSettings.ScriptSource.ScriptsRootDirectoryPath,
+                unsuppressedIssues,
+                suppressedIssues,
+                issuesByObjectName,
+                _applicationSettings.Diagnostics.DisabledDiagnostics
             );
-
-        return new AnalysisResult(
-            _applicationSettings.ScriptSource.ScriptsRootDirectoryPath,
-            unsuppressedIssues,
-            suppressedIssues,
-            issuesByObjectName,
-            _applicationSettings.Diagnostics.DisabledDiagnostics
-        );
+        }
     }
 
     private static (List<IIssue> UnsuppressedIssues, List<SuppressedIssue> SuppressedIssues) SplitIssuesToSuppressedAndUnsuppressed(IReadOnlyCollection<IScriptModel> scripts, IReadOnlyCollection<IIssue> issues)

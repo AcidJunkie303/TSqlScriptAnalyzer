@@ -24,10 +24,13 @@ A framework to analyze multiple T-SQL script files
   database.
 
 ### Other
-- *none*
+
+- Create HTML report
 
 # Done
+
 ### Analyzers created
+
 - Dead code after return, break, continue, throw and goto statements
 - Unused label -> dead code
 - Object creation without schema name
@@ -45,6 +48,7 @@ A framework to analyze multiple T-SQL script files
 - invoked stored procedure or function not found
 
 ### Other
+
 - Create smart settings implementation so IDiagnosticSettingsProvider is not used anymore. Instead, rely on
   IRawSettings<out TSettings> and the type constraints to make it dynamic.
 
