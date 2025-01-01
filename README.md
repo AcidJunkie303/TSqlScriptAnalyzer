@@ -14,21 +14,20 @@ A framework to analyze multiple T-SQL script files
 ### Resiliency / Robustness
 
 - A faulty analyzer must not cause the app to crash
-- Remove IssueReporter.Report() extension methods. Instead, every script should provide the database name
+- Remove IssueReporter.Report() extension methods. Instead, every script should provide the database name. Passing in
+  the IScriptModel is easier but sometime, when the script contains additional USE DATABASE statements, the real
+  database name can be a different one
 - Every analyzer must handle situations where the database name is not known -> maybe through analyzer base class to
   provide such handling!?
-- script in which the first statement is not USE <Database> should be removed from the scanning by the core itself. Such
+- Script in which the first statement is not USE <Database> should be removed from the scanning by the core itself. Such
   cases should be reported as issues as well. This way we can be sure, that for every statement, it's associated with a
   database.
 
 ### Other
-
 - *none*
 
 # Done
-
 ### Analyzers created
-
 - Dead code after return, break, continue, throw and goto statements
 - Unused label -> dead code
 - Object creation without schema name
@@ -46,8 +45,7 @@ A framework to analyze multiple T-SQL script files
 - invoked stored procedure or function not found
 
 ### Other
-
-- create smart settings implementation so IDiagnosticSettingsProvider is not used anymore. Instead rely on
+- Create smart settings implementation so IDiagnosticSettingsProvider is not used anymore. Instead, rely on
   IRawSettings<out TSettings> and the type constraints to make it dynamic.
 
 ### Resiliency / Robustness
