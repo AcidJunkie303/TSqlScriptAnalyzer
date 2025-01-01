@@ -76,7 +76,7 @@ public sealed class BannedFunctionAnalyzer : IScriptAnalyzer
     {
         public static DiagnosticDefinition Default { get; } = new
         (
-            Aj5040Settings.DiagnosticId,
+            "AJ5040",
             IssueType.Warning,
             "Usage of banned function",
             "The function '{0}' is banned. {1}"
