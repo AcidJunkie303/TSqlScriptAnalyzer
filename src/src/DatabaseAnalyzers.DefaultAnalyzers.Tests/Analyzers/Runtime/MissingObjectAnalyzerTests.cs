@@ -3,8 +3,6 @@ using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using Xunit.Abstractions;
 
-#pragma warning disable
-
 namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Runtime;
 
 public sealed class MissingObjectAnalyzerTests(ITestOutputHelper testOutputHelper)
@@ -18,7 +16,6 @@ public sealed class MissingObjectAnalyzerTests(ITestOutputHelper testOutputHelpe
                                       GO
                                       CREATE FUNCTION   schema1.F1 () RETURNS INT AS BEGIN RETURN 1 END
                                       """;
-
 
     private static readonly Aj5044Settings Settings = new Aj5044SettingsRaw
     {
@@ -88,7 +85,6 @@ public sealed class MissingObjectAnalyzerTests(ITestOutputHelper testOutputHelpe
 
         Verify(Settings, code, SharedCode);
     }
-
 
     [Fact]
     public void WhenStoredProcedureDoesNotExist_WhenIgnored_ThenOk()
