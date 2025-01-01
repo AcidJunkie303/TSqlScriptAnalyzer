@@ -21,6 +21,6 @@ public static class SqlParserTokenExtensions
             : endColumnOffset;
 
         endColumnNumber++; // because it's an offset
-        return new CodeRegion(token.Line, token.Column, endLineNumber, endColumnNumber);
+        return CodeRegion.Create(token.Line, token.Column, endLineNumber, endColumnNumber);
     }
 }

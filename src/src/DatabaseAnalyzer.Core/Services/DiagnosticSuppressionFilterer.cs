@@ -16,7 +16,7 @@ internal static class DiagnosticSuppressionFilterer
         foreach (var issue in issues)
         {
             var activeSuppressions = suppressionMap
-                .GetActiveSuppressionsAtLocation(issue.CodeRegion.StartLineNumber, issue.CodeRegion.StartColumnNumber);
+                .GetActiveSuppressionsAtLocation(issue.CodeRegion.Begin.Line, issue.CodeRegion.Begin.Column);
 
             var suppression = activeSuppressions.LastOrDefault(a => a.DiagnosticId.EqualsOrdinalIgnoreCase(issue.DiagnosticDefinition.DiagnosticId));
             if (suppression is null)

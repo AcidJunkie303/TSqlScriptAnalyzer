@@ -59,10 +59,8 @@ public sealed class NonStandardComparisonOperatorAnalyzer : IScriptAnalyzer
 
         return CodeRegion.Create
         (
-            firstOperatorTokenCodeRegion.StartLineNumber,
-            firstOperatorTokenCodeRegion.StartColumnNumber,
-            lastOperatorTokenCodeRegion.EndLineNumber,
-            lastOperatorTokenCodeRegion.EndColumnNumber
+            firstOperatorTokenCodeRegion.Begin,
+            lastOperatorTokenCodeRegion.End
         );
     }
 

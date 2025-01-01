@@ -15,7 +15,7 @@ public static class SqlFragmentExtensions
         var firstTokenRegion = fragment.ScriptTokenStream[fragment.FirstTokenIndex].GetCodeRegion();
         var lastTokenRegion = fragment.ScriptTokenStream[fragment.LastTokenIndex].GetCodeRegion();
 
-        return CodeRegion.Create(firstTokenRegion.StartLineNumber, firstTokenRegion.StartColumnNumber, lastTokenRegion.EndLineNumber, lastTokenRegion.EndColumnNumber);
+        return CodeRegion.Create(firstTokenRegion.Begin, lastTokenRegion.End);
     }
 
     public static IReadOnlyList<TSqlFragment> GetChildren(this TSqlFragment fragment, bool recursive = false, Func<TSqlFragment, bool>? continueBranchRecursionPredicate = null)

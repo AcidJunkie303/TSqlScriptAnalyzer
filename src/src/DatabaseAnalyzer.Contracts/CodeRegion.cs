@@ -4,44 +4,29 @@ namespace DatabaseAnalyzer.Contracts;
 
 [StructLayout(LayoutKind.Auto)]
 public record struct CodeRegion(
-    int StartLineNumber,
-    int StartColumnNumber,
-    int EndLineNumber,
-    int EndColumnNumber
+    CodeLocation Begin,
+    CodeLocation End
 ) : IComparable<CodeRegion>, IComparable
 {
-    public static CodeRegion Create(CodeLocation startLocation, CodeLocation endLocation)
-        => new(startLocation.LineNumber, startLocation.ColumnNumber, endLocation.LineNumber, endLocation.ColumnNumber);
+    public static CodeRegion Create(CodeLocation beginLocation, CodeLocation endLocation)
+        => new(beginLocation, endLocation);
 
-    public static CodeRegion Create(int startLineNumber, int startColumnNumber, int endLineNumber, int endColumnNumber)
-        => new(startLineNumber, startColumnNumber, endLineNumber, endColumnNumber);
+    public static CodeRegion Create(int beginLineNumber, int beginColumnNumber, int endLineNumber, int endColumnNumber)
+        => new(new CodeLocation(beginLineNumber, beginColumnNumber), new CodeLocation(endLineNumber, endColumnNumber));
 
-    public static CodeRegion CreateSpan(CodeRegion start, CodeRegion end)
-        => Create(start.StartLineNumber, start.StartColumnNumber, end.EndLineNumber, end.EndColumnNumber);
+    public static CodeRegion CreateSpan(CodeRegion begin, CodeRegion end) => Create(begin.Begin, end.End);
 
     public readonly bool IsAround(int lineNumber, int columnNumber)
-        => lineNumber >= StartLineNumber
-           && columnNumber >= StartColumnNumber
-           && lineNumber <= EndLineNumber
-           && columnNumber <= EndColumnNumber;
+        => lineNumber >= Begin.Line
+           && columnNumber >= Begin.Column
+           && lineNumber <= End.Line
+           && columnNumber <= End.Column;
 
     public readonly int CompareTo(CodeRegion other)
     {
-        var result = StartLineNumber.CompareTo(other.StartLineNumber);
-        if (result != 0)
-        {
-            return result;
-        }
-
-        result = StartColumnNumber.CompareTo(other.StartColumnNumber);
-        if (result != 0)
-        {
-            return result;
-        }
-
-        result = EndLineNumber.CompareTo(other.EndLineNumber);
+        var result = Begin.CompareTo(other.Begin);
         return result == 0
-            ? EndColumnNumber.CompareTo(other.EndColumnNumber)
+            ? End.CompareTo(other.End)
             : result;
     }
 
@@ -55,5 +40,5 @@ public record struct CodeRegion(
     public static bool operator <=(CodeRegion left, CodeRegion right) => left.CompareTo(right) <= 0;
     public static bool operator >=(CodeRegion left, CodeRegion right) => left.CompareTo(right) >= 0;
 
-    public override readonly string ToString() => $"({StartLineNumber},{StartColumnNumber})-({EndLineNumber},{EndColumnNumber})";
+    public override readonly string ToString() => $"{Begin} - {End}";
 }

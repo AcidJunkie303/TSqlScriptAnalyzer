@@ -32,7 +32,7 @@ public sealed class UnnecessarySemicolonAnalyzer : IScriptAnalyzer
         var fragment = script.ParsedScript.TryGetSqlFragmentAtPosition(semicolonToken.Line, semicolonToken.Column);
         var fullObjectName = fragment?.TryGetFirstClassObjectName(context, script);
         var databaseName = fragment?.FindCurrentDatabaseNameAtFragment(script.ParsedScript) ?? script.DatabaseName;
-        var codeRegion = new CodeRegion(semicolonToken.Line, semicolonToken.Column, semicolonToken.Line, semicolonToken.Column + 1);
+        var codeRegion = CodeRegion.Create(semicolonToken.Line, semicolonToken.Column, semicolonToken.Line, semicolonToken.Column + 1);
         context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, codeRegion);
 
         static bool IsSemicolonRequired(IScriptModel script, int tokenIndex)

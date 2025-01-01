@@ -24,9 +24,9 @@ internal sealed class SuppressionMap
     {
         var sortedSuppressions = suppressions
             .GroupBy(a => a.Location)
-            .OrderBy(a => a.Key.LineNumber)
-            .ThenBy(a => a.Key.ColumnNumber)
-            .Select(a => (Coords: (a.Key.LineNumber, a.Key.ColumnNumber), Suppressions: a.ToList()));
+            .OrderBy(a => a.Key.Line)
+            .ThenBy(a => a.Key.Column)
+            .Select(a => (Coords: (LineNumber: a.Key.Line, ColumnNumber: a.Key.Column), Suppressions: a.ToList()));
 
         var activeSuppressions = new LinkedList<DiagnosticSuppression>();
         var map = new List<SuppressionEntry>();
