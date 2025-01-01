@@ -14,10 +14,14 @@ public sealed class PlaygroundTests(ITestOutputHelper testOutputHelper)
                             USE MyDB
                             GO
 
-                            RAISERROR (50005, -- Message ID.
-                                10, -- Severity,
-                                1, -- State,
-                                N'abcde');
+                            select TOP 1 ID
+                            from Table1
+                            ORDER BY Id
+
+                            update TOP (1) t1
+                            SET Value1 = 123
+                            FROM Table1 t1
+
                             """;
 
         var tester = GetDefaultTesterBuilder(code).Build();

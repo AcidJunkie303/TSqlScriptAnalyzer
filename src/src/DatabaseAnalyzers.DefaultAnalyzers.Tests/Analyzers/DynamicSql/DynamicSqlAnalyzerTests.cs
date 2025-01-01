@@ -4,10 +4,11 @@ using Xunit.Abstractions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.DynamicSql;
 
-public sealed class DynamicSqlAnalyzerTests(ITestOutputHelper testOutputHelper) : ScriptAnalyzerTestsBase<DynamicSqlAnalyzer>(testOutputHelper)
+public sealed class DynamicSqlAnalyzerTests(ITestOutputHelper testOutputHelper)
+    : ScriptAnalyzerTestsBase<DynamicSqlAnalyzer>(testOutputHelper)
 {
     [Fact]
-    public void WhenUsingExecAndCallingStoredProcedure_ThenOk()
+    public void WhenDirectProcedureCall1_ThenOk()
     {
         const string code = """
                             USE MyDb
@@ -19,33 +20,59 @@ public sealed class DynamicSqlAnalyzerTests(ITestOutputHelper testOutputHelper) 
     }
 
     [Fact]
-    public void WhenUsingExecWithBrackets_ThenDiagnose()
+    public void WhenDirectProcedureCall2_ThenOk()
     {
         const string code = """
                             USE MyDb
                             GO
 
-                            █AJ5000░script_0.sql░███EXEC ('SELECT 1')█
+                            dbo.P1 @param1 = 123
                             """;
 
         Verify(code);
     }
 
     [Fact]
-    public void WhenUsingExecWithSpExecuteSqlAndCallingStringProvidedCommand_ThenDiagnose()
+    public void WhenVariable_ThenDiagnose()
     {
         const string code = """
                             USE MyDb
                             GO
 
-                            █AJ5000░script_0.sql░███EXEC sp_executeSql 'dbo.P1'█
+                            █AJ5000░script_0.sql░███EXEC (@cmd)█
                             """;
 
         Verify(code);
     }
 
     [Fact]
-    public void WhenUsingExecWithSpExecuteSqlAndCallingVariableProvidedCommand_ThenDiagnose()
+    public void WhenStringLiteral_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            EXEC ('SELECT 1')
+                            """;
+
+        Verify(code);
+    }
+
+    [Fact]
+    public void WithSpExecuteSql_WhenStringLiteral_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            EXEC sp_executeSql 'dbo.P1'
+                            """;
+
+        Verify(code);
+    }
+
+    [Fact]
+    public void WithSpExecuteSql_WhenVariable_ThenDiagnose()
     {
         const string code = """
                             USE MyDb
@@ -53,19 +80,6 @@ public sealed class DynamicSqlAnalyzerTests(ITestOutputHelper testOutputHelper) 
 
                             DECLARE @sql NVARCHAR = N'SELECT 1'
                             █AJ5000░script_0.sql░███EXEC sp_executeSql @sql█
-                            """;
-
-        Verify(code);
-    }
-
-    [Fact]
-    public void WhenUsingDirectProcedureInvocation_ThenOk()
-    {
-        const string code = """
-                            USE MyDb
-                            GO
-
-                            dbo.P1 @param1 = 123
                             """;
 
         Verify(code);

@@ -31,10 +31,16 @@ public sealed class DynamicSqlAnalyzer : IScriptAnalyzer
             if (statement.ExecuteSpecification.ExecutableEntity is ExecutableProcedureReference procedureReference)
             {
                 var firstParameter = procedureReference.Parameters.FirstOrDefault();
-                return firstParameter?.ParameterValue is StringLiteral or VariableReference;
+                return firstParameter?.ParameterValue is VariableReference;
             }
 
-            return statement.ExecuteSpecification.ExecutableEntity is ExecutableStringList;
+            return statement.ExecuteSpecification.ExecutableEntity switch
+            {
+                ExecutableProcedureReference => false,
+                ExecutableStringList executableStringList when executableStringList.Strings.IsNullOrEmpty() => false,
+                ExecutableStringList executableStringList when !executableStringList.Strings.IsNullOrEmpty() => !executableStringList.Strings.All(s => s is StringLiteral),
+                _ => false
+            };
         }
     }
 
@@ -45,7 +51,7 @@ public sealed class DynamicSqlAnalyzer : IScriptAnalyzer
             "AJ5000",
             IssueType.Warning,
             "Dynamic SQL",
-            "Dynamic SQL is not recommended."
+            "Executing dynamic or external provided SQL can be dangerous and should be avoided."
         );
     }
 }
