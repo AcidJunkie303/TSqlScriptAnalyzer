@@ -34,8 +34,6 @@ public sealed class NonStandardComparisonOperatorAnalyzerTests(ITestOutputHelper
                             BEGIN
                                 PRINT 'Hello'
                             END
-
-
                             """;
 
         Verify(code);

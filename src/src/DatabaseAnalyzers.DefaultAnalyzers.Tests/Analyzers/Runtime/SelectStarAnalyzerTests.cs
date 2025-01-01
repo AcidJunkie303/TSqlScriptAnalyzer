@@ -69,7 +69,6 @@ public sealed class SelectStarAnalyzerTests(ITestOutputHelper testOutputHelper)
         Verify(code);
     }
 
-
     [Fact]
     public void WithJoin_WhenSelectStarRefersToNonDerivedJoinTable_ThenDiagnose()
     {

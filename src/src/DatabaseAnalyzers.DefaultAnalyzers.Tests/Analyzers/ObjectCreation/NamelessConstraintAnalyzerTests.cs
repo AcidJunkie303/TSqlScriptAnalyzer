@@ -68,7 +68,6 @@ public sealed class NamelessConstraintAnalyzerTests(ITestOutputHelper testOutput
                             USE MyDb
                             GO
 
-
                             ALTER TABLE     Table1
                             ADD             Id INT NOT NULL █AJ5039░script_0.sql░MyDb.dbo.Table1███PRIMARY KEY█
 

@@ -77,7 +77,6 @@ csharp_space_around_binary_operators = before_and_after
 dotnet_style_allow_multiple_blank_lines = false
 dotnet_style_allow_multiple_blank_lines_experimental = false:warning
 
-
 dotnet_diagnostic.asp0000.severity = error
 dotnet_diagnostic.asp0001.severity = error
 dotnet_diagnostic.bl0002.severity = error
