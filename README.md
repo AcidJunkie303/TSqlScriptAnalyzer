@@ -27,7 +27,8 @@ A framework to analyze multiple T-SQL script files
 
 ### Other
 
-- Create HTML report
+- write github diagnostic descriptor markdown
+- Create HTML report feature
 
 # Done
 
