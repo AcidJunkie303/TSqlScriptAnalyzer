@@ -57,18 +57,21 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
                                 tablesByDatabaseNameBySchemaName
                                     .GetValueOrDefault(db.Key)
                                     ?.GetValueOrDefault(schema.Key)
-                                    ?.ToDictionary(table => table.ObjectName, table => table, StringComparer.OrdinalIgnoreCase)
-                                    ?.AsIReadOnlyDictionary() ?? FrozenDictionary<string, TableInformation>.Empty.AsIReadOnlyDictionary(),
+                                    ?.ToDictionary(static table => table.ObjectName, table => table, StringComparer.OrdinalIgnoreCase)
+                                    .AsIReadOnlyDictionary()
+                                ?? FrozenDictionary<string, TableInformation>.Empty.AsIReadOnlyDictionary(),
                                 proceduresByDatabaseNameBySchemaName
                                     .GetValueOrDefault(db.Key)
                                     ?.GetValueOrDefault(schema.Key)
-                                    ?.ToDictionary(procedure => procedure.ObjectName, procedure => procedure, StringComparer.OrdinalIgnoreCase)
-                                    ?.AsIReadOnlyDictionary() ?? FrozenDictionary<string, ProcedureInformation>.Empty.AsIReadOnlyDictionary(),
+                                    ?.ToDictionary(static procedure => procedure.ObjectName, procedure => procedure, StringComparer.OrdinalIgnoreCase)
+                                    .AsIReadOnlyDictionary()
+                                ?? FrozenDictionary<string, ProcedureInformation>.Empty.AsIReadOnlyDictionary(),
                                 functionsByDatabaseNameBySchemaName
                                     .GetValueOrDefault(db.Key)
                                     ?.GetValueOrDefault(schema.Key)
-                                    ?.ToDictionary(function => function.ObjectName, function => function, StringComparer.OrdinalIgnoreCase)
-                                    ?.AsIReadOnlyDictionary() ?? FrozenDictionary<string, FunctionInformation>.Empty.AsIReadOnlyDictionary(),
+                                    ?.ToDictionary(static function => function.ObjectName, function => function, StringComparer.OrdinalIgnoreCase)
+                                    .AsIReadOnlyDictionary()
+                                ?? FrozenDictionary<string, FunctionInformation>.Empty.AsIReadOnlyDictionary(),
                                 new CreateSchemaStatement(),
                                 string.Empty
                             )
@@ -100,9 +103,9 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
                 _issueReporter.Report(WellKnownDiagnosticDefinitions.DuplicateObjectCreationStatement,
                     databaseObject.DatabaseName,
                     databaseObject.RelativeScriptFilePath,
-                    databaseObject.FullNameParts.StringJoin("."),
+                    databaseObject.FullNameParts.StringJoin('.'),
                     databaseObject.CreationStatement.GetCodeRegion(),
-                    databaseObject.FullNameParts.StringJoin("."),
+                    databaseObject.FullNameParts.StringJoin('.'),
                     scriptFilePaths
                 );
             }

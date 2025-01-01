@@ -2,7 +2,7 @@ using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
-namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.DynamicSql;
+namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Security;
 
 public sealed class DynamicSqlAnalyzer : IScriptAnalyzer
 {

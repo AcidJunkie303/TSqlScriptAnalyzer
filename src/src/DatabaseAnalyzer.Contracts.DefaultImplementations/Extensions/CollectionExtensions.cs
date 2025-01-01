@@ -79,6 +79,9 @@ public static class CollectionExtensions
     public static string StringJoin<T>(this IEnumerable<T> items, string separator)
         => string.Join(separator, items);
 
+    public static string StringJoin<T>(this IEnumerable<T> items, char separator)
+        => string.Join(separator, items);
+
     public static void AddIfNotNull<T>(this ICollection<T>? collection, T? item)
     {
         if (collection is null || item is null)

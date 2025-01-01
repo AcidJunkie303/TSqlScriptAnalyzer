@@ -1,8 +1,8 @@
 using DatabaseAnalyzer.Testing;
-using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.DynamicSql;
+using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Security;
 using Xunit.Abstractions;
 
-namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.DynamicSql;
+namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Security;
 
 public sealed class DynamicSqlAnalyzerTests(ITestOutputHelper testOutputHelper)
     : ScriptAnalyzerTestsBase<DynamicSqlAnalyzer>(testOutputHelper)

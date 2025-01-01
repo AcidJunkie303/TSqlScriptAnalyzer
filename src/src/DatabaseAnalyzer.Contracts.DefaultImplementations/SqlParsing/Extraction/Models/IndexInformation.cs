@@ -1,5 +1,6 @@
 using System.Collections.Frozen;
 using System.Collections.Immutable;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction.Models;
@@ -23,4 +24,10 @@ public sealed record IndexInformation(
         DatabaseName,
         IndexName ?? string.Empty
     }.ToImmutableArray();
+
+    public string FullName { get; } = new[]
+    {
+        DatabaseName,
+        IndexName ?? string.Empty
+    }.StringJoin('.');
 }

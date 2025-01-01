@@ -40,7 +40,7 @@ public sealed class BannedFunctionAnalyzer : IScriptAnalyzer
             script,
             settings,
             schemaObjectFunctions,
-            static x => x.SchemaObject.Identifiers.Select(static a => a.Value).StringJoin("."),
+            static x => x.SchemaObject.Identifiers.Select(static a => a.Value).StringJoin('.'),
             static x => x.SchemaObject.GetCodeRegion());
     }
 

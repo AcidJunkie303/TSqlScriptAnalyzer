@@ -11,7 +11,9 @@ public sealed partial class DiagnosticSuppressionExtractor : IDiagnosticSuppress
     public IEnumerable<DiagnosticSuppression> ExtractSuppressions(TSqlScript script)
     {
         ArgumentNullException.ThrowIfNull(script);
-        return script.ScriptTokenStream.SelectMany(Extract);
+        return script.Batches.IsNullOrEmpty() || script.ScriptTokenStream.IsNullOrEmpty()
+            ? []
+            : script.ScriptTokenStream.SelectMany(Extract);
     }
 
     [GeneratedRegex(@"#pragma\s+diagnostic\s+((?<disable>(disable))|(?<restore>restore))\s+(?<ids>[A-Za-z0-9, ]+)(\s*-> \s*(?<reason>.*))?", RegexOptions.ExplicitCapture, 100)]

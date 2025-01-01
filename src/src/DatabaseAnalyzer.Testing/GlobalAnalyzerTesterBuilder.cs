@@ -58,7 +58,6 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
             .Select(a =>
             {
                 var testCode = testCodeProcessor.ParseTestCode(a.Value.Contents);
-
                 return new
                 {
                     testCode.MarkupFreeSql,
@@ -67,6 +66,13 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
                 };
             })
             .ToList();
+
+        var firstScriptWithErrors = processedScripts.FirstOrDefault(a => a.ScriptModel.Errors.Count > 0);
+        if (firstScriptWithErrors is not null)
+        {
+            var errorMessages = firstScriptWithErrors.ScriptModel.Errors.StringJoin(". ");
+            throw new InvalidOperationException($"The script '{firstScriptWithErrors.ScriptModel.RelativeScriptFilePath}' has errors: {errorMessages}");
+        }
 
         var allScripts = processedScripts.ConvertAll(a => a.ScriptModel);
         var expectedIssues = processedScripts.SelectMany(a => a.ExpectedIssues).ToList();

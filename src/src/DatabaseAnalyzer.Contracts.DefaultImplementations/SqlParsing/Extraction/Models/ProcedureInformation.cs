@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
@@ -13,6 +14,13 @@ public sealed record ProcedureInformation(
     string RelativeScriptFilePath)
     : ISchemaBoundObject
 {
+    public string FullName { get; } = new[]
+    {
+        DatabaseName,
+        SchemaName,
+        ObjectName
+    }.StringJoin('.');
+
     public IReadOnlyList<string> FullNameParts { get; } = new[]
     {
         DatabaseName,

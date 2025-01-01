@@ -8,7 +8,7 @@ public static class MultiPartIdentifierExtensions
     {
         ArgumentNullException.ThrowIfNull(identifier);
 
-        return identifier.Identifiers.Select(static a => a.Value).StringJoin(".");
+        return identifier.Identifiers.Select(static a => a.Value).StringJoin('.');
     }
 
     public static string GetSchemaName(this MultiPartIdentifier identifier, string defaultSchemaName)
@@ -30,7 +30,7 @@ public static class MultiPartIdentifierExtensions
             1 => (null, null, identifier.Identifiers[0].Value!),
             2 => (null, identifier.Identifiers[0].Value, identifier.Identifiers[1].Value!),
             3 => (identifier.Identifiers[0].Value, identifier.Identifiers[1].Value, identifier.Identifiers[2].Value!),
-            _ => throw new ArgumentException($"The provided multi-part identifier has more than 3 parts: {identifier.Identifiers.Select(static a => a.Value).StringJoin(".")}", nameof(identifier))
+            _ => throw new ArgumentException($"The provided multi-part identifier has more than 3 parts: {identifier.Identifiers.Select(static a => a.Value).StringJoin('.')}", nameof(identifier))
         };
     }
 
@@ -43,7 +43,7 @@ public static class MultiPartIdentifierExtensions
             0 => throw new ArgumentException("The provided multi-part identifier for a column is empty", nameof(identifier)),
             1 => (null, identifier.Identifiers[0].Value),
             2 => (identifier.Identifiers[0].Value, identifier.Identifiers[1].Value),
-            _ => throw new ArgumentException($"The provided multi-part identifier for a column has more than 2 parts: {identifier.Identifiers.Select(static a => a.Value).StringJoin(".")}", nameof(identifier))
+            _ => throw new ArgumentException($"The provided multi-part identifier for a column has more than 2 parts: {identifier.Identifiers.Select(static a => a.Value).StringJoin('.')}", nameof(identifier))
         };
     }
 }

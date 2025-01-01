@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction.Models;
@@ -17,6 +18,12 @@ public sealed record ForeignKeyConstraintInformation(
 ) : ISchemaBoundObject
 {
     public string FullColumnName { get; } = $"{DatabaseName}.{SchemaName}.{TableName}.{ColumnName}";
+
+    public string FullName { get; } = new[]
+    {
+        DatabaseName,
+        ObjectName
+    }.StringJoin('.');
 
     public IReadOnlyList<string> FullNameParts { get; } = new[]
     {
