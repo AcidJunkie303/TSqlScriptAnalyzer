@@ -25,8 +25,6 @@ A framework to analyze multiple T-SQL script files
 
 ### Other
 
-- CodeRegion should only contain two properties: Begin and End. Both of them are of type CodeLocation.
-  CodeLocation have the following two properties: Line and Column
 - Create HTML report
 
 # Done
@@ -53,6 +51,8 @@ A framework to analyze multiple T-SQL script files
 
 - Create smart settings implementation so IDiagnosticSettingsProvider is not used anymore. Instead, rely on
   IRawSettings<out TSettings> and the type constraints to make it dynamic.
+- CodeRegion should only contain two properties: Begin and End. Both of them are of type CodeLocation.
+  CodeLocation have the following two properties: Line and Column
 
 ### Resiliency / Robustness
 
