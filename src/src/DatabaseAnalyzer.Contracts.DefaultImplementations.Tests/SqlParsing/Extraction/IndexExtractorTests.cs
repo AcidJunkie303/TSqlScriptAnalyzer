@@ -16,7 +16,7 @@ public sealed class IndexExtractorTests
                             GO
                             CREATE NONCLUSTERED INDEX [IX_T1_Value1] ON [dbo].[T1]
                             (
-                            	[Value1] ASC
+                                [Value1] ASC
                             )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 
                             """;
@@ -34,7 +34,7 @@ public sealed class IndexExtractorTests
         indices[0].DatabaseName.Should().Be("MyDb");
         indices[0].SchemaName.Should().Be("dbo");
         indices[0].ColumnNames.Should().BeEquivalentTo("Value1");
-        indices[0].IndexType.Should().Be(TableColumnIndexType.None);
+        indices[0].IndexTypes.Should().Be(TableColumnIndexTypes.None);
         indices[0].IncludedColumnNames.Should().BeEmpty();
     }
 }

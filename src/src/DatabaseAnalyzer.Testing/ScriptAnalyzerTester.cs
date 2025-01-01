@@ -40,7 +40,7 @@ public sealed class ScriptAnalyzerTester
 
         _analyzer.AnalyzeScript(_analysisContext, MainScript);
 
-        var reportedIssues = _analysisContext.IssueReporter.GetIssues();
+        var reportedIssues = _analysisContext.IssueReporter.Issues;
         WriteIssues(reportedIssues);
 
         // sometimes the order is not the same, therefore we cannot use BeEquivalentTo()

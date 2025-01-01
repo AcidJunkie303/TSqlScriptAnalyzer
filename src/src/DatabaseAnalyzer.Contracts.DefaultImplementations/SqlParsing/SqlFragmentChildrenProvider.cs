@@ -4,10 +4,16 @@ namespace DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing;
 
 public static class SqlFragmentChildrenProvider
 {
-    public static IReadOnlyList<TSqlFragment> GetChildren(TSqlFragment fragment, bool recursive = false, Func<TSqlFragment, bool>? continueBranchRecursionPredicate = null)
+    public static IReadOnlyList<TSqlFragment> GetChildren(TSqlFragment fragment)
+        => GetChildren<TSqlFragment>(fragment, recursive: false, continueBranchRecursionPredicate: null);
+
+    public static IReadOnlyList<TSqlFragment> GetChildren(TSqlFragment fragment, bool recursive)
+        => GetChildren<TSqlFragment>(fragment, recursive, continueBranchRecursionPredicate: null);
+
+    public static IReadOnlyList<TSqlFragment> GetChildren(TSqlFragment fragment, bool recursive, Func<TSqlFragment, bool>? continueBranchRecursionPredicate)
         => GetChildren<TSqlFragment>(fragment, recursive, continueBranchRecursionPredicate);
 
-    public static IReadOnlyList<T> GetChildren<T>(TSqlFragment fragment, bool recursive = false, Func<TSqlFragment, bool>? continueBranchRecursionPredicate = null)
+    public static IReadOnlyList<T> GetChildren<T>(TSqlFragment fragment, bool recursive, Func<TSqlFragment, bool>? continueBranchRecursionPredicate)
         where T : TSqlFragment
     {
         ArgumentNullException.ThrowIfNull(fragment);

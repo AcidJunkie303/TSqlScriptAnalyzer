@@ -36,13 +36,13 @@ public sealed class DatabaseObjectExtractorTests
 
                             CREATE NONCLUSTERED INDEX [IX_T1_Status] ON [dbo].[T1]
                             (
-                            	[Status] ASC
+                                [Status] ASC
                             )
                             GO
 
                             CREATE NONCLUSTERED INDEX [IX_T2_Name] ON [dbo].[T2]
                             (
-                            	[Name] ASC
+                                [Name] ASC
                             )
                             GO
 

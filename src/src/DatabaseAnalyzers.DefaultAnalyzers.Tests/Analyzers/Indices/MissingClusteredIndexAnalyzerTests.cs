@@ -38,7 +38,7 @@ public sealed class MissingClusteredIndexAnalyzerTests(ITestOutputHelper testOut
                                 Value1        NVARCHAR(128) NOT NULL,
                                 CONSTRAINT PK_Table1 PRIMARY KEY CLUSTERED
                                 (
-                            	    Id ASC
+                                    Id ASC
                                 )
                             )
                             """;
@@ -62,7 +62,7 @@ public sealed class MissingClusteredIndexAnalyzerTests(ITestOutputHelper testOut
 
                             CREATE CLUSTERED INDEX IX_Table1_Value1 ON dbo.Table1
                             (
-                            	Value1 ASC
+                                Value1 ASC
                             )
                             """;
 

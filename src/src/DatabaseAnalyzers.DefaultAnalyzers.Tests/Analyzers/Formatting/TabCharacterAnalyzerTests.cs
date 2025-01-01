@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using DatabaseAnalyzer.Testing;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 using Xunit.Abstractions;
@@ -20,6 +21,7 @@ public sealed class TabCharacterAnalyzerTests(ITestOutputHelper testOutputHelper
     }
 
     [Fact]
+    [SuppressMessage("Minor Code Smell", "S105:Tabulation characters should not be used", Justification = "Using a tabulator character is part of the test")]
     public void WhenTabFound_ThenDiagnose()
     {
         // had to be done this way because the IDE replaces tabs with spaces...

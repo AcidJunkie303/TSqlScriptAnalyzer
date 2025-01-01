@@ -36,7 +36,7 @@ public sealed class TableColumnResolver
             fragment = fragment.GetParent(_parentFragmentProvider);
             if (fragment is null)
             {
-                break;
+                return null;
             }
 
             var column = fragment switch
@@ -60,8 +60,6 @@ public sealed class TableColumnResolver
                 return null;
             }
         }
-
-        return null;
     }
 
     private ColumnReference? Check(MergeSpecification mergeSpecification, ColumnReferenceExpression columnReference)
@@ -109,15 +107,21 @@ public sealed class TableColumnResolver
     {
         foreach (var tableReference in fromClause.TableReferences ?? [])
         {
-            var column = tableReference switch
+            if (tableReference is QualifiedJoin qualifiedJoin)
             {
-                QualifiedJoin qualifiedJoin => Check(qualifiedJoin, columnReference),
-                _ => CheckTableReference(tableReference as NamedTableReference, columnReference)
-            };
-
-            if (column is not null)
+                var column = Check(qualifiedJoin, columnReference);
+                if (column is not null)
+                {
+                    return column;
+                }
+            }
+            else
             {
-                return column;
+                var column = CheckTableReference(tableReference as NamedTableReference, columnReference);
+                if (column is not null)
+                {
+                    return column;
+                }
             }
         }
 

@@ -1,7 +1,7 @@
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction.Models;
 
 [Flags]
-public enum TableColumnIndexType
+public enum TableColumnIndexTypes
 {
     None = 0,
     PrimaryKey = 1,

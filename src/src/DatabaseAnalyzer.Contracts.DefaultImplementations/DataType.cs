@@ -63,14 +63,16 @@ public sealed class DataType : IDataType
 
     private static string GenerateFullName(string name, int? argument1, int? argument2, bool quote)
     {
-        switch (argument1)
+        if (argument1 is null && argument2 is null)
         {
-            case null when argument2 is null:
-                return quote
-                    ? $"[{name}]"
-                    : name;
-            case null:
-                throw new ArgumentException($"{nameof(argument1)} cannot be null when {nameof(argument1)} is not null", nameof(argument1));
+            return quote
+                ? $"[{name}]"
+                : name;
+        }
+
+        if (argument1 is null)
+        {
+            throw new ArgumentException($"{nameof(argument1)} cannot be null when {nameof(argument1)} is not null", nameof(argument1));
         }
 
         var buffer = new StringBuilder();

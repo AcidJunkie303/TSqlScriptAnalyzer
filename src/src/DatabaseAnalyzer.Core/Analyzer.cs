@@ -1,5 +1,6 @@
 using System.Collections.Frozen;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
@@ -11,6 +12,8 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Core;
 
+[SuppressMessage("Major Code Smell", "S1200:Classes should not be coupled to too many other classes")]
+[SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters")]
 internal sealed class Analyzer : IAnalyzer
 {
     private readonly ApplicationSettings _applicationSettings;
@@ -75,7 +78,7 @@ internal sealed class Analyzer : IAnalyzer
 
         using (_progressCallback.OnProgressWithAutoEndActionNotification("Calculating results"))
         {
-            var issues = analysisContext.IssueReporter.GetIssues();
+            var issues = analysisContext.IssueReporter.Issues;
             var (unsuppressedIssues, suppressedIssues) = SplitIssuesToSuppressedAndUnsuppressed(scripts, issues);
             var issuesByObjectName = issues
                 .GroupBy(a => a.FullObjectNameOrFileName, StringComparer.OrdinalIgnoreCase)

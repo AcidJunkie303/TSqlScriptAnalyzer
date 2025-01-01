@@ -21,7 +21,7 @@ public sealed class StringConcatenationUnicodeAsciiMixAnalyzer : IScriptAnalyzer
         var visitor = new Visitor(script);
         visitor.ExplicitVisit(expression);
 
-        if (visitor.StringTypesFound != (StringType.Unicode | StringType.Ascii))
+        if (visitor.StringTypesesFound != (StringTypes.Unicode | StringTypes.Ascii))
         {
             return;
         }
@@ -39,50 +39,50 @@ public sealed class StringConcatenationUnicodeAsciiMixAnalyzer : IScriptAnalyzer
             _script = script;
         }
 
-        public StringType StringTypesFound { get; private set; }
+        public StringTypes StringTypesesFound { get; private set; }
 
         public override void Visit(BinaryExpression node)
         {
-            StringTypesFound |= GetStringTypeFromExpression(node.FirstExpression) | GetStringTypeFromExpression(node.SecondExpression);
+            StringTypesesFound |= GetStringTypeFromExpression(node.FirstExpression) | GetStringTypeFromExpression(node.SecondExpression);
 
             base.Visit(node);
         }
 
-        private StringType GetStringTypeFromExpression(ScalarExpression expression)
+        private StringTypes GetStringTypeFromExpression(ScalarExpression expression)
             => expression switch
             {
-                BinaryExpression => StringType.None,
-                StringLiteral { IsNational: true } => StringType.Unicode,
-                StringLiteral { IsNational: false } => StringType.Ascii,
+                BinaryExpression => StringTypes.None,
+                StringLiteral { IsNational: true } => StringTypes.Unicode,
+                StringLiteral { IsNational: false } => StringTypes.Ascii,
                 VariableReference variableReference => GetStringType(variableReference),
                 ConvertCall convert => GetStringType(convert.DataType),
                 CastCall cast => GetStringType(cast.DataType),
-                _ => StringType.None
+                _ => StringTypes.None
             };
 
-        private StringType GetStringType(VariableReference variableReference)
+        private StringTypes GetStringType(VariableReference variableReference)
         {
             var dataType = variableReference.TryGetVariableDeclaration(_script)?.DataType;
             return dataType is null
-                ? StringType.None
+                ? StringTypes.None
                 : GetStringType(dataType);
         }
 
-        private static StringType GetStringType(DataTypeReference dataType)
+        private static StringTypes GetStringType(DataTypeReference dataType)
         {
             if (dataType.IsUnicodeCharOrString())
             {
-                return StringType.Unicode;
+                return StringTypes.Unicode;
             }
 
             return dataType.IsAsciiCharOrString()
-                ? StringType.Ascii
-                : StringType.None;
+                ? StringTypes.Ascii
+                : StringTypes.None;
         }
     }
 
     [Flags]
-    private enum StringType
+    private enum StringTypes
     {
         None = 0,
         Unicode = 1,

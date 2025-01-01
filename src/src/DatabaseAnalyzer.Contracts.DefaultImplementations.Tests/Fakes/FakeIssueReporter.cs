@@ -6,7 +6,7 @@ internal sealed class FakeIssueReporter : IIssueReporter
 {
     public List<IIssue> Issues { get; } = [];
 
-    IReadOnlyList<IIssue> IIssueReporter.GetIssues() => Issues;
+    IReadOnlyList<IIssue> IIssueReporter.Issues => Issues;
 
     public void Report(IDiagnosticDefinition rule, string databaseName, string relativeScriptFilePath, string? fullObjectName, CodeRegion codeRegion, params object[] insertionStrings)
     {

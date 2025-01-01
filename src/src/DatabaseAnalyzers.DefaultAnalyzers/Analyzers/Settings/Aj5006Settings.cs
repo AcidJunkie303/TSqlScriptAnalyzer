@@ -26,7 +26,7 @@ internal sealed class Aj5006SettingsRaw : IRawSettings<Aj5006Settings>
         => types
             .NullIfEmpty()
             .WhereNotNull()
-            .Select(static a => a.ToRegexWithSimpleWildcards(compileRegex: true))
+            .Select(static a => a.ToRegexWithSimpleWildcards(caseSensitive: false, compileRegex: true))
             .ToImmutableArray();
 }
 

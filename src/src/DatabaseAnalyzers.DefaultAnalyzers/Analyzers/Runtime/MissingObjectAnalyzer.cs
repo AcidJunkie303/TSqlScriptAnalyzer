@@ -203,11 +203,11 @@ public sealed class MissingObjectAnalyzer : IGlobalAnalyzer
 
     private sealed class IssueReporter : IIssueReporter
     {
-        public IReadOnlyList<IIssue> GetIssues() => [];
-
         public void Report(IDiagnosticDefinition rule, string databaseName, string relativeScriptFilePath, string? fullObjectName, CodeRegion codeRegion, params object[] insertionStrings)
         {
         }
+
+        public IReadOnlyList<IIssue> Issues => [];
     }
 
     private static class DiagnosticDefinitions

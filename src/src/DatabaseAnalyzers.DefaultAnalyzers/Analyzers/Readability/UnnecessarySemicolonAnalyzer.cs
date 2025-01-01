@@ -35,52 +35,72 @@ public sealed class UnnecessarySemicolonAnalyzer : IScriptAnalyzer
         var codeRegion = CodeRegion.Create(semicolonToken.Line, semicolonToken.Column, semicolonToken.Line, semicolonToken.Column + 1);
         context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, codeRegion);
 
-        static bool IsSemicolonRequired(IScriptModel script, int tokenIndex)
+        static bool IsSemicolonRequired(IScriptModel script, int semicolonTokenIndex)
         {
-            if (tokenIndex == 0)
+            if (semicolonTokenIndex == 0)
             {
                 return false;
             }
 
-            // check tokens after this one for CTEs (WITH)
-            for (var i = tokenIndex + 1; i <= script.ParsedScript.LastTokenIndex; i++)
+            if (IsSemicolonRequiredForNextStatement(script.ParsedScript.ScriptTokenStream, semicolonTokenIndex, script.ParsedScript.LastTokenIndex))
             {
-                var token = script.ParsedScript.ScriptTokenStream[i];
-                if (token.TokenType is TSqlTokenType.MultilineComment or TSqlTokenType.SingleLineComment or TSqlTokenType.WhiteSpace)
-                {
-                    continue;
-                }
-
-                if (token.TokenType == TSqlTokenType.With)
-                {
-                    return true;
-                }
+                return true;
             }
 
-            // check tokens before this one for 'THROW' and 'MERGE'
-            for (var i = tokenIndex - 1; i >= 0; i--)
+            if (IsSemicolonRequiredForPreviousStatement(script, semicolonTokenIndex))
             {
-                var token = script.ParsedScript.ScriptTokenStream[i];
-                if (token.TokenType is TSqlTokenType.MultilineComment or TSqlTokenType.SingleLineComment or TSqlTokenType.WhiteSpace)
-                {
-                    continue;
-                }
-
-                var fragment = script.ParsedScript.TryGetSqlFragmentAtPosition(token.Line, token.Column);
-                var parentStatement = fragment?.GetParents(script.ParentFragmentProvider)
-                    .OfType<TSqlStatement>()
-                    .FirstOrDefault();
-
-                if (parentStatement is null)
-                {
-                    return true; // to be on the safe side
-                }
-
-                return parentStatement is MergeStatement or ThrowStatement; // merge statements must be terminated with a semicolon. throw statements should be terminated with a semicolon.
+                return true;
             }
 
-            return true;
+            return false;
         }
+    }
+
+    private static bool IsSemicolonRequiredForNextStatement(IList<TSqlParserToken> tokens, int semicolonTokenIndex, int lastTokenIndex)
+    {
+        // check tokens after this one for CTEs (WITH)
+        for (var i = semicolonTokenIndex + 1; i <= lastTokenIndex; i++)
+        {
+            var token = tokens[i];
+            if (token.TokenType is TSqlTokenType.MultilineComment or TSqlTokenType.SingleLineComment or TSqlTokenType.WhiteSpace)
+            {
+                continue;
+            }
+
+            if (token.TokenType == TSqlTokenType.With)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool IsSemicolonRequiredForPreviousStatement(IScriptModel script, int semicolonTokenIndex)
+    {
+        // check tokens before this one for 'THROW' and 'MERGE'
+        for (var i = semicolonTokenIndex - 1; i >= 0; i--)
+        {
+            var token = script.ParsedScript.ScriptTokenStream[i];
+            if (token.TokenType is TSqlTokenType.MultilineComment or TSqlTokenType.SingleLineComment or TSqlTokenType.WhiteSpace)
+            {
+                continue;
+            }
+
+            var fragment = script.ParsedScript.TryGetSqlFragmentAtPosition(token.Line, token.Column);
+            var parentStatement = fragment?.GetParents(script.ParentFragmentProvider)
+                .OfType<TSqlStatement>()
+                .FirstOrDefault();
+
+            if (parentStatement is null)
+            {
+                return true; // to be on the safe side
+            }
+
+            return parentStatement is MergeStatement or ThrowStatement; // merge statements must be terminated with a semicolon. throw statements should be terminated with a semicolon.
+        }
+
+        return false;
     }
 
     private static class DiagnosticDefinitions

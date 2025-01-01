@@ -1,4 +1,5 @@
 using System.Collections.Frozen;
+using System.Diagnostics.CodeAnalysis;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Services;
 using DatabaseAnalyzer.Core.Configuration;
@@ -10,9 +11,12 @@ using Microsoft.Extensions.Hosting;
 
 namespace DatabaseAnalyzer.Core;
 
+[SuppressMessage("Major Code Smell", "S1200:Classes should not be coupled to too many other classes")]
 public static class AnalyzerFactory
 {
-    public static IAnalyzer Create(IConfiguration configuration, ApplicationSettings settings, IProgressCallback? progressCallback = null)
+    public static IAnalyzer Create(IConfiguration configuration, ApplicationSettings settings) => Create(configuration, settings, null);
+
+    public static IAnalyzer Create(IConfiguration configuration, ApplicationSettings settings, IProgressCallback? progressCallback)
     {
         var host = CreateHostBuilder(configuration, settings, progressCallback).Build();
         return host.Services.GetRequiredService<IAnalyzer>();

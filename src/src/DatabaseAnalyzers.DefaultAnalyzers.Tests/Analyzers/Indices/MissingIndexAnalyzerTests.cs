@@ -128,7 +128,7 @@ public sealed class MissingIndexAnalyzerTests(ITestOutputHelper testOutputHelper
                             (
                                 Id              INT NOT NULL,                           -- not indexed
                                 Name            NVARCHAR(250) NOT NULL,                 -- not indexed
-                            	CONSTRAINT      PK_Department PRIMARY KEY CLUSTERED
+                                CONSTRAINT      PK_Department PRIMARY KEY CLUSTERED
                                 (
                                     Id ASC
                                 )

@@ -79,7 +79,7 @@ internal static class PluginAssemblyLoader
 
     private static string GetPluginsDirectoryPath()
     {
-        var currentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? throw new InvalidOperationException("Unable to determine application directory.");
+        var currentDirectory = Path.GetDirectoryName(Environment.ProcessPath) ?? throw new InvalidOperationException("Unable to determine application directory.");
         return Path.Combine(currentDirectory, "plugins");
     }
 

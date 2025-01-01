@@ -17,7 +17,11 @@ public static class StringExtensions
             ? null
             : value;
 
-    public static Regex ToRegexWithSimpleWildcards(this string value, bool caseSensitive = false, bool compileRegex = false)
+    public static Regex ToRegexWithSimpleWildcards(this string value)
+        => value.ToRegexWithSimpleWildcards(caseSensitive: false, compileRegex: false);
+    public static Regex ToRegexWithSimpleWildcards(this string value, bool caseSensitive)
+        => value.ToRegexWithSimpleWildcards(caseSensitive, compileRegex: false);
+    public static Regex ToRegexWithSimpleWildcards(this string value, bool caseSensitive, bool compileRegex)
     {
         var pattern = Regex.Escape(value)
             .Replace("\\*", ".*", StringComparison.Ordinal) // Convert '*' to '.*'

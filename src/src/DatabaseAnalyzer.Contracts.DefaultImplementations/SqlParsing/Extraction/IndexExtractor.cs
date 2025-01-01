@@ -21,15 +21,15 @@ public sealed class IndexExtractor : Extractor<IndexInformation>
 
     private IndexInformation GetIndex(CreateIndexStatement statement, string? databaseName, IScriptModel script)
     {
-        var indexType = TableColumnIndexType.None;
+        var indexType = TableColumnIndexTypes.None;
         if (statement.Unique)
         {
-            indexType |= TableColumnIndexType.Unique;
+            indexType |= TableColumnIndexTypes.Unique;
         }
 
         if (statement.Clustered.GetValueOrDefault())
         {
-            indexType |= TableColumnIndexType.Clustered;
+            indexType |= TableColumnIndexTypes.Clustered;
         }
 
         var tableSchemaName = statement.OnName.SchemaIdentifier?.Value ?? DefaultSchemaName;

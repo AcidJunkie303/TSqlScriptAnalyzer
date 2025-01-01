@@ -11,7 +11,7 @@ public sealed class MissingIndexSuppressionSettingsRaw
 
     public MissingIndexSuppressionSettings ToSettings() => new
     (
-        Guard.Against.NullOrWhiteSpace(FullColumnNamePattern).ToRegexWithSimpleWildcards(compileRegex: true),
+        Guard.Against.NullOrWhiteSpace(FullColumnNamePattern).ToRegexWithSimpleWildcards(caseSensitive: false, compileRegex: true),
         Guard.Against.NullOrWhiteSpace(SuppressionReason)
     );
 }

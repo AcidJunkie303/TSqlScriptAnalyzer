@@ -67,7 +67,7 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
             })
             .ToList();
 
-        var firstScriptWithErrors = processedScripts.FirstOrDefault(a => a.ScriptModel.Errors.Count > 0);
+        var firstScriptWithErrors = processedScripts.Find(a => a.ScriptModel.Errors.Count > 0);
         if (firstScriptWithErrors is not null)
         {
             var errorMessages = firstScriptWithErrors.ScriptModel.Errors.StringJoin(". ");

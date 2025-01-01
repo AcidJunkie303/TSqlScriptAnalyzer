@@ -18,10 +18,24 @@ public static class SqlFragmentExtensions
         return CodeRegion.Create(firstTokenRegion.Begin, lastTokenRegion.End);
     }
 
-    public static IReadOnlyList<TSqlFragment> GetChildren(this TSqlFragment fragment, bool recursive = false, Func<TSqlFragment, bool>? continueBranchRecursionPredicate = null)
+    public static IReadOnlyList<TSqlFragment> GetChildren(this TSqlFragment fragment)
+        => SqlFragmentChildrenProvider.GetChildren<TSqlFragment>(fragment, recursive: false, continueBranchRecursionPredicate: null);
+
+    public static IReadOnlyList<TSqlFragment> GetChildren(this TSqlFragment fragment, bool recursive)
+        => SqlFragmentChildrenProvider.GetChildren<TSqlFragment>(fragment, recursive, continueBranchRecursionPredicate: null);
+
+    public static IReadOnlyList<TSqlFragment> GetChildren(this TSqlFragment fragment, bool recursive, Func<TSqlFragment, bool>? continueBranchRecursionPredicate)
         => SqlFragmentChildrenProvider.GetChildren<TSqlFragment>(fragment, recursive, continueBranchRecursionPredicate);
 
-    public static IReadOnlyList<T> GetChildren<T>(this TSqlFragment fragment, bool recursive = false, Func<TSqlFragment, bool>? continueBranchRecursionPredicate = null)
+    public static IReadOnlyList<T> GetChildren<T>(this TSqlFragment fragment)
+        where T : TSqlFragment
+        => SqlFragmentChildrenProvider.GetChildren<T>(fragment, recursive: false, continueBranchRecursionPredicate: null);
+
+    public static IReadOnlyList<T> GetChildren<T>(this TSqlFragment fragment, bool recursive)
+        where T : TSqlFragment
+        => SqlFragmentChildrenProvider.GetChildren<T>(fragment, recursive, continueBranchRecursionPredicate: null);
+
+    public static IReadOnlyList<T> GetChildren<T>(this TSqlFragment fragment, bool recursive, Func<TSqlFragment, bool>? continueBranchRecursionPredicate)
         where T : TSqlFragment
         => SqlFragmentChildrenProvider.GetChildren<T>(fragment, recursive, continueBranchRecursionPredicate);
 

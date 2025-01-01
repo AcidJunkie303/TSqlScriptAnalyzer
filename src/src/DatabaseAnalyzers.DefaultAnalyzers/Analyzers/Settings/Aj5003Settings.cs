@@ -19,7 +19,7 @@ internal sealed class Aj5003SettingsRaw : IRawSettings<Aj5003Settings>
 
         var patterns = ExcludedFilePathPatterns
             .WhereNotNull()
-            .Select(static a => a.Trim().ToRegexWithSimpleWildcards(compileRegex: true))
+            .Select(static a => a.Trim().ToRegexWithSimpleWildcards(caseSensitive: false, compileRegex: true))
             .ToImmutableArray();
 
         return new Aj5003Settings(patterns);

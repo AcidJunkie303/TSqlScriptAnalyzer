@@ -34,21 +34,21 @@ public sealed class TableExtractor : Extractor<TableInformation>
             {
                 var isPrimaryKey = a.ColumnDefinition.Constraints.Any(b => b is UniqueConstraintDefinition { IsPrimaryKey: true });
                 var isClustered = a.ColumnDefinition.Constraints.Any(b => b is UniqueConstraintDefinition { Clustered: true });
-                var indexType = TableColumnIndexType.None;
+                var indexType = TableColumnIndexTypes.None;
 
                 if (isPrimaryKey)
                 {
-                    indexType |= TableColumnIndexType.PrimaryKey | TableColumnIndexType.Unique;
+                    indexType |= TableColumnIndexTypes.PrimaryKey | TableColumnIndexTypes.Unique;
                 }
 
                 if (isClustered)
                 {
-                    indexType |= TableColumnIndexType.Clustered;
+                    indexType |= TableColumnIndexTypes.Clustered;
                 }
 
                 if (a.IsUnique)
                 {
-                    indexType |= TableColumnIndexType.Unique;
+                    indexType |= TableColumnIndexTypes.Unique;
                 }
 
                 return new IndexInformation
@@ -121,16 +121,16 @@ public sealed class TableExtractor : Extractor<TableInformation>
 
     private static IndexInformation GetIndex(UniqueConstraintDefinition constraint, string databaseName, string tableSchemaName, string tableName, string relativeScriptFilePath)
     {
-        var indexType = TableColumnIndexType.Unique;
+        var indexType = TableColumnIndexTypes.Unique;
 
         if (constraint.Clustered.GetValueOrDefault())
         {
-            indexType |= TableColumnIndexType.Clustered;
+            indexType |= TableColumnIndexTypes.Clustered;
         }
 
         if (constraint.IsPrimaryKey)
         {
-            indexType |= TableColumnIndexType.PrimaryKey;
+            indexType |= TableColumnIndexTypes.PrimaryKey;
         }
 
         return new IndexInformation(

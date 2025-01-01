@@ -454,7 +454,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
     }
 
     [Fact]
-    public void WhenSelectWithCte_()
+    public void WhenSelectWithCte()
     {
         const string code = """
                             USE MyDb

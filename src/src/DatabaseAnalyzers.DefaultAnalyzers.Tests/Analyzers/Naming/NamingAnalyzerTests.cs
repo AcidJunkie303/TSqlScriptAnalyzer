@@ -153,7 +153,7 @@ public sealed class NamingAnalyzerTests(ITestOutputHelper testOutputHelper)
                         Column1 INT IDENTITY(1, 1),
                         CONSTRAINT {primaryKeyIndexName} PRIMARY KEY CLUSTERED
                         (
-                    	    Column1 ASC
+                            Column1 ASC
                         )
                     );
                     """;

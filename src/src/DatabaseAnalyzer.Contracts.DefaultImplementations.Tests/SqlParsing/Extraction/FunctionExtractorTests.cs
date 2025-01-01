@@ -15,13 +15,13 @@ public sealed class FunctionExtractorTests
                             GO
                             CREATE FUNCTION [dbo].[F1]
                             (
-                            	@Param1 INT
+                                @Param1 INT
                             )
                             RETURNS TABLE
                             AS
                             RETURN
                             (
-                            	SELECT 0 as C1
+                                SELECT 0 as C1
                             )
                             """;
 

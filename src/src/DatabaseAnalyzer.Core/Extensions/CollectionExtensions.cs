@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DatabaseAnalyzer.Core.Extensions;
 
@@ -8,6 +9,7 @@ public static class CollectionExtensions
         where TKey : notnull
         => value ?? ImmutableDictionary<TKey, TValue>.Empty;
 
+    [SuppressMessage("Major Code Smell", "S4017:Method signatures should not contain nested generic types")]
     public static IEnumerable<KeyValuePair<TKey, TValue>> WhereValueNotNull<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue?>> dictionary)
         where TKey : notnull
         => dictionary

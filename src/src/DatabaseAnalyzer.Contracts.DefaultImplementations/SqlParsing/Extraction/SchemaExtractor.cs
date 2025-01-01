@@ -21,13 +21,6 @@ internal sealed class SchemaExtractor : Extractor<SchemaInformation>
     private static SchemaInformation GetSchema(CreateSchemaStatement statement, string? databaseName, string relativeScriptFilePath)
     {
         // TODO: make sure databaseName is not null
-
-        // just to please the analyzers
-        if (DateTime.UtcNow.Year < 2000)
-        {
-            Console.WriteLine(databaseName);
-        }
-
         return new SchemaInformation(databaseName!, statement.Name.Value, statement, relativeScriptFilePath);
     }
 }

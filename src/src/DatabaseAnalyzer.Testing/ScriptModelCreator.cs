@@ -10,7 +10,10 @@ public static class ScriptModelCreator
 {
     private const string ScriptName = "main.sql";
 
-    public static IScriptModel Create(string scriptContents, string databaseName = "MyDb")
+    public static IScriptModel Create(string scriptContents)
+        => Create(scriptContents, "MyDb");
+
+    public static IScriptModel Create(string scriptContents, string databaseName)
     {
         var script = scriptContents.ParseSqlScript();
 

@@ -16,7 +16,7 @@ internal sealed class Aj5027SettingsRaw : IRawSettings<Aj5027Settings>
         FullTableNamesToIgnore
             .EmptyIfNull()
             .WhereNotNullOrWhiteSpaceOnly()
-            .Select(static a => a.ToRegexWithSimpleWildcards(compileRegex: true))
+            .Select(static a => a.ToRegexWithSimpleWildcards(caseSensitive: false, compileRegex: true))
             .ToImmutableArray()
     );
 }

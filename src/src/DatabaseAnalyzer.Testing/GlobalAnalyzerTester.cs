@@ -35,7 +35,7 @@ public sealed class GlobalAnalyzerTester
 
         _analyzer.Analyze(_analysisContext);
 
-        var reportedIssues = _analysisContext.IssueReporter.GetIssues();
+        var reportedIssues = _analysisContext.IssueReporter.Issues;
         reportedIssues.Should().BeEquivalentTo(ExpectedIssues);
     }
 }
