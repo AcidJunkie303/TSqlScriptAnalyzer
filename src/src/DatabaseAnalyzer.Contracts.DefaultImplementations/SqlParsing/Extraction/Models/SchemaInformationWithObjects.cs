@@ -8,6 +8,7 @@ public sealed record SchemaInformationWithObjects(
     string DatabaseName,
     string SchemaName,
     IReadOnlyDictionary<string, TableInformation> TablesByName,
+    IReadOnlyDictionary<string, ViewInformation> ViewsByName,
     IReadOnlyDictionary<string, ProcedureInformation> ProceduresByName,
     IReadOnlyDictionary<string, FunctionInformation> FunctionsByName,
     TSqlFragment CreationStatement,

@@ -25,7 +25,7 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
         var indices = new IndexExtractor(defaultSchemaName).Extract(scripts).ToList();
         var foreignKeyConstraints = new ForeignKeyConstraintExtractor(defaultSchemaName).Extract(scripts).ToList();
         var aggregatedTables = AggregateTables(tables, foreignKeyConstraints, indices);
-
+        var views = new ViewExtractor(defaultSchemaName).Extract(scripts).ToList();
         ISchemaBoundObject[] allObjects = [.. schemas, .. aggregatedTables, .. functions, .. procedures];
         allObjects = RemoveAndReportDuplicates(allObjects);
 
@@ -36,6 +36,7 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
         var functionsByDatabaseNameBySchemaName = GroupByDatabaseNameBySchemaName(functions, a => a.SchemaName);
         var proceduresByDatabaseNameBySchemaName = GroupByDatabaseNameBySchemaName(procedures, a => a.SchemaName);
         var tablesByDatabaseNameBySchemaName = GroupByDatabaseNameBySchemaName(aggregatedTables, a => a.SchemaName);
+        var viewsByDatabaseNameBySchemaName = GroupByDatabaseNameBySchemaName(views, a => a.SchemaName);
 
         return allObjects
             .GroupBy(a => a.DatabaseName, StringComparer.OrdinalIgnoreCase)
@@ -60,6 +61,12 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
                                     ?.ToDictionary(static table => table.ObjectName, table => table, StringComparer.OrdinalIgnoreCase)
                                     .AsIReadOnlyDictionary()
                                 ?? FrozenDictionary<string, TableInformation>.Empty.AsIReadOnlyDictionary(),
+                                viewsByDatabaseNameBySchemaName
+                                    .GetValueOrDefault(db.Key)
+                                    ?.GetValueOrDefault(schema.Key)
+                                    ?.ToDictionary(static table => table.ObjectName, table => table, StringComparer.OrdinalIgnoreCase)
+                                    .AsIReadOnlyDictionary()
+                                ?? FrozenDictionary<string, ViewInformation>.Empty.AsIReadOnlyDictionary(),
                                 proceduresByDatabaseNameBySchemaName
                                     .GetValueOrDefault(db.Key)
                                     ?.GetValueOrDefault(schema.Key)

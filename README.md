@@ -6,27 +6,20 @@ A framework to analyze multiple T-SQL script files
 
 ### Analyzers not created yet
 
-- IIssueCollector should be on the IScriptModel. This way, we don't need to specify the relative script file path.
-  However, it has nothing to do with the script model. Maybe a factory in IAnalysisContext which like:
-  ```
-  public interface IIssueReporterProvider
-  {
-      IIssueReporter GetFor(IScriptModel script);
-  }
-  ```
-  Wouldn't solve the problem as someone can pass in the wrong script model which would result in the wrong script name
-  in the issue.
 - ToDo, not yet finished, open point finder
 - Output parameters should be assigned (hard because we need to check all possible execution paths)
-- All branches in a conditional structure should not have exactly the same implementation
+- All branches in a conditional structure should not have exactly the same implementation (except 1=1)
 - indices and trigger names should contain the table name and the table schema name
 
 ### Resiliency / Robustness
 
 - A faulty analyzer must not cause the app to crash
-- remove IssueReporter.Report() extension methods. Instead, every script should provide the database name
+- Remove IssueReporter.Report() extension methods. Instead, every script should provide the database name
 - Every analyzer must handle situations where the database name is not known -> maybe through analyzer base class to
   provide such handling!?
+- script in which the first statement is not USE <Database> should be removed from the scanning by the core itself. Such
+  cases should be reported as issues as well. This way we can be sure, that for every statement, it's associated with a
+  database.
 
 ### Other
 

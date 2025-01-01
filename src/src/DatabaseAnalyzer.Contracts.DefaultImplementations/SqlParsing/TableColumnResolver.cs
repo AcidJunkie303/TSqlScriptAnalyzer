@@ -179,7 +179,7 @@ public sealed class TableColumnResolver
         var (tableNameOrAlias, columnName) = columnReferenceExpression.MultiPartIdentifier.GetColumnReferenceParts();
         var tableReferenceTableName = namedTableReference.SchemaObject.BaseIdentifier.Value;
         var tableReferenceSchemaName = namedTableReference.SchemaObject.SchemaIdentifier?.Value ?? _defaultSchemaName;
-        var currentDatabaseName = columnReferenceExpression.FindCurrentDatabaseNameAtFragment(_script);
+        var currentDatabaseName = namedTableReference.SchemaObject.DatabaseIdentifier?.Value ?? columnReferenceExpression.FindCurrentDatabaseNameAtFragment(_script);
 
         // if we don't have an alias, we have aborted earlier on in case there are multiple tables involved
         // Therefore, we assume that this is the table we're looking for
