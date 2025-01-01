@@ -1,5 +1,6 @@
 ﻿using System.CommandLine;
 using DatabaseAnalyzer.App.Reporting;
+using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using DatabaseAnalyzer.Core;
 using DatabaseAnalyzer.Core.Configuration;
@@ -71,6 +72,10 @@ internal static class Program
             Console.WriteLine(consoleReport);
             Console.WriteLine("{{Report-End}}");
 
+            Console.WriteLine("{{Mini-Json-Report-Start}}");
+            Console.WriteLine(new JsonMiniReportRenderer().RenderReport(analysisResult));
+            Console.WriteLine("{{Mini-Json-Report-Start}}");
+
             if (!options.HtmlReportFilePath.IsNullOrWhiteSpace())
             {
                 ReportFileRenderer.Render(new HtmlReportRenderer(), analysisResult, options.HtmlReportFilePath);
@@ -78,7 +83,7 @@ internal static class Program
 
             if (!options.JsonReportFilePath.IsNullOrWhiteSpace())
             {
-                ReportFileRenderer.Render(new JsonReportRenderer(), analysisResult, options.JsonReportFilePath);
+                ReportFileRenderer.Render(new JsonFullReportRenderer(), analysisResult, options.JsonReportFilePath);
             }
 
             if (!options.TextReportFilePath.IsNullOrWhiteSpace())
@@ -86,8 +91,9 @@ internal static class Program
                 ReportFileRenderer.Render(new TextReportRenderer(), analysisResult, options.TextReportFilePath);
             }
 
+            var nonInfoIssueCount = analysisResult.Issues.Count(a => a.DiagnosticDefinition.IssueType != IssueType.Info);
             Console.WriteLine();
-            Console.WriteLine($"Found {analysisResult.Issues.Count} issues. Exiting with exit code {analysisResult.Issues.Count}");
+            Console.WriteLine($"Exiting with exit code {nonInfoIssueCount}");
 
             return analysisResult.Issues.Count;
         }

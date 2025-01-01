@@ -4,7 +4,7 @@ using DatabaseAnalyzer.Core;
 
 namespace DatabaseAnalyzer.App.Reporting;
 
-internal sealed class JsonReportRenderer : IReportRenderer
+internal sealed class JsonFullReportRenderer : IReportRenderer
 {
     public string RenderReport(AnalysisResult analysisResult)
     {
@@ -34,7 +34,7 @@ internal sealed class JsonReportRenderer : IReportRenderer
 
     private static JsonSerializerOptions CreateJsonSerializerOptions()
     {
-        return new JsonSerializerOptions(JsonSerializerDefaults.Web)
+        return new JsonSerializerOptions(JsonSerializerDefaults.General)
         {
             WriteIndented = true,
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
