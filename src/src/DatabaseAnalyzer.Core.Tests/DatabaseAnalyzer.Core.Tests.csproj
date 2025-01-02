@@ -13,8 +13,4 @@
         <ProjectReference Include="..\DatabaseAnalyzer.Core\DatabaseAnalyzer.Core.csproj"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="SqlParsing\"/>
-    </ItemGroup>
-
 </Project>
