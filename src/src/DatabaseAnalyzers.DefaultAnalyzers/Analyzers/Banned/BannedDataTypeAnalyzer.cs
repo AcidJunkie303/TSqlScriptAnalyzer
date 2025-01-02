@@ -75,8 +75,8 @@ public sealed class BannedDataTypeAnalyzer : IScriptAnalyzer
         }
 
         var fullObjectName = parameter.TryGetFirstClassObjectName(context.DefaultSchemaName, script.ParsedScript, script.ParentFragmentProvider);
-
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, parameter, dataTypeName, pluralObjectType);
+        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(parameter) ?? DatabaseNames.Unknown;
+        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, parameter.GetCodeRegion(), dataTypeName, pluralObjectType);
     }
 
     private static class DiagnosticDefinitions

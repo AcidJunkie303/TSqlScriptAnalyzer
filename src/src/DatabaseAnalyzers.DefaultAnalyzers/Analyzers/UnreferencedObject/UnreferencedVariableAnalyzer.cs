@@ -35,7 +35,8 @@ public sealed class UnreferencedVariableAnalyzer : IScriptAnalyzer
             }
 
             var fullObjectName = variableDeclaration.TryGetFirstClassObjectName(context, script);
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, variableDeclaration, variableDeclaration.VariableName.Value);
+            var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(variableDeclaration) ?? DatabaseNames.Unknown;
+            context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, variableDeclaration.GetCodeRegion(), variableDeclaration.VariableName.Value);
         }
     }
 

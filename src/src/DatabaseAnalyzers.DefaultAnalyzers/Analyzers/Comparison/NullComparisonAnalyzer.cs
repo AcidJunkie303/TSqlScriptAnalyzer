@@ -30,7 +30,8 @@ public sealed class NullComparisonAnalyzer : IScriptAnalyzer
         }
 
         var fullObjectName = expression.TryGetFirstClassObjectName(context.DefaultSchemaName, script.ParsedScript, script.ParentFragmentProvider);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, expression);
+        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(expression) ?? DatabaseNames.Unknown;
+        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, expression.GetCodeRegion());
     }
 
     private static class DiagnosticDefinitions

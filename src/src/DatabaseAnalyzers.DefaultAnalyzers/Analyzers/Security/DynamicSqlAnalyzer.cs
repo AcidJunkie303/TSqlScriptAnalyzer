@@ -24,7 +24,8 @@ public sealed class DynamicSqlAnalyzer : IScriptAnalyzer
         }
 
         var fullObjectName = statement.TryGetFirstClassObjectName(context, script);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, statement);
+        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(statement) ?? DatabaseNames.Unknown;
+        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, statement.GetCodeRegion());
 
         bool IsDynamicSql()
         {

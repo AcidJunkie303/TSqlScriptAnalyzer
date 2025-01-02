@@ -35,7 +35,8 @@ public sealed class ExcessiveStringConcatenationAnalyzer : IScriptAnalyzer
         }
 
         var fullObjectName = expression.TryGetFirstClassObjectName(context, script);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, expression, maxAllowedStringConcatenations);
+        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(expression) ?? DatabaseNames.Unknown;
+        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, expression.GetCodeRegion(), maxAllowedStringConcatenations);
     }
 
     private static int GetMaxAllowedStringConcatenations(IAnalysisContext context)

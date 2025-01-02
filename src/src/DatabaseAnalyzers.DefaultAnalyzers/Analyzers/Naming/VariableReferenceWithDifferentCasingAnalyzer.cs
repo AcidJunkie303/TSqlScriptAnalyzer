@@ -41,7 +41,8 @@ public sealed class VariableReferenceWithDifferentCasingAnalyzer : IScriptAnalyz
             }
 
             var fullObjectName = variableReference.TryGetFirstClassObjectName(context, script);
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, variableReference, variableReference.Name, variableDeclaration.VariableName.Value);
+            var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(variableReference) ?? DatabaseNames.Unknown;
+            context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, variableReference.GetCodeRegion(), variableReference.Name, variableDeclaration.VariableName.Value);
         }
     }
 

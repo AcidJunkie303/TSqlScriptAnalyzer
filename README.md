@@ -13,15 +13,11 @@ A framework to analyze multiple T-SQL script files
 
 ### Resiliency / Robustness
 
-- Remove IssueReporter.Report() extension methods. Instead, every script should provide the database name. Passing in
-  the IScriptModel is easier but sometime, when the script contains additional USE DATABASE statements, the real
-  database name can be a different one
 - Naming analyzer settings should provide a pair: regex and description. In compliance failure, use the description to
   pass to the issue
 
 ### Other
 
--
 - write github diagnostic descriptor markdown
 - Create HTML report feature
 
@@ -55,6 +51,9 @@ A framework to analyze multiple T-SQL script files
 - CodeRegion should only contain two properties: Begin and End. Both of them are of type CodeLocation.
   CodeLocation have the following two properties: Line and Column
 - Scripts which contain errors should not be take part of the analysis
+- Remove IssueReporter.Report() extension methods. Instead, every script should provide the database name. Passing in
+  the IScriptModel is easier but sometime, when the script contains additional USE DATABASE statements, the real
+  database name can be a different one
 
 ### Resiliency / Robustness
 

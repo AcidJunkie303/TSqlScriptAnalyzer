@@ -33,6 +33,9 @@ public static class CurrentDatabaseNameFinder
         return TryFindCurrentDatabaseNameAtLocation(script, fragmentLocation);
     }
 
+    public static string? TryFindCurrentDatabaseNameAtLocation(TSqlScript script, int line, int column)
+        => script.TryFindCurrentDatabaseNameAtLocation(CodeLocation.Create(line, column));
+
     public static string? TryFindCurrentDatabaseNameAtLocation(TSqlScript script, CodeLocation location)
     {
         string? currentDatabaseName = null;

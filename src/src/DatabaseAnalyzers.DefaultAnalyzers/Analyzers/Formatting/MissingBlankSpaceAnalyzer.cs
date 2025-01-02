@@ -42,7 +42,8 @@ public sealed class MissingBlankSpaceAnalyzer : IScriptAnalyzer
                 .TryGetSqlFragmentAtPosition(token)
                 ?.TryGetFirstClassObjectName(context, script);
 
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, token, beforeOrAfter, token.Text);
+            var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtToken(token) ?? DatabaseNames.Unknown;
+            context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, token.GetCodeRegion(), beforeOrAfter, token.Text);
         }
     }
 

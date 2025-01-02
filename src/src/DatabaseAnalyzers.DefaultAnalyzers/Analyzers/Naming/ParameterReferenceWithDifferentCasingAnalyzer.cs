@@ -71,7 +71,8 @@ public sealed class ParameterReferenceWithDifferentCasingAnalyzer : IScriptAnaly
 
         foreach (var reference in variableReferencesWithDifferentCasing)
         {
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, script, lazyFullObjectName.Value, reference, reference.Name, parameter.VariableName.Value);
+            var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(reference) ?? DatabaseNames.Unknown;
+            context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, lazyFullObjectName.Value, reference.GetCodeRegion(), reference.Name, parameter.VariableName.Value);
         }
     }
 

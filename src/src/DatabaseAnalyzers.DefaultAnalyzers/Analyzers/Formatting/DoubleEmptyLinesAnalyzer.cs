@@ -39,7 +39,8 @@ public sealed class DoubleEmptyLinesAnalyzer : IScriptAnalyzer
                 .TryGetSqlFragmentAtPosition(block[0])
                 ?.TryGetFirstClassObjectName(context, script);
 
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, codeRegion);
+            var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtLocation(block[0].Line, block[0].Column) ?? DatabaseNames.Unknown;
+            context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, codeRegion);
         }
     }
 

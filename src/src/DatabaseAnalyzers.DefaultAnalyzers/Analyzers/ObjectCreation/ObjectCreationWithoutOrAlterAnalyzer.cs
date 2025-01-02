@@ -21,12 +21,13 @@ public sealed class ObjectCreationWithoutOrAlterAnalyzer : IScriptAnalyzer
         foreach (var fragment in fragments)
         {
             var fullObjectName = fragment.TryGetFirstClassObjectName(context, script);
-            Report(context.IssueReporter, script, fullObjectName, fragment);
+            var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(fragment) ?? DatabaseNames.Unknown;
+            Report(context.IssueReporter, databaseName, script.RelativeScriptFilePath, fullObjectName, fragment);
         }
     }
 
-    private static void Report(IIssueReporter issueReporter, IScriptModel script, string? fullObjectName, TSqlFragment fragment)
-        => issueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, fragment);
+    private static void Report(IIssueReporter issueReporter, string databaseName, string relativeScriptFilePath, string? fullObjectName, TSqlFragment fragment)
+        => issueReporter.Report(DiagnosticDefinitions.Default, databaseName, relativeScriptFilePath, fullObjectName, fragment.GetCodeRegion());
 
     private static class DiagnosticDefinitions
     {

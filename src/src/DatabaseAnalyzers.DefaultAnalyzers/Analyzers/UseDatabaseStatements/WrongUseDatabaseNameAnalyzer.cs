@@ -31,7 +31,8 @@ public sealed class WrongUseDatabaseNameAnalyzer : IScriptAnalyzer
                 continue;
             }
 
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName: null, useStatement, useStatement.DatabaseName.Value, script.DatabaseName);
+            var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(useStatement) ?? DatabaseNames.Unknown;
+            context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName: null, useStatement.GetCodeRegion(), useStatement.DatabaseName.Value, script.DatabaseName);
         }
     }
 

@@ -25,8 +25,8 @@ public sealed class TabCharacterAnalyzer : IScriptAnalyzer
             var fullObjectName = script.ParsedScript
                 .TryGetSqlFragmentAtPosition(i)
                 ?.TryGetFirstClassObjectName(context, script);
-
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, codeRegion);
+            var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtLocation(codeRegion.Begin) ?? DatabaseNames.Unknown;
+            context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, codeRegion);
         }
     }
 

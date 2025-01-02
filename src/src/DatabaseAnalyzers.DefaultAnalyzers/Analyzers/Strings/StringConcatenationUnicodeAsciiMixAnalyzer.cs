@@ -27,7 +27,8 @@ public sealed class StringConcatenationUnicodeAsciiMixAnalyzer : IScriptAnalyzer
         }
 
         var fullObjectName = expression.TryGetFirstClassObjectName(context, script);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, script, fullObjectName, expression);
+        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(expression) ?? DatabaseNames.Unknown;
+        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, expression.GetCodeRegion());
     }
 
     private sealed class Visitor : TSqlFragmentVisitor

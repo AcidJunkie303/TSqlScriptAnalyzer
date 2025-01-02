@@ -34,7 +34,7 @@ public static class SqlScriptExtensions
         return CurrentDatabaseNameFinder.FindCurrentDatabaseNameAtToken(script, token);
     }
 
-    public static string? TryFindCurrentDatabaseNameAt(this TSqlScript script, TSqlParserToken token)
+    public static string? TryFindCurrentDatabaseNameAtToken(this TSqlScript script, TSqlParserToken token)
     {
         ArgumentNullException.ThrowIfNull(token);
         ArgumentNullException.ThrowIfNull(script);
@@ -50,6 +50,9 @@ public static class SqlScriptExtensions
 
     public static string? TryFindCurrentDatabaseNameAtLocation(this TSqlScript script, CodeLocation location)
         => CurrentDatabaseNameFinder.TryFindCurrentDatabaseNameAtLocation(script, location);
+
+    public static string? TryFindCurrentDatabaseNameAtLocation(this TSqlScript script, int line, int column)
+        => CurrentDatabaseNameFinder.TryFindCurrentDatabaseNameAtLocation(script, line, column);
 
     public static string FindCurrentDatabaseNameAtLocation(this TSqlScript script, CodeLocation location)
         => CurrentDatabaseNameFinder.FindCurrentDatabaseNameAtLocation(script, location);
