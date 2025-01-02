@@ -24,7 +24,7 @@ public sealed class NonStandardComparisonOperatorAnalyzer : IScriptAnalyzer
         }
 
         var codeRegion = GetOperatorCodeRegion(script.ParsedScript.ScriptTokenStream, expression);
-        var databaseName = script.ParsedScript.FindCurrentDatabaseNameAtFragment(expression);
+        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(expression) ?? DatabaseNames.Unknown;
         var fullObjectName = expression.TryGetFirstClassObjectName(context, script);
         context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, codeRegion, "!=");
     }

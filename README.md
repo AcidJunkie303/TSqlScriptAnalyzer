@@ -17,14 +17,12 @@ A framework to analyze multiple T-SQL script files
 - Remove IssueReporter.Report() extension methods. Instead, every script should provide the database name. Passing in
   the IScriptModel is easier but sometime, when the script contains additional USE DATABASE statements, the real
   database name can be a different one
-- Every analyzer must handle situations where the database name is not known -> maybe through analyzer base class to
-  provide such handling!?
-- Script in which the first statement is not USE <Database> should be removed from the scanning by the core itself. Such
-  cases should be reported as issues as well. This way we can be sure, that for every statement, it's associated with a
-  database.
+- Naming analyzer settings should provide a pair: regex and description. In compliance failure, use the description to
+  pass to the issue
 
 ### Other
 
+-
 - write github diagnostic descriptor markdown
 - Create HTML report feature
 
@@ -56,6 +54,7 @@ A framework to analyze multiple T-SQL script files
   IRawSettings<out TSettings> and the type constraints to make it dynamic.
 - CodeRegion should only contain two properties: Begin and End. Both of them are of type CodeLocation.
   CodeLocation have the following two properties: Line and Column
+- Scripts which contain errors should not be take part of the analysis
 
 ### Resiliency / Robustness
 

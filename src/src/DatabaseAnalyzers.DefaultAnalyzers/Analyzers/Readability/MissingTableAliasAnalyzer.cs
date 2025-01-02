@@ -40,7 +40,7 @@ public sealed class MissingTableAliasAnalyzer : IScriptAnalyzer
             return;
         }
 
-        var databaseName = script.ParsedScript.FindCurrentDatabaseNameAtFragment(columnReference);
+        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(columnReference) ?? DatabaseNames.Unknown;
         var fullObjectName = columnReference.TryGetFirstClassObjectName(context, script);
         context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, columnReference.GetCodeRegion(), columnReference.GetSql());
     }

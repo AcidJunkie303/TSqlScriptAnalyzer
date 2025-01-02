@@ -48,7 +48,16 @@ internal sealed class Analyzer : IAnalyzer
 
     public AnalysisResult Analyze()
     {
+        var issueReporter = new IssueReporter();
         var scripts = ParseScripts();
+
+        var scriptsWithIssues = GetScriptsWithIssues(scripts, issueReporter).ToList();
+        var issuesFound = scriptsWithIssues.Count > 0;
+
+        // if we found scripts with issues already, we only use them
+        scripts = issuesFound
+            ? scriptsWithIssues
+            : scripts;
 
         var scriptByDatabaseName = scripts
             .GroupBy(a => a.DatabaseName, StringComparer.OrdinalIgnoreCase)
@@ -60,8 +69,20 @@ internal sealed class Analyzer : IAnalyzer
             scripts,
             scriptByDatabaseName,
             _diagnosticSettingsProvider,
-            new IssueReporter()
+            issueReporter
         );
+
+        if (!issuesFound)
+        {
+            PerformAnalysis(analysisContext);
+        }
+
+        return CalculateAnalysisResult(analysisContext, scripts);
+    }
+
+    private void PerformAnalysis(AnalysisContext analysisContext)
+    {
+        // TODO: handle exceptions thrown by analyzers
 
         using (_progressCallback.OnProgressWithAutoEndActionNotification("Running analyzers"))
         {
@@ -75,30 +96,36 @@ internal sealed class Analyzer : IAnalyzer
 
             Parallel.ForEach(_globalAnalyzers, analyzer => analyzer.Analyze(analysisContext));
         }
-
-        using (_progressCallback.OnProgressWithAutoEndActionNotification("Calculating results"))
-        {
-            var issues = analysisContext.IssueReporter.Issues;
-            var (unsuppressedIssues, suppressedIssues) = SplitIssuesToSuppressedAndUnsuppressed(scripts, issues);
-            var issuesByObjectName = issues
-                .GroupBy(a => a.FullObjectNameOrFileName, StringComparer.OrdinalIgnoreCase)
-                .ToDictionary(
-                    a => a.Key,
-                    a => (IReadOnlyList<IIssue>)a.ToImmutableArray(),
-                    StringComparer.OrdinalIgnoreCase
-                );
-
-            return new AnalysisResult(
-                _applicationSettings.ScriptSource.ScriptsRootDirectoryPath,
-                unsuppressedIssues,
-                suppressedIssues,
-                issuesByObjectName,
-                _applicationSettings.Diagnostics.DisabledDiagnostics
-            );
-        }
     }
 
-    private static (List<IIssue> UnsuppressedIssues, List<SuppressedIssue> SuppressedIssues) SplitIssuesToSuppressedAndUnsuppressed(IReadOnlyCollection<IScriptModel> scripts, IReadOnlyCollection<IIssue> issues)
+    private AnalysisResult CalculateAnalysisResult(AnalysisContext analysisContext, IReadOnlyList<IScriptModel> scripts)
+    {
+        using var _ = _progressCallback.OnProgressWithAutoEndActionNotification("Calculating results");
+        var issues = analysisContext.IssueReporter.Issues
+            .Deduplicate(
+                a => $"{a.DiagnosticDefinition.DiagnosticId}::{a.RelativeScriptFilePath}::{a.CodeRegion}",
+                StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        var (unsuppressedIssues, suppressedIssues) = SplitIssuesToSuppressedAndUnsuppressed(scripts, issues);
+        var issuesByObjectName = issues
+            .GroupBy(a => a.FullObjectNameOrFileName, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(
+                a => a.Key,
+                a => (IReadOnlyList<IIssue>)a.ToImmutableArray(),
+                StringComparer.OrdinalIgnoreCase
+            );
+
+        return new AnalysisResult(
+            _applicationSettings.ScriptSource.ScriptsRootDirectoryPath,
+            unsuppressedIssues,
+            suppressedIssues,
+            issuesByObjectName,
+            _applicationSettings.Diagnostics.DisabledDiagnostics
+        );
+    }
+
+    private static (List<IIssue> UnsuppressedIssues, List<SuppressedIssue> SuppressedIssues) SplitIssuesToSuppressedAndUnsuppressed(IReadOnlyCollection<IScriptModel> scripts, List<IIssue> issues)
     {
         var unsuppressedIssues = new List<IIssue>(issues.Count);
         var suppressedIssues = new List<SuppressedIssue>(issues.Count);
@@ -129,7 +156,7 @@ internal sealed class Analyzer : IAnalyzer
             .ToList();
     }
 
-    private ImmutableArray<IScriptModel> ParseScripts()
+    private List<IScriptModel> ParseScripts()
     {
         var sourceScripts = GetScriptFilePaths();
         var basicScripts = LoadScriptFiles(sourceScripts);
@@ -138,8 +165,7 @@ internal sealed class Analyzer : IAnalyzer
             .AsParallel()
             .WithExecutionMode(ParallelExecutionMode.ForceParallelism)
 #endif
-            .Select(ParseScript)
-            .ToImmutableArray();
+            .ConvertAll(ParseScript);
 
         IScriptModel ParseScript(BasicScriptInformation script)
         {
@@ -147,7 +173,7 @@ internal sealed class Analyzer : IAnalyzer
             using var reader = new StringReader(script.Contents);
             var parsedScript = parser.Parse(reader, out var parserErrors) as TSqlScript ?? new TSqlScript();
             var errorMessages = parserErrors
-                .Select(a => $"{a.Message} at {CodeRegion.Create(a.Line, a.Column, a.Line, a.Column)}")
+                .Select(a => new ScriptError(a.Message, CodeRegion.Create(a.Line, a.Column, a.Line, a.Column)))
                 .ToImmutableArray();
             var suppressions = _diagnosticSuppressionExtractor.ExtractSuppressions(parsedScript).ToList();
             var parentFragmentProvider = parsedScript.CreateParentFragmentProvider();
@@ -184,4 +210,33 @@ internal sealed class Analyzer : IAnalyzer
             return _scriptSourceProvider.GetScriptFilePaths();
         }
     }
+
+    private static IEnumerable<IScriptModel> GetScriptsWithIssues(List<IScriptModel> scripts, IIssueReporter issueReporter)
+    {
+        foreach (var script in scripts)
+        {
+            if (!DoesScriptContainStatements(script))
+            {
+                continue;
+            }
+
+            if (CheckAndReportErrors(script, issueReporter))
+            {
+                yield return script;
+            }
+        }
+    }
+
+    private static bool CheckAndReportErrors(IScriptModel script, IIssueReporter issueReporter)
+    {
+        foreach (var error in script.Errors)
+        {
+            issueReporter.Report(WellKnownDiagnosticDefinitions.ScriptContainsErrors, script.DatabaseName, script.RelativeScriptFilePath, null, error.CodeRegion, error.Message);
+        }
+
+        return script.Errors.Count > 0;
+    }
+
+    private static bool DoesScriptContainStatements(IScriptModel script)
+        => script.ParsedScript.Batches.Any(a => a.Statements.Count > 0);
 }

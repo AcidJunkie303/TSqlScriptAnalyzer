@@ -100,7 +100,7 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
 
     private static void Report(IAnalysisContext context, IScriptModel script, TSqlFragment fragment, string objectTypeName, string objectName, Regex validator)
     {
-        var databaseName = script.ParsedScript.FindCurrentDatabaseNameAtFragment(fragment);
+        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(fragment) ?? DatabaseNames.Unknown;
         var fullObjectName = fragment.TryGetFirstClassObjectName(context, script);
         context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, fragment.GetCodeRegion(), objectTypeName, objectName, validator);
     }

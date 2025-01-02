@@ -58,7 +58,7 @@ public sealed class NamelessConstraintAnalyzer : IScriptAnalyzer
             return;
         }
 
-        var databaseName = script.ParsedScript.FindCurrentDatabaseNameAtFragment(constraint);
+        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(constraint) ?? DatabaseNames.Unknown;
         var fullObjectName = constraint.TryGetFirstClassObjectName(context, script);
         context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, constraint.GetCodeRegion());
     }

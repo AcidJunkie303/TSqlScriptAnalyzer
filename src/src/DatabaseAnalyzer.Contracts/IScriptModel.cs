@@ -9,6 +9,6 @@ public interface IScriptModel
     string Contents { get; }
     TSqlScript ParsedScript { get; }
     IParentFragmentProvider ParentFragmentProvider { get; }
-    IReadOnlyList<string> Errors { get; }
+    IReadOnlyList<ScriptError> Errors { get; }
     IReadOnlyList<DiagnosticSuppression> DiagnosticSuppressions { get; }
 }

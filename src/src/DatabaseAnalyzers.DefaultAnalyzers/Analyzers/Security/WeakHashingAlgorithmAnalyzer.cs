@@ -46,7 +46,7 @@ public sealed class WeakHashingAlgorithmAnalyzer : IScriptAnalyzer
             return;
         }
 
-        var databaseName = script.ParsedScript.FindCurrentDatabaseNameAtFragment(algorithmArgument);
+        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(algorithmArgument) ?? DatabaseNames.Unknown;
         var fullObjectName = algorithmArgument.TryGetFirstClassObjectName(context, script);
         context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, algorithmArgument.GetCodeRegion(), hashAlgorithmName);
     }

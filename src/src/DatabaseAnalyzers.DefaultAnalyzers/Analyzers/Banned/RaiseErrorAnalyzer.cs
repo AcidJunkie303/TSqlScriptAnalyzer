@@ -24,7 +24,7 @@ public sealed class RaiseErrorAnalyzer : IScriptAnalyzer
 
     private static void Analyze(IAnalysisContext context, IScriptModel script, TSqlStatement statement)
     {
-        var databaseName = script.ParsedScript.FindCurrentDatabaseNameAtFragment(statement);
+        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(statement) ?? DatabaseNames.Unknown;
         var fullObjectName = statement.TryGetFirstClassObjectName(context, script);
         context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, statement.GetCodeRegion());
     }

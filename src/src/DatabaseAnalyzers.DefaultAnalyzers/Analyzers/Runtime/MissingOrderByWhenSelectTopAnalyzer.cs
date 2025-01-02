@@ -33,7 +33,7 @@ public sealed class MissingOrderByWhenSelectTopAnalyzer : IScriptAnalyzer
             return;
         }
 
-        var databaseName = script.ParsedScript.FindCurrentDatabaseNameAtFragment(statement);
+        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(statement) ?? DatabaseNames.Unknown;
         var fullObjectName = statement.TryGetFirstClassObjectName(context, script);
         context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, statement.GetCodeRegion());
     }

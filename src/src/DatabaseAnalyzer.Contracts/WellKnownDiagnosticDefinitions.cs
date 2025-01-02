@@ -7,7 +7,7 @@ public static class WellKnownDiagnosticDefinitions
         "AJ9000",
         IssueType.Warning,
         "The first statement in a script must be 'USE <DATABASE>'",
-        "The first statement in a script must be 'USE {0}'"
+        "The very first statement in a script must be a 'USE' statements at location 1,1"
     );
 
     public static DiagnosticDefinition MissingAlias { get; } = new
@@ -25,5 +25,13 @@ public static class WellKnownDiagnosticDefinitions
         IssueType.Error,
         "Duplicate object creation statement",
         "The object '{0}' is created more than once. Script files: '{1}'."
+    );
+
+    public static DiagnosticDefinition ScriptContainsErrors { get; } = new
+    (
+        "AJ9004",
+        IssueType.Error,
+        "Error in script",
+        "The script contains one or more errors: {0}."
     );
 }

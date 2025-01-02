@@ -36,7 +36,7 @@ public sealed class MissingPrimaryKeyAnalyzer : IGlobalAnalyzer
             return;
         }
 
-        var databaseName = table.ScriptModel.ParsedScript.FindCurrentDatabaseNameAtFragment(table.CreationStatement);
+        var databaseName = table.ScriptModel.ParsedScript.TryFindCurrentDatabaseNameAtFragment(table.CreationStatement) ?? DatabaseNames.Unknown;
         context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, table.ScriptModel.RelativeScriptFilePath, table.FullName, table.CreationStatement.GetCodeRegion(), table.FullName);
     }
 

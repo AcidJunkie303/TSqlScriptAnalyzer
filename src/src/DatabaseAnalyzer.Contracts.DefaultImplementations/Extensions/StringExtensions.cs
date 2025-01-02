@@ -19,8 +19,10 @@ public static class StringExtensions
 
     public static Regex ToRegexWithSimpleWildcards(this string value)
         => value.ToRegexWithSimpleWildcards(caseSensitive: false, compileRegex: false);
+
     public static Regex ToRegexWithSimpleWildcards(this string value, bool caseSensitive)
         => value.ToRegexWithSimpleWildcards(caseSensitive, compileRegex: false);
+
     public static Regex ToRegexWithSimpleWildcards(this string value, bool caseSensitive, bool compileRegex)
     {
         var pattern = Regex.Escape(value)
@@ -109,7 +111,7 @@ public static class StringExtensions
         return script;
     }
 
-    public static TSqlScript TryParseSqlScript(this string sqlScriptContents, out IReadOnlyList<string> errors)
+    public static TSqlScript TryParseSqlScript(this string sqlScriptContents, out IReadOnlyList<ScriptError> errors)
     {
         var parser = TSqlParser.CreateParser(SqlVersion.Sql170, initialQuotedIdentifiers: true);
         using var reader = new StringReader(sqlScriptContents);
@@ -122,7 +124,7 @@ public static class StringExtensions
         }
 
         errors = parserErrors
-            .Select(static a => $"{a.Message} at {CodeRegion.Create(a.Line, a.Column, a.Line, a.Column)}")
+            .Select(static a => new ScriptError(a.Message, CodeRegion.Create(a.Line, a.Column, a.Line, a.Column)))
             .ToList();
 
         return script;

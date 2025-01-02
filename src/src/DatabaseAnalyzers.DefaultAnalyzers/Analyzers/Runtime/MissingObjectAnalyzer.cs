@@ -57,7 +57,7 @@ public sealed class MissingObjectAnalyzer : IGlobalAnalyzer
             return;
         }
 
-        var databaseName = script.ParsedScript.FindCurrentDatabaseNameAtFragment(columnReference);
+        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(columnReference) ?? DatabaseNames.Unknown;
         var fullObjectName = columnReference.TryGetFirstClassObjectName(context, script);
         context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, columnReference.GetCodeRegion(), "column", column.FullName);
     }
@@ -79,7 +79,9 @@ public sealed class MissingObjectAnalyzer : IGlobalAnalyzer
 
     private static void AnalyzeTableReference(IAnalysisContext context, Aj5044Settings settings, IReadOnlyDictionary<string, DatabaseInformation> databasesByName, IScriptModel script, NamedTableReference tableReference)
     {
-        var databaseName = tableReference.SchemaObject.DatabaseIdentifier?.Value.NullIfEmptyOrWhiteSpace() ?? script.ParsedScript.FindCurrentDatabaseNameAtFragment(tableReference);
+        var databaseName = tableReference.SchemaObject.DatabaseIdentifier?.Value.NullIfEmptyOrWhiteSpace()
+                           ?? script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(tableReference)
+                           ?? DatabaseNames.Unknown;
         var schemaName = tableReference.SchemaObject.SchemaIdentifier?.Value.NullIfEmptyOrWhiteSpace() ?? context.DefaultSchemaName;
         var tableName = tableReference.SchemaObject.BaseIdentifier.Value;
 

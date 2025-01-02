@@ -183,7 +183,9 @@ public sealed class TableColumnResolver
         var (tableNameOrAlias, columnName) = columnReferenceExpression.MultiPartIdentifier.GetColumnReferenceParts();
         var tableReferenceTableName = namedTableReference.SchemaObject.BaseIdentifier.Value;
         var tableReferenceSchemaName = namedTableReference.SchemaObject.SchemaIdentifier?.Value ?? _defaultSchemaName;
-        var currentDatabaseName = namedTableReference.SchemaObject.DatabaseIdentifier?.Value ?? _script.FindCurrentDatabaseNameAtFragment(columnReferenceExpression);
+        var currentDatabaseName = namedTableReference.SchemaObject.DatabaseIdentifier?.Value
+                                  ?? _script.TryFindCurrentDatabaseNameAtFragment(columnReferenceExpression)
+                                  ?? DatabaseNames.Unknown;
 
         // if we don't have an alias, we have aborted earlier on in case there are multiple tables involved
         // Therefore, we assume that this is the table we're looking for
@@ -200,7 +202,7 @@ public sealed class TableColumnResolver
         }
 
         return tableReferenceAlias.EqualsOrdinalIgnoreCase(tableNameOrAlias)
-            ? new ColumnReference(currentDatabaseName ?? "Unknown", tableReferenceSchemaName, tableReferenceTableName, columnName, TableSourceType.NotDetermined, columnReferenceExpression, GetFullObjectName())
+            ? new ColumnReference(currentDatabaseName, tableReferenceSchemaName, tableReferenceTableName, columnName, TableSourceType.NotDetermined, columnReferenceExpression, GetFullObjectName())
             : null;
 
         string GetFullObjectName()
@@ -217,8 +219,8 @@ public sealed class TableColumnResolver
 
     private void ReportMissingAlias(ColumnReferenceExpression columnReference)
     {
-        var currentDatabaseName = _script.FindCurrentDatabaseNameAtFragment(columnReference);
+        var currentDatabaseName = _script.TryFindCurrentDatabaseNameAtFragment(columnReference);
         var fullObjectName = columnReference.TryGetFirstClassObjectName(_defaultSchemaName, _script, _parentFragmentProvider);
-        _issueReporter.Report(WellKnownDiagnosticDefinitions.MissingAlias, currentDatabaseName ?? "Unknown", _relativeScriptFilePath, fullObjectName, columnReference.GetCodeRegion(), columnReference.GetSql());
+        _issueReporter.Report(WellKnownDiagnosticDefinitions.MissingAlias, currentDatabaseName ?? DatabaseNames.Unknown, _relativeScriptFilePath, fullObjectName, columnReference.GetCodeRegion(), columnReference.GetSql());
     }
 }

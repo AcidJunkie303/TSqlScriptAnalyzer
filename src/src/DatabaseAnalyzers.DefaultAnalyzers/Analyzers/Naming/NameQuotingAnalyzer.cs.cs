@@ -155,7 +155,7 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
                 continue;
             }
 
-            var databaseName = script.ParsedScript.FindCurrentDatabaseNameAtFragment(statement);
+            var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(statement) ?? DatabaseNames.Unknown;
             var fullObjectName = statement.TryGetFirstClassObjectName(context, script);
             context.IssueReporter.Report(DiagnosticDefinitions.Default,
                 databaseName,

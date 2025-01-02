@@ -91,4 +91,17 @@ public static class CollectionExtensions
 
         collection.Add(item);
     }
+
+    public static IEnumerable<T> Deduplicate<T, TKey>(this IEnumerable<T> items, Func<T, TKey> keySelector)
+        => Deduplicate(items, keySelector, EqualityComparer<TKey>.Default);
+
+    public static IEnumerable<T> Deduplicate<T, TKey>(this IEnumerable<T> items, Func<T, TKey> keySelector, IEqualityComparer<TKey> comparer)
+    {
+        ArgumentNullException.ThrowIfNull(items);
+        ArgumentNullException.ThrowIfNull(keySelector);
+
+        return items
+            .GroupBy(keySelector, comparer)
+            .Select(a => a.First());
+    }
 }

@@ -16,7 +16,7 @@ public sealed class SetOptionSeparatedByGoAnalyzer : IScriptAnalyzer
             var lastBatchCodeRegion = group[^1].GetCodeRegion();
 
             var codeRegion = CodeRegion.CreateSpan(firstBatchCodeRegion, lastBatchCodeRegion);
-            var databaseName = script.ParsedScript.FindCurrentDatabaseNameAtFragment(group[0]);
+            var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(group[0]) ?? DatabaseNames.Unknown;
             var fullObjectName = group[0].TryGetFirstClassObjectName(context, script);
             context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, codeRegion);
         }

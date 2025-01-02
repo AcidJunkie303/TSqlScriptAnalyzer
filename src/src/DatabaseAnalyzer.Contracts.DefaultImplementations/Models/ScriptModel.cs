@@ -8,6 +8,6 @@ public sealed record ScriptModel(
     string Contents,
     TSqlScript ParsedScript,
     IParentFragmentProvider ParentFragmentProvider,
-    IReadOnlyList<string> Errors,
+    IReadOnlyList<ScriptError> Errors,
     IReadOnlyList<DiagnosticSuppression> DiagnosticSuppressions
 ) : IScriptModel;

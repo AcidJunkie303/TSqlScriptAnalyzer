@@ -6,6 +6,7 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction;
 
+[SuppressMessage("Major Code Smell", "S1200:Classes should not be coupled to too many other classes")]
 public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
 {
     private readonly IIssueReporter _issueReporter;
@@ -90,14 +91,14 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
     private ISchemaBoundObject[] RemoveAndReportDuplicates(ISchemaBoundObject[] objects)
     {
         var indicesWithoutName = objects
-            .Where(static a => a is IndexInformation { IndexName: null })
+            .Where(a => a is IndexInformation { IndexName: null })
             .ToList();
 
         var objectsGroupedByName = objects
             // depending on the index type, some indices might not have a name
-            .Where(static a => a is not IndexInformation { IndexName: null })
+            .Where(a => a is not IndexInformation { IndexName: null })
             .GroupBy(a => a.FullNameParts.StringJoin(":::"), StringComparer.OrdinalIgnoreCase)
-            .Select(static a => a.ToList())
+            .Select(a => a.ToList())
             .ToList();
 
         foreach (var databaseObjects in objectsGroupedByName)

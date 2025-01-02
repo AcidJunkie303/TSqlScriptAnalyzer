@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using BetterConsoleTables;
+using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
@@ -52,9 +53,9 @@ public static class SyntaxTreeVisualizer
                 return;
             }
 
-            var codeRegion = fragment.StartLine >= 0 && fragment.StartColumn >= 0
+            var codeRegion = fragment is { StartLine: >= 0, StartColumn: >= 0 }
                 ? fragment.GetCodeRegion().ToString()
-                : "Unknown";
+                : CodeRegion.Create(1, 1, 1, 2).ToString();
 
             var code = fragment.GetSql()
                 .Replace("\r", "\\r", StringComparison.Ordinal)

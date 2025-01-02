@@ -87,7 +87,7 @@ public static class SqlFragmentExtensions
             var name = TryGetFirstClassObjectNameCore(parent, defaultSchemaName);
             if (!name.IsNullOrWhiteSpace())
             {
-                var databaseName = script.FindCurrentDatabaseNameAtFragment(parent);
+                var databaseName = script.TryFindCurrentDatabaseNameAtFragment(parent) ?? DatabaseNames.Unknown;
                 return $"{databaseName}.{name}";
             }
         }
@@ -297,6 +297,12 @@ public static class SqlFragmentExtensions
 
         static bool IsInsideElement(TSqlFragment fragment, int lineNumber, int columnNumber)
         {
+            // StatementList fragments sometimes have no StartLine or StartColumn set so we skip these
+            if (fragment.StartLine < 0 || fragment.StartColumn < 0)
+            {
+                return false;
+            }
+
             var codeRegion = fragment.GetCodeRegion();
             return codeRegion.IsAround(lineNumber, columnNumber);
         }
