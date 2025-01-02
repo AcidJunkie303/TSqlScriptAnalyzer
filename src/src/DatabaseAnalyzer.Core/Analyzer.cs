@@ -82,19 +82,32 @@ internal sealed class Analyzer : IAnalyzer
 
     private void PerformAnalysis(AnalysisContext analysisContext)
     {
-        // TODO: handle exceptions thrown by analyzers
-
         using (_progressCallback.OnProgressWithAutoEndActionNotification("Running analyzers"))
         {
             Parallel.ForEach(analysisContext.Scripts, script =>
             {
                 foreach (var analyzer in _scriptAnalyzers)
                 {
-                    analyzer.AnalyzeScript(analysisContext, script);
+                    ExecuteAndCaptureExceptions(analyzer, script.DatabaseName, script.RelativeScriptFilePath, analysisContext, () => analyzer.AnalyzeScript(analysisContext, script));
                 }
             });
 
-            Parallel.ForEach(_globalAnalyzers, analyzer => analyzer.Analyze(analysisContext));
+            Parallel.ForEach(_globalAnalyzers, analyzer => ExecuteAndCaptureExceptions(analyzer, string.Empty, string.Empty, analysisContext, () => analyzer.Analyze(analysisContext)));
+        }
+
+        static void ExecuteAndCaptureExceptions(IObjectAnalyzer analyzer, string databaseName, string relativeScriptFilePath, AnalysisContext analysisContext, Action action)
+        {
+            try
+            {
+                action();
+            }
+#pragma warning disable CA1031 // Do not catch general exception types -> yes we do
+            catch (Exception ex)
+#pragma warning restore CA1031
+            {
+                var analyzerName = analyzer.GetType().FullName ?? "<Unknown>";
+                analysisContext.IssueReporter.Report(WellKnownDiagnosticDefinitions.UnhandledAnalyzerException, databaseName, relativeScriptFilePath, null, CodeRegion.Unknown, analyzerName, ex.Message);
+            }
         }
     }
 

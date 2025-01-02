@@ -8,6 +8,8 @@ public record struct CodeRegion(
     CodeLocation End
 ) : IComparable<CodeRegion>, IComparable
 {
+    public static CodeRegion Unknown { get; } = Create(1, 1, 1, 1);
+
     public static CodeRegion Create(CodeLocation beginLocation, CodeLocation endLocation)
         => new(beginLocation, endLocation);
 

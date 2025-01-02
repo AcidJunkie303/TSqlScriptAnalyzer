@@ -34,4 +34,12 @@ public static class WellKnownDiagnosticDefinitions
         "Error in script",
         "The script contains one or more errors: {0}."
     );
+
+    public static DiagnosticDefinition UnhandledAnalyzerException { get; } = new
+    (
+        "AJ9999",
+        IssueType.Error,
+        "Analyzer error",
+        "The analyzer '{0}' threw an exception: {1}."
+    );
 }

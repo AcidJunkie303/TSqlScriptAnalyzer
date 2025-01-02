@@ -13,7 +13,6 @@ A framework to analyze multiple T-SQL script files
 
 ### Resiliency / Robustness
 
-- A faulty analyzer must not cause the app to crash
 - Remove IssueReporter.Report() extension methods. Instead, every script should provide the database name. Passing in
   the IScriptModel is easier but sometime, when the script contains additional USE DATABASE statements, the real
   database name can be a different one
@@ -50,6 +49,7 @@ A framework to analyze multiple T-SQL script files
 
 ### Other
 
+- A faulty analyzer must not cause the app to crash
 - Create smart settings implementation so IDiagnosticSettingsProvider is not used anymore. Instead, rely on
   IRawSettings<out TSettings> and the type constraints to make it dynamic.
 - CodeRegion should only contain two properties: Begin and End. Both of them are of type CodeLocation.
