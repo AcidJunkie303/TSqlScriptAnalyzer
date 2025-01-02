@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
@@ -34,7 +33,7 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
 
         foreach (var view in views)
         {
-            Analyze(context, script, view, "view", settings.ViewNamePattern, static a => a.SchemaObjectName.BaseIdentifier.Value, static a => a.SchemaObjectName.BaseIdentifier);
+            Analyze(context, script, view, "view", settings.ViewName, static a => a.SchemaObjectName.BaseIdentifier.Value, static a => a.SchemaObjectName.BaseIdentifier);
         }
 
         foreach (var variable in variables)
@@ -46,63 +45,63 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
                     continue;
                 }
 
-                Analyze(context, script, declaration, "variable", settings.VariableNamePattern, static a => a.VariableName.Value.Trim('@'), static a => a.VariableName);
+                Analyze(context, script, declaration, "variable", settings.VariableName, static a => a.VariableName.Value.Trim('@'), static a => a.VariableName);
             }
         }
 
         foreach (var constraint in primaryKeyConstraints)
         {
-            Analyze(context, script, constraint, "primary key constraint", settings.PrimaryKeyConstraintNamePattern, static a => a.ConstraintIdentifier?.Value, static a => a.ConstraintIdentifier);
+            Analyze(context, script, constraint, "primary key constraint", settings.PrimaryKeyConstraintName, static a => a.ConstraintIdentifier?.Value, static a => a.ConstraintIdentifier);
         }
 
         foreach (var procedure in procedures)
         {
-            Analyze(context, script, procedure, "procedure", settings.ProcedureNamePattern, static a => a.ProcedureReference.Name.BaseIdentifier.Value, static a => a.ProcedureReference.Name.BaseIdentifier);
+            Analyze(context, script, procedure, "procedure", settings.ProcedureName, static a => a.ProcedureReference.Name.BaseIdentifier.Value, static a => a.ProcedureReference.Name.BaseIdentifier);
         }
 
         foreach (var function in functions)
         {
-            Analyze(context, script, function, "function", settings.FunctionNamePattern, static a => a.Name.BaseIdentifier.Value, static a => a.Name.BaseIdentifier);
+            Analyze(context, script, function, "function", settings.FunctionName, static a => a.Name.BaseIdentifier.Value, static a => a.Name.BaseIdentifier);
         }
 
         foreach (var parameter in parameters)
         {
-            Analyze(context, script, parameter, "parameter", settings.ParameterNamePattern, static a => a.VariableName.Value.Trim('@'), static a => a.VariableName);
+            Analyze(context, script, parameter, "parameter", settings.ParameterName, static a => a.VariableName.Value.Trim('@'), static a => a.VariableName);
         }
 
         foreach (var trigger in triggers)
         {
-            Analyze(context, script, trigger, "trigger", settings.TriggerNamePattern, static a => a.Name.BaseIdentifier.Value, static a => a.Name.BaseIdentifier);
+            Analyze(context, script, trigger, "trigger", settings.TriggerName, static a => a.Name.BaseIdentifier.Value, static a => a.Name.BaseIdentifier);
         }
 
         foreach (var table in tables)
         {
-            Analyze(context, script, table, "table", settings.TableNamePattern, static a => a.SchemaObjectName.BaseIdentifier.Value, static a => a.SchemaObjectName.BaseIdentifier);
+            Analyze(context, script, table, "table", settings.TableName, static a => a.SchemaObjectName.BaseIdentifier.Value, static a => a.SchemaObjectName.BaseIdentifier);
 
             foreach (var column in table.Definition.ColumnDefinitions)
             {
-                Analyze(context, script, column, "column", settings.ColumnNamePattern, static a => a.ColumnIdentifier.Value, static a => a.ColumnIdentifier);
+                Analyze(context, script, column, "column", settings.ColumnName, static a => a.ColumnIdentifier.Value, static a => a.ColumnIdentifier);
             }
         }
     }
 
-    private static void Analyze<T>(IAnalysisContext context, IScriptModel script, T statement, string objectTypeName, Regex validator, Func<T, string?> nameGetter, Func<T, TSqlFragment> fragmentToReportGetter)
+    private static void Analyze<T>(IAnalysisContext context, IScriptModel script, T statement, string objectTypeName, Aj5030Settings.PatternEntry patternEntry, Func<T, string?> nameGetter, Func<T, TSqlFragment> fragmentToReportGetter)
         where T : TSqlFragment
     {
         var name = nameGetter(statement);
-        if (name is null || validator.IsMatch(name))
+        if (name is null || patternEntry.Pattern.IsMatch(name))
         {
             return;
         }
 
-        Report(context, script, fragmentToReportGetter(statement), objectTypeName, name, validator);
+        Report(context, script, fragmentToReportGetter(statement), objectTypeName, name, patternEntry.Description);
     }
 
-    private static void Report(IAnalysisContext context, IScriptModel script, TSqlFragment fragment, string objectTypeName, string objectName, Regex validator)
+    private static void Report(IAnalysisContext context, IScriptModel script, TSqlFragment fragment, string objectTypeName, string objectName, string ruleDescription)
     {
         var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(fragment) ?? DatabaseNames.Unknown;
         var fullObjectName = fragment.TryGetFirstClassObjectName(context, script);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, fragment.GetCodeRegion(), objectTypeName, objectName, validator);
+        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, fragment.GetCodeRegion(), objectTypeName, objectName, ruleDescription);
     }
 
     private static class DiagnosticDefinitions
@@ -112,7 +111,7 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
             "AJ5030",
             IssueType.Warning,
             "Object name violates naming conventions",
-            "The {0} name '{1}' does not comply with the regular expression '{2}'."
+            "The {0} name '{1}' does not comply with the configured naming rules: {2}."
         );
     }
 }
