@@ -13,9 +13,9 @@ A framework to analyze multiple T-SQL script files
     - if the object is tied to a table, add placeholders to the expression pattern which represent the current schema
       and table name
 - Stored procedure, functions etc. documentation header analyzer
+- index creation on table without specified table schema name
 
 ### Resiliency / Robustness
-
 
 ### Other
 
@@ -43,7 +43,6 @@ A framework to analyze multiple T-SQL script files
 - invoked stored procedure or function not found
 - ToDo, not yet finished, open point finder. Tags (only opening -> capture until end of line, or open and closing tag
   can be configured)
-
 
 ### Other
 
