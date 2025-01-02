@@ -36,7 +36,7 @@ public sealed class MissingClusteredIndexAnalyzer : IGlobalAnalyzer
             return;
         }
 
-        var databaseName = table.CreationStatement.FindCurrentDatabaseNameAtFragment(table.ScriptModel.ParsedScript);
+        var databaseName = table.ScriptModel.ParsedScript.FindCurrentDatabaseNameAtFragment(table.CreationStatement);
         context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, table.ScriptModel.RelativeScriptFilePath, table.FullName, table.CreationStatement.GetCodeRegion(), table.FullName);
     }
 

@@ -26,6 +26,34 @@ public static class SqlScriptExtensions
     public static bool IsUseDatabaseCalledBeforeAnyOtherStatement(this TSqlScript script)
         => ScriptComplianceChecker.IsUseDatabaseCalledBeforeAnyOtherStatement(script);
 
+    public static string FindCurrentDatabaseNameAt(this TSqlScript script, TSqlParserToken token)
+    {
+        ArgumentNullException.ThrowIfNull(token);
+        ArgumentNullException.ThrowIfNull(script);
+
+        return CurrentDatabaseNameFinder.FindCurrentDatabaseNameAtToken(script, token);
+    }
+
+    public static string? TryFindCurrentDatabaseNameAt(this TSqlScript script, TSqlParserToken token)
+    {
+        ArgumentNullException.ThrowIfNull(token);
+        ArgumentNullException.ThrowIfNull(script);
+
+        return CurrentDatabaseNameFinder.TryFindCurrentDatabaseNameAtToken(script, token);
+    }
+
+    public static string? TryFindCurrentDatabaseNameAtFragment(this TSqlScript script, TSqlFragment fragment)
+        => CurrentDatabaseNameFinder.TryFindCurrentDatabaseNameAtFragment(script, fragment);
+
+    public static string FindCurrentDatabaseNameAtFragment(this TSqlScript script, TSqlFragment fragment)
+        => CurrentDatabaseNameFinder.FindCurrentDatabaseNameAtFragment(script, fragment);
+
+    public static string? TryFindCurrentDatabaseNameAtLocation(this TSqlScript script, CodeLocation location)
+        => CurrentDatabaseNameFinder.TryFindCurrentDatabaseNameAtLocation(script, location);
+
+    public static string FindCurrentDatabaseNameAtLocation(this TSqlScript script, CodeLocation location)
+        => CurrentDatabaseNameFinder.FindCurrentDatabaseNameAtLocation(script, location);
+
     private sealed class GetTopLevelDescendantVisitor<T> : TSqlFragmentVisitor
         where T : TSqlFragment
     {

@@ -4,6 +4,13 @@ namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 
 public static class SqlParserTokenExtensions
 {
+    public static CodeLocation GetCodeLocation(this TSqlParserToken token)
+    {
+        ArgumentNullException.ThrowIfNull(token);
+
+        return CodeLocation.Create(token.Line, token.Column);
+    }
+
     public static CodeRegion GetCodeRegion(this TSqlParserToken token)
     {
         ArgumentNullException.ThrowIfNull(token);

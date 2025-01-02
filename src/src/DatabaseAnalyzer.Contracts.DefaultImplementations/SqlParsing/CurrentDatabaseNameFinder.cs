@@ -5,42 +5,61 @@ namespace DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing;
 
 public static class CurrentDatabaseNameFinder
 {
-    public static string FindCurrentDatabaseNameAtFragment(TSqlFragment fragment, TSqlScript script)
-    {
-        var visitor = new DatabaseNameVisitorForFragment(fragment);
-        visitor.ExplicitVisit(script);
+    public static string FindCurrentDatabaseNameAtFragment(TSqlScript script, TSqlFragment fragment) => FindCurrentDatabaseNameAtLocation(script, fragment.GetCodeLocation());
+    public static string FindCurrentDatabaseNameAtToken(TSqlScript script, TSqlParserToken token) => FindCurrentDatabaseNameAtLocation(script, token.GetCodeLocation());
 
-        if (visitor.DatabaseNameAtFragment is not null)
+    public static string FindCurrentDatabaseNameAtLocation(TSqlScript script, CodeLocation location)
+    {
+        var databaseName = TryFindCurrentDatabaseNameAtLocation(script, location);
+        if (!databaseName.IsNullOrWhiteSpace())
         {
-            return visitor.DatabaseNameAtFragment;
+            return databaseName;
         }
 
-        var message = "Unable to determine the database name for the given fragment."
-                      + $" Looks like there's no preceding 'USE' statement. Script content: {script.GetSql()}. Fragment code region: {fragment.GetCodeRegion()}";
-
-        throw new InvalidOperationException(message);
+        throw GetUnableToFindDatabaseNameException(script, location);
     }
 
-    private sealed class DatabaseNameVisitorForFragment : DatabaseAwareFragmentVisitor
+    public static string? TryFindCurrentDatabaseNameAtFragment(TSqlScript script, TSqlFragment fragment)
     {
-        private readonly TSqlFragment _fragmentToCheckCurrentDatabaseName;
+        var fragmentLocation = fragment.GetCodeLocation();
 
-        public DatabaseNameVisitorForFragment(TSqlFragment fragmentToCheckCurrentDatabaseName) : base("dbo") // defaultSchemaName is not necessary here, so we use dbo
+        return TryFindCurrentDatabaseNameAtLocation(script, fragmentLocation);
+    }
+
+    public static string? TryFindCurrentDatabaseNameAtToken(TSqlScript script, TSqlParserToken token)
+    {
+        var fragmentLocation = token.GetCodeLocation();
+
+        return TryFindCurrentDatabaseNameAtLocation(script, fragmentLocation);
+    }
+
+    public static string? TryFindCurrentDatabaseNameAtLocation(TSqlScript script, CodeLocation location)
+    {
+        string? currentDatabaseName = null;
+
+        foreach (var child in script.GetChildren(recursive: true))
         {
-            _fragmentToCheckCurrentDatabaseName = fragmentToCheckCurrentDatabaseName;
-        }
-
-        public string? DatabaseNameAtFragment { get; private set; }
-
-        public override void Visit(TSqlFragment fragment)
-        {
-            if (ReferenceEquals(_fragmentToCheckCurrentDatabaseName, fragment))
+            if (child is UseStatement useStatement)
             {
-                DatabaseNameAtFragment = CurrentDatabaseName;
-                return;
+                currentDatabaseName = useStatement.DatabaseName.Value;
             }
 
-            fragment.AcceptChildren(this);
+            var childLocation = child.GetCodeLocation();
+
+            if (childLocation > location)
+            {
+                return currentDatabaseName;
+            }
         }
+
+        return currentDatabaseName;
+    }
+
+    private static InvalidOperationException GetUnableToFindDatabaseNameException(TSqlScript script, CodeLocation location)
+    {
+        var message = $"Unable to determine the database name for the given location {location}."
+                      + $" Looks like there's no preceding 'USE' statement. Script content: {script.GetSql()}.";
+
+        throw new InvalidOperationException(message);
     }
 }

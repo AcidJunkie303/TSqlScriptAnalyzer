@@ -23,7 +23,7 @@ public sealed class NestedTernaryOperatorsAnalyzer : IScriptAnalyzer
             return;
         }
 
-        var databaseName = expression.FindCurrentDatabaseNameAtFragment(script.ParsedScript);
+        var databaseName = script.ParsedScript.FindCurrentDatabaseNameAtFragment(expression);
         var fullObjectName = expression.TryGetFirstClassObjectName(context, script);
         context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, expression.GetCodeRegion());
     }

@@ -183,7 +183,7 @@ public sealed class TableColumnResolver
         var (tableNameOrAlias, columnName) = columnReferenceExpression.MultiPartIdentifier.GetColumnReferenceParts();
         var tableReferenceTableName = namedTableReference.SchemaObject.BaseIdentifier.Value;
         var tableReferenceSchemaName = namedTableReference.SchemaObject.SchemaIdentifier?.Value ?? _defaultSchemaName;
-        var currentDatabaseName = namedTableReference.SchemaObject.DatabaseIdentifier?.Value ?? columnReferenceExpression.FindCurrentDatabaseNameAtFragment(_script);
+        var currentDatabaseName = namedTableReference.SchemaObject.DatabaseIdentifier?.Value ?? _script.FindCurrentDatabaseNameAtFragment(columnReferenceExpression);
 
         // if we don't have an alias, we have aborted earlier on in case there are multiple tables involved
         // Therefore, we assume that this is the table we're looking for
@@ -217,7 +217,7 @@ public sealed class TableColumnResolver
 
     private void ReportMissingAlias(ColumnReferenceExpression columnReference)
     {
-        var currentDatabaseName = columnReference.FindCurrentDatabaseNameAtFragment(_script);
+        var currentDatabaseName = _script.FindCurrentDatabaseNameAtFragment(columnReference);
         var fullObjectName = columnReference.TryGetFirstClassObjectName(_defaultSchemaName, _script, _parentFragmentProvider);
         _issueReporter.Report(WellKnownDiagnosticDefinitions.MissingAlias, currentDatabaseName ?? "Unknown", _relativeScriptFilePath, fullObjectName, columnReference.GetCodeRegion(), columnReference.GetSql());
     }

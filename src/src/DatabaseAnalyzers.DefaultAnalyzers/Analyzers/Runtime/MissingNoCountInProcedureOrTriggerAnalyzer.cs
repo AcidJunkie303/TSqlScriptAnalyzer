@@ -41,7 +41,7 @@ public sealed class MissingNoCountInProcedureOrTriggerAnalyzer : IScriptAnalyzer
         }
 
         var firstStatement = bodyStatements[0];
-        var databaseName = creationStatement.FindCurrentDatabaseNameAtFragment(script.ParsedScript);
+        var databaseName = script.ParsedScript.FindCurrentDatabaseNameAtFragment(creationStatement);
         var fullObjectName = creationStatement.TryGetFirstClassObjectName(context, script);
         context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, firstStatement.GetCodeRegion());
     }

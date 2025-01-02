@@ -5,6 +5,8 @@ namespace DatabaseAnalyzer.Contracts;
 [StructLayout(LayoutKind.Auto)]
 public record struct CodeLocation(int Line, int Column) : IComparable<CodeLocation>, IComparable
 {
+    public static CodeLocation Create(int line, int column) => new(line, column);
+
     public readonly int CompareTo(object? obj)
         => obj is CodeLocation other
             ? CompareTo(other)

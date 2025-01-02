@@ -67,7 +67,7 @@ public sealed class BannedFunctionAnalyzer : IScriptAnalyzer
             return;
         }
 
-        var databaseName = function.FindCurrentDatabaseNameAtFragment(script.ParsedScript);
+        var databaseName = script.ParsedScript.FindCurrentDatabaseNameAtFragment(function);
         var fullObjectName = function.TryGetFirstClassObjectName(context, script);
         context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, nameLocationGetter(function), functionName, reason);
     }

@@ -34,7 +34,7 @@ public sealed class DeadCodeAnalyzer : IScriptAnalyzer
             return;
         }
 
-        var databaseName = branchExecutionTerminatorStatement.FindCurrentDatabaseNameAtFragment(script.ParsedScript);
+        var databaseName = script.ParsedScript.FindCurrentDatabaseNameAtFragment(branchExecutionTerminatorStatement);
         var fullObjectName = branchExecutionTerminatorStatement.TryGetFirstClassObjectName(context, script);
         context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, branchExecutionTerminatorStatement.GetCodeRegion(), statementName);
 
@@ -65,7 +65,7 @@ public sealed class DeadCodeAnalyzer : IScriptAnalyzer
             return;
         }
 
-        var databaseName = goToStatement.FindCurrentDatabaseNameAtFragment(script.ParsedScript);
+        var databaseName = script.ParsedScript.FindCurrentDatabaseNameAtFragment(goToStatement);
         var fullObjectName = goToStatement.TryGetFirstClassObjectName(context, script);
         context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, goToStatement.GetCodeRegion(), "GOTO");
     }

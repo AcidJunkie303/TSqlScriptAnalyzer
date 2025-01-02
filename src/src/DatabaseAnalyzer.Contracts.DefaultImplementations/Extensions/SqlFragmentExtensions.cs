@@ -5,9 +5,15 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 
-// aa
 public static class SqlFragmentExtensions
 {
+    public static CodeLocation GetCodeLocation(this TSqlFragment fragment)
+    {
+        ArgumentNullException.ThrowIfNull(fragment);
+
+        return CodeLocation.Create(fragment.StartLine, fragment.StartColumn);
+    }
+
     public static CodeRegion GetCodeRegion(this TSqlFragment fragment)
     {
         ArgumentNullException.ThrowIfNull(fragment);
@@ -78,10 +84,10 @@ public static class SqlFragmentExtensions
                 return null;
             }
 
-            var databaseName = parent.FindCurrentDatabaseNameAtFragment(script);
             var name = TryGetFirstClassObjectNameCore(parent, defaultSchemaName);
             if (!name.IsNullOrWhiteSpace())
             {
+                var databaseName = script.FindCurrentDatabaseNameAtFragment(parent);
                 return $"{databaseName}.{name}";
             }
         }
@@ -250,13 +256,13 @@ public static class SqlFragmentExtensions
         return script.TryGetSqlFragmentAtPosition(token.Line, token.Column);
     }
 
-    public static TSqlFragment? TryGetSqlFragmentAtPosition(this TSqlScript script, int index)
+    public static TSqlFragment? TryGetSqlFragmentAtPosition(this TSqlScript script, int characterIndex)
     {
         TSqlFragment? match = null;
 
         foreach (var child in script.GetChildren(recursive: true))
         {
-            if (IsIndexInsideFragment(index, child))
+            if (IsIndexInsideFragment(characterIndex, child))
             {
                 // get the last possible match
                 match = child;
@@ -295,7 +301,4 @@ public static class SqlFragmentExtensions
             return codeRegion.IsAround(lineNumber, columnNumber);
         }
     }
-
-    public static string FindCurrentDatabaseNameAtFragment(this TSqlFragment fragment, TSqlScript script)
-        => CurrentDatabaseNameFinder.FindCurrentDatabaseNameAtFragment(fragment, script);
 }

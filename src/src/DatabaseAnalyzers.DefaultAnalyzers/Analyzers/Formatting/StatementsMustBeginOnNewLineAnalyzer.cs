@@ -47,7 +47,7 @@ public sealed class StatementsMustBeginOnNewLineAnalyzer : IScriptAnalyzer
             }
 
             var fullObjectName = statement.TryGetFirstClassObjectName(context, script);
-            var databaseName = statement.FindCurrentDatabaseNameAtFragment(script.ParsedScript);
+            var databaseName = script.ParsedScript.FindCurrentDatabaseNameAtFragment(statement);
             context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, statement.GetCodeRegion());
 
             return;

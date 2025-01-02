@@ -22,6 +22,11 @@
         "0000 Create*.sql"
       ]
     },
+    "AJ5004": { // open points / todo 
+      "TopicsByPattern": {
+        "TODO\\s*:\\s*(?<message>[^\r\n]+)": "to do" // named capture 'message' is used to extract the text after the 'todo'
+      }
+    },
     "AJ5006": { // Banned data types
       "BannedColumnDataTypes": [
         "decimal", // use numeric because decimal is a synonym for numeric
@@ -86,19 +91,19 @@
         "MyDb.MySchema.My*"
       ]
     },
-    "AJ5030":{ // Object and variable naming
+    "AJ5030": { // Object and variable naming
       "ColumnNamePattern": "\\A[A-Z][A-Za-z0-1]+",
       "FunctionNamePattern": "\\A[A-Z][A-Za-z0-1]+",
       "ParameterNamePattern": "\\A[A-Z][A-Za-z0-1]+",
-      "PrimaryKeyConstraintNamePattern": "\\APK_", 
+      "PrimaryKeyConstraintNamePattern": "\\APK_",
       "ProcedureNamePattern": "\\A[A-Z][A-Za-z0-1]+",
       "TableNamePattern": "\\A[A-Z][A-Za-z0-1]+",
       "TriggerNamePattern": "\\ATRG_[A-Za-z0-1]+",
       "VariableNamePattern": "\\A[A-Z][A-Za-z0-1]+",
       "ViewNamePattern": "\\AV_[A-Z][A-Za-z0-1]+"
     },
-    "AJ5038":{
-      "NameQuotingPolicyDuringObjectCreation" : "NotAllowed"
+    "AJ5038": {
+      "NameQuotingPolicyDuringObjectCreation": "NotAllowed"
     }
   }
 }

@@ -33,7 +33,7 @@ public sealed class MissingBeginEndAnalyzer : IScriptAnalyzer
         }
 
         var fullObjectName = statement.TryGetFirstClassObjectName(context, script);
-        var databaseName = statement.FindCurrentDatabaseNameAtFragment(script.ParsedScript);
+        var databaseName = script.ParsedScript.FindCurrentDatabaseNameAtFragment(statement);
         context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, statement.Statement.GetCodeRegion(), "WHILE");
     }
 
@@ -45,7 +45,7 @@ public sealed class MissingBeginEndAnalyzer : IScriptAnalyzer
         }
 
         var fullObjectName = statement.TryGetFirstClassObjectName(context, script);
-        var databaseName = statement.FindCurrentDatabaseNameAtFragment(script.ParsedScript);
+        var databaseName = script.ParsedScript.FindCurrentDatabaseNameAtFragment(statement);
         context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, statement.GetCodeRegion(), name);
     }
 

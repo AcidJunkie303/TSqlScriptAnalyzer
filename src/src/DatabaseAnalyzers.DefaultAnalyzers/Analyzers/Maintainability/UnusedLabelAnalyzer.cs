@@ -31,7 +31,7 @@ public sealed class UnusedLabelAnalyzer : IScriptAnalyzer
                 continue;
             }
 
-            var databaseName = label.FindCurrentDatabaseNameAtFragment(script.ParsedScript);
+            var databaseName = script.ParsedScript.FindCurrentDatabaseNameAtFragment(label);
             var fullObjectName = label.TryGetFirstClassObjectName(context, script);
             context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, label.GetCodeRegion(), labelName);
         }

@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
+using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Naming;
@@ -99,7 +100,7 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
 
     private static void Report(IAnalysisContext context, IScriptModel script, TSqlFragment fragment, string objectTypeName, string objectName, Regex validator)
     {
-        var databaseName = fragment.FindCurrentDatabaseNameAtFragment(script.ParsedScript);
+        var databaseName = script.ParsedScript.FindCurrentDatabaseNameAtFragment(fragment);
         var fullObjectName = fragment.TryGetFirstClassObjectName(context, script);
         context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, fragment.GetCodeRegion(), objectTypeName, objectName, validator);
     }

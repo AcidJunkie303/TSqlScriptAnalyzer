@@ -24,7 +24,7 @@ public sealed class RedundantPairOfParenthesesAnalyzer : IScriptAnalyzer
         }
 
         var fullObjectName = expression.TryGetFirstClassObjectName(context, script);
-        var databaseName = expression.FindCurrentDatabaseNameAtFragment(script.ParsedScript);
+        var databaseName = script.ParsedScript.FindCurrentDatabaseNameAtFragment(expression);
         context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, expression.GetCodeRegion(), expression.GetSql());
     }
 

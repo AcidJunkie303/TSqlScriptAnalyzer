@@ -36,7 +36,7 @@ public sealed class SetOptionWhichShouldNotBeTurnedOffAnalyzer : IScriptAnalyzer
             return;
         }
 
-        var databaseName = predicateStatement.FindCurrentDatabaseNameAtFragment(script.ParsedScript);
+        var databaseName = script.ParsedScript.FindCurrentDatabaseNameAtFragment(predicateStatement);
         var fullObjectName = predicateStatement.TryGetFirstClassObjectName(context, script);
         context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, predicateStatement.GetCodeRegion(), sqlRepresentationOfOptionsWhichShouldNotBeTurnedOff);
     }
