@@ -17,7 +17,6 @@ A framework to analyze multiple T-SQL script files
 - scripts containing standard headers like:
   `/****** Object: ……. Script Date:`
 - unused indices (except FK indices)
-- Only one consecutive GO batch separator
 - procedure invocation without schema
 - Keywords must be uppercase or lower case (configurable). maybe make the list of keywords configurable -> big though
 - table alias with different casing (not done already?)
@@ -57,6 +56,7 @@ A framework to analyze multiple T-SQL script files
 - ToDo, not yet finished, open point finder. Tags (only opening -> capture until end of line, or open and closing tag
   can be configured)
 - No empty line after GO batch separator
+- Multiple consecutive GO batch separator
 
 ### Other
 
