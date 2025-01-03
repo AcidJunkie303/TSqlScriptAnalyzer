@@ -14,7 +14,20 @@ A framework to analyze multiple T-SQL script files
       and table name
 - Stored procedure, functions etc. documentation header analyzer
 - index creation on table without specified table schema name
-
+- scripts containing standard headers like:
+  `/****** Object: ……. Script Date:`
+- unused indices (except FK indices)
+- No empty line after GO batch separator
+- Only one consecutive GO batch separator
+- procedure invocation without schema
+- Keywords must be uppercase or lower case (configurable). maybe make the list of keywords configurable -> big though
+- table alias with different casing (not done already?)
+- undoncitional table or index  creation (not embeded in IF exists check)
+- referenced stored procedure not found
+- referenced object name casing difference (procedure, table, view, column etc.) also schema name
+- table alias naming analyzer (small only etc. -> regex)
+- XML or JSON string extraction of banned types -> integrate into banned type analyzer
+  
 ### Resiliency / Robustness
 
 ### Other
