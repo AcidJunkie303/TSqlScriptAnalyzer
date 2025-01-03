@@ -1,7 +1,7 @@
 using System.Text.Json;
 using DatabaseAnalyzer.Core;
 
-namespace DatabaseAnalyzer.App.Reporting;
+namespace DatabaseAnalyzer.App.Reporting.Json;
 
 internal sealed class JsonMiniReportRenderer : IReportRenderer
 {

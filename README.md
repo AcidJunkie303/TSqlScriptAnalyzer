@@ -17,18 +17,17 @@ A framework to analyze multiple T-SQL script files
 - scripts containing standard headers like:
   `/****** Object: ……. Script Date:`
 - unused indices (except FK indices)
-- No empty line after GO batch separator
 - Only one consecutive GO batch separator
 - procedure invocation without schema
 - Keywords must be uppercase or lower case (configurable). maybe make the list of keywords configurable -> big though
 - table alias with different casing (not done already?)
-- undoncitional table or index  creation (not embeded in IF exists check)
+- unconditional table or index creation (not embedded in IF exists check)
 - referenced stored procedure not found
 - referenced object name casing difference (procedure, table, view, column etc.) also schema name
 - table alias naming analyzer (small only etc. -> regex)
 - XML or JSON string extraction of banned types -> integrate into banned type analyzer
 - Foreign key constraint creation without specifying the source table schema name
-  
+
 ### Resiliency / Robustness
 
 ### Other
@@ -57,6 +56,7 @@ A framework to analyze multiple T-SQL script files
 - invoked stored procedure or function not found
 - ToDo, not yet finished, open point finder. Tags (only opening -> capture until end of line, or open and closing tag
   can be configured)
+- No empty line after GO batch separator
 
 ### Other
 

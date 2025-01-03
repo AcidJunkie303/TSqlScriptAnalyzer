@@ -142,8 +142,16 @@
       "ViewNamePattern": "\\AV_[A-Z][A-Za-z0-1]+"
     },
     */
-    "AJ5038": {
-      "NameQuotingPolicyDuringObjectCreation": "NotAllowed"
+    "AJ5038": { // Name quoting. Possible values: Undefined, Required, DoubleQuotesRequired, SquareBracketsRequired or NotAllowed
+      "NameQuotingPolicyDuringObjectCreation": "NotAllowed",
+      "NameQuotingPolicyForColumnReferences": "Undefined",
+      "NameQuotingPolicyForColumnDefinitions": "SquareBracketsRequired",
+      "NameQuotingPolicyForTableReferences": "SquareBracketsRequired",
+      "NameQuotingPolicyForDataTypes": "Undefined"
+    },
+    "AJ5045": { // GO statement
+      "RequireEmptyLineBeforeGo": false,
+      "RequireEmptyLineAfterGo": true
     }
   }
 }

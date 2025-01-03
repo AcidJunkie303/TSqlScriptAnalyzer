@@ -1,5 +1,6 @@
 ﻿using System.CommandLine;
 using DatabaseAnalyzer.App.Reporting;
+using DatabaseAnalyzer.App.Reporting.Json;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using DatabaseAnalyzer.Core;

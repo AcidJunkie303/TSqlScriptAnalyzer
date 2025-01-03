@@ -4,7 +4,8 @@ using Xunit.Abstractions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Formatting;
 
-public sealed class DoubleEmptyLinesAnalyzerTests(ITestOutputHelper testOutputHelper) : ScriptAnalyzerTestsBase<DoubleEmptyLinesAnalyzer>(testOutputHelper)
+public sealed class DoubleEmptyLinesAnalyzerTests(ITestOutputHelper testOutputHelper)
+    : ScriptAnalyzerTestsBase<DoubleEmptyLinesAnalyzer>(testOutputHelper)
 {
     [Fact]
     public void WhenOnlySingleEmptyLine_ThenOk()

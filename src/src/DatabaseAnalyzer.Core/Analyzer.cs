@@ -123,9 +123,12 @@ internal sealed class Analyzer : IAnalyzer
         var (unsuppressedIssues, suppressedIssues) = SplitIssuesToSuppressedAndUnsuppressed(scripts, issues);
         var issuesByObjectName = issues
             .GroupBy(a => a.FullObjectNameOrFileName, StringComparer.OrdinalIgnoreCase)
-            .ToDictionary(
+            .ToFrozenDictionary(
                 a => a.Key,
-                a => (IReadOnlyList<IIssue>)a.ToImmutableArray(),
+                a => (IReadOnlyList<IIssue>)a
+                    .OrderBy(x => x.CodeRegion.Begin)
+                    .ThenBy(x => x.CodeRegion.End)
+                    .ToImmutableArray(),
                 StringComparer.OrdinalIgnoreCase
             );
 

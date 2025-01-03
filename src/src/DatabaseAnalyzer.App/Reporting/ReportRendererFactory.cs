@@ -1,3 +1,5 @@
+using DatabaseAnalyzer.App.Reporting.Json;
+
 namespace DatabaseAnalyzer.App.Reporting;
 
 internal static class ReportRendererFactory

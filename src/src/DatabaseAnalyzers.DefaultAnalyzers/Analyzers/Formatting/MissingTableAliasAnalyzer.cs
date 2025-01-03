@@ -2,7 +2,7 @@ using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
-namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Readability;
+namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 
 public sealed class MissingTableAliasAnalyzer : IScriptAnalyzer
 {

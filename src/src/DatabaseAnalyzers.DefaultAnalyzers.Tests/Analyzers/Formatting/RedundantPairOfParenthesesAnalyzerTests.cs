@@ -1,8 +1,8 @@
 using DatabaseAnalyzer.Testing;
-using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Readability;
+using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 using Xunit.Abstractions;
 
-namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Readability;
+namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Formatting;
 
 public sealed class RedundantPairOfParenthesesAnalyzerTests(ITestOutputHelper testOutputHelper)
     : ScriptAnalyzerTestsBase<RedundantPairOfParenthesesAnalyzer>(testOutputHelper)
