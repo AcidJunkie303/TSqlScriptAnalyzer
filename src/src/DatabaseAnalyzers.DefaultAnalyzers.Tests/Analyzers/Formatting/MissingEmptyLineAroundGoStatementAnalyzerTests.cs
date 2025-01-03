@@ -73,5 +73,4 @@ public sealed class MissingEmptyLineAroundGoStatementAnalyzerTests(ITestOutputHe
 
         Verify(RequiredAfterSettings, code);
     }
-    //
 }
