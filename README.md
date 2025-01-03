@@ -27,6 +27,7 @@ A framework to analyze multiple T-SQL script files
 - referenced object name casing difference (procedure, table, view, column etc.) also schema name
 - table alias naming analyzer (small only etc. -> regex)
 - XML or JSON string extraction of banned types -> integrate into banned type analyzer
+- Foreign key constraint creation without specifying the source table schema name
   
 ### Resiliency / Robustness
 
