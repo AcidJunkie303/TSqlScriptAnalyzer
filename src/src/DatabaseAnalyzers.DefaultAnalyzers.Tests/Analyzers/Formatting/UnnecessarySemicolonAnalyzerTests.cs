@@ -47,7 +47,7 @@ public sealed class UnnecessarySemicolonAnalyzerTests(ITestOutputHelper testOutp
                             GO
 
                             SELECT 303
-                            █AJ5028░script_0.sql░███;█
+                            ▶️AJ5028💛script_0.sql💛✅;◀️
                             SELECT 303
                             """;
         Verify(code);

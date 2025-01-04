@@ -29,7 +29,7 @@ public sealed class RedundantPairOfParenthesesAnalyzerTests(ITestOutputHelper te
                             USE MyDb
                             GO
 
-                            IF █AJ5031░script_0.sql░░((1=1))███((1=1))█
+                            IF ▶️AJ5031💛script_0.sql💛💛((1=1))✅((1=1))◀️
                             BEGIN
                                 PRINT 'Hello'
                             END

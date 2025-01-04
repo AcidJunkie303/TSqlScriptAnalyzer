@@ -1,75 +1,159 @@
-# TSqlScriptAnalyzer
+# About
 
-A framework to analyze multiple T-SQL script files
+An extendable analyzer for T-SQL scripts.
 
-# TODO
+# Creating analyzers
 
-### Analyzers not created yet
+Before we dive into the analyzers itself, there are some data structures you need to know first.
 
-- Output parameters should be assigned (hard because we need to check all possible execution paths)
-- All branches in a conditional structure should not have exactly the same implementation (except 1=1)
-- Object naming extensions:
-    - if the object is tied to a schema, add placeholders to the expression pattern which represent the current schema
-    - if the object is tied to a table, add placeholders to the expression pattern which represent the current schema
-      and table name
-- Stored procedure, functions etc. documentation header analyzer
-- index creation on table without specified table schema name
-- scripts containing standard headers like:
-  `/****** Object: ……. Script Date:`
-- unused indices (except FK indices)
-- procedure invocation without schema
-- Keywords must be uppercase or lower case (configurable). maybe make the list of keywords configurable -> big though
-- table alias with different casing (not done already?)
-- unconditional table or index creation (not embedded in IF exists check)
-- referenced stored procedure not found
-- referenced object name casing difference (procedure, table, view, column etc.) also schema name
-- table alias naming analyzer (small only etc. -> regex)
-- XML or JSON string extraction of banned types -> integrate into banned type analyzer
-- Foreign key constraint creation without specifying the source table schema name
+### IDiagnosticDefinition
 
-### Resiliency / Robustness
+```csharp
+public interface IDiagnosticDefinition : IEquatable<IDiagnosticDefinition>
+{
+    string DiagnosticId { get; } // e.g. AJ1234
+    IssueType IssueType { get; } // Warning, Error, Information
+    string Title { get; } 
+    string MessageTemplate { get; }
+    int RequiredInsertionStringCount { get; }
+}
+```
 
-### Other
+| Property                     | Description                                                                                                                                | 
+|:-----------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------|
+| MessageTemplate              | The message template used to report the issue. It can contain insertions strings indices enclosed in curly brackets. E.g. `{0}`, `{1}` etc |
+| RequiredInsertionStringCount | The insertion string count required to for this diagnostic to be reported.                                                                 |
 
-- write github diagnostic descriptor markdown
-- Create HTML report feature
+### IAnalysisContext
 
-# Done
+```csharp
+public interface IAnalysisContext
+{
+    string DefaultSchemaName { get; }
+    IReadOnlyList<IScriptModel> Scripts { get; }
+    IReadOnlyDictionary<string, IReadOnlyList<IScriptModel>> ScriptsByDatabaseName { get; }
+    IDiagnosticSettingsProvider DiagnosticSettingsProvider { get; }
+    IIssueReporter IssueReporter { get; }
+}
+```
 
-### Analyzers created
+| Property                    | Description                                                          | 
+|:----------------------------|:---------------------------------------------------------------------|
+| DefaultSchemaName           | The default schema name. This is provided through the configuration. |
+| Scripts                     | All parsed scripts.                                                  |
+| ScriptsByDatabaseName       | Scripts grouped by database names.                                   |
+| IDiagnosticSettingsProvider | Settings provider. Every diagnostic has it's own configuration.      |
+| IIssueReporter              | Use to report diagnostics/issues.                                    |
 
-- Dead code after return, break, continue, throw and goto statements
-- Unused label -> dead code
-- Object creation without schema name
-- missing quotes. configurable for: (Required, NotAllowed, Ignored)
-    - column references
-    - schema name
-    - object name
-- Do not create nameless constraints (unique, primary key) which will have a random name when executing. Otherwise,
-  schema comparison would yield lots of unnecessary deltas.
-- usage banned functions like GETDATE(), use GETUTCDATE() instead etc. make it configurable
-- "unsafe" select * finder
-- Raiserror finder
-- Queries that use "TOP" should have an "ORDER BY"
-- sp_executeSql can be used with parameters, so check for it -> improvement
-- invoked stored procedure or function not found
-- ToDo, not yet finished, open point finder. Tags (only opening -> capture until end of line, or open and closing tag
-  can be configured)
-- No empty line after GO batch separator
-- Multiple consecutive GO batch separator
+### IScriptModel
 
-### Other
+```csharp
+public interface IScriptModel
+{
+    string DatabaseName { get; }
+    string RelativeScriptFilePath { get; }
+    string Contents { get; }
+    TSqlScript ParsedScript { get; }
+    IParentFragmentProvider ParentFragmentProvider { get; }
+    IReadOnlyList<DiagnosticSuppression> DiagnosticSuppressions { get; }
+}
+```
 
-- A faulty analyzer must not cause the app to crash
-- Create smart settings implementation so IDiagnosticSettingsProvider is not used anymore. Instead, rely on
-  IRawSettings<out TSettings> and the type constraints to make it dynamic.
-- CodeRegion should only contain two properties: Begin and End. Both of them are of type CodeLocation.
-  CodeLocation have the following two properties: Line and Column
-- Scripts which contain errors should not be take part of the analysis
-- Remove IssueReporter.Report() extension methods. Instead, every script should provide the database name. Passing in
-  the IScriptModel is easier but sometime, when the script contains additional USE DATABASE statements, the real
-  database name can be a different one
+| Property               | Description                                                                                                                                                                                      | 
+|:-----------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| DatabaseName           | The database name this script is meant to be for. The framework can handle multiple databases. Depending on the path of the script, the framework knows for which database this script used for. |
+| RelativeScriptFilePath | The script path relative to the database script root path.                                                                                                                                       |
+| Contents               | The bare script contents as string.                                                                                                                                                              |
+| ParsedScript           | The parsed script as AST (abstract syntax tree) represented through `Microsoft.SqlServer.TransactSql.ScriptDom.ParsedScript`                                                                     |
+| ParentFragmentProvider | Use to get the parent AST node.                                                                                                                                                                  |
+| DiagnosticSuppressions | The diagnostic suppressions regions defined in this script through `#pragma diagnostic disable X` and restored through `#pragma diagnostic restore X`                                            |
 
-### Resiliency / Robustness
+### IObjectAnalyzer
 
-- *none*
+Base interface for analyzers is `IObjectAnalyzer` provides information about which diagnostic types this analyzer will
+report:
+
+```csharp
+public interface IObjectAnalyzer
+{
+    IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; }
+}
+```
+
+### IScriptAnalyzer
+
+```csharp
+public interface IScriptAnalyzer : IObjectAnalyzer
+{
+    void AnalyzeScript(IAnalysisContext context, IScriptModel script);
+}
+```
+
+### IGlobalAnalyzer
+
+Global analyzers are not bound to a single script. They can be used to perform analysis in a wider scope which involves
+multiple script files.
+
+```csharp
+
+public interface IGlobalAnalyzer : IObjectAnalyzer
+{
+    void Analyze(IAnalysisContext context);
+}
+```
+
+# Testing
+
+Unit testing analyzers is pretty simple thanks to the markup extensions.
+
+Let's start with an example. We have an analyzer which checks if there are more than 2 string concatenations.
+The test code `SET @MyVar = N'a' + N'b' + N'c' + N'd'` violates this rule because it performs 3 concatenations:
+
+- a + b
+- result of (a + b) + c
+- result of ((a + b) + c) + d
+
+To test whether the analyzer should report an issue, the following markup can be used:
+`SET @MyVar = ▶️AJ5001💛Procedure1.sql💛MyDatabase.dbo.Procedure1💛2✅N'a' + N'b' + N'c' + N'd'◀️`
+
+Markup explanation:
+The markup is enclosed in ▶️ and ◀️ and split by ✅ into two sections:
+
+**Left Part**
+
+This part is split by 💛 where the tokens have the following meaning:
+
+| Token # | Meaning                                                                      | Mandatory             |
+|:--------|:-----------------------------------------------------------------------------|:----------------------|
+| 1       | Diagnostic ID                                                                | Yes                   |
+| 2       | Relative script file path                                                    | Yes                   |
+| 3       | The full name of the enclosing object name (if any). Pattern: DB.schema.name | Yes, but can be empty |
+| 4-n     | The insertion strings                                                        | No                    |
+
+**Right Part**
+The right part between ✅ and ◀️ is the actual code region (T-SQL code) which caused the diagnostic issue.
+
+Example 1:
+Analyzer which checks for banned data types for variables:
+
+Analyzer which checks if there are more than
+`SET @MyVar = ▶️AJ5001💛Procedure1.sql💛MyDatabase.dbo.Procedure1💛2✅N'a' + N'b' + N'c' + N'd'◀️`
+
+| Token                       | Meaning                                                                                                                                                                      |
+|:----------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| AJ5001                      | Diagnostic ID                                                                                                                                                                |
+| Procedure1.sql              | Relative script file path                                                                                                                                                    |
+| MyDatabase.dbo.Procedure1   | The full name of the enclosing object name (if any). Pattern: DB.schema.name. If this code is not within in a procedure, table, view, function etc., this value is undefined |
+| 2                           | 1st insertion string                                                                                                                                                         |
+| `N'a' + N'b' + N'c' + N'd'` | The code which caused the issue                                                                                                                                              |
+
+Example 1:
+`SET @MyVar = ▶️AJ5001💛Procedure1.sql💛💛2✅N'a' + N'b' + N'c' + N'd'◀️`
+
+| Token                       | Meaning                                                                                                                                                                      |
+|:----------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| AJ5001                      | Diagnostic ID                                                                                                                                                                |
+| Procedure1.sql              | Relative script file path                                                                                                                                                    |
+| MyDatabase.dbo.Procedure1   | The full name of the enclosing object name (if any). Pattern: DB.schema.name. If this code is not within in a procedure, table, view, function etc., this value is undefined |
+| 2                           | 1st insertion string                                                                                                                                                         |
+| `N'a' + N'b' + N'c' + N'd'` | The code which caused the issue                                                                                                                                              |

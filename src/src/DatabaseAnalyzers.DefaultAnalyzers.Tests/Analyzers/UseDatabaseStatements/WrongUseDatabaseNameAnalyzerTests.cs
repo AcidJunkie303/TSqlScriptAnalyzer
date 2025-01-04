@@ -30,7 +30,7 @@ public sealed class WrongUseDatabaseNameAnalyzerTests(ITestOutputHelper testOutp
 
                             PRINT 'Hello World'
 
-                            █AJ5003░script_0.sql░░master░MyDb███USE [master]█
+                            ▶️AJ5003💛script_0.sql💛💛master💛MyDb✅USE [master]◀️
                             PRINT 'Hello World'
                             """;
 

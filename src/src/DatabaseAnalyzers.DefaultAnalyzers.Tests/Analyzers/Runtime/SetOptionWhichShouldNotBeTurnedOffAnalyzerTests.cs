@@ -26,9 +26,9 @@ public sealed class SetOptionWhichShouldNotBeTurnedOffAnalyzerTests(ITestOutputH
         const string code = """
                             USE MyDb
                             GO
-                            █AJ5021░script_0.sql░░ANSI_WARNINGS███SET ANSI_WARNINGS OFF█
-                            █AJ5021░script_0.sql░░ARITHABORT███SET ARITHABORT OFF█
-                            █AJ5021░script_0.sql░░ANSI_WARNINGS, ARITHABORT███SET ANSI_WARNINGS,  ARITHABORT OFF█
+                            ▶️AJ5021💛script_0.sql💛💛ANSI_WARNINGS✅SET ANSI_WARNINGS OFF◀️
+                            ▶️AJ5021💛script_0.sql💛💛ARITHABORT✅SET ARITHABORT OFF◀️
+                            ▶️AJ5021💛script_0.sql💛💛ANSI_WARNINGS, ARITHABORT✅SET ANSI_WARNINGS,  ARITHABORT OFF◀️
                             """;
         Verify(code);
     }

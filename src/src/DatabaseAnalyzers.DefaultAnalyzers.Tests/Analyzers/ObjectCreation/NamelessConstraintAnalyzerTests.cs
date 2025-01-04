@@ -38,7 +38,7 @@ public sealed class NamelessConstraintAnalyzerTests(ITestOutputHelper testOutput
 
                             CREATE TABLE Table1
                             (
-                                Id          INT NOT NULL █AJ5039░script_0.sql░MyDb.dbo.Table1███PRIMARY KEY█,
+                                Id          INT NOT NULL ▶️AJ5039💛script_0.sql💛MyDb.dbo.Table1✅PRIMARY KEY◀️,
                                 Value1      NVARCHAR(128) NOT NULL
                             )
 
@@ -69,7 +69,7 @@ public sealed class NamelessConstraintAnalyzerTests(ITestOutputHelper testOutput
                             GO
 
                             ALTER TABLE     Table1
-                            ADD             Id INT NOT NULL █AJ5039░script_0.sql░MyDb.dbo.Table1███PRIMARY KEY█
+                            ADD             Id INT NOT NULL ▶️AJ5039💛script_0.sql💛MyDb.dbo.Table1✅PRIMARY KEY◀️
 
                             """;
 
@@ -108,7 +108,7 @@ public sealed class NamelessConstraintAnalyzerTests(ITestOutputHelper testOutput
                             CREATE TABLE Table1
                             (
                                 Id          INT NOT NULL,
-                                Value1      INT NOT NULL █AJ5039░script_0.sql░MyDb.dbo.Table1███UNIQUE█
+                                Value1      INT NOT NULL ▶️AJ5039💛script_0.sql💛MyDb.dbo.Table1✅UNIQUE◀️
                             )
 
                             """;
@@ -138,7 +138,7 @@ public sealed class NamelessConstraintAnalyzerTests(ITestOutputHelper testOutput
                             GO
 
                             ALTER TABLE Table1
-                            ADD         Id INT NOT NULL █AJ5039░script_0.sql░MyDb.dbo.Table1███UNIQUE█
+                            ADD         Id INT NOT NULL ▶️AJ5039💛script_0.sql💛MyDb.dbo.Table1✅UNIQUE◀️
 
                             """;
 
@@ -177,7 +177,7 @@ public sealed class NamelessConstraintAnalyzerTests(ITestOutputHelper testOutput
                             CREATE TABLE Table1
                             (
                                 Id          INT NOT NULL,
-                                Value1      DATETIME NOT NULL █AJ5039░script_0.sql░MyDb.dbo.Table1███UNIQUE█
+                                Value1      DATETIME NOT NULL ▶️AJ5039💛script_0.sql💛MyDb.dbo.Table1✅UNIQUE◀️
                             )
 
                             """;
@@ -208,7 +208,7 @@ public sealed class NamelessConstraintAnalyzerTests(ITestOutputHelper testOutput
                             GO
 
                             ALTER TABLE Table1
-                            ADD Value1 INT █AJ5039░script_0.sql░MyDb.dbo.Table1███DEFAULT 1█
+                            ADD Value1 INT ▶️AJ5039💛script_0.sql💛MyDb.dbo.Table1✅DEFAULT 1◀️
 
                             """;
 
@@ -246,7 +246,7 @@ public sealed class NamelessConstraintAnalyzerTests(ITestOutputHelper testOutput
                             CREATE TABLE Table1
                             (
                                 Id          INT NOT NULL,
-                                Value1      INT NOT NULL █AJ5039░script_0.sql░MyDb.dbo.Table1███CHECK (Value1 > 0)█
+                                Value1      INT NOT NULL ▶️AJ5039💛script_0.sql💛MyDb.dbo.Table1✅CHECK (Value1 > 0)◀️
                             )
 
                             """;
@@ -275,7 +275,7 @@ public sealed class NamelessConstraintAnalyzerTests(ITestOutputHelper testOutput
                             GO
 
                             ALTER TABLE     Table1
-                            ADD             Value1 INT █AJ5039░script_0.sql░MyDb.dbo.Table1███CHECK (Value1 > 0)█
+                            ADD             Value1 INT ▶️AJ5039💛script_0.sql💛MyDb.dbo.Table1✅CHECK (Value1 > 0)◀️
                             """;
 
         Verify(code);

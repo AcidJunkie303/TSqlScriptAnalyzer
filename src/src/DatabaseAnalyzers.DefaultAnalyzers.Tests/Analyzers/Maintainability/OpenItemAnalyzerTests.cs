@@ -36,7 +36,7 @@ public sealed class OpenItemAnalyzerTests(ITestOutputHelper testOutputHelper)
     {
         const string code = """
                             USE MyDb
-                            █AJ5004░script_0.sql░░to do░not complete███-- TODO: not complete█
+                            ▶️AJ5004💛script_0.sql💛💛to do💛not complete✅-- TODO: not complete◀️
                             """;
         Verify(Settings, code);
     }
@@ -46,11 +46,11 @@ public sealed class OpenItemAnalyzerTests(ITestOutputHelper testOutputHelper)
     {
         const string code = """
                             USE MyDb
-                            █AJ5004░script_0.sql░░open point░not finished yet███/*
+                            ▶️AJ5004💛script_0.sql💛💛open point💛not finished yet✅/*
 
                             {OpenPoint}not finished yet{OpenPoint}
 
-                            *█/
+                            *◀️/
                             """;
         Verify(Settings, code);
     }

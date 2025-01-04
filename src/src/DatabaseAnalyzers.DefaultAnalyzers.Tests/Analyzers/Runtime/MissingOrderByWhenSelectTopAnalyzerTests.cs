@@ -45,8 +45,8 @@ public sealed class MissingOrderByWhenSelectTopAnalyzerTests(ITestOutputHelper t
                             USE MyDb
                             GO
 
-                            █AJ5043░script_0.sql░███SELECT TOP 1 ID
-                            FROM        Table1█
+                            ▶️AJ5043💛script_0.sql💛✅SELECT TOP 1 ID
+                            FROM        Table1◀️
                             """;
 
         Verify(code);

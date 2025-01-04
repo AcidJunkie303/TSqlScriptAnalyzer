@@ -40,7 +40,7 @@ public sealed class BannedFunctionAnalyzerTests(ITestOutputHelper testOutputHelp
                             USE MyDb
                             GO
 
-                            SELECT █AJ5040░script_0.sql░░LEN░Reason1███LEN█('Hello')
+                            SELECT ▶️AJ5040💛script_0.sql💛💛LEN💛Reason1✅LEN◀️('Hello')
                             """;
 
         Verify(Settings, code);
@@ -66,7 +66,7 @@ public sealed class BannedFunctionAnalyzerTests(ITestOutputHelper testOutputHelp
                             USE MyDb
                             GO
 
-                            SELECT value FROM █AJ5040░script_0.sql░░My.BannedFunction░Reason2███My.BannedFunction█(303)
+                            SELECT value FROM ▶️AJ5040💛script_0.sql💛💛My.BannedFunction💛Reason2✅My.BannedFunction◀️(303)
                             """;
 
         Verify(Settings, code);

@@ -28,7 +28,7 @@ public sealed class DeadCodeAnalyzerTests(ITestOutputHelper testOutputHelper)
                             GO
 
                             PRINT 'Hello'
-                            █AJ5035░script_0.sql░░RETURN███RETURN█
+                            ▶️AJ5035💛script_0.sql💛💛RETURN✅RETURN◀️
                             PRINT 'Hello'
                             """;
         Verify(code);
@@ -55,7 +55,7 @@ public sealed class DeadCodeAnalyzerTests(ITestOutputHelper testOutputHelper)
                             GO
 
                             PRINT 'Hello'
-                            █AJ5035░script_0.sql░░THROW███THROW 60000, 'ooops', 1;█
+                            ▶️AJ5035💛script_0.sql💛💛THROW✅THROW 60000, 'ooops', 1;◀️
                             PRINT 'Hello'
                             """;
         Verify(code);
@@ -89,7 +89,7 @@ public sealed class DeadCodeAnalyzerTests(ITestOutputHelper testOutputHelper)
                             WHILE(1=1)
                             BEGIN
                                 PRINT 'Hello'
-                                █AJ5035░script_0.sql░░BREAK███BREAK█
+                                ▶️AJ5035💛script_0.sql💛💛BREAK✅BREAK◀️
                                 PRINT 'Hello'
                             END
 
@@ -126,7 +126,7 @@ public sealed class DeadCodeAnalyzerTests(ITestOutputHelper testOutputHelper)
                             WHILE(1=1)
                             BEGIN
                                 PRINT 'Hello'
-                                █AJ5035░script_0.sql░░CONTINUE███CONTINUE█
+                                ▶️AJ5035💛script_0.sql💛💛CONTINUE✅CONTINUE◀️
                                 PRINT 'Hello'
                             END
 
@@ -141,7 +141,7 @@ public sealed class DeadCodeAnalyzerTests(ITestOutputHelper testOutputHelper)
         const string code = """
                             USE MyDb
                             GO
-
+                            
                                 GOTO MyLabel
                             MyLabel:
                                 PRINT 'Hello'
@@ -176,7 +176,7 @@ public sealed class DeadCodeAnalyzerTests(ITestOutputHelper testOutputHelper)
                             USE MyDb
                             GO
 
-                            █AJ5035░script_0.sql░░GOTO███GOTO MyLabel█
+                            ▶️AJ5035💛script_0.sql💛💛GOTO✅GOTO MyLabel◀️
                             PRINT 303
 
                             MyLabel:
@@ -193,7 +193,7 @@ public sealed class DeadCodeAnalyzerTests(ITestOutputHelper testOutputHelper)
 
                             if (1=1)
                             BEGIN
-                                █AJ5035░script_0.sql░░GOTO███GOTO MyLabel█
+                                ▶️AJ5035💛script_0.sql💛💛GOTO✅GOTO MyLabel◀️
                                 PRINT 303
                             END
 

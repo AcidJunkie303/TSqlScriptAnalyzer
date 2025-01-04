@@ -30,7 +30,7 @@ public sealed class NullComparisonAnalyzerTests(ITestOutputHelper testOutputHelp
                             USE MyDb
                             GO
 
-                            IF (303 = █AJ5018░script_0.sql░███NULL█)
+                            IF (303 = ▶️AJ5018💛script_0.sql💛✅NULL◀️)
                             BEGIN
                                 PRINT 'Hello'
                             END
@@ -46,7 +46,7 @@ public sealed class NullComparisonAnalyzerTests(ITestOutputHelper testOutputHelp
                             USE MyDb
                             GO
 
-                            IF (█AJ5018░script_0.sql░███NULL█ = 303)
+                            IF (▶️AJ5018💛script_0.sql💛✅NULL◀️ = 303)
                             BEGIN
                                 PRINT 'Hello'
                             END

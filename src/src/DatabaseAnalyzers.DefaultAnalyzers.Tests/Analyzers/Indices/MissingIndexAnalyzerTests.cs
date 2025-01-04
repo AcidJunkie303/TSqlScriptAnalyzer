@@ -79,7 +79,7 @@ public sealed class MissingIndexAnalyzerTests(ITestOutputHelper testOutputHelper
                                   BEGIN
                                       SELECT    *
                                       FROM      dbo.Employee
-                                      WHERE     █AJ5015░script_1.sql░MyDb.dbo.P1░MyDb░dbo░Employee░Email░script_1.sql███Email█ = 'tb@303.com'
+                                      WHERE     ▶️AJ5015💛script_1.sql💛MyDb.dbo.P1💛MyDb💛dbo💛Employee💛Email💛script_1.sql✅Email◀️ = 'tb@303.com'
                                   END
                                   """;
 
@@ -182,7 +182,7 @@ public sealed class MissingIndexAnalyzerTests(ITestOutputHelper testOutputHelper
                             (
                                 Id              INT NOT NULL,
                                 FirstName       NVARCHAR(250)  NOT NULL,
-                                █AJ5017░script_0.sql░MyDb.dbo.Employee░MyDb░dbo░Employee░DepartmentId███DepartmentId INT NOT NULL█,                           -- foreign key, not indexed
+                                ▶️AJ5017💛script_0.sql💛MyDb.dbo.Employee💛MyDb💛dbo💛Employee💛DepartmentId✅DepartmentId INT NOT NULL◀️,                           -- foreign key, not indexed
                                 CONSTRAINT      PK_Employee PRIMARY KEY CLUSTERED
                                 (
                                     Id ASC

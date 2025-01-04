@@ -39,7 +39,7 @@ public sealed class DynamicSqlAnalyzerTests(ITestOutputHelper testOutputHelper)
                             USE MyDb
                             GO
 
-                            █AJ5000░script_0.sql░███EXEC (@cmd)█
+                            ▶️AJ5000💛script_0.sql💛✅EXEC (@cmd)◀️
                             """;
 
         Verify(code);
@@ -79,7 +79,7 @@ public sealed class DynamicSqlAnalyzerTests(ITestOutputHelper testOutputHelper)
                             GO
 
                             DECLARE @sql NVARCHAR = N'SELECT 1'
-                            █AJ5000░script_0.sql░███EXEC sp_executeSql @sql█
+                            ▶️AJ5000💛script_0.sql💛✅EXEC sp_executeSql @sql◀️
                             """;
 
         Verify(code);

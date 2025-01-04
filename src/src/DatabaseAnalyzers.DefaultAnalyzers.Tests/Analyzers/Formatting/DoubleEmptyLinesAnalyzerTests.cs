@@ -27,10 +27,10 @@ public sealed class DoubleEmptyLinesAnalyzerTests(ITestOutputHelper testOutputHe
         const string code = """
                             USE MyDb
                             GO
-                            PRINT 303█AJ5007░script_0.sql░███
+                            PRINT 303▶️AJ5007💛script_0.sql💛✅
 
 
-                            █PRINT 909
+                            ◀️PRINT 909
                             """;
 
         Verify(code);

@@ -27,7 +27,7 @@ public sealed class RaiseErrorAnalyzerTests(ITestOutputHelper testOutputHelper)
                             USE MyDb
                             GO
 
-                            █AJ5042░script_0.sql░███RAISERROR (50005, 10, 1, N'Hello');█
+                            ▶️AJ5042💛script_0.sql💛✅RAISERROR (50005, 10, 1, N'Hello');◀️
                             """;
 
         Verify(code);

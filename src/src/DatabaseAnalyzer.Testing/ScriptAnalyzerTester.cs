@@ -69,7 +69,7 @@ public sealed class ScriptAnalyzerTester
         {
             var insertionStrings = issue.MessageInsertions.Count == 0
                 ? "<none>"
-                : issue.MessageInsertions.StringJoin("░");
+                : issue.MessageInsertions.StringJoin("💛");
             var message = $"""{issue.DiagnosticDefinition.DiagnosticId}    CodeRegion="{issue.CodeRegion}"    Insertions="{insertionStrings}""";
             _testOutputHelper.WriteLine(message);
         }

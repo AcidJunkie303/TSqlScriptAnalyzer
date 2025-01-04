@@ -133,4 +133,41 @@ public static class StringExtensions
     public static bool IsEqualToButWithDifferentCasing(this string value, string? other)
         => string.Equals(value, other, StringComparison.OrdinalIgnoreCase)
            && !string.Equals(value, other, StringComparison.Ordinal);
+
+    public static IEnumerable<string> Split(string input, string delimiter)
+        => Split(input, delimiter, StringComparison.Ordinal);
+
+    public static IEnumerable<string> Split(this string input, string delimiter, StringComparison comparisonType)
+    {
+        CheckArguments(input, delimiter);
+
+        var startIndex = 0;
+
+        while (true)
+        {
+            var index = input.IndexOf(delimiter, startIndex, comparisonType);
+            if (index == -1) // No more delimiters found
+            {
+                yield return input[startIndex..]; // Add the remaining part of the string
+                yield break;
+            }
+
+            // Add the substring before the delimiter
+            yield return input[startIndex..index];
+            startIndex = index + delimiter.Length; // Move past the delimiter
+        }
+
+        static void CheckArguments(string input, string delimiter)
+        {
+            if (string.IsNullOrEmpty(input))
+            {
+                throw new ArgumentException("Input cannot be null or empty.", nameof(input));
+            }
+
+            if (string.IsNullOrEmpty(delimiter))
+            {
+                throw new ArgumentException("Delimiter cannot be null or empty.", nameof(delimiter));
+            }
+        }
+    }
 }

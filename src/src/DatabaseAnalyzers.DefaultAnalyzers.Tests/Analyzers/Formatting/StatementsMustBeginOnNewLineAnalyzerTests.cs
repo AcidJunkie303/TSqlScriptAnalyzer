@@ -33,7 +33,7 @@ public sealed class StatementsMustBeginOnNewLineAnalyzerTests(ITestOutputHelper 
                             USE MyDb
                             GO
 
-                            IF @x < 0 █AJ5023░script_0.sql░███SELECT 1█
+                            IF (@x < 0) ▶️AJ5023💛script_0.sql💛✅SELECT 1◀️
                             """;
         Verify(DefaultSettings, code);
     }
@@ -45,7 +45,7 @@ public sealed class StatementsMustBeginOnNewLineAnalyzerTests(ITestOutputHelper 
                             USE MyDb
                             GO
 
-                            IF @x < 0 SET @x = 0
+                            IF (@x < 0) SET @x = 0
                             """;
         Verify(DefaultSettings, code);
     }
@@ -57,7 +57,7 @@ public sealed class StatementsMustBeginOnNewLineAnalyzerTests(ITestOutputHelper 
                             USE MyDb
                             GO
 
-                            IF @x < 0 SET @x = 0; █AJ5023░script_0.sql░███IF @y < 0 SET @y = 0█
+                            IF (@x < 0) SET @x = 0; ▶️AJ5023💛script_0.sql💛✅IF @y < 0 SET @y = 0◀️
                             """;
         Verify(DefaultSettings, code);
     }
@@ -69,7 +69,7 @@ public sealed class StatementsMustBeginOnNewLineAnalyzerTests(ITestOutputHelper 
                             USE MyDb
                             GO
 
-                            IF @x < 0 █AJ5023░script_0.sql░███SET @x = 0█
+                            IF (@x < 0) ▶️AJ5023💛script_0.sql💛✅SET @x = 0◀️
                             """;
 
         Verify(Aj5023Settings.Default, code);

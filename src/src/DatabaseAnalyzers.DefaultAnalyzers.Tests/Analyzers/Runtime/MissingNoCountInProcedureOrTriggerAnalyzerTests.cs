@@ -18,7 +18,7 @@ public sealed class MissingNoCountInProcedureOrTriggerAnalyzerTests(ITestOutputH
                             BEGIN
                                 SET ARITHABORT ON
                                 SET NOCOUNT ON
-
+                            
                                 SELECT * FROM T1
                             END
                             """;
@@ -34,7 +34,7 @@ public sealed class MissingNoCountInProcedureOrTriggerAnalyzerTests(ITestOutputH
 
                             CREATE PROCEDURE [dbo].[P1] AS
                             BEGIN
-                                █AJ5029░script_0.sql░MyDb.dbo.P1███SELECT * FROM T1█
+                                ▶️AJ5029💛script_0.sql💛MyDb.dbo.P1✅SELECT * FROM T1◀️
                             END
                             """;
         Verify(code);
@@ -49,7 +49,7 @@ public sealed class MissingNoCountInProcedureOrTriggerAnalyzerTests(ITestOutputH
 
                             CREATE PROCEDURE [dbo].[P1] AS
                             BEGIN
-                                █AJ5029░script_0.sql░MyDb.dbo.P1███SELECT * FROM T1█
+                                ▶️AJ5029💛script_0.sql💛MyDb.dbo.P1✅SELECT * FROM T1◀️
                                 SELECT * FROM T1
                             END
                             """;
@@ -70,7 +70,7 @@ public sealed class MissingNoCountInProcedureOrTriggerAnalyzerTests(ITestOutputH
                             BEGIN
                                 SET ARITHABORT ON
                                 SET NOCOUNT ON
-
+                            
                                 SELECT * FROM T1
                             END
                             """;
@@ -89,7 +89,7 @@ public sealed class MissingNoCountInProcedureOrTriggerAnalyzerTests(ITestOutputH
                                AFTER INSERT
                             AS
                             BEGIN
-                                █AJ5029░script_0.sql░MyDb.dbo.Trigger1███SELECT * FROM T1█
+                                ▶️AJ5029💛script_0.sql💛MyDb.dbo.Trigger1✅SELECT * FROM T1◀️
                             END
                             """;
         Verify(code);
@@ -107,7 +107,7 @@ public sealed class MissingNoCountInProcedureOrTriggerAnalyzerTests(ITestOutputH
                                AFTER INSERT
                             AS
                             BEGIN
-                                █AJ5029░script_0.sql░MyDb.dbo.Trigger1███SELECT * FROM T1█
+                                ▶️AJ5029💛script_0.sql💛MyDb.dbo.Trigger1✅SELECT * FROM T1◀️
                                 SELECT * FROM T1
                             END
                             """;

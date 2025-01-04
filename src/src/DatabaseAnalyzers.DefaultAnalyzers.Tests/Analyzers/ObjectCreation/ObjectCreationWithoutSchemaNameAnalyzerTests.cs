@@ -29,7 +29,7 @@ public sealed class ObjectCreationWithoutSchemaNameAnalyzerTests(ITestOutputHelp
                             USE MyDb
                             GO
 
-                            CREATE VIEW █AJ5037░script_0.sql░MyDb.dbo.V1░view░MyDb.dbo.V1███V1█
+                            CREATE VIEW ▶️AJ5037💛script_0.sql💛MyDb.dbo.V1💛view💛MyDb.dbo.V1✅V1◀️
                             AS
                             SELECT      1 AS Column1
                             """;
@@ -61,7 +61,7 @@ public sealed class ObjectCreationWithoutSchemaNameAnalyzerTests(ITestOutputHelp
                             USE MyDb
                             GO
 
-                            CREATE TABLE █AJ5037░script_0.sql░MyDb.dbo.T1░table░MyDb.dbo.T1███T1█
+                            CREATE TABLE ▶️AJ5037💛script_0.sql💛MyDb.dbo.T1💛table💛MyDb.dbo.T1✅T1◀️
                             (
                                 Id            INT NOT NULL PRIMARY KEY,
                                 Value1        NVARCHAR(128) NOT NULL
@@ -94,7 +94,7 @@ public sealed class ObjectCreationWithoutSchemaNameAnalyzerTests(ITestOutputHelp
                             USE MyDb
                             GO
 
-                            CREATE PROCEDURE █AJ5037░script_0.sql░MyDb.dbo.P1░procedure░MyDb.dbo.P1███P1█ AS
+                            CREATE PROCEDURE ▶️AJ5037💛script_0.sql💛MyDb.dbo.P1💛procedure💛MyDb.dbo.P1✅P1◀️ AS
                             BEGIN
                                 SELECT 1
                             END
@@ -129,7 +129,7 @@ public sealed class ObjectCreationWithoutSchemaNameAnalyzerTests(ITestOutputHelp
                             USE MyDb
                             GO
 
-                            CREATE TRIGGER █AJ5037░script_0.sql░MyDb.dbo.Trigger1░trigger░MyDb.dbo.Trigger1███Trigger1█
+                            CREATE TRIGGER ▶️AJ5037💛script_0.sql💛MyDb.dbo.Trigger1💛trigger💛MyDb.dbo.Trigger1✅Trigger1◀️
                                 ON dbo.Table1
                                 AFTER INSERT
                             AS
@@ -167,7 +167,7 @@ public sealed class ObjectCreationWithoutSchemaNameAnalyzerTests(ITestOutputHelp
                             USE MyDb
                             GO
 
-                            CREATE FUNCTION █AJ5037░script_0.sql░MyDb.dbo.F1░function░MyDb.dbo.F1███F1█ ()
+                            CREATE FUNCTION ▶️AJ5037💛script_0.sql💛MyDb.dbo.F1💛function💛MyDb.dbo.F1✅F1◀️ ()
                             RETURNS INT
                             AS
                             BEGIN

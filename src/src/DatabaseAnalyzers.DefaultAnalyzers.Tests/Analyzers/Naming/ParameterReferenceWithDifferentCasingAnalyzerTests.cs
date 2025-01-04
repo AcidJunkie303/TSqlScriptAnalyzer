@@ -32,7 +32,7 @@ public sealed class ParameterReferenceWithDifferentCasingAnalyzerTests(ITestOutp
                                     @Param1 VARCHAR(MAX)
                             AS
                             BEGIN
-                                 PRINT █AJ5013░script_0.sql░MyDb.dbo.P1░@PARAM1░@Param1███@PARAM1█
+                                 PRINT ▶️AJ5013💛script_0.sql💛MyDb.dbo.P1💛@PARAM1💛@Param1✅@PARAM1◀️
                             END
                             """;
         Verify(code);
@@ -73,7 +73,7 @@ public sealed class ParameterReferenceWithDifferentCasingAnalyzerTests(ITestOutp
                             RETURNS INT
                             AS
                             BEGIN
-                                    PRINT █AJ5013░script_0.sql░MyDb.dbo.F1░@PARAM1░@Param1███@PARAM1█
+                                    PRINT ▶️AJ5013💛script_0.sql💛MyDb.dbo.F1💛@PARAM1💛@Param1✅@PARAM1◀️
                                     RETURN 1
                             END
                             """;

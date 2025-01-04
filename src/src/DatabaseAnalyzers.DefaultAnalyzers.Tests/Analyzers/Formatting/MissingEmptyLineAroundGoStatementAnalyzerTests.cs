@@ -41,7 +41,7 @@ public sealed class MissingEmptyLineAroundGoStatementAnalyzerTests(ITestOutputHe
     {
         const string code = """
                             USE MyDb
-                            █AJ5045░script_0.sql░░before███GO█
+                            ▶️AJ5045💛script_0.sql💛💛before✅GO◀️
                             PRINT 303
                             """;
 
@@ -67,7 +67,7 @@ public sealed class MissingEmptyLineAroundGoStatementAnalyzerTests(ITestOutputHe
         const string code = """
                             USE MyDb
 
-                            █AJ5045░script_0.sql░░after███GO█
+                            ▶️AJ5045💛script_0.sql💛💛after✅GO◀️
                             PRINT 303
                             """;
 

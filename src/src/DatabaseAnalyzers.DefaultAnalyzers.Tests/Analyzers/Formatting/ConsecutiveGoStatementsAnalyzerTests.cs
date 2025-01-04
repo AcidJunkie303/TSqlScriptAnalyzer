@@ -26,8 +26,8 @@ public sealed class ConsecutiveGoStatementsAnalyzerTests(ITestOutputHelper testO
     {
         const string code = """
                             USE MyDb
-                            █AJ5046░script_0.sql░███GO
-                            GO█
+                            ▶️AJ5046💛script_0.sql💛✅GO
+                            GO◀️
                             PRINT 303
                             """;
 
@@ -39,10 +39,10 @@ public sealed class ConsecutiveGoStatementsAnalyzerTests(ITestOutputHelper testO
     {
         const string code = """
                             USE MyDb
-                            █AJ5046░script_0.sql░███GO
+                            ▶️AJ5046💛script_0.sql💛✅GO
                             /* comment */
                             -- comment
-                            GO█
+                            GO◀️
                             PRINT 303
                             """;
 

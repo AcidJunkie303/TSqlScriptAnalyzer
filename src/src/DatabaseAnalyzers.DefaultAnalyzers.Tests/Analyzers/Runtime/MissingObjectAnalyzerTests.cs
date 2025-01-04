@@ -49,7 +49,7 @@ public sealed class MissingObjectAnalyzerTests(ITestOutputHelper testOutputHelpe
 
                             CREATE PROCEDURE  dbo.MyProcedure AS
                             BEGIN
-                                EXEC █AJ5044░script_0.sql░MyDb.dbo.MyProcedure░procedure░xxx.schema1.P1███xxx.schema1.P1█
+                                EXEC ▶️AJ5044💛script_0.sql💛MyDb.dbo.MyProcedure💛procedure💛xxx.schema1.P1✅xxx.schema1.P1◀️
                             END
                             """;
 
@@ -65,7 +65,7 @@ public sealed class MissingObjectAnalyzerTests(ITestOutputHelper testOutputHelpe
 
                             CREATE PROCEDURE  dbo.MyProcedure AS
                             BEGIN
-                                EXEC █AJ5044░script_0.sql░MyDb.dbo.MyProcedure░procedure░DB1.xxx.P1███DB1.xxx.P1█
+                                EXEC ▶️AJ5044💛script_0.sql💛MyDb.dbo.MyProcedure💛procedure💛DB1.xxx.P1✅DB1.xxx.P1◀️
                             END
                             """;
 
@@ -81,7 +81,7 @@ public sealed class MissingObjectAnalyzerTests(ITestOutputHelper testOutputHelpe
 
                             CREATE PROCEDURE  dbo.MyProcedure AS
                             BEGIN
-                                EXEC █AJ5044░script_0.sql░MyDb.dbo.MyProcedure░procedure░DB1.schema1.xxx███DB1.schema1.xxx█
+                                EXEC ▶️AJ5044💛script_0.sql💛MyDb.dbo.MyProcedure💛procedure💛DB1.schema1.xxx✅DB1.schema1.xxx◀️
                             END
                             """;
 
@@ -97,7 +97,7 @@ public sealed class MissingObjectAnalyzerTests(ITestOutputHelper testOutputHelpe
 
                             CREATE PROCEDURE  dbo.MyProcedure AS
                             BEGIN
-                                EXEC xxx.ignored.yyy█
+                                EXEC xxx.ignored.yyy◀️
                             END
                             """;
 
@@ -107,9 +107,9 @@ public sealed class MissingObjectAnalyzerTests(ITestOutputHelper testOutputHelpe
     [Theory]
     [InlineData(" /* 0000 */ DB1.schema1.T1                                                     ")]
     [InlineData(" /* 0001 */ DB1.ignored.T1                                                     ")]
-    [InlineData(" /* 0002 */ █AJ5044░script_0.sql░░table░xxx.schema1.T1███xxx.schema1.T1█       ")]
-    [InlineData(" /* 0003 */ █AJ5044░script_0.sql░░table░DB1.xxx.T1███DB1.xxx.T1█               ")]
-    [InlineData(" /* 0004 */ █AJ5044░script_0.sql░░table░DB1.schema1.xxx███DB1.schema1.xxx█     ")]
+    [InlineData(" /* 0002 */ ▶️AJ5044💛script_0.sql💛💛table💛xxx.schema1.T1✅xxx.schema1.T1◀️       ")]
+    [InlineData(" /* 0003 */ ▶️AJ5044💛script_0.sql💛💛table💛DB1.xxx.T1✅DB1.xxx.T1◀️               ")]
+    [InlineData(" /* 0004 */ ▶️AJ5044💛script_0.sql💛💛table💛DB1.schema1.xxx✅DB1.schema1.xxx◀️     ")]
     public void TableReference_Theory(string tableNameCode)
     {
         var code = $"""
@@ -125,7 +125,7 @@ public sealed class MissingObjectAnalyzerTests(ITestOutputHelper testOutputHelpe
 
     [Theory]
     [InlineData(" /* 0000 */ Column1                                                ")]
-    [InlineData(" /* 0001 */ █AJ5044░script_0.sql░░column░DB1.schema1.T1.xxx███xxx█ ")]
+    [InlineData(" /* 0001 */ ▶️AJ5044💛script_0.sql💛💛column💛DB1.schema1.T1.xxx✅xxx◀️ ")]
     public void ColumnReferenceOnExistingTable_Theory(string columnNameCode)
     {
         var code = $"""

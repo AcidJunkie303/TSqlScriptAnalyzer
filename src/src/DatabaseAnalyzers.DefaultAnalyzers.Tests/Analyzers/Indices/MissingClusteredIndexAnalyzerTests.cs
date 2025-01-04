@@ -76,11 +76,11 @@ public sealed class MissingClusteredIndexAnalyzerTests(ITestOutputHelper testOut
                             USE MyDb
                             GO
 
-                            █AJ5027░script_0.sql░MyDb.dbo.Table1░MyDb.dbo.Table1███CREATE TABLE dbo.Table1
+                            ▶️AJ5027💛script_0.sql💛MyDb.dbo.Table1💛MyDb.dbo.Table1✅CREATE TABLE dbo.Table1
                             (
                                 Id            INT NOT NULL,
                                 Value1        NVARCHAR(128) NOT NULL
-                            )█
+                            )◀️
                             """;
 
         Verify(Aj5027Settings.Default, code);

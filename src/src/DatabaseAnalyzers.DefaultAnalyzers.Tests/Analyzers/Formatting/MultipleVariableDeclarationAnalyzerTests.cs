@@ -27,7 +27,7 @@ public sealed class MultipleVariableDeclarationAnalyzerTests(ITestOutputHelper t
                             USE MyDb
                             GO
 
-                            █AJ5024░script_0.sql░███DECLARE @a INT, @b INT█
+                            ▶️AJ5024💛script_0.sql💛✅DECLARE @a INT, @b INT◀️
 
                             PRINT 909
                             """;

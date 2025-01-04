@@ -22,7 +22,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
 
                             DELETE
                             FROM    Table1
-                            WHERE   █Value3█ = 303
+                            WHERE   ▶️Value3◀️ = 303
                             """;
 
         // arrange
@@ -49,7 +49,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             GO
 
                             DELETE  Table1
-                            WHERE   █Value3█ = 303
+                            WHERE   ▶️Value3◀️ = 303
                             """;
 
         // arrange
@@ -77,7 +77,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
 
                             DELETE  t1
                             FROM    Table1 t1
-                            WHERE   █t1.Value1█ = 303
+                            WHERE   ▶️t1.Value1◀️ = 303
                             """;
 
         // arrange
@@ -107,7 +107,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             FROM    Table1 t1
                             INNER   JOIN Table2 t2 on t2.Id = t1.id
                             INNER   JOIN Table3 t3 on t3.Id = t2.id
-                            WHERE   █t3.Value3█ = 303
+                            WHERE   ▶️t3.Value3◀️ = 303
                             """;
 
         // arrange
@@ -136,7 +136,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             DELETE  t1
                             FROM    Table1 t1
                             INNER   JOIN Table2 t2 on t2.Id = t1.id
-                            INNER   JOIN Table3 t3 on t3.Id = █t2.id█
+                            INNER   JOIN Table3 t3 on t3.Id = ▶️t2.id◀️
                             INNER   JOIN Table3 t4 on t4.Id = t3.id
                             WHERE   t3.Value3 = 303
                             """;
@@ -165,7 +165,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
 
                             SELECT  *
                             FROM    Table1
-                            WHERE   █Value1█ = 303
+                            WHERE   ▶️Value1◀️ = 303
                             """;
 
         // arrange
@@ -193,7 +193,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
 
                             SELECT  *
                             FROM    Table1  t1
-                            WHERE   █t1.Value1█ = 303
+                            WHERE   ▶️t1.Value1◀️ = 303
                             """;
 
         // arrange
@@ -224,7 +224,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             INNER   JOIN Table2 t2 on t2.Id = t1.id
                             INNER   JOIN Table3 t3 on t3.Id = t2.id
                             INNER   JOIN Table4 t4 on t4.Id = t3.ID
-                            WHERE   █t4.Value4█ = 303
+                            WHERE   ▶️t4.Value4◀️ = 303
                             """;
 
         // arrange
@@ -252,7 +252,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
 
                             SELECT  *
                             FROM    Table1
-                            WHERE   █Id█ =
+                            WHERE   ▶️Id◀️ =
                             (
                                 SELECT TOP 1 ID
                                 FROM Table2
@@ -287,7 +287,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             FROM    Table1 t1
                             INNER   JOIN Table2 t2 on t2.Id = t1.id
                             INNER   JOIN Table3 t3 on t3.Id = t2.id
-                            INNER   JOIN Table3 t4 on t4.Id = █t3.ID█
+                            INNER   JOIN Table3 t4 on t4.Id = ▶️t3.ID◀️
                             WHERE   Value1 = 303
                             """;
 
@@ -317,7 +317,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             INSERT  INTO Table1
                             SELECT  *
                             FROM    Table2
-                            WHERE   █Id█ = 303
+                            WHERE   ▶️Id◀️ = 303
                             """;
 
         // arrange
@@ -345,7 +345,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
 
                             UPDATE  Table1
                             SET     Value1 = 'Hello'
-                            WHERE   █Id█ = 303
+                            WHERE   ▶️Id◀️ = 303
                             """;
 
         // arrange
@@ -374,7 +374,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             UPDATE  t1
                             SET     t1.Value1 = 'Hello'
                             FROM    Table1 t1
-                            WHERE   █Id█ = 303
+                            WHERE   ▶️Id◀️ = 303
                             """;
 
         // arrange
@@ -404,7 +404,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             SET     t1.Value1 = 'Hello'
                             FROM    Table1 t1
                             INNER   JOIN Table2 t2 ON t2.Id = t1.Id
-                            WHERE   █t2.Value2█ = 303
+                            WHERE   ▶️t2.Value2◀️ = 303
                             """;
 
         // arrange
@@ -433,7 +433,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             UPDATE  t1
                             SET     t1.Value1 = 'Hello'
                             FROM    Table1 t1
-                            INNER   JOIN Table2 t2 ON t2.Id = █t1.Id█
+                            INNER   JOIN Table2 t2 ON t2.Id = ▶️t1.Id◀️
                             WHERE   t2.Value2 = 303
                             """;
 
@@ -468,7 +468,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             )
                             SELECT  *
                             FROM    CTE c
-                            WHERE   █c.Value1█ = 'World';
+                            WHERE   ▶️c.Value1◀️ = 'World';
                             """;
 
         // arrange
@@ -498,7 +498,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
 
                             MERGE       INTO Table1 AS t1
                             USING       Table2      AS t2
-                            ON          t1.Id = █t2.Id█
+                            ON          t1.Id = ▶️t2.Id◀️
                             WHEN MATCHED THEN
                                 UPDATE SET t1.Value1 = t2.Value2
                             WHEN NOT MATCHED BY TARGET THEN
@@ -538,7 +538,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             WHEN NOT MATCHED BY TARGET THEN
                                 INSERT (id, Name, Status, CreatedDate)
                                 VALUES (t2.Id, t2.Name, t2.Status, GETDATE())
-                            WHEN NOT MATCHED BY SOURCE AND █t1.IsActive█ = 1 THEN
+                            WHEN NOT MATCHED BY SOURCE AND ▶️t1.IsActive◀️ = 1 THEN
                                 DELETE;
                             """;
 
@@ -568,7 +568,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             MERGE INTO  Table1 AS t1
                             USING       Table2 AS t2
                             ON          t1.Id = t2.Id
-                            WHEN MATCHED AND █t1.Status█ <> t2.Status THEN
+                            WHEN MATCHED AND ▶️t1.Status◀️ <> t2.Status THEN
                                 UPDATE SET t1.Status = t2.Status, t1.LastUpdated = GETDATE()
                             WHEN NOT MATCHED BY TARGET THEN
                                 INSERT (id, Name, Status, CreatedDate)
@@ -628,18 +628,18 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
 
         static (string MarkupFreeSql, CodeRegion CodeRegion) RemoveMarkupAndGetCodeRegion(string code)
         {
-            var startIndex = code.IndexOf('█', StringComparison.Ordinal); // string comparision required because of analyzer
-            var endIndex = code.IndexOf('█', startIndex + 1); // no overload for string comparision :(
+            var startIndex = code.IndexOf("▶️", StringComparison.Ordinal);
+            var endIndex = code.IndexOf("◀️", startIndex + 1, StringComparison.Ordinal);
             if (startIndex < 0 || endIndex < 0)
             {
-                throw new ArgumentException("The SQL code does not contain contain two markup markers '█'", nameof(code));
+                throw new ArgumentException("The SQL code does not contain contain two markup markers '▶️' and '◀️'", nameof(code));
             }
 
             // currently, this only works if start and end marker are on the same line
             var (startLineNumber, startColumnNumber) = code.GetLineAndColumnNumber(startIndex);
             var (endLineNumber, endColumnNumber) = code.GetLineAndColumnNumber(endIndex - 1); // -1 because we'll remove the start and end marker
-            var codeRegion = CodeRegion.Create(startLineNumber, startColumnNumber, endLineNumber, endColumnNumber);
-            var markupFreeSql = code.Remove(endIndex, 1).Remove(startIndex, 1);
+            var codeRegion = CodeRegion.Create(startLineNumber, startColumnNumber, endLineNumber, endColumnNumber - 1);
+            var markupFreeSql = code.Remove(endIndex, 2).Remove(startIndex, 2);
 
             return (markupFreeSql, codeRegion);
         }

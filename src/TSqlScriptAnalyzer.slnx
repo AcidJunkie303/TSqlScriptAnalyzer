@@ -4,6 +4,9 @@
     <File Path="Directory.Build.props" />
     <File Path=".gitignore" />
     <File Path="..\README.md" />
+    <File Path="..\STATUS.md" />
+    <File Path="..\CreatingAnalyzers.md" />
+    <File Path="..\UnitTestingAnalyzers.md" />
   </Folder>
   <Project Path="src\DatabaseAnalyzer.App\DatabaseAnalyzer.App.csproj" Type="Classic C#" />
   <Project Path="src\DatabaseAnalyzer.Common\DatabaseAnalyzer.Common.csproj" Type="Classic C#" />

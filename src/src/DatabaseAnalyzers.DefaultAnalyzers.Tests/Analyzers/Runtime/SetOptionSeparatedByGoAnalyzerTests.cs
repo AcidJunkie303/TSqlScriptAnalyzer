@@ -52,7 +52,7 @@ public sealed class SetOptionSeparatedByGoAnalyzerTests(ITestOutputHelper testOu
                             USE MyDb
                             GO
 
-                            █AJ5034░script_0.sql░███SET ANSI_NULLS ON
+                            ▶️AJ5034💛script_0.sql💛✅SET ANSI_NULLS ON
                             GO
 
                             SET ARITHABORT ON
@@ -61,7 +61,7 @@ public sealed class SetOptionSeparatedByGoAnalyzerTests(ITestOutputHelper testOu
                             SET ARITHABORT ON
                             GO
 
-                            SET ANSI_WARNINGS ON█
+                            SET ANSI_WARNINGS ON◀️
                             GO
                             """;
         Verify(code);

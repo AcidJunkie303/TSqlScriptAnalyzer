@@ -26,7 +26,7 @@ public sealed class VariableReferenceWithDifferentCasingAnalyzerTests(ITestOutpu
                             USE MyDb
                             GO
                             DECLARE @Var1 INT = 303
-                            PRINT █AJ5014░script_0.sql░░@VAR1░@Var1███@VAR1█
+                            PRINT ▶️AJ5014💛script_0.sql💛💛@VAR1💛@Var1✅@VAR1◀️
                             """;
         Verify(code);
     }

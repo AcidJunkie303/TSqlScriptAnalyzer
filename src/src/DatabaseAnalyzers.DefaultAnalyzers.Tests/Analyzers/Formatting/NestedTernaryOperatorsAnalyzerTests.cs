@@ -27,7 +27,7 @@ public sealed class NestedTernaryOperatorsAnalyzerTests(ITestOutputHelper testOu
                             USE MyDb
                             GO
 
-                            SELECT IIF(@a=1, 'Hello', █AJ5033░script_0.sql░███IIF(@b=1, 'world','there')█)
+                            SELECT IIF(@a=1, 'Hello', ▶️AJ5033💛script_0.sql💛✅IIF(@b=1, 'world','there')◀️)
                             """;
         Verify(code);
     }

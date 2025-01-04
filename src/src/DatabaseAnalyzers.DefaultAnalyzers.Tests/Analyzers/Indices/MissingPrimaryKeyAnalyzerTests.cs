@@ -50,11 +50,11 @@ public sealed class MissingPrimaryKeyAnalyzerTests(ITestOutputHelper testOutputH
                             USE MyDb
                             GO
 
-                            █AJ5026░script_0.sql░MyDb.dbo.Table1░MyDb.dbo.Table1███CREATE TABLE Table1
+                            ▶️AJ5026💛script_0.sql💛MyDb.dbo.Table1💛MyDb.dbo.Table1✅CREATE TABLE Table1
                             (
                                 Id              INT NOT NULL,
                                 Value1          NVARCHAR(128) NOT NULL
-                            )█
+                            )◀️
                             """;
 
         Verify(Aj5026Settings.Default, code);

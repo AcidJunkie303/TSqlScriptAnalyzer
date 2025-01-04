@@ -30,7 +30,7 @@ public sealed class SelectStarAnalyzerTests(ITestOutputHelper testOutputHelper)
                             USE MyDb
                             GO
 
-                            SELECT      █AJ5041░script_0.sql░███*█
+                            SELECT      ▶️AJ5041💛script_0.sql💛✅*◀️
                             FROM        Table1
                             """;
         Verify(code);
@@ -43,7 +43,7 @@ public sealed class SelectStarAnalyzerTests(ITestOutputHelper testOutputHelper)
                             USE MyDb
                             GO
 
-                            SELECT      █AJ5041░script_0.sql░███t1.*█
+                            SELECT      ▶️AJ5041💛script_0.sql💛✅t1.*◀️
                             FROM        Table1 t1
                             """;
         Verify(code);
@@ -77,7 +77,7 @@ public sealed class SelectStarAnalyzerTests(ITestOutputHelper testOutputHelper)
                             GO
 
                             SELECT      t1.Id,
-                                        █AJ5041░script_0.sql░███t2.*█
+                                        ▶️AJ5041💛script_0.sql💛✅t2.*◀️
                             FROM        Table1 AS t1
                             INNER JOIN  Table2 AS t2 ON t2.Id = t1.Id
                             """;
