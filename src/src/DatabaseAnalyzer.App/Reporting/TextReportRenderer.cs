@@ -44,6 +44,5 @@ internal sealed class TextReportRenderer : IReportRenderer
     private static IEnumerable<T> OrderIssues<T>(IEnumerable<T> items, Func<T, IIssue> issueSelector)
         => items
             .OrderBy(a => issueSelector(a).RelativeScriptFilePath, StringComparer.OrdinalIgnoreCase)
-            .ThenBy(a => issueSelector(a).CodeRegion.Begin)
-            .ThenBy(a => issueSelector(a).CodeRegion.End);
+            .ThenBy(a => issueSelector(a).CodeRegion);
 }

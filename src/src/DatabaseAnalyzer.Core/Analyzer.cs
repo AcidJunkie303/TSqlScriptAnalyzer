@@ -105,7 +105,7 @@ internal sealed class Analyzer : IAnalyzer
             catch (Exception ex)
 #pragma warning restore CA1031
             {
-                var analyzerName = analyzer.GetType().FullName ?? "<Unknown>";
+                var analyzerName = analyzer.GetType().FullName ?? "<unknown>";
                 analysisContext.IssueReporter.Report(WellKnownDiagnosticDefinitions.UnhandledAnalyzerException, databaseName, relativeScriptFilePath, null, CodeRegion.Unknown, analyzerName, ex.Message);
             }
         }
@@ -126,8 +126,7 @@ internal sealed class Analyzer : IAnalyzer
             .ToFrozenDictionary(
                 a => a.Key,
                 a => (IReadOnlyList<IIssue>)a
-                    .OrderBy(x => x.CodeRegion.Begin)
-                    .ThenBy(x => x.CodeRegion.End)
+                    .OrderBy(x => x.CodeRegion)
                     .ToImmutableArray(),
                 StringComparer.OrdinalIgnoreCase
             );

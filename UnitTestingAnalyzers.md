@@ -34,3 +34,6 @@ Each token of `▶️AJ5022💛Procedure1.sql💛MyDatabase.dbo.Procedure💛IF�
 | MyDatabase.dbo.Procedure1 | The full name of the enclosing object name (if any). If this code is not within in a procedure, table, view, function etc., this value is empty. |
 | IF                        | 1st insertion string                                                                                                                             |
 | `PRINT 'tb'`              | The code which caused the issue                                                                                                                  |
+
+TODO:
+continue here with actual code

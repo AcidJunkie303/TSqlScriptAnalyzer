@@ -13,8 +13,7 @@ internal sealed class JsonFullReportRenderer : IReportRenderer
             analysisResult.DisabledDiagnostics,
             Issues = analysisResult.Issues
                 .OrderBy(static a => a.RelativeScriptFilePath, StringComparer.OrdinalIgnoreCase)
-                .ThenBy(static a => a.CodeRegion.Begin)
-                .ThenBy(static a => a.CodeRegion.End)
+                .ThenBy(static a => a.CodeRegion)
                 .Select(static a => new
                 {
                     a.DiagnosticDefinition.DiagnosticId,
@@ -24,8 +23,7 @@ internal sealed class JsonFullReportRenderer : IReportRenderer
                 }),
             SuppressedIssues = analysisResult.SuppressedIssues
                 .OrderBy(static a => a.Issue.RelativeScriptFilePath, StringComparer.OrdinalIgnoreCase)
-                .ThenBy(static a => a.Issue.CodeRegion.Begin)
-                .ThenBy(static a => a.Issue.CodeRegion.End)
+                .ThenBy(static a => a.Issue.CodeRegion)
                 .Select(static a => new
                 {
                     a.Issue.DiagnosticDefinition.DiagnosticId,

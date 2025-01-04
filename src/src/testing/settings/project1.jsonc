@@ -66,16 +66,15 @@
       ]
     },
     "AJ5022": { // Missing BEGIN/END blocks
+      "IfRequiresBeginEndBlock": true,
+      "WhileRequiresBeginEndBlock": true
+    },
+    "AJ5023": { // Statements must begin on a new line
       "StatementTypesToIgnore": [
         "goto",
         "print",
         "set"
       ]
-    },
-    "AJ5023": { // Statements must begin on a new line
-      "ForRequiresBeginEndBlock": true,
-      "IfRequiresBeginEndBlock": true,
-      "WhileRequiresBeginEndBlock": true
     },
     "AJ5026": { // Missing primary key
       "FullTableNamesToIgnore": [
@@ -129,19 +128,6 @@
         "Description": "View names must start with a capital letter followed by characters or numbers only"
       }
     },
-    /*
-    "AJ5030": { // Object and variable naming
-      "ColumnNamePattern": "\\A[A-Z][A-Za-z0-1]+",
-      "FunctionNamePattern": "\\A[A-Z][A-Za-z0-1]+",
-      "ParameterNamePattern": "\\A[A-Z][A-Za-z0-1]+",
-      "PrimaryKeyConstraintNamePattern": "\\APK_",
-      "ProcedureNamePattern": "\\A[A-Z][A-Za-z0-1]+",
-      "TableNamePattern": "\\A[A-Z][A-Za-z0-1]+",
-      "TriggerNamePattern": "\\ATRG_[A-Za-z0-1]+",
-      "VariableNamePattern": "\\A[A-Z][A-Za-z0-1]+",
-      "ViewNamePattern": "\\AV_[A-Z][A-Za-z0-1]+"
-    },
-    */
     "AJ5038": { // Name quoting. Possible values: Undefined, Required, DoubleQuotesRequired, SquareBracketsRequired or NotAllowed
       "NameQuotingPolicyDuringObjectCreation": "NotAllowed",
       "NameQuotingPolicyForColumnReferences": "Undefined",
@@ -149,7 +135,7 @@
       "NameQuotingPolicyForTableReferences": "SquareBracketsRequired",
       "NameQuotingPolicyForDataTypes": "Undefined"
     },
-    "AJ5045": { // GO statement
+    "AJ5045": { // Empty lines before/after GO statement
       "RequireEmptyLineBeforeGo": false,
       "RequireEmptyLineAfterGo": true
     }
