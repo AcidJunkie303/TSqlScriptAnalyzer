@@ -12,7 +12,7 @@ resharper_braces_for_foreach = required
 #[*.cs]
 indent_size = 4
 dotnet_sort_system_directives_first = true
-
+csharp_space_after_cast = true
 # Enforce file-scoped namespaces
 csharp_style_namespace_declarations = file_scoped:error
 

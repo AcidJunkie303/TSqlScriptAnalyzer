@@ -21,7 +21,7 @@ internal sealed class TextReportRenderer : IReportRenderer
 
             foreach (var issue in OrderIssues(analysisResult.Issues, a => a))
             {
-                buffer.AppendLine(CultureInfo.CurrentCulture, $"""{issue.DiagnosticDefinition.DiagnosticId} File="{issue.RelativeScriptFilePath}" Issue="{issue.Message}" Location="{issue.CodeRegion}" """);
+                buffer.AppendLine(CultureInfo.CurrentCulture, $"""{issue.DiagnosticDefinition.DiagnosticId} File="{issue.RelativeScriptFilePath}" Issue="{issue.Message}" Location="{issue.CodeRegion}" HelpUrl="{issue.DiagnosticDefinition.HelpUrl}" """);
             }
         }
 

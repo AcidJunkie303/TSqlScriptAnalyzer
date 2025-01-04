@@ -111,7 +111,8 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
             "AJ5030",
             IssueType.Warning,
             "Object name violates naming conventions",
-            "The {0} name '{1}' does not comply with the configured naming rules: {2}."
+            "The {0} name '{1}' does not comply with the configured naming rules: {2}.",
+            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
     }
 }

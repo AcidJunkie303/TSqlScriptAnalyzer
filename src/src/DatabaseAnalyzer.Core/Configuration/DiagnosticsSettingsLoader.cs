@@ -11,7 +11,7 @@ public static class DiagnosticsSettingsLoader
 
         foreach (var (rawType, finalType) in settingsPairTypes)
         {
-            var diagnosticId = (string?)finalType.GetProperty(nameof(ISettings.DiagnosticId))?.GetValue(null);
+            var diagnosticId = (string?) finalType.GetProperty(nameof(ISettings.DiagnosticId))?.GetValue(null);
             if (diagnosticId is null)
             {
                 // TODO: maybe we should throw an exception here
@@ -21,7 +21,7 @@ public static class DiagnosticsSettingsLoader
             dynamic raw = diagnosticsConfigurationSection.GetSection(diagnosticId).Get(rawType) ?? Activator.CreateInstance(rawType)!;
 
             var accessorType = typeof(SettingsAccessor<,>).MakeGenericType(rawType, finalType);
-            var accessor = (ISettingsAccessor)Activator.CreateInstance(accessorType, (object[]) [raw])!;
+            var accessor = (ISettingsAccessor) Activator.CreateInstance(accessorType, (object[]) [raw])!;
             var settings = accessor.GetSettings();
 
             diagnosticSettingsById.Add(diagnosticId, settings);

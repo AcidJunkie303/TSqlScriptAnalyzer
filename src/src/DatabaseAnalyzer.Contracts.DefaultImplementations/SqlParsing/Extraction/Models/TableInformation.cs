@@ -14,8 +14,8 @@ public sealed record TableInformation(
     string RelativeScriptFilePath
 ) : ISchemaBoundObject
 {
-    public string FullName { get; } = $"{DatabaseName}.{SchemaName}.{ObjectName}";
     public required IScriptModel ScriptModel { get; init; }
+    public string FullName { get; } = $"{DatabaseName}.{SchemaName}.{ObjectName}";
 
     public IReadOnlyList<string> FullNameParts { get; } = new[]
     {

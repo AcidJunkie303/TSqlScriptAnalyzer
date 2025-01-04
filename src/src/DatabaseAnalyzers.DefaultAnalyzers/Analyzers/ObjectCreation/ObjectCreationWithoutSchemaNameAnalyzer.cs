@@ -81,7 +81,8 @@ public sealed class ObjectCreationWithoutSchemaNameAnalyzer : IScriptAnalyzer
             "AJ5037",
             IssueType.Formatting,
             "Object creation without schema name",
-            "The creation statement of the {0} '{1}' doesn't use a schema name."
+            "The creation statement of the {0} '{1}' doesn't use a schema name.",
+            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
     }
 }

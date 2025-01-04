@@ -41,7 +41,8 @@ public sealed class NullComparisonAnalyzer : IScriptAnalyzer
             "AJ5018",
             IssueType.Warning,
             "Null comparison",
-            "Do not use equality comparison for NULL. Instead, use 'IS NULL' or 'IS NOT NULL'."
+            "Do not use equality comparison for NULL. Instead, use 'IS NULL' or 'IS NOT NULL'.",
+            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
     }
 }

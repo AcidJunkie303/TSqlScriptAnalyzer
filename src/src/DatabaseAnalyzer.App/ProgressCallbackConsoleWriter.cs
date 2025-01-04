@@ -7,9 +7,6 @@ internal sealed partial class ProgressCallbackConsoleWriter : IProgressCallback
 {
     private static readonly Lock LockObject = new();
 
-    [GeneratedRegex(@"\{\s*(?<index>\d+)\s*\}", RegexOptions.None, 100)]
-    private static partial Regex PlaceholderFinder();
-
     public void OnProgress(ProgressCallbackArgs args)
     {
         if (!args.IsBeginOfAction)
@@ -31,6 +28,9 @@ internal sealed partial class ProgressCallbackConsoleWriter : IProgressCallback
             WriteProcess(args, matches);
         }
     }
+
+    [GeneratedRegex(@"\{\s*(?<index>\d+)\s*\}", RegexOptions.None, 100)]
+    private static partial Regex PlaceholderFinder();
 
     private static void WriteProcess(ProgressCallbackArgs args, MatchCollection matches)
     {

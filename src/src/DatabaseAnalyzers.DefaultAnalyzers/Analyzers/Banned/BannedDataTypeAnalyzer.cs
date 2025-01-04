@@ -86,7 +86,8 @@ public sealed class BannedDataTypeAnalyzer : IScriptAnalyzer
             "AJ5006",
             IssueType.Warning,
             "Usage of banned data type",
-            "The data type '{0}' is banned for {1}"
+            "The data type '{0}' is banned for {1}",
+            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
     }
 }

@@ -112,7 +112,8 @@ public sealed class UnnecessarySemicolonAnalyzer : IScriptAnalyzer
             "AJ5028",
             IssueType.Warning,
             "Semicolon is not necessary",
-            "Semicolon is not necessary."
+            "Semicolon is not necessary.",
+            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
     }
 }

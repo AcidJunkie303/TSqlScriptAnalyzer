@@ -18,7 +18,7 @@ public sealed class MissingNoCountInProcedureOrTriggerAnalyzerTests(ITestOutputH
                             BEGIN
                                 SET ARITHABORT ON
                                 SET NOCOUNT ON
-
+                            
                                 SELECT * FROM T1
                             END
                             """;
@@ -70,7 +70,7 @@ public sealed class MissingNoCountInProcedureOrTriggerAnalyzerTests(ITestOutputH
                             BEGIN
                                 SET ARITHABORT ON
                                 SET NOCOUNT ON
-
+                            
                                 SELECT * FROM T1
                             END
                             """;

@@ -142,7 +142,8 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
             "AJ5015",
             IssueType.MissingIndex,
             "Missing Index",
-            "The column '{0}.{1}.{2}.{3}' defined in script '{4}' is not indexed but used as column filtering predicate."
+            "The column '{0}.{1}.{2}.{3}' defined in script '{4}' is not indexed but used as column filtering predicate.",
+            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
 
         /* Insertions Description:
@@ -157,7 +158,8 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
             "AJ5017",
             IssueType.MissingIndex,
             "Missing Index",
-            "The foreign-key column '{0}.{1}.{2}.{3}' is not indexed. Although this columns might not be used for filtering directly, it is still recommended to create an index on it because it will improve performance when checking for referential integrity when deleting columns from the table being referenced for example."
+            "The foreign-key column '{0}.{1}.{2}.{3}' is not indexed. Although this columns might not be used for filtering directly, it is still recommended to create an index on it because it will improve performance when checking for referential integrity when deleting columns from the table being referenced for example.",
+            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
     }
 }

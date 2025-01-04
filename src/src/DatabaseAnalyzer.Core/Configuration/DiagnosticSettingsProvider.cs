@@ -18,6 +18,6 @@ public sealed class DiagnosticSettingsProvider : IDiagnosticSettingsProvider
         var settings = _diagnosticsSettingsById.GetValueOrDefault(TSettings.DiagnosticId)
                        ?? throw new InvalidOperationException($"No settings registered for diagnostic id '{TSettings.DiagnosticId}'!");
 
-        return (TSettings)settings;
+        return (TSettings) settings;
     }
 }

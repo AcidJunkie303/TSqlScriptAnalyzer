@@ -16,7 +16,7 @@ internal sealed class Aj5023SettingsRaw : IRawSettings<Aj5023Settings>
             .WhereNotNull()
             .Select(static a => Enum.TryParse<TSqlTokenType>(a, ignoreCase: true, out var tokenType)
                 ? tokenType
-                : (TSqlTokenType?)null)
+                : (TSqlTokenType?) null)
             .Where(static a => a.HasValue)
             .Select(static a => a!.Value)
             .ToFrozenSet()

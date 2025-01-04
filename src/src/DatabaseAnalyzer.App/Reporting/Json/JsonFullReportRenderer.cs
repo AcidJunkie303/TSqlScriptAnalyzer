@@ -19,7 +19,8 @@ internal sealed class JsonFullReportRenderer : IReportRenderer
                     a.DiagnosticDefinition.DiagnosticId,
                     a.Message,
                     a.RelativeScriptFilePath,
-                    a.CodeRegion
+                    a.CodeRegion,
+                    a.DiagnosticDefinition.HelpUrl
                 }),
             SuppressedIssues = analysisResult.SuppressedIssues
                 .OrderBy(static a => a.Issue.RelativeScriptFilePath, StringComparer.OrdinalIgnoreCase)
@@ -30,7 +31,8 @@ internal sealed class JsonFullReportRenderer : IReportRenderer
                     a.Issue.Message,
                     a.Reason,
                     a.Issue.RelativeScriptFilePath,
-                    a.Issue.CodeRegion
+                    a.Issue.CodeRegion,
+                    a.Issue.DiagnosticDefinition.HelpUrl
                 })
         };
 

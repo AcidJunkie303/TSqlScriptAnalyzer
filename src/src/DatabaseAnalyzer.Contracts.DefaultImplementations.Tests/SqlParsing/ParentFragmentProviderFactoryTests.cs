@@ -30,10 +30,10 @@ public sealed class ParentFragmentProviderFactoryTests
         sut.Root.Should().BeSameAs(script);
 
         var batch2 = script.Batches[1];
-        var selectStatement = (SelectStatement)batch2.Statements[0];
-        var querySpecification = (QuerySpecification)selectStatement.QueryExpression;
-        var selectElements = (SelectScalarExpression)querySpecification.SelectElements[0];
-        var coalesceExpression = (CoalesceExpression)selectElements.Expression;
+        var selectStatement = (SelectStatement) batch2.Statements[0];
+        var querySpecification = (QuerySpecification) selectStatement.QueryExpression;
+        var selectElements = (SelectScalarExpression) querySpecification.SelectElements[0];
+        var coalesceExpression = (CoalesceExpression) selectElements.Expression;
         var literal303 = coalesceExpression.Expressions[1];
 
         sut.GetParent(literal303).Should().BeSameAs(coalesceExpression);

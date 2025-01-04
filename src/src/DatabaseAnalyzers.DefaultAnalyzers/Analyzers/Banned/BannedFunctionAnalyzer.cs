@@ -32,8 +32,8 @@ public sealed class BannedFunctionAnalyzer : IScriptAnalyzer
             script,
             settings,
             scalarFunctions,
-            static x => ((FunctionCall)x.Expression).FunctionName.Value,
-            static x => ((FunctionCall)x.Expression).FunctionName.GetCodeRegion());
+            static x => ((FunctionCall) x.Expression).FunctionName.Value,
+            static x => ((FunctionCall) x.Expression).FunctionName.GetCodeRegion());
 
         AnalyzeFunctionInvocation(
             context,
@@ -79,7 +79,8 @@ public sealed class BannedFunctionAnalyzer : IScriptAnalyzer
             "AJ5040",
             IssueType.Warning,
             "Usage of banned function",
-            "The function '{0}' is banned. {1}"
+            "The function '{0}' is banned. {1}",
+            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
     }
 }

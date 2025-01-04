@@ -71,7 +71,8 @@ public sealed class NonStandardComparisonOperatorAnalyzer : IScriptAnalyzer
             "AJ5032",
             IssueType.Warning,
             "Non-standard comparison operator",
-            "The non-standard comparison operator '{0}' should not be used."
+            "The non-standard comparison operator '{0}' should not be used.",
+            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
     }
 }

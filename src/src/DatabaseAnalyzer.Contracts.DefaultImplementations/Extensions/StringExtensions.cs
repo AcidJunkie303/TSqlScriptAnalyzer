@@ -18,10 +18,10 @@ public static class StringExtensions
             : value;
 
     public static Regex ToRegexWithSimpleWildcards(this string value)
-        => value.ToRegexWithSimpleWildcards(caseSensitive: false, compileRegex: false);
+        => value.ToRegexWithSimpleWildcards(false, false);
 
     public static Regex ToRegexWithSimpleWildcards(this string value, bool caseSensitive)
-        => value.ToRegexWithSimpleWildcards(caseSensitive, compileRegex: false);
+        => value.ToRegexWithSimpleWildcards(caseSensitive, false);
 
     public static Regex ToRegexWithSimpleWildcards(this string value, bool caseSensitive, bool compileRegex)
     {
@@ -113,7 +113,7 @@ public static class StringExtensions
 
     public static TSqlScript TryParseSqlScript(this string sqlScriptContents, out IReadOnlyList<ScriptError> errors)
     {
-        var parser = TSqlParser.CreateParser(SqlVersion.Sql170, initialQuotedIdentifiers: true);
+        var parser = TSqlParser.CreateParser(SqlVersion.Sql170, true);
         using var reader = new StringReader(sqlScriptContents);
         var script = parser.Parse(reader, out var parserErrors) as TSqlScript ?? new TSqlScript();
 
@@ -156,6 +156,46 @@ public static class StringExtensions
             yield return input[startIndex..index];
             startIndex = index + delimiter.Length; // Move past the delimiter
         }
+
+        static void CheckArguments(string input, string delimiter)
+        {
+            if (string.IsNullOrEmpty(input))
+            {
+                throw new ArgumentException("Input cannot be null or empty.", nameof(input));
+            }
+
+            if (string.IsNullOrEmpty(delimiter))
+            {
+                throw new ArgumentException("Delimiter cannot be null or empty.", nameof(delimiter));
+            }
+        }
+    }
+
+    public static IReadOnlyList<string> SplitMaterialized(this string input, string delimiter, StringComparison comparisonType)
+    {
+        CheckArguments(input, delimiter);
+
+        var result = new List<string>();
+
+        var startIndex = 0;
+
+        while (true)
+        {
+            var index = input.IndexOf(delimiter, startIndex, comparisonType);
+            if (index == -1) // No more delimiters found
+            {
+                result.Add(input[startIndex..]); // Add the remaining part of the string
+#pragma warning disable S1227
+                break;
+#pragma warning restore S1227
+            }
+
+            // Add the substring before the delimiter
+            result.Add(input[startIndex..index]);
+            startIndex = index + delimiter.Length; // Move past the delimiter
+        }
+
+        return result;
 
         static void CheckArguments(string input, string delimiter)
         {

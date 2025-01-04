@@ -7,4 +7,5 @@ public interface IDiagnosticDefinition : IEquatable<IDiagnosticDefinition>
     string Title { get; }
     string MessageTemplate { get; }
     int RequiredInsertionStringCount { get; }
+    Uri HelpUrl { get; }
 }

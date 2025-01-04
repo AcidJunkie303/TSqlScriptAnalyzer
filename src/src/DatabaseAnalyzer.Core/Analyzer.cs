@@ -61,7 +61,7 @@ internal sealed class Analyzer : IAnalyzer
 
         var scriptByDatabaseName = scripts
             .GroupBy(a => a.DatabaseName, StringComparer.OrdinalIgnoreCase)
-            .ToFrozenDictionary(a => a.Key, a => (IReadOnlyList<IScriptModel>)a.ToImmutableArray(), StringComparer.OrdinalIgnoreCase);
+            .ToFrozenDictionary(a => a.Key, a => (IReadOnlyList<IScriptModel>) a.ToImmutableArray(), StringComparer.OrdinalIgnoreCase);
 
         var analysisContext = new AnalysisContext
         (
@@ -125,7 +125,7 @@ internal sealed class Analyzer : IAnalyzer
             .GroupBy(a => a.FullObjectNameOrFileName, StringComparer.OrdinalIgnoreCase)
             .ToFrozenDictionary(
                 a => a.Key,
-                a => (IReadOnlyList<IIssue>)a
+                a => (IReadOnlyList<IIssue>) a
                     .OrderBy(x => x.CodeRegion)
                     .ToImmutableArray(),
                 StringComparer.OrdinalIgnoreCase

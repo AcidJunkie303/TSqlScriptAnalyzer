@@ -11,7 +11,7 @@ The framework allows writing unit tests in a declarative way. For that, it suppo
 Markup explanation:
 The markup is enclosed in ▶️ and ◀️ and split by ✅ into two sections:
 
-**Left Part**
+**Left Section**
 
 This part is split by 💛 where the tokens have the following meaning:
 
@@ -22,7 +22,7 @@ This part is split by 💛 where the tokens have the following meaning:
 | 3       | The full name of the enclosing object name (if any). Pattern: DB.schema.name | Yes, but can be empty |
 | 4-n     | The insertion strings                                                        | No                    |
 
-**Right Part**
+**Right Section**
 The right part between ✅ and ◀️ is the actual code region (T-SQL code) which caused the diagnostic issue.
 
 Each token of `▶️AJ5022💛Procedure1.sql💛MyDatabase.dbo.Procedure💛IF✅PRINT 'tb'◀️` explained:
@@ -35,5 +35,198 @@ Each token of `▶️AJ5022💛Procedure1.sql💛MyDatabase.dbo.Procedure💛IF�
 | IF                        | 1st insertion string                                                                                                                             |
 | `PRINT 'tb'`              | The code which caused the issue                                                                                                                  |
 
-TODO:
-continue here with actual code
+## Base Classes
+
+The framework also provides base classes to unit test script analyzers as well as global analyzers. Those are
+`ScriptAnalyzerTestsBase` and `GloablAnalyzerTestsBase`.
+
+## Unit Test Class
+
+```csharp
+public sealed class MissingBeginEndAnalyzerTests(ITestOutputHelper testOutputHelper)
+    : ScriptAnalyzerTestsBase<MissingBeginEndAnalyzer>(testOutputHelper)
+{
+    private static readonly Aj5022Settings NoBeginEndRequiredSettings = new(IfRequiresBeginEndBlock: false, WhileRequiresBeginEndBlock: false);
+    private static readonly Aj5022Settings BeginEndRequiredSettings = new(IfRequiresBeginEndBlock: true, WhileRequiresBeginEndBlock: true);
+
+    [Fact]
+    public void WithIfElse_WithNoBeginEndRequired_WhenNotUsingBeginEnd_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            IF (1=1)
+                                PRINT 'tb'
+                            ELSE
+                                PRINT '303'
+                            """;
+
+        Verify(NoBeginEndRequiredSettings, code);
+    }
+
+    [Fact]
+    public void WithIfElse_WithNoBeginEndRequired_WhenUsingBeginEnd_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            IF (1=1)
+                            BEGIN
+                                PRINT 'tb'
+                            END
+                            ELSE
+                            BEGIN
+                                PRINT '303'
+                            END
+                            """;
+
+        Verify(NoBeginEndRequiredSettings, code);
+    }
+
+    [Fact]
+    public void WithWhile_WithNoBeginEndRequired_WhenUsingBeginEnd_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            WHILE (1=1)
+                            BEGIN
+                                PRINT 'tb'
+                            END
+                            """;
+        Verify(NoBeginEndRequiredSettings, code);
+    }
+
+    [Fact]
+    public void WithWhile_WithNoBeginEndRequired_WhenNotUsingBeginEndThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            WHILE (1=1)
+                                PRINT 'tb-303'
+                            """;
+        Verify(NoBeginEndRequiredSettings, code);
+    }
+
+    [Fact]
+    public void WithIfElse_WithBeginEndRequired_WhenNotUsingBeginEnd_ThenDiagnose()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            IF (1=1)
+                                ▶️AJ5022💛script_0.sql💛💛IF✅PRINT 'tb'◀️
+                            ELSE
+                                ▶️AJ5022💛script_0.sql💛💛ELSE✅PRINT '303'◀️
+                            """;
+        Verify(BeginEndRequiredSettings, code);
+    }
+
+    [Fact]
+    public void WithWhile_WithBeginEndRequired_WhenUsingBeginEnd_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            IF (1=1)
+                            BEGIN
+                                PRINT 'tb'
+                            END
+                            ELSE
+                            BEGIN
+                                PRINT '303'
+                            END
+                            """;
+        Verify(BeginEndRequiredSettings, code);
+    }
+
+    [Fact]
+    public void WithWhile_WithBeginEndRequired_WhenNotUsingBeginEnd_ThenDiagnose()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            WHILE (1=1)
+                                ▶️AJ5022💛script_0.sql💛💛WHILE✅PRINT 'tb-303'◀️
+                            """;
+        Verify(BeginEndRequiredSettings, code);
+    }
+
+    [Fact]
+    public void WithIfElse_WithBeginEndRequired_WhenUsingBeginEnd_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            WHILE (1=1)
+                            BEGIN
+                                PRINT 'tb-303'
+                            END
+                            """;
+        Verify(BeginEndRequiredSettings, code);
+    }
+}
+```
+
+When executing any unit test, the test output window will provide you with the abstract syntax tree as well as the
+parsed tokens:
+
+```
+Syntax Tree:
++-------------------------------------+-----------------+---------------------------------------------------------+
+| Type                                | Region          | Contents                                                |
++-------------------------------------+-----------------+---------------------------------------------------------+
+| TSqlScript                          | (1,1) - (5,19)  | USE MyDb\r\nGO\r\n\r\nWHILE (1=1)\r\n    PRINT 'tb-303' |
+|   TSqlBatch                         | (1,1) - (1,9)   | USE MyDb                                                |
+|     UseStatement                    | (1,1) - (1,9)   | USE MyDb                                                |
+|       Identifier                    | (1,5) - (1,9)   | MyDb                                                    |
+|   TSqlBatch                         | (4,1) - (5,19)  | WHILE (1=1)\r\n    PRINT 'tb-303'                       |
+|     WhileStatement                  | (4,1) - (5,19)  | WHILE (1=1)\r\n    PRINT 'tb-303'                       |
+|       BooleanParenthesisExpression  | (4,7) - (4,12)  | (1=1)                                                   |
+|         BooleanComparisonExpression | (4,8) - (4,11)  | 1=1                                                     |
+|           IntegerLiteral            | (4,8) - (4,9)   | 1                                                       |
+|           IntegerLiteral            | (4,10) - (4,11) | 1                                                       |
+|       PrintStatement                | (5,5) - (5,19)  | PRINT 'tb-303'                                          |
+|         StringLiteral               | (5,11) - (5,19) | 'tb-303'                                                |
++-------------------------------------+-----------------+---------------------------------------------------------+
+
+Tokens:
++--------------------+-----------------+----------+
+| Type               | Region          | Contents |
++--------------------+-----------------+----------+
+| Use                | (1,1) - (1,4)   | USE      |
+| WhiteSpace         | (1,4) - (1,5)   | ¦ ¦      |
+| Identifier         | (1,5) - (1,9)   | MyDb     |
+| WhiteSpace         | (1,9) - (2,1)   | \r\n     |
+| Go                 | (2,1) - (2,3)   | GO       |
+| WhiteSpace         | (2,3) - (3,1)   | \r\n     |
+| WhiteSpace         | (3,1) - (4,1)   | \r\n     |
+| While              | (4,1) - (4,6)   | WHILE    |
+| WhiteSpace         | (4,6) - (4,7)   | ¦ ¦      |
+| LeftParenthesis    | (4,7) - (4,8)   | (        |
+| Integer            | (4,8) - (4,9)   | 1        |
+| EqualsSign         | (4,9) - (4,10)  | =        |
+| Integer            | (4,10) - (4,11) | 1        |
+| RightParenthesis   | (4,11) - (4,12) | )        |
+| WhiteSpace         | (4,12) - (5,1)  | \r\n     |
+| WhiteSpace         | (5,1) - (5,5)   | ¦    ¦   |
+| Print              | (5,5) - (5,10)  | PRINT    |
+| WhiteSpace         | (5,10) - (5,11) | ¦ ¦      |
+| AsciiStringLiteral | (5,11) - (5,19) | 'tb-303' |
+| EndOfFile          | (5,19) - (5,19) | ¦¦       |
++--------------------+-----------------+----------+
+
+1 issue reported:
+AJ5022    CodeRegion="(5,5) - (5,19)"    Insertions="WHILE
+```
+
+Therefore, before implementing any analyzer logic, it's worth creating the unit tests first and check the AST.

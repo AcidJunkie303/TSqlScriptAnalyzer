@@ -3,7 +3,7 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
     </PropertyGroup>
-    
+
     <ItemGroup>
         <PackageReference Include="Microsoft.SqlServer.TransactSql.ScriptDom" Version="170.3.0"/>
     </ItemGroup>

@@ -7,7 +7,13 @@ namespace DatabaseAnalyzer.Testing.Tests;
 
 public sealed class TestCodeProcessorTests
 {
-    private static readonly DiagnosticDefinitionRegistry DiagnosticDefinitionRegistry = new([TestDiagnosticDefinitions.TestDiagnostic0, TestDiagnosticDefinitions.TestDiagnostic1, TestDiagnosticDefinitions.TestDiagnostic2]);
+    private static readonly DiagnosticDefinitionRegistry DiagnosticDefinitionRegistry = new(
+        [
+            TestDiagnosticDefinitions.TestDiagnostic0,
+            TestDiagnosticDefinitions.TestDiagnostic1,
+            TestDiagnosticDefinitions.TestDiagnostic2
+        ]
+    );
 
     [Fact]
     public void WhenNoMarkup_ThenNoIssues_ThenCodeIsLikeInput()

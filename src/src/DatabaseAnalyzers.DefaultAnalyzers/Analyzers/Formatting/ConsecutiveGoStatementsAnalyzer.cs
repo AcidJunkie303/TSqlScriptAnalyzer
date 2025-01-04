@@ -60,7 +60,8 @@ public sealed class ConsecutiveGoStatementsAnalyzer : IScriptAnalyzer
             "AJ5046",
             IssueType.Formatting,
             "Consecutive GO statements",
-            "Consecutive GO statements."
+            "Consecutive GO statements.",
+            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
     }
 }

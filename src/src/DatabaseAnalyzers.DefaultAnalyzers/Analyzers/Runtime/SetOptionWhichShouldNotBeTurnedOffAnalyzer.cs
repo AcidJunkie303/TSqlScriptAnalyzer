@@ -59,7 +59,8 @@ public sealed class SetOptionWhichShouldNotBeTurnedOffAnalyzer : IScriptAnalyzer
             "AJ5021",
             IssueType.Warning,
             "Specific options should not be turned off",
-            "The option '{0}' should not be turned off."
+            "The option '{0}' should not be turned off.",
+            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
     }
 }

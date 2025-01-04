@@ -55,7 +55,8 @@ public sealed class SetOptionSeparatedByGoAnalyzer : IScriptAnalyzer
             "AJ5034",
             IssueType.Warning,
             "Set options don't need to be separated by GO",
-            "Multiple set option calls are not required to be separated by 'GO'. Use one GO statement at the end  of multiple set option calls."
+            "Multiple set option calls are not required to be separated by 'GO'. Use one GO statement at the end  of multiple set option calls.",
+            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
     }
 }

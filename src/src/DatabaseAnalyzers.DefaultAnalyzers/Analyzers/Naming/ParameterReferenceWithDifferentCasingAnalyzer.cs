@@ -83,7 +83,8 @@ public sealed class ParameterReferenceWithDifferentCasingAnalyzer : IScriptAnaly
             "AJ5013",
             IssueType.Warning,
             "Parameter reference with different casing",
-            "The parameter reference '{0}' has different casing compared to the declaration '{1}'."
+            "The parameter reference '{0}' has different casing compared to the declaration '{1}'.",
+            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
     }
 }

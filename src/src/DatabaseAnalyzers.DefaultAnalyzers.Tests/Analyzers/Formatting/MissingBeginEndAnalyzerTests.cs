@@ -8,6 +8,9 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Formatting;
 public sealed class MissingBeginEndAnalyzerTests(ITestOutputHelper testOutputHelper)
     : ScriptAnalyzerTestsBase<MissingBeginEndAnalyzer>(testOutputHelper)
 {
+    private static readonly Aj5022Settings NoBeginEndRequiredSettings = new(IfRequiresBeginEndBlock: false, WhileRequiresBeginEndBlock: false);
+    private static readonly Aj5022Settings BeginEndRequiredSettings = new(IfRequiresBeginEndBlock: true, WhileRequiresBeginEndBlock: true);
+
     [Fact]
     public void WithIfElse_WithNoBeginEndRequired_WhenNotUsingBeginEnd_ThenOk()
     {
@@ -21,7 +24,7 @@ public sealed class MissingBeginEndAnalyzerTests(ITestOutputHelper testOutputHel
                                 PRINT '303'
                             """;
 
-        Verify(Settings.NoBeginEndRequired, code);
+        Verify(NoBeginEndRequiredSettings, code);
     }
 
     [Fact]
@@ -41,7 +44,7 @@ public sealed class MissingBeginEndAnalyzerTests(ITestOutputHelper testOutputHel
                             END
                             """;
 
-        Verify(Settings.NoBeginEndRequired, code);
+        Verify(NoBeginEndRequiredSettings, code);
     }
 
     [Fact]
@@ -56,7 +59,7 @@ public sealed class MissingBeginEndAnalyzerTests(ITestOutputHelper testOutputHel
                                 PRINT 'tb'
                             END
                             """;
-        Verify(Settings.NoBeginEndRequired, code);
+        Verify(NoBeginEndRequiredSettings, code);
     }
 
     [Fact]
@@ -69,7 +72,7 @@ public sealed class MissingBeginEndAnalyzerTests(ITestOutputHelper testOutputHel
                             WHILE (1=1)
                                 PRINT 'tb-303'
                             """;
-        Verify(Settings.NoBeginEndRequired, code);
+        Verify(NoBeginEndRequiredSettings, code);
     }
 
     [Fact]
@@ -84,7 +87,7 @@ public sealed class MissingBeginEndAnalyzerTests(ITestOutputHelper testOutputHel
                             ELSE
                                 ▶️AJ5022💛script_0.sql💛💛ELSE✅PRINT '303'◀️
                             """;
-        Verify(Settings.BeginEndRequired, code);
+        Verify(BeginEndRequiredSettings, code);
     }
 
     [Fact]
@@ -103,7 +106,7 @@ public sealed class MissingBeginEndAnalyzerTests(ITestOutputHelper testOutputHel
                                 PRINT '303'
                             END
                             """;
-        Verify(Settings.BeginEndRequired, code);
+        Verify(BeginEndRequiredSettings, code);
     }
 
     [Fact]
@@ -116,7 +119,7 @@ public sealed class MissingBeginEndAnalyzerTests(ITestOutputHelper testOutputHel
                             WHILE (1=1)
                                 ▶️AJ5022💛script_0.sql💛💛WHILE✅PRINT 'tb-303'◀️
                             """;
-        Verify(Settings.BeginEndRequired, code);
+        Verify(BeginEndRequiredSettings, code);
     }
 
     [Fact]
@@ -131,12 +134,6 @@ public sealed class MissingBeginEndAnalyzerTests(ITestOutputHelper testOutputHel
                                 PRINT 'tb-303'
                             END
                             """;
-        Verify(Settings.BeginEndRequired, code);
-    }
-
-    private static class Settings
-    {
-        public static Aj5022Settings NoBeginEndRequired { get; } = new(IfRequiresBeginEndBlock: false, WhileRequiresBeginEndBlock: false);
-        public static Aj5022Settings BeginEndRequired { get; } = new(IfRequiresBeginEndBlock: true, WhileRequiresBeginEndBlock: true);
+        Verify(BeginEndRequiredSettings, code);
     }
 }

@@ -1,5 +1,6 @@
 USE [database-1]
 GO
+
 CREATE TABLE Table1
 (
     Id INT IDENTITY(1, 1) PRIMARY KEY,

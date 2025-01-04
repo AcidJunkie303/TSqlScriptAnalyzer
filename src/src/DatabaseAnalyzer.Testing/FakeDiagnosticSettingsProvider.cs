@@ -19,6 +19,6 @@ internal sealed class FakeDiagnosticSettingsProvider : IDiagnosticSettingsProvid
             throw new InvalidOperationException($"The settings provider for diagnostic '{TSettings.DiagnosticId}' returned null!");
         }
 
-        return (TSettings)settings;
+        return (TSettings) settings;
     }
 }
