@@ -2,11 +2,13 @@
 
     <PropertyGroup>
         <IsTestProject>true</IsTestProject>
+        <IsPackable>false</IsPackable>
+        <NoWarn>$(NoWarn);MA0004;CA2007</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\DatabaseAnalyzer.Contracts.DefaultImplementations\DatabaseAnalyzer.Contracts.DefaultImplementations.csproj"/>
         <ProjectReference Include="..\DatabaseAnalyzer.Contracts\DatabaseAnalyzer.Contracts.csproj"/>
+        <ProjectReference Include="..\DatabaseAnalyzers.DefaultAnalyzers\DatabaseAnalyzers.DefaultAnalyzers.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -14,8 +16,13 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Extensions\"/>
-        <Folder Include="Services\"/>
+        <None Update="docs\source\*">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="Xunit"/>
     </ItemGroup>
 
 </Project>

@@ -68,10 +68,12 @@ public static class CollectionExtensions
     public static IEnumerable<T> NullIfEmpty<T>(this IEnumerable<T>? items)
         => items ?? [];
 
+    [OverloadResolutionPriority(2)]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsNullOrEmpty<T>([NotNullWhen(false)] this IReadOnlyCollection<T>? items)
         => items is null || items.Count == 0;
 
+    [OverloadResolutionPriority(1)]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsNullOrEmpty<T>([NotNullWhen(false)] this ICollection<T>? items)
         => items is null || items.Count == 0;
