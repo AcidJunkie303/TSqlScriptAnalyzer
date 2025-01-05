@@ -1,6 +1,6 @@
 # {DiagnosticId} : {Title}
 
-# Diagnostic Definition
+## Diagnostic Definition
 
 <table>
   <tr>
@@ -22,7 +22,7 @@
   {InsertionStrings}
 </table>
 
-# Details
+## Details
 
 {Main}
 

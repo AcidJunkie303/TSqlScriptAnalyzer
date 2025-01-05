@@ -1,7 +1,7 @@
-# Settings
+##~~~~ Settings
 
 {SettingsJson}
 
-## Properties
+### Properties
 
 {SettingsProperties}
