@@ -54,6 +54,7 @@ public sealed class VariableReferenceWithDifferentCasingAnalyzer : IScriptAnalyz
             IssueType.Warning,
             "Variable reference with different casing",
             "The variable reference '{0}' has different casing compared to the declaration '{1}'.",
+            ["Variable name", "Declared variable name"],
             new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
     }

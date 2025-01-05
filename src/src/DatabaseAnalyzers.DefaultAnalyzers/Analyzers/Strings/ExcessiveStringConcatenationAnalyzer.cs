@@ -106,6 +106,7 @@ public sealed class ExcessiveStringConcatenationAnalyzer : IScriptAnalyzer
             IssueType.Warning,
             "Excessive string concatenations",
             "More than {0} allowed string concatenations",
+            ["Maximum allowed string concatenations"],
             new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
     }

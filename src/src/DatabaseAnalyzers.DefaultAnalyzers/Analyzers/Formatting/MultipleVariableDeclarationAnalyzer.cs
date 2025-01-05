@@ -36,6 +36,7 @@ public sealed class MultipleVariableDeclarationAnalyzer : IScriptAnalyzer
             IssueType.Formatting,
             "Multiple variable declaration on same line",
             "Multiple variables should be declared on separate lines using a separate DECLARE statement.",
+            [],
             new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
     }

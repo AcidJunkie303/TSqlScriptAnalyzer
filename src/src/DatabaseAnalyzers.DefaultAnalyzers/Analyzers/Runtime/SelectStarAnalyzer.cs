@@ -74,6 +74,7 @@ public sealed class SelectStarAnalyzer : IScriptAnalyzer
             IssueType.Warning,
             "Usage of 'SELECT *' ",
             "Usage of 'SELECT *' from a non-CTE or non-derived table source",
+            [],
             new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
     }

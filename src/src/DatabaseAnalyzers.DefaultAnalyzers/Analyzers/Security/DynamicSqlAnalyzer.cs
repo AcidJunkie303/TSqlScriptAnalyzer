@@ -53,6 +53,7 @@ public sealed class DynamicSqlAnalyzer : IScriptAnalyzer
             IssueType.Warning,
             "Dynamic SQL",
             "Executing dynamic or external provided SQL can be dangerous and should be avoided.",
+            [],
             new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
     }

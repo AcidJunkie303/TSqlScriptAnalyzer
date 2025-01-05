@@ -19,10 +19,7 @@
     <td class="header"><b>Message Template</b></td>
     <td>{MessageTemplate}</td>
   </tr>
-  <tr>
-    <td class="header"><b>Insertion String Count</b></td>
-    <td>{InsertionStringCount}</td>
-  </tr>
+  {InsertionStrings}
 </table>
 
 # Details

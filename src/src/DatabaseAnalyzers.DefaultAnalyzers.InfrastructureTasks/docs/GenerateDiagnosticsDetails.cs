@@ -8,6 +8,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.InfrastructureTasks.Docs;
 
 public sealed class GenerateDiagnosticsDetails
 {
+    private readonly string _insertionStringRowTemplate;
     private readonly string _noSettingsContents;
     private readonly string _settingsTemplate;
     private readonly string _template;
@@ -17,10 +18,12 @@ public sealed class GenerateDiagnosticsDetails
         const string templateFilePath = @".\docs\source\_DiagnosticDetailTemplate.md";
         const string settingsFilePath = @".\docs\source\_Settings.md";
         const string noSettingsFilePath = @".\docs\source\_NoSettings.md";
+        const string insertionStringRowTemplateFilePath = @".\docs\source\_InsertionStringRowTemplate.md";
 
-        _template = File.ReadAllText(templateFilePath);
+        _insertionStringRowTemplate = File.ReadAllText(insertionStringRowTemplateFilePath);
         _noSettingsContents = File.ReadAllText(noSettingsFilePath);
         _settingsTemplate = File.ReadAllText(settingsFilePath);
+        _template = File.ReadAllText(templateFilePath);
     }
 
     [Fact]
@@ -54,11 +57,19 @@ public sealed class GenerateDiagnosticsDetails
             .Replace("{Title}", definition.Title, StringComparison.Ordinal)
             .Replace("{MessageTemplate}", definition.MessageTemplate, StringComparison.Ordinal)
             .Replace("{IssueType}", definition.IssueType.ToString(), StringComparison.Ordinal)
-            .Replace("{InsertionStringCount}", definition.RequiredInsertionStringCount.ToString(CultureInfo.InvariantCulture), StringComparison.Ordinal);
+            .Replace("{InsertionStrings}", GetInsertionStringRows(definition), StringComparison.Ordinal);
 
         var path = $@"..\..\..\..\..\..\docs\diagnostics\{definition.DiagnosticId.ToUpperInvariant()}.md";
         await File.WriteAllTextAsync(path, contents);
     }
+
+    private string GetInsertionStringRows(IDiagnosticDefinition definition)
+        => definition.InsertionStringDescriptions
+            .Select((str, index) => _insertionStringRowTemplate
+                .Replace("{Index}", index.ToString(CultureInfo.InvariantCulture), StringComparison.Ordinal)
+                .Replace("{Description}", str, StringComparison.Ordinal)
+            )
+            .StringJoin(string.Empty);
 
     private async Task<string> GetSettingsContentsAsync(IDiagnosticDefinition definition, List<SettingsInformationProvider.PropertyDescriber>? settingsPropertyDescribers)
     {

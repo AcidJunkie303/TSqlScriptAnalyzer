@@ -38,6 +38,7 @@ public sealed class TabCharacterAnalyzer : IScriptAnalyzer
             IssueType.Formatting,
             "Tab character",
             "Tab character.",
+            [],
             new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
     }

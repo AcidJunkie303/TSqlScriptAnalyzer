@@ -135,7 +135,7 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
             1 -> Schema name
             2 -> Table name
             3 -> Column name
-            4 -> Relative script file name containing the table creation statement
+            4 -> Relative script file path containing the table creation statement
         */
         public static DiagnosticDefinition FilteringColumnNotIndexed { get; } = new
         (
@@ -143,6 +143,7 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
             IssueType.MissingIndex,
             "Missing Index",
             "The column '{0}.{1}.{2}.{3}' defined in script '{4}' is not indexed but used as column filtering predicate.",
+            ["Table name", "Schema name", "Table name", "Column name", "Relative script file path"],
             new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
 
@@ -151,7 +152,7 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
             1 -> Schema name
             2 -> Table name
             3 -> Column name
-            4 -> Relative script file name containing the table creation statement
+            4 -> Relative script file path containing the table creation statement
         */
         public static DiagnosticDefinition ForeignKeyColumnNotIndexed { get; } = new
         (
@@ -159,6 +160,7 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
             IssueType.MissingIndex,
             "Missing Index",
             "The foreign-key column '{0}.{1}.{2}.{3}' is not indexed. Although this columns might not be used for filtering directly, it is still recommended to create an index on it because it will improve performance when checking for referential integrity when deleting columns from the table being referenced for example.",
+            ["Table name", "Schema name", "Table name", "Column name", "Relative script file path"],
             new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
     }

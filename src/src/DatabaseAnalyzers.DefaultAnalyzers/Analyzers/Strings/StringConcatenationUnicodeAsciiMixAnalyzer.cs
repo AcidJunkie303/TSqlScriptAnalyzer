@@ -98,6 +98,7 @@ public sealed class StringConcatenationUnicodeAsciiMixAnalyzer : IScriptAnalyzer
             IssueType.Warning,
             "Unicode/ASCII string mix",
             "Concatenating Unicode and ASCII strings",
+            [],
             new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
     }

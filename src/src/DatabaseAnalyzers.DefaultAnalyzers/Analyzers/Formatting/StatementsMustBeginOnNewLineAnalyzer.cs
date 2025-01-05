@@ -62,6 +62,7 @@ public sealed class StatementsMustBeginOnNewLineAnalyzer : IScriptAnalyzer
             IssueType.Formatting,
             "Statements must begin on a new line",
             "Statements must begin on a new line.",
+            [],
             new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
     }

@@ -53,6 +53,7 @@ public sealed class MissingTableAliasAnalyzer : IScriptAnalyzer
             IssueType.Warning,
             "Missing table alias when more than two involved sources",
             "Missing alias in expression '{0}'.",
+            ["Expression"],
             new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
     }

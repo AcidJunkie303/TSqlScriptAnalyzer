@@ -71,6 +71,7 @@ public sealed class NamelessConstraintAnalyzer : IScriptAnalyzer
             IssueType.Formatting,
             "Nameless constraints",
             "Do not create nameless constraints. This will make schema comparison, execution plan comparison etc. more difficult.",
+            [],
             new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
     }

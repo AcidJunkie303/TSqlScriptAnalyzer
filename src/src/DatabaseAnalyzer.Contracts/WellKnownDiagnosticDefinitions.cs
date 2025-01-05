@@ -11,6 +11,7 @@ public static class WellKnownDiagnosticDefinitions
         IssueType.Warning,
         "The first statement in a script must be 'USE <DATABASE>'",
         "The very first statement in a script must be a 'USE' statements at location 1,1",
+        [],
         new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/AJ9000.md")
     );
 
@@ -21,6 +22,7 @@ public static class WellKnownDiagnosticDefinitions
         "Missing table alias",
         "The column expression {0} cannot be resolved when more than one data source (table, view, etc.) is involved in the statement. " +
         "To solve this issue, make sure that all data sources are using an alias.",
+        ["Column reference expression: [0]"],
         new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/AJ9001.md")
     );
 
@@ -30,6 +32,7 @@ public static class WellKnownDiagnosticDefinitions
         IssueType.Error,
         "Duplicate object creation statement",
         "The object '{0}' is created more than once. Script files: '{1}'.",
+        ["Object name", "Script file path"],
         new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/AJ9002.md")
     );
 
@@ -39,6 +42,7 @@ public static class WellKnownDiagnosticDefinitions
         IssueType.Error,
         "Error in script",
         "The script contains one or more errors: {0}.",
+        ["Error message"],
         new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/AJ9004.md")
     );
 
@@ -48,6 +52,7 @@ public static class WellKnownDiagnosticDefinitions
         IssueType.Error,
         "Analyzer error",
         "The analyzer '{0}' threw an exception: {1}.",
+        ["Analyzer name", "Exception message"],
         new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/AJ9999.md")
     );
 }

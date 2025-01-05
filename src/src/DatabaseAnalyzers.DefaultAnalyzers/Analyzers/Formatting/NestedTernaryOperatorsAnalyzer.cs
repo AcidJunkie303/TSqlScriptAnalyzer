@@ -36,6 +36,7 @@ public sealed class NestedTernaryOperatorsAnalyzer : IScriptAnalyzer
             IssueType.Warning,
             "Ternary operators should not be nested",
             "Ternary operators 'IIF' should not be nested.",
+            [],
             new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
     }

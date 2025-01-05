@@ -97,6 +97,7 @@ public sealed class MissingEmptyLineAroundGoStatementAnalyzer : IScriptAnalyzer
             IssueType.Formatting,
             "Missing empty line before/after GO batch separators",
             "Missing empty line {0} GO statement.",
+            ["Before/after"],
             new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
     }

@@ -6,6 +6,6 @@ public interface IDiagnosticDefinition : IEquatable<IDiagnosticDefinition>
     IssueType IssueType { get; }
     string Title { get; }
     string MessageTemplate { get; }
-    int RequiredInsertionStringCount { get; }
+    IReadOnlyList<string> InsertionStringDescriptions { get; }
     Uri HelpUrl { get; }
 }

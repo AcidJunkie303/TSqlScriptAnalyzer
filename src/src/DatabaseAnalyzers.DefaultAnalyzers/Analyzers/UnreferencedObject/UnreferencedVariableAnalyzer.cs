@@ -48,6 +48,7 @@ public sealed class UnreferencedVariableAnalyzer : IScriptAnalyzer
             IssueType.Warning,
             "Unreferenced variable",
             "The variable '{0}' is declared but not used",
+            ["Variable name"],
             new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
     }

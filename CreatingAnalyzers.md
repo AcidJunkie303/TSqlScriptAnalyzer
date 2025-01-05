@@ -196,7 +196,9 @@ public sealed class MissingBeginEndAnalyzer : IScriptAnalyzer
             "AJ5022",
             IssueType.Formatting,
             "Missing BEGIN/END blocks",
-            "The children of '{0}' should be enclosed in BEGIN/END blocks."
+            "The children of '{0}' should be enclosed in BEGIN/END blocks.",
+            ["Statement name"], // describes the insertion strings used above
+            new Uri("https://link.to.the.issue")
         );
     }
 }

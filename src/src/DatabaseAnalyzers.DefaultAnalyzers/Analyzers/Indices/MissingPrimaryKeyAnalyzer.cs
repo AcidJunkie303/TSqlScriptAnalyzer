@@ -51,6 +51,7 @@ public sealed class MissingPrimaryKeyAnalyzer : IGlobalAnalyzer
             IssueType.Warning,
             "Table has no primary key",
             "The table '{0}' has no primary key defined.",
+            ["Table name"],
             new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
     }
