@@ -26,6 +26,7 @@ A framework to analyze multiple T-SQL script files
 - table alias naming analyzer (small only etc. -> regex)
 - XML or JSON string extraction of banned types -> integrate into banned type analyzer
 - Foreign key constraint creation without specifying the source table schema name
+- empty line after BEGIN/END block
 
 ### Resiliency / Robustness
 

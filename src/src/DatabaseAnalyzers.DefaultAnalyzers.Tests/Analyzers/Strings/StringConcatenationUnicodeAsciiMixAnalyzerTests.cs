@@ -78,4 +78,38 @@ public sealed class StringConcatenationUnicodeAsciiMixAnalyzerTests(ITestOutputH
 
         Verify(code);
     }
+
+    [Fact]
+    public void WithVariablesAndLiterals_WhenAllAreOfSameType_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+                            IF (1=1)
+                            BEGIN
+                                DECLARE @a NVARCHAR(128)
+                            END
+
+                            SET @x = @a + N'Hello'
+                            """;
+
+        Verify(code);
+    }
+
+    [Fact]
+    public void WithVariablesAndLiterals_WhenNotAllAreOfSameType_ThenDiagnose()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+                            IF (1=1)
+                            BEGIN
+                                DECLARE @a NVARCHAR(128)
+                            END
+
+                            SET @x = ▶️AJ5002💛script_0.sql💛✅@a + 'Hello'◀️
+                            """;
+
+        Verify(code);
+    }
 }

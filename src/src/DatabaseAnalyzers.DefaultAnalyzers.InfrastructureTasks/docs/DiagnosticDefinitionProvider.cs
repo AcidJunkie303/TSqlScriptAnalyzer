@@ -18,6 +18,11 @@ internal static class DiagnosticDefinitionProvider
         {
             foreach (var definition in GetDiagnosticDefinitionsFromType(type))
             {
+                if (!definition.DiagnosticId.StartsWith("AJ", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
                 yield return definition;
             }
         }

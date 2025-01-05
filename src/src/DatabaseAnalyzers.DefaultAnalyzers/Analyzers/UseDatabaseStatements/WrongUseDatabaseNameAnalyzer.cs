@@ -55,7 +55,7 @@ public sealed class WrongUseDatabaseNameAnalyzer : IScriptAnalyzer
         (
             "AJ5003",
             IssueType.Warning,
-            "Wrong database name in 'USE DATABASE'",
+            "Wrong database name in 'USE' statement",
             "Wrong database name in 'USE {0}'. Expected is 'USE {1}'",
             new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );

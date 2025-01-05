@@ -1,4 +1,5 @@
-﻿using BetterConsoleTables;
+﻿using System.Globalization;
+using BetterConsoleTables;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using FluentAssertions;
@@ -7,12 +8,26 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.InfrastructureTasks.Docs;
 
 public sealed class GenerateDiagnosticsDetails
 {
+    private readonly string _noSettingsContents;
+    private readonly string _settingsTemplate;
+    private readonly string _template;
+
+    public GenerateDiagnosticsDetails()
+    {
+        const string templateFilePath = @".\docs\source\_DiagnosticDetailTemplate.md";
+        const string settingsFilePath = @".\docs\source\_Settings.md";
+        const string noSettingsFilePath = @".\docs\source\_NoSettings.md";
+
+        _template = File.ReadAllText(templateFilePath);
+        _noSettingsContents = File.ReadAllText(noSettingsFilePath);
+        _settingsTemplate = File.ReadAllText(settingsFilePath);
+    }
+
     [Fact]
     public async Task CreateAsync()
     {
-        const string templateFilePath = @".\docs\source\_DiagnosticDetailTemplate.md";
         var propertyDescriptionsByDiagnosticSettings = SettingsInformationProvider.GetPropertyDescriptionsByDiagnosticSettings();
-        var template = await File.ReadAllTextAsync(templateFilePath);
+
         var definitions = DiagnosticDefinitionProvider
             .GetDefinitionsFromAssemblies()
             .OrderBy(a => a.DiagnosticId, StringComparer.OrdinalIgnoreCase);
@@ -20,10 +35,49 @@ public sealed class GenerateDiagnosticsDetails
         foreach (var diagnostic in definitions)
         {
             var propertyDescribers = propertyDescriptionsByDiagnosticSettings.GetValueOrDefault(diagnostic.DiagnosticId);
-            await CreatDiagnosticFileAsync(diagnostic, template, propertyDescribers);
+            await CreatDiagnosticFileAsync(diagnostic, propertyDescribers);
         }
 
         true.Should().BeTrue();
+    }
+
+    private async Task CreatDiagnosticFileAsync(IDiagnosticDefinition definition, List<SettingsInformationProvider.PropertyDescriber>? settingsPropertyDescribers)
+    {
+        var mainFileContents = await GetDiagnosticDetailMainFileContentsAsync(definition);
+        var settingsFileContents = await GetSettingsContentsAsync(definition, settingsPropertyDescribers);
+        var contents = _template
+            .Replace("{DiagnosticId}", definition.DiagnosticId, StringComparison.Ordinal)
+            .Replace("{Title}", definition.Title, StringComparison.Ordinal)
+            .Replace("{Main}", mainFileContents, StringComparison.Ordinal)
+            .Replace("{Settings}", settingsFileContents, StringComparison.Ordinal)
+            .Replace("{DiagnosticId}", definition.DiagnosticId, StringComparison.Ordinal)
+            .Replace("{Title}", definition.Title, StringComparison.Ordinal)
+            .Replace("{MessageTemplate}", definition.MessageTemplate, StringComparison.Ordinal)
+            .Replace("{IssueType}", definition.IssueType.ToString(), StringComparison.Ordinal)
+            .Replace("{InsertionStringCount}", definition.RequiredInsertionStringCount.ToString(CultureInfo.InvariantCulture), StringComparison.Ordinal);
+
+        var path = $@"..\..\..\..\..\..\docs\diagnostics\{definition.DiagnosticId.ToUpperInvariant()}.md";
+        await File.WriteAllTextAsync(path, contents);
+    }
+
+    private async Task<string> GetSettingsContentsAsync(IDiagnosticDefinition definition, List<SettingsInformationProvider.PropertyDescriber>? settingsPropertyDescribers)
+    {
+        var settingsContents = await GetDiagnosticDetailSettingsFileContentsAsync(definition);
+        if (settingsContents.IsNullOrWhiteSpace())
+        {
+            return _noSettingsContents;
+        }
+
+        if (settingsPropertyDescribers.IsNullOrEmpty())
+        {
+            return _noSettingsContents;
+        }
+
+        var propertiesTable = CreateSettingsPropertiesTable(settingsPropertyDescribers);
+
+        return _settingsTemplate
+            .Replace("{SettingsJson}", settingsContents, StringComparison.Ordinal)
+            .Replace("{SettingsProperties}", propertiesTable, StringComparison.Ordinal);
     }
 
     private static string CreateSettingsPropertiesTable(List<SettingsInformationProvider.PropertyDescriber> propertyDescribers)
@@ -42,24 +96,6 @@ public sealed class GenerateDiagnosticsDetails
         return table.ToString();
     }
 
-    private static async Task CreatDiagnosticFileAsync(IDiagnosticDefinition definition, string template, List<SettingsInformationProvider.PropertyDescriber>? settingsPropertyDescribers)
-    {
-        var mainFileContents = await GetDiagnosticDetailMainFileContentsAsync(definition);
-        var settingsFileContents = await GetDiagnosticDetailSettingsFileContentsAsync(definition);
-        var settingsPropertiesTable = settingsPropertyDescribers.IsNullOrEmpty()
-            ? "*none*"
-            : CreateSettingsPropertiesTable(settingsPropertyDescribers);
-        var contents = template
-            .Replace("{DiagnosticId}", definition.DiagnosticId, StringComparison.Ordinal)
-            .Replace("{Title}", definition.Title, StringComparison.Ordinal)
-            .Replace("{Main}", mainFileContents, StringComparison.Ordinal)
-            .Replace("{Settings}", settingsFileContents, StringComparison.Ordinal)
-            .Replace("{SettingsProperties}", settingsPropertiesTable, StringComparison.Ordinal);
-
-        var path = $@"..\..\..\..\..\..\docs\diagnostics\{definition.DiagnosticId.ToUpperInvariant()}.md";
-        await File.WriteAllTextAsync(path, contents);
-    }
-
     private static async Task<string> GetDiagnosticDetailMainFileContentsAsync(IDiagnosticDefinition definition)
     {
         var path = $@".\docs\source\{definition.DiagnosticId.ToUpperInvariant()}.main.md";
@@ -73,6 +109,6 @@ public sealed class GenerateDiagnosticsDetails
         var path = $@".\docs\source\{definition.DiagnosticId.ToUpperInvariant()}.settings.md";
         return File.Exists(path)
             ? await File.ReadAllTextAsync(path)
-            : "*none*";
+            : string.Empty;
     }
 }

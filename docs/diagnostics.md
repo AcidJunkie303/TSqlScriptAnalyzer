@@ -11,7 +11,7 @@
 | [AJ5000](diagnostics/AJ5000.md) | Dynamic SQL                                                   | Warning      |
 | [AJ5001](diagnostics/AJ5001.md) | Excessive string concatenations                               | Warning      |
 | [AJ5002](diagnostics/AJ5002.md) | Unicode/ASCII string mix                                      | Warning      |
-| [AJ5003](diagnostics/AJ5003.md) | Wrong database name in 'USE DATABASE'                         | Warning      |
+| [AJ5003](diagnostics/AJ5003.md) | Wrong database name in 'USE' statement                        | Warning      |
 | [AJ5004](diagnostics/AJ5004.md) | Open Item                                                     | Warning      |
 | [AJ5006](diagnostics/AJ5006.md) | Usage of banned data type                                     | Warning      |
 | [AJ5007](diagnostics/AJ5007.md) | Multiple empty lines                                          | Formatting   |
