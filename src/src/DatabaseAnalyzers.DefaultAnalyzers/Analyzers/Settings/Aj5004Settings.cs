@@ -1,4 +1,5 @@
 using System.Collections.Frozen;
+using System.ComponentModel;
 using System.Text.RegularExpressions;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
@@ -22,6 +23,7 @@ internal sealed class Aj5004SettingsRaw : IRawSettings<Aj5004Settings>
 }
 
 internal sealed record Aj5004Settings(
+    [property: Description("The regular expressions to check comments for. The dictionary key is the regular expression and the value is the topic. Both, message and topic will be reported to the issue raised.")]
     IReadOnlyDictionary<Regex, string> TopicsByPattern
 ) : ISettings<Aj5004Settings>
 {
