@@ -35,7 +35,7 @@
 | [AJ5027](diagnostics/AJ5027.md) | Table has no clustered index                                            | Warning      |
 | [AJ5028](diagnostics/AJ5028.md) | Semicolon is not necessary                                              | Warning      |
 | [AJ5029](diagnostics/AJ5029.md) | The first statement in a procedure should be 'SET NOCOUNT ON'           | Warning      |
-| [AJ5030](diagnostics/AJ5030.md) | Object name violates naming conventions                                 | Warning      |
+| [AJ5030](diagnostics/AJ5030.md) | Object name violates naming convention                                  | Warning      |
 | [AJ5031](diagnostics/AJ5031.md) | Redundant pair of parentheses                                           | Warning      |
 | [AJ5032](diagnostics/AJ5032.md) | Non-standard comparison operator                                        | Warning      |
 | [AJ5033](diagnostics/AJ5033.md) | Ternary operators should not be nested                                  | Warning      |

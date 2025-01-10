@@ -23,7 +23,7 @@ internal sealed class Aj5026SettingsRaw : IRawSettings<Aj5026Settings>
 }
 
 internal sealed record Aj5026Settings(
-    [property: Description("Full table names (database.schema.table) to ignore. Wildcards like `*` and `?` are supported.")]
+    [property: Description("Full table names (`database`.`schema`.`table`) to ignore. Wildcards like `*` and `?` are supported.")]
     IReadOnlyList<Regex> FullTableNamesToIgnore
 ) : ISettings<Aj5026Settings>
 {

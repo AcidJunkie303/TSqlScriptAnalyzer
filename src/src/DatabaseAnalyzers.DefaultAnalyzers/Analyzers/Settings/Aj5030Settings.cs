@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Text.RegularExpressions;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
@@ -48,17 +49,28 @@ public sealed class Aj5030SettingsRaw : IRawSettings<Aj5030Settings>
 }
 
 public sealed record Aj5030Settings(
+    [property: Description("The naming policy for columns. " + Aj5030Settings.DescriptionSuffix)]
     Aj5030Settings.PatternEntry ColumnName,
+    [property: Description("The naming policy for functions. " + Aj5030Settings.DescriptionSuffix)]
     Aj5030Settings.PatternEntry FunctionName,
+    [property: Description("The naming policy for parameters. " + Aj5030Settings.DescriptionSuffix)]
     Aj5030Settings.PatternEntry ParameterName,
+    [property: Description("The naming policy for primary key constraints. " + Aj5030Settings.DescriptionSuffix)]
     Aj5030Settings.PatternEntry PrimaryKeyConstraintName,
+    [property: Description("The naming policy for procedures. " + Aj5030Settings.DescriptionSuffix)]
     Aj5030Settings.PatternEntry ProcedureName,
+    [property: Description("The naming policy for tables. " + Aj5030Settings.DescriptionSuffix)]
     Aj5030Settings.PatternEntry TableName,
+    [property: Description("The naming policy for triggers. " + Aj5030Settings.DescriptionSuffix)]
     Aj5030Settings.PatternEntry TriggerName,
+    [property: Description("The naming policy for variables. " + Aj5030Settings.DescriptionSuffix)]
     Aj5030Settings.PatternEntry VariableName,
+    [property: Description("The naming policy for views. " + Aj5030Settings.DescriptionSuffix)]
     Aj5030Settings.PatternEntry ViewName
 ) : ISettings<Aj5030Settings>
 {
+    private const string DescriptionSuffix = "It contains the properties `Pattern` and `Description`. The `Pattern` is a case sensitive regular expression and the `Description` contains the message which is reported in case of a violation. It should be a descriptive representation of the regular expression.";
+
     public static Aj5030Settings Default { get; } = new
     (
         new PatternEntry(Aj5030SettingsRaw.AlwaysMatchRegex, string.Empty),
