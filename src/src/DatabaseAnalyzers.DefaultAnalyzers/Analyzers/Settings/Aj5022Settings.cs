@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using DatabaseAnalyzer.Contracts;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
@@ -16,7 +17,9 @@ internal sealed class Aj5022SettingsRaw : IRawSettings<Aj5022Settings>
 }
 
 internal sealed record Aj5022Settings(
+    [property: Description("Indicates whether IF statements require BEGIN/END blocks. Default is true.")]
     bool IfRequiresBeginEndBlock,
+    [property: Description("Indicates whether WHILE statements require BEGIN/END blocks. Default is true.")]
     bool WhileRequiresBeginEndBlock
 ) : ISettings<Aj5022Settings>
 {

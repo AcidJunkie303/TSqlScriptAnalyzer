@@ -23,7 +23,6 @@ public sealed class MissingIndexAnalyzerTests(ITestOutputHelper testOutputHelper
         (
             Id            INT NOT NULL,                           -- not indexed
             Name          NVARCHAR(250) NOT NULL                  -- not indexed
-
         );
 
         CREATE TABLE Employee
@@ -32,18 +31,18 @@ public sealed class MissingIndexAnalyzerTests(ITestOutputHelper testOutputHelper
             Email         NVARCHAR(250)  NOT NULL,                -- NOT indexed
             FirstName     NVARCHAR(250)  NOT NULL,                -- indexed
             DepartmentId  INT NOT NULL,                           -- indexed, foreign key
-            RankId        INT NOT NULL                           -- NOT indexed, foreign key
+            RankId        INT NOT NULL                            -- NOT indexed, foreign key
         );
 
         CREATE NONCLUSTERED INDEX IX_Employee_FirstName ON dbo.Employee
         (
             FirstName ASC
-        )
+        );
 
         CREATE NONCLUSTERED INDEX IX_Employee_DepartmentId ON dbo.Employee
         (
             DepartmentId ASC
-        )
+        );
         """;
 
     [Fact]
@@ -79,7 +78,7 @@ public sealed class MissingIndexAnalyzerTests(ITestOutputHelper testOutputHelper
                                   BEGIN
                                       SELECT    *
                                       FROM      dbo.Employee
-                                      WHERE     ▶️AJ5015💛script_1.sql💛MyDb.dbo.P1💛MyDb💛dbo💛Employee💛Email💛script_1.sql✅Email◀️ = 'tb@303.com'
+                                      WHERE     ▶️AJ5015💛script_1.sql💛MyDb.dbo.P1💛MyDb💛dbo💛Employee💛Email💛script_0.sql💛(19,5) - (19,42)✅Email◀️ = 'tb@303.com'
                                   END
                                   """;
 
