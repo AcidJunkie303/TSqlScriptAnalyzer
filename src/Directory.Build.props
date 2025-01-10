@@ -24,7 +24,8 @@
         <!-- S1135      Already covered by MA0026 -->
         <!-- S3267      Loops should be simplified using the "Where" LINQ method -> we don't want to enforce it -->
         <!-- SA1600     Elements Must Be Documented-->
-        <NoWarn>CA1014;CA1032;CA1034;CA1062;CA1303;IDE0008;IDE0022;MA0045;NU1901;NU1902;NU1903;RCS1004;RCS1061;RCS1205;RCS1112;RCS1194;S1066;S1135;S3267;SA1600;</NoWarn>
+        <!-- S1075      Refactor your code not to use hardcoded absolute paths or URIs. -> All diagnostic definitions contain absolute paths. Cannot be changed-->
+        <NoWarn>CA1014;CA1032;CA1034;CA1062;CA1303;IDE0008;IDE0022;MA0045;NU1901;NU1902;NU1903;RCS1004;RCS1061;RCS1205;RCS1112;RCS1194;S1066;S1075;S1135;S3267;SA1600;</NoWarn>
 
         <!-- MA0025: NotImplementedException are like TODOs they should be warning only -->
         <!-- MA0026: We know TODO items should be tackled, let's not create Errors for them -->
@@ -48,7 +49,7 @@
 
     <!-- C# Analyzers -->
     <ItemGroup>
-        <PackageReference Include="Meziantou.Analyzer" Version="2.0.184">
+        <PackageReference Include="Meziantou.Analyzer" Version="2.0.185">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
@@ -81,8 +82,8 @@
     <ItemGroup Condition="'$(IsTestProject)' == 'true'">
         <PackageReference Include="FluentAssertions" Version="7.0.0"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0"/>
-        <PackageReference Include="xunit" Version="2.9.2"/>
-        <PackageReference Include="xunit.runner.visualstudio" Version="3.0.0" privateAssets="all"/>
+        <PackageReference Include="xunit" Version="2.9.3"/>
+        <PackageReference Include="xunit.runner.visualstudio" Version="3.0.1" privateAssets="all"/>
         <PackageReference Include="JunitXml.TestLogger" Version="5.0.0"/>
         <PackageReference Include="coverlet.collector" Version="6.0.3">
             <PrivateAssets>all</PrivateAssets>

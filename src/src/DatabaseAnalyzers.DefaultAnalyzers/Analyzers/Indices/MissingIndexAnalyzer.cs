@@ -143,7 +143,7 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
             IssueType.MissingIndex,
             "Missing Index",
             "The column '{0}.{1}.{2}.{3}' defined in script '{4}' is not indexed but used as column filtering predicate.",
-            ["Table name", "Schema name", "Table name", "Column name", "Relative script file path"],
+            ["Database name", "Schema name", "Table name", "Column name", "Relative script file path"],
             new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
 

@@ -39,6 +39,10 @@
       "BannedProcedureParameterDataTypes": [
         "decimal", // use numeric because decimal is a synonym for numeric
         "varchar" // use nvarchar instead
+      ],
+      "BannedScriptVariableDataTypes": [
+        "decimal", // use numeric because decimal is a synonym for numeric
+        "varchar" // use nvarchar instead
       ]
     },
     "AJ5015": { // Missing index on column being filtered
