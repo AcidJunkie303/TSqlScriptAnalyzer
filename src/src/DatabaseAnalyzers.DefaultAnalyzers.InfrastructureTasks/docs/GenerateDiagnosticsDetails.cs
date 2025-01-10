@@ -85,10 +85,12 @@ public sealed class GenerateDiagnosticsDetails
         }
 
         var propertiesTable = CreateSettingsPropertiesTable(settingsPropertyDescribers);
+        var postSettings = await GetPostSettingsContentsAsync(definition);
 
         return _settingsTemplate
             .Replace("{SettingsJson}", settingsContents, StringComparison.Ordinal)
-            .Replace("{SettingsProperties}", propertiesTable, StringComparison.Ordinal);
+            .Replace("{SettingsProperties}", propertiesTable, StringComparison.Ordinal)
+            .Replace("{PostSettings}", postSettings, StringComparison.Ordinal);
     }
 
     private static string CreateSettingsPropertiesTable(List<SettingsInformationProvider.PropertyDescriber> propertyDescribers)
@@ -118,6 +120,14 @@ public sealed class GenerateDiagnosticsDetails
     private static async Task<string> GetDiagnosticDetailSettingsFileContentsAsync(IDiagnosticDefinition definition)
     {
         var path = $@".\docs\source\{definition.DiagnosticId.ToUpperInvariant()}.settings.md";
+        return File.Exists(path)
+            ? await File.ReadAllTextAsync(path)
+            : string.Empty;
+    }
+
+    private static async Task<string> GetPostSettingsContentsAsync(IDiagnosticDefinition definition)
+    {
+        var path = $@".\docs\source\{definition.DiagnosticId.ToUpperInvariant()}.settings-post.md";
         return File.Exists(path)
             ? await File.ReadAllTextAsync(path)
             : string.Empty;

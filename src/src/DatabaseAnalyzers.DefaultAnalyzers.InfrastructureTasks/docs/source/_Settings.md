@@ -5,3 +5,5 @@
 ### Properties
 
 {SettingsProperties}
+
+{PostSettings}
