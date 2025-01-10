@@ -40,7 +40,7 @@ public sealed class UnreferencedVariableAnalyzerTests(ITestOutputHelper testOutp
                             GO
                             -- Variable not referenced in this batch
                             DECLARE ▶️AJ5012💛script_0.sql💛💛@Var1✅@Var1 INT = 303◀️
-                            PRINT 'Hello'
+                                                                     PRINT 'Hello'
                             GO
 
                             -- Variable referenced in this batch

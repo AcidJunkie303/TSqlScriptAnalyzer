@@ -4,7 +4,8 @@ using Xunit.Abstractions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Formatting;
 
-public sealed class MissingBlankSpaceAnalyzerTests(ITestOutputHelper testOutputHelper) : ScriptAnalyzerTestsBase<MissingBlankSpaceAnalyzer>(testOutputHelper)
+public sealed class MissingBlankSpaceAnalyzerTests(ITestOutputHelper testOutputHelper)
+    : ScriptAnalyzerTestsBase<MissingBlankSpaceAnalyzer>(testOutputHelper)
 {
     [Fact]
     public void WhenBlankSpaceAfterComma_ThenOk()
