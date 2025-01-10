@@ -28,7 +28,7 @@ internal sealed class Aj5003SettingsRaw : IRawSettings<Aj5003Settings>
 }
 
 internal sealed record Aj5003Settings(
-    [property: Description("Script file path patterns to exclude. Wildcards like '*' and '?' are supported.")]
+    [property: Description("Script file path patterns to exclude. Wildcards like `*` and `?` are supported.")]
     IReadOnlyList<Regex> ExcludedFilePathPatterns
 ) : ISettings<Aj5003Settings>
 {

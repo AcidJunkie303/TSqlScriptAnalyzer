@@ -18,7 +18,7 @@ internal sealed class Aj5015SettingsRaw : IRawSettings<Aj5015Settings>
 }
 
 internal sealed record Aj5015Settings(
-    [property: Description("List of of suppressed missing index warnings. For 'FullColumnNamePattern', wildcards like '*' and '?' are supported.")]
+    [property: Description("List of of suppressed missing index warnings. For 'FullColumnNamePattern', Wildcards like `*` and `?` are supported.")]
     IReadOnlyList<MissingIndexSuppressionSettings> MissingIndexSuppressions
 ) : ISettings<Aj5015Settings>
 {

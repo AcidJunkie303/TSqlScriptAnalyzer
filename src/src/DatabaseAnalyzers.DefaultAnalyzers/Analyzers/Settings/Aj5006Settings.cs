@@ -32,13 +32,13 @@ internal sealed class Aj5006SettingsRaw : IRawSettings<Aj5006Settings>
 }
 
 internal sealed record Aj5006Settings(
-    [property: Description("Banned data types for columns. Wildcards like '*' and '?' are supported.")]
+    [property: Description("Banned data types for columns. Wildcards like `*` and `?` are supported.")]
     IReadOnlyCollection<Regex> BannedColumnDataTypes,
-    [property: Description("Banned data types function parameters. Wildcards like '*' and '?' are supported.")]
+    [property: Description("Banned data types function parameters. Wildcards like `*` and `?` are supported.")]
     IReadOnlyCollection<Regex> BannedFunctionParameterDataTypes,
-    [property: Description("Banned data types for procedure parameters. Wildcards like '*' and '?' are supported.")]
+    [property: Description("Banned data types for procedure parameters. Wildcards like `*` and `?` are supported.")]
     IReadOnlyCollection<Regex> BannedProcedureParameterDataTypes,
-    [property: Description("Banned data types for variables. Wildcards like '*' and '?' are supported.")]
+    [property: Description("Banned data types for variables. Wildcards like `*` and `?` are supported.")]
     IReadOnlyCollection<Regex> BannedScriptVariableDataTypes
 ) : ISettings<Aj5006Settings>
 {
