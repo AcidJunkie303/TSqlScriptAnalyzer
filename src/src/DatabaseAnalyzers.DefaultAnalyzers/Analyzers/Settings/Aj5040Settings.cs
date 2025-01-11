@@ -1,4 +1,5 @@
 using System.Collections.Frozen;
+using System.ComponentModel;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 
@@ -23,6 +24,7 @@ internal sealed class Aj5040SettingsRaw : IRawSettings<Aj5040Settings>
 }
 
 internal sealed record Aj5040Settings(
+    [property: Description("Banned function names. The key is the function name itself and the value is the bann-reason.")]
     IReadOnlyDictionary<string, string> BannedFunctionNamesByReason
 ) : ISettings<Aj5040Settings>
 {

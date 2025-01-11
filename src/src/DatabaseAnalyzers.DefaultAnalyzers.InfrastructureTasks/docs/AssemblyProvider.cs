@@ -8,7 +8,7 @@ internal static class AssemblyProvider
 {
     public static IEnumerable<Assembly> GetAssemblies() =>
     [
-        typeof(IDiagnosticDefinition).Assembly,
-        typeof(ExcessiveStringConcatenationAnalyzer).Assembly
+        typeof(IDiagnosticDefinition).Assembly, // Contracts
+        typeof(ExcessiveStringConcatenationAnalyzer).Assembly // DefaultAnalyzers
     ];
 }

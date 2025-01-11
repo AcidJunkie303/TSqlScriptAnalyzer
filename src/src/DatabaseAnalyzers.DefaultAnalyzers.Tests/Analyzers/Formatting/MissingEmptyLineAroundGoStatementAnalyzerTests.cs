@@ -73,4 +73,18 @@ public sealed class MissingEmptyLineAroundGoStatementAnalyzerTests(ITestOutputHe
 
         Verify(RequiredAfterSettings, code);
     }
+
+    [Fact]
+    public void WithRequiredNewLineAfter_WhenJustCommentLineAfter_ThenDiagnose()
+    {
+        const string code = """
+                            USE MyDb
+
+                            ▶️AJ5045💛script_0.sql💛💛after✅GO◀️
+                            -- some comments
+                            PRINT 303
+                            """;
+
+        Verify(RequiredAfterSettings, code);
+    }
 }
