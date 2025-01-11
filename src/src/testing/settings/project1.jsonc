@@ -139,6 +139,10 @@
       "NameQuotingPolicyForTableReferences": "SquareBracketsRequired",
       "NameQuotingPolicyForDataTypes": "Undefined"
     },
+    "AJ5040": { // Empty lines before/after GO statement
+      "RequireEmptyLineBeforeGo": false,
+      "RequireEmptyLineAfterGo": true
+    },
     "AJ5045": { // Empty lines before/after GO statement
       "RequireEmptyLineBeforeGo": false,
       "RequireEmptyLineAfterGo": true
