@@ -16,7 +16,7 @@
 | [AJ5006](diagnostics/AJ5006.md) | Usage of banned data type                                               | Warning      |
 | [AJ5007](diagnostics/AJ5007.md) | Multiple empty lines                                                    | Formatting   |
 | [AJ5008](diagnostics/AJ5008.md) | Tab character                                                           | Formatting   |
-| [AJ5009](diagnostics/AJ5009.md) | Object creation without 'OR ALTER' clause                               | Formatting   |
+| [AJ5009](diagnostics/AJ5009.md) | Object creation without `OR ALTER` clause                               | Warning      |
 | [AJ5010](diagnostics/AJ5010.md) | Missing blank-space                                                     | Formatting   |
 | [AJ5011](diagnostics/AJ5011.md) | Unreferenced parameter                                                  | Warning      |
 | [AJ5012](diagnostics/AJ5012.md) | Unreferenced variable                                                   | Warning      |
@@ -33,7 +33,7 @@
 | [AJ5024](diagnostics/AJ5024.md) | Multiple variable declaration on same line                              | Formatting   |
 | [AJ5026](diagnostics/AJ5026.md) | Table has no primary key                                                | Warning      |
 | [AJ5027](diagnostics/AJ5027.md) | Table has no clustered index                                            | Warning      |
-| [AJ5028](diagnostics/AJ5028.md) | Semicolon is not necessary                                              | Warning      |
+| [AJ5028](diagnostics/AJ5028.md) | Semicolon is not necessary                                              | Formatting   |
 | [AJ5029](diagnostics/AJ5029.md) | The first statement in a procedure should be 'SET NOCOUNT ON'           | Warning      |
 | [AJ5030](diagnostics/AJ5030.md) | Object name violates naming convention                                  | Warning      |
 | [AJ5031](diagnostics/AJ5031.md) | Redundant pair of parentheses                                           | Warning      |
@@ -43,7 +43,7 @@
 | [AJ5035](diagnostics/AJ5035.md) | Dead Code                                                               | Warning      |
 | [AJ5036](diagnostics/AJ5036.md) | Unreferenced Label                                                      | Warning      |
 | [AJ5037](diagnostics/AJ5037.md) | Object creation without schema name                                     | Formatting   |
-| [AJ5038](diagnostics/AJ5038.md) | Object name quoting                                                     | Warning      |
+| [AJ5038](diagnostics/AJ5038.md) | Object name quoting                                                     | Formatting   |
 | [AJ5039](diagnostics/AJ5039.md) | Nameless constraints                                                    | Formatting   |
 | [AJ5040](diagnostics/AJ5040.md) | Usage of banned function                                                | Warning      |
 | [AJ5041](diagnostics/AJ5041.md) | Usage of 'SELECT *'                                                     | Warning      |
@@ -52,7 +52,7 @@
 | [AJ5044](diagnostics/AJ5044.md) | Missing Object                                                          | Warning      |
 | [AJ5045](diagnostics/AJ5045.md) | Missing empty line before/after GO batch separators                     | Formatting   |
 | [AJ5046](diagnostics/AJ5046.md) | Consecutive GO statements                                               | Formatting   |
-| [AJ9000](diagnostics/AJ9000.md) | The first statement in a script must be 'USE <DATABASE>'                | Warning      |
+| [AJ9000](diagnostics/AJ9000.md) | The first statement in a script must be USE <DATABASE>'                 | Warning      |
 | [AJ9001](diagnostics/AJ9001.md) | Missing table alias                                                     | Warning      |
 | [AJ9002](diagnostics/AJ9002.md) | Duplicate object creation statement                                     | Error        |
 | [AJ9004](diagnostics/AJ9004.md) | Error in script                                                         | Error        |

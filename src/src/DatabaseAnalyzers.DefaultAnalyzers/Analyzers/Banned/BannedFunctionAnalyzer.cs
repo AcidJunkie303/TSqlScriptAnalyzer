@@ -79,7 +79,7 @@ public sealed class BannedFunctionAnalyzer : IScriptAnalyzer
             "AJ5040",
             IssueType.Warning,
             "Usage of banned function",
-            "The function '{0}' is banned. {1}",
+            "The function `{0}` is banned. {1}",
             ["Function name", "Reason"],
             new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );

@@ -9,8 +9,8 @@ public static class WellKnownDiagnosticDefinitions
     (
         "AJ9000",
         IssueType.Warning,
-        "The first statement in a script must be 'USE <DATABASE>'",
-        "The very first statement in a script must be a 'USE' statements at location 1,1",
+        "The first statement in a script must be USE <DATABASE>'",
+        "The very first statement in a script must be a `USE` statements at location 1,1",
         [],
         new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/AJ9000.md")
     );
@@ -31,7 +31,7 @@ public static class WellKnownDiagnosticDefinitions
         "AJ9002",
         IssueType.Error,
         "Duplicate object creation statement",
-        "The object '{0}' is created more than once. Script files: '{1}'.",
+        "The object `{0}` is created more than once. Script files: `{1}`.",
         ["Object name", "Script file path"],
         new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/AJ9002.md")
     );
@@ -51,7 +51,7 @@ public static class WellKnownDiagnosticDefinitions
         "AJ9999",
         IssueType.Error,
         "Analyzer error",
-        "The analyzer '{0}' threw an exception: {1}.",
+        "The analyzer `{0}` threw an exception: {1}.",
         ["Analyzer name", "Exception message"],
         new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/AJ9999.md")
     );

@@ -99,7 +99,7 @@ public sealed class MissingBlankSpaceAnalyzer : IScriptAnalyzer
             "AJ5010",
             IssueType.Formatting,
             "Missing blank-space",
-            "Missing blank-space {0} '{1}'",
+            "Missing blank-space {0} `{1}`",
             ["Before/after", "Statement"],
             new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );

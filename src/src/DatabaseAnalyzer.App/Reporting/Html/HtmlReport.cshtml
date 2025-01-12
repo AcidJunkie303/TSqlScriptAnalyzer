@@ -1,4 +1,7 @@
+@using System.Text.RegularExpressions
+@using System.Web
 @using DatabaseAnalyzer.App.Extensions
+@using Microsoft.AspNetCore.Html
 @inherits Microsoft.AspNetCore.Mvc.Razor.RazorPage<DatabaseAnalyzer.Core.AnalysisResult>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head title="Database Analysis Result">
@@ -13,47 +16,91 @@
     Generated at: @DateTime.Now.ToString("u")<br/>
 </div>
 
+<h1>Summary</h1>
 <div class="overview">
     <table class="data-table">
         <tbody>
         <tr>
             <td>Total Issues</td>
-            <td>@Model.Issues.Count</td>
+            <td>
+                <span class="@GetCssClassForIssueCount(Model.Statistics.TotalIssueCount)">
+                    @Model.Statistics.TotalIssueCount
+                </span>
+            </td>
         </tr>
         <tr>
             <td>Total Information Messages</td>
-            <td><span
-                    class="@GetCssClassForIssueCount(Model.Statistics.TotalInformationIssueCount)">@Model.Statistics.TotalInformationIssueCount</span>
+            <td>
+                <span class="@GetCssClassForIssueCount(Model.Statistics.TotalInformationIssueCount)">
+                    @Model.Statistics.TotalInformationIssueCount
+                </span>
             </td>
         </tr>
         <tr>
             <td>Total Formatting Issues</td>
-            <td><span
-                    class="@GetCssClassForIssueCount(Model.Statistics.TotalFormattingIssueCount)">@Model.Statistics.TotalFormattingIssueCount</span>
+            <td>
+                <span class="@GetCssClassForIssueCount(Model.Statistics.TotalFormattingIssueCount)">
+                    @Model.Statistics.TotalFormattingIssueCount
+                </span>
             </td>
         </tr>
         <tr>
             <td>Total Warnings</td>
-            <td><span
-                    class="@GetCssClassForIssueCount(Model.Statistics.TotalWarningCount)">@Model.Statistics.TotalWarningCount</span>
+            <td>
+                <span
+                    class="@GetCssClassForIssueCount(Model.Statistics.TotalWarningCount)">@Model.Statistics.TotalWarningCount
+                </span>
             </td>
         </tr>
         <tr>
             <td>Total Errors</td>
-            <td><span
-                    class="@GetCssClassForIssueCount(Model.Statistics.TotalErrorCount)">@Model.Statistics.TotalErrorCount</span>
+            <td>
+                <span
+                    class="@GetCssClassForIssueCount(Model.Statistics.TotalErrorCount)">@Model.Statistics.TotalErrorCount
+                </span>
             </td>
         </tr>
         <tr>
-            <td>Total Missing Indexes</td>
-            <td><span
-                    class="@GetCssClassForIssueCount(Model.Statistics.TotalMissingIndexIssueCount)">@Model.Statistics.TotalMissingIndexIssueCount</span>
+            <td>Total Missing Indices</td>
+            <td>
+                <span
+                    class="@GetCssClassForIssueCount(Model.Statistics.TotalMissingIndexIssueCount)">@Model.Statistics.TotalMissingIndexIssueCount
+                </span>
             </td>
         </tr>
         <tr>
             <td>Suppressed Issues</td>
-            <td><span
-                    class="@GetCssClassForIssueCount(Model.Statistics.TotalSuppressedIssueCount)">@Model.Statistics.TotalSuppressedIssueCount</span>
+            <td>
+                <span class="@GetCssClassForIssueCount(Model.Statistics.TotalSuppressedIssueCount)">
+                    @Model.Statistics.TotalSuppressedIssueCount
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td>Disabled Diagnostics</td>
+            <td>
+                <span class="@GetCssClassForIssueCount(Model.DisabledDiagnostics.Count)">
+                    @Model.DisabledDiagnostics.Count
+                </span>
+
+                @if (Model.DisabledDiagnostics.Count > 0)
+                {
+                    <span> → </span>
+                    foreach (var diagnosticId in Model.DisabledDiagnostics.Order(StringComparer.OrdinalIgnoreCase))
+                    {
+                        var url = Model.DiagnosticDefinitionsById.GetValueOrDefault(diagnosticId);
+                        if (url is null)
+                        {
+                            <span style="margin-left: 5px" title="No help link available">@diagnosticId</span>
+                        }
+                        else
+                        {
+                            <a href="https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/@(diagnosticId).md"
+                               style="margin-left: 5px"
+                               target="_blank">@diagnosticId</a>
+                        }
+                    }
+                }
             </td>
         </tr>
         </tbody>
@@ -92,8 +139,8 @@ else
                 </td>
                 <td><a href="@MakeFullPath(issue.RelativeScriptFilePath)"
                        target="_blank">@issue.FullObjectNameOrFileName</a></td>
-                <td>@issue.CodeRegion</td>
-                <td>@issue.Message</td>
+                <td>@issue.CodeRegion.ToString().Replace("(", "").Replace(")", "")</td>
+                <td>@HighLightCodeParts(issue.Message)</td>
             </tr>
         }
         </tbody>
@@ -134,7 +181,7 @@ else
                 <td><a href="@MakeFullPath(issue.Issue.RelativeScriptFilePath)"
                        target="_blank">@issue.Issue.FullObjectNameOrFileName</a></td>
                 <td>@issue.Issue.CodeRegion</td>
-                <td>@issue.Issue.Message</td>
+                <td>@HighLightCodeParts(issue.Issue.Message)</td>
                 <td>@issue.Reason</td>
             </tr>
         }
@@ -142,13 +189,29 @@ else
     </table>
 }
 
-
 @Html.Partial("/Reporting/Html/Scripts.cshtml")
 </body>
 </html>
 
-@{
+@functions
+{
+    static readonly Regex CodeBlockFinder = new("`(?<content>[^`]*)`", RegexOptions.Compiled | RegexOptions.NonBacktracking, TimeSpan.FromMilliseconds(100));
+
     string MakeFullPath(string relativeFilePath) => System.IO.Path.Combine(Model.ScriptsRootDirectoryPath, relativeFilePath);
 
     string GetCssClassForIssueCount(int issueCount) => issueCount == 0 ? "stats-has-no-issues" : "stats-has-issues";
+
+    HtmlString HighLightCodeParts(string message)
+    {
+        var markup = CodeBlockFinder.Replace(
+            HttpUtility.HtmlEncode(message),
+            match =>
+            {
+                var content = match.Groups["content"].Value;
+                var encodedContent = HttpUtility.HtmlEncode(content);
+                return $"<pre class=\"code\">{encodedContent}</pre>";
+            });
+
+        return new HtmlString(markup);
+    }
 }

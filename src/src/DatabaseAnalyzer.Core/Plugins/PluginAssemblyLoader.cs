@@ -42,13 +42,14 @@ internal static class PluginAssemblyLoader
             var globalAnalyzerTypes = GetPluginsOfType<IGlobalAnalyzer>(assembly).ToImmutableArray();
             var diagnosticSettingsProviderTypes = GetPluginsOfType<IDiagnosticSettingsProvider>(assembly).ToImmutableArray();
             var settingsPairTypes = GetSettingsPairTypes(assembly).ToImmutableArray();
+            var diagnosticDefinitions = GetDefinitionsFromAssembly(assembly).ToImmutableArray();
 
-            if (scriptAnalyzerTypes.Length == 0 && globalAnalyzerTypes.Length == 0 && diagnosticSettingsProviderTypes.Length == 0)
+            if (scriptAnalyzerTypes.Length == 0 && globalAnalyzerTypes.Length == 0 && diagnosticSettingsProviderTypes.Length == 0 && diagnosticDefinitions.Length == 0)
             {
                 return null;
             }
 
-            return new PluginAssembly(assemblyLoadContext, scriptAnalyzerTypes, globalAnalyzerTypes, diagnosticSettingsProviderTypes, settingsPairTypes);
+            return new PluginAssembly(assemblyLoadContext, scriptAnalyzerTypes, globalAnalyzerTypes, diagnosticSettingsProviderTypes, settingsPairTypes, diagnosticDefinitions);
         }
         catch
         {
@@ -116,5 +117,48 @@ internal static class PluginAssemblyLoader
         }
 
         return result;
+    }
+
+    private static IEnumerable<IDiagnosticDefinition> GetDefinitionsFromAssembly(Assembly assembly)
+    {
+        foreach (var type in assembly.GetTypes())
+        {
+            foreach (var definition in GetDiagnosticDefinitionsFromType(type))
+            {
+                if (!definition.DiagnosticId.StartsWith("AJ", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                yield return definition;
+            }
+        }
+    }
+
+    private static IEnumerable<IDiagnosticDefinition> GetDiagnosticDefinitionsFromType(Type type)
+    {
+        var properties = type
+            .GetProperties()
+            .Where(a => a.CanRead)
+            .Where(a => a.GetMethod?.IsPublic ?? false)
+            .Where(a => a.GetMethod?.IsStatic ?? false)
+            .Where(a => a.PropertyType.IsAssignableTo(typeof(IDiagnosticDefinition)));
+
+        foreach (var property in properties)
+        {
+            var value = property.GetValue(null);
+            if (value is IDiagnosticDefinition definition)
+            {
+                yield return definition;
+            }
+        }
+
+        foreach (var nestedType in type.GetNestedTypes())
+        {
+            foreach (var nestedDefinition in GetDiagnosticDefinitionsFromType(nestedType))
+            {
+                yield return nestedDefinition;
+            }
+        }
     }
 }

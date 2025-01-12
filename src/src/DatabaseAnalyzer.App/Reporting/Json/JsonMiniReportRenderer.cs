@@ -20,16 +20,7 @@ internal sealed class JsonMiniReportRenderer : IReportRenderer
             IssueCountByType = issueCountByType
         };
 
-        var options = CreateJsonSerializerOptions();
-        var renderedReport = JsonSerializer.Serialize(report, options).Trim();
+        var renderedReport = JsonSerializer.Serialize(report, JsonSerializationOptions.Default).Trim();
         return Task.FromResult(renderedReport);
-    }
-
-    private static JsonSerializerOptions CreateJsonSerializerOptions()
-    {
-        return new JsonSerializerOptions(JsonSerializerDefaults.General)
-        {
-            WriteIndented = true
-        };
     }
 }

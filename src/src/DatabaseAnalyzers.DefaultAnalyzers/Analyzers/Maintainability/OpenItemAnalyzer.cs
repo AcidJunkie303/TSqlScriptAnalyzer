@@ -51,7 +51,7 @@ public sealed class OpenItemAnalyzer : IScriptAnalyzer
             "AJ5004",
             IssueType.Warning,
             "Open Item",
-            "Found {0}: {1}",
+            "Found `{0}`: {1}",
             ["Topic", "Message"],
             new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );

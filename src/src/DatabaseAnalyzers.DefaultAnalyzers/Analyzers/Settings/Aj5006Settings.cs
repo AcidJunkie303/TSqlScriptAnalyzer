@@ -25,7 +25,7 @@ internal sealed class Aj5006SettingsRaw : IRawSettings<Aj5006Settings>
 
     private static ImmutableArray<Regex> ConvertToRegex(IReadOnlyCollection<string?>? types)
         => types
-            .NullIfEmpty()
+            .EmptyIfNull()
             .WhereNotNull()
             .Select(static a => a.ToRegexWithSimpleWildcards(caseSensitive: false, compileRegex: true))
             .ToImmutableArray();

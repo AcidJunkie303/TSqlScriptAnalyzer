@@ -44,7 +44,7 @@ public sealed class UnusedLabelAnalyzer : IScriptAnalyzer
             "AJ5036",
             IssueType.Warning,
             "Unreferenced Label",
-            "The label '{0}' is not referenced and can be removed.",
+            "The label `{0}` is not referenced and can be removed.",
             ["Label name"],
             new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );

@@ -41,6 +41,7 @@ public static class AnalyzerFactory
                 var pluginAssemblies = PluginAssemblyLoader.LoadPlugins(services);
                 RegisterPlugins(services, pluginAssemblies);
                 RegisterDiagnosticsSettingsProvider(services, configuration, pluginAssemblies);
+                RegisterDiagnosticDefinitions(services, pluginAssemblies);
             });
 
     private static void RegisterPlugins(IServiceCollection services, IReadOnlyList<PluginAssembly> pluginAssemblies)
@@ -67,6 +68,15 @@ public static class AnalyzerFactory
                 services.AddSingleton(pair);
             }
         }
+    }
+
+    private static void RegisterDiagnosticDefinitions(IServiceCollection services, IReadOnlyList<PluginAssembly> pluginAssemblies)
+    {
+        var diagnosticDefinitionsById = pluginAssemblies
+            .SelectMany(a => a.DiagnosticDefinitions)
+            .ToDictionary(a => a.DiagnosticId, a => a, StringComparer.OrdinalIgnoreCase);
+
+        services.AddSingleton<IReadOnlyDictionary<string, IDiagnosticDefinition>>(diagnosticDefinitionsById);
     }
 
     private static void RegisterDiagnosticsSettingsProvider(IServiceCollection services, IConfiguration configuration, IReadOnlyList<PluginAssembly> pluginAssemblies)

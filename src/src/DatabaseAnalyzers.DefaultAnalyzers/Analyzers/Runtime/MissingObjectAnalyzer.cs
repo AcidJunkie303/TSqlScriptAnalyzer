@@ -219,7 +219,7 @@ public sealed class MissingObjectAnalyzer : IGlobalAnalyzer
             "AJ5044",
             IssueType.Warning,
             "Missing Object",
-            "The referenced {0} '{1}' was not found.",
+            "The referenced {0} `{1}` was not found.",
             ["Object type name", "Expression"],
             new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );

@@ -1,4 +1,3 @@
-using System.Text.Encodings.Web;
 using System.Text.Json;
 using DatabaseAnalyzer.Core;
 
@@ -36,17 +35,7 @@ internal sealed class JsonFullReportRenderer : IReportRenderer
                 })
         };
 
-        var options = CreateJsonSerializerOptions();
-        var renderedReport = JsonSerializer.Serialize(report, options).Trim();
+        var renderedReport = JsonSerializer.Serialize(report, JsonSerializationOptions.Default).Trim();
         return Task.FromResult(renderedReport);
-    }
-
-    private static JsonSerializerOptions CreateJsonSerializerOptions()
-    {
-        return new JsonSerializerOptions(JsonSerializerDefaults.General)
-        {
-            WriteIndented = true,
-            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-        };
     }
 }

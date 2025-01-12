@@ -36,7 +36,7 @@ public sealed class RaiseErrorAnalyzer : IScriptAnalyzer
             "AJ5042",
             IssueType.Warning,
             "Usage of RAISERROR",
-            "'RAISERROR' should not be used anymore. Use 'THROW' instead.",
+            "`RAISERROR` should not be used anymore. Use `THROW` instead.",
             [],
             new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
