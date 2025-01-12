@@ -1,33 +1,30 @@
 ﻿<Solution>
-    <Folder Name="/Solution Files/">
-        <File Path=".editorconfig"/>
-        <File Path="Directory.Build.props"/>
-        <File Path=".gitignore"/>
-        <File Path="..\README.md"/>
-        <File Path="..\STATUS.md"/>
-        <File Path="..\CreatingAnalyzers.md"/>
-        <File Path="..\UnitTestingAnalyzers.md"/>
-        <File Path="TSqlScriptAnalyzer.sln.DotSettings"/>
-        <File Path="TSqlScriptAnalyzer.sln.DotSettings.user"/>
-    </Folder>
-    <Project Path="src\DatabaseAnalyzer.App\DatabaseAnalyzer.App.csproj" Type="Classic C#"/>
-    <Project Path="src\DatabaseAnalyzer.Common\DatabaseAnalyzer.Common.csproj" Type="Classic C#"/>
-    <Project
-        Path="src\DatabaseAnalyzer.Contracts.DefaultImplementations.Tests\DatabaseAnalyzer.Contracts.DefaultImplementations.Tests.csproj"
-        Type="Classic C#"/>
-    <Project
-        Path="src\DatabaseAnalyzer.Contracts.DefaultImplementations\DatabaseAnalyzer.Contracts.DefaultImplementations.csproj"
-        Type="Classic C#"/>
-    <Project Path="src\DatabaseAnalyzer.Contracts\DatabaseAnalyzer.Contracts.csproj" Type="Classic C#"/>
-    <Project Path="src\DatabaseAnalyzer.Core.Tests\DatabaseAnalyzer.Core.Tests.csproj" Type="Classic C#"/>
-    <Project Path="src\DatabaseAnalyzer.Core\DatabaseAnalyzer.Core.csproj" Type="Classic C#"/>
-    <Project Path="src\DatabaseAnalyzer.Testing.Tests\DatabaseAnalyzer.Testing.Tests.csproj" Type="Classic C#"/>
-    <Project Path="src\DatabaseAnalyzer.Testing\DatabaseAnalyzer.Testing.csproj" Type="Classic C#"/>
-    <Project
-        Path="src\DatabaseAnalyzers.DefaultAnalyzers.InfrastructureTasks\DatabaseAnalyzers.DefaultAnalyzers.InfrastructureTasks.csproj"
-        Type="Classic C#"/>
-    <Project Path="src\DatabaseAnalyzers.DefaultAnalyzers.Tests\DatabaseAnalyzers.DefaultAnalyzers.Tests.csproj"
-             Type="Classic C#"/>
-    <Project Path="src\DatabaseAnalyzers.DefaultAnalyzers\DatabaseAnalyzers.DefaultAnalyzers.csproj" Type="Classic C#"/>
-    <Project Path="src\Playground\Playground.csproj" Type="Classic C#"/>
+  <Folder Name="/Infra Tasks/">
+    <Project Path="src\DatabaseAnalyzers.DefaultAnalyzers.InfrastructureTasks\DatabaseAnalyzers.DefaultAnalyzers.InfrastructureTasks.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/Solution Files/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path=".gitignore" />
+    <File Path="..\README.md" />
+    <File Path="..\STATUS.md" />
+    <File Path="..\CreatingAnalyzers.md" />
+    <File Path="..\UnitTestingAnalyzers.md" />
+    <File Path="TSqlScriptAnalyzer.sln.DotSettings" />
+    <File Path="TSqlScriptAnalyzer.sln.DotSettings.user" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="src\DatabaseAnalyzer.Contracts.DefaultImplementations.Tests\DatabaseAnalyzer.Contracts.DefaultImplementations.Tests.csproj" Type="Classic C#" />
+    <Project Path="src\DatabaseAnalyzer.Core.Tests\DatabaseAnalyzer.Core.Tests.csproj" Type="Classic C#" />
+    <Project Path="src\DatabaseAnalyzer.Testing.Tests\DatabaseAnalyzer.Testing.Tests.csproj" Type="Classic C#" />
+    <Project Path="src\DatabaseAnalyzer.Testing\DatabaseAnalyzer.Testing.csproj" Type="Classic C#" />
+    <Project Path="src\DatabaseAnalyzers.DefaultAnalyzers.Tests\DatabaseAnalyzers.DefaultAnalyzers.Tests.csproj" Type="Classic C#" />
+  </Folder>
+  <Project Path="src\DatabaseAnalyzer.App\DatabaseAnalyzer.App.csproj" Type="Classic C#" />
+  <Project Path="src\DatabaseAnalyzer.Common\DatabaseAnalyzer.Common.csproj" Type="Classic C#" />
+  <Project Path="src\DatabaseAnalyzer.Contracts.DefaultImplementations\DatabaseAnalyzer.Contracts.DefaultImplementations.csproj" Type="Classic C#" />
+  <Project Path="src\DatabaseAnalyzer.Contracts\DatabaseAnalyzer.Contracts.csproj" Type="Classic C#" />
+  <Project Path="src\DatabaseAnalyzer.Core\DatabaseAnalyzer.Core.csproj" Type="Classic C#" />
+  <Project Path="src\DatabaseAnalyzers.DefaultAnalyzers\DatabaseAnalyzers.DefaultAnalyzers.csproj" Type="Classic C#" />
+  <Project Path="src\Playground\Playground.csproj" Type="Classic C#" />
 </Solution>
