@@ -131,12 +131,23 @@ internal sealed class Analyzer : IAnalyzer
                 StringComparer.OrdinalIgnoreCase
             );
 
+        var staticitics = new AnalysisResultStatistics(
+            TotalDisabledDiagnosticCount: _applicationSettings.Diagnostics.DisabledDiagnostics.Count,
+            TotalErrorCount: issues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Error),
+            TotalFormattingIssueCount: issues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Formatting),
+            TotalInformationIssueCount: issues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Info),
+            TotalIssueCount: issues.Count,
+            TotalMissingIndexIssueCount: issues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.MissingIndex),
+            TotalSuppressedIssueCount: suppressedIssues.Count,
+            TotalWarningCount: issues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Warning)
+        );
         return new AnalysisResult(
-            _applicationSettings.ScriptSource.ScriptsRootDirectoryPath,
-            unsuppressedIssues,
-            suppressedIssues,
-            issuesByObjectName,
-            _applicationSettings.Diagnostics.DisabledDiagnostics
+            ScriptsRootDirectoryPath: _applicationSettings.ScriptSource.ScriptsRootDirectoryPath,
+            Issues: unsuppressedIssues,
+            SuppressedIssues: suppressedIssues,
+            IssuesByObjectName: issuesByObjectName,
+            DisabledDiagnostics: _applicationSettings.Diagnostics.DisabledDiagnostics,
+            Statistics: staticitics
         );
     }
 

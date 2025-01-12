@@ -1,0 +1,154 @@
+@using DatabaseAnalyzer.App.Extensions
+@inherits Microsoft.AspNetCore.Mvc.Razor.RazorPage<DatabaseAnalyzer.Core.AnalysisResult>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head title="Database Analysis Result">
+    @Html.Partial("/Reporting/Html/Styles-Dark.cshtml")
+</head>
+<body>
+
+<h1>Database Analysis Result</h1>
+
+<div class="info-box">
+    Generated at (UTC): @DateTime.UtcNow.ToString("u")<br/>
+    Generated at: @DateTime.Now.ToString("u")<br/>
+</div>
+
+<div class="overview">
+    <table class="data-table">
+        <tbody>
+        <tr>
+            <td>Total Issues</td>
+            <td>@Model.Issues.Count</td>
+        </tr>
+        <tr>
+            <td>Total Information Messages</td>
+            <td><span
+                    class="@GetCssClassForIssueCount(Model.Statistics.TotalInformationIssueCount)">@Model.Statistics.TotalInformationIssueCount</span>
+            </td>
+        </tr>
+        <tr>
+            <td>Total Formatting Issues</td>
+            <td><span
+                    class="@GetCssClassForIssueCount(Model.Statistics.TotalFormattingIssueCount)">@Model.Statistics.TotalFormattingIssueCount</span>
+            </td>
+        </tr>
+        <tr>
+            <td>Total Warnings</td>
+            <td><span
+                    class="@GetCssClassForIssueCount(Model.Statistics.TotalWarningCount)">@Model.Statistics.TotalWarningCount</span>
+            </td>
+        </tr>
+        <tr>
+            <td>Total Errors</td>
+            <td><span
+                    class="@GetCssClassForIssueCount(Model.Statistics.TotalErrorCount)">@Model.Statistics.TotalErrorCount</span>
+            </td>
+        </tr>
+        <tr>
+            <td>Total Missing Indexes</td>
+            <td><span
+                    class="@GetCssClassForIssueCount(Model.Statistics.TotalMissingIndexIssueCount)">@Model.Statistics.TotalMissingIndexIssueCount</span>
+            </td>
+        </tr>
+        <tr>
+            <td>Suppressed Issues</td>
+            <td><span
+                    class="@GetCssClassForIssueCount(Model.Statistics.TotalSuppressedIssueCount)">@Model.Statistics.TotalSuppressedIssueCount</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<h1>Issues</h1>
+@if (Model.Issues.Count == 0)
+{
+    <i>None</i>
+}
+else
+{
+    <table class="data-table sortable">
+        <thead>
+        <tr>
+            <th>Diag. Id</th>
+            <th>Type</th>
+            <th>Object Name or File Name</th>
+            <th>Location</th>
+            <th>Message</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var issue in Model.Issues
+                      .OrderBy(a => a.DiagnosticDefinition.DiagnosticId)
+                      .ThenBy(a => a.FullObjectNameOrFileName)
+                      .ThenBy(a => a.RelativeScriptFilePath)
+                      .ThenBy(a => a.CodeRegion))
+        {
+            <tr>
+                <td><a href="@issue.DiagnosticDefinition.HelpUrl"
+                       target="_blank">@issue.DiagnosticDefinition.DiagnosticId</a></td>
+                <td><span
+                        class="issue-type-@issue.DiagnosticDefinition.IssueType.ToString().ToLower()">@issue.DiagnosticDefinition.IssueType.ToName()</span>
+                </td>
+                <td><a href="@MakeFullPath(issue.RelativeScriptFilePath)"
+                       target="_blank">@issue.FullObjectNameOrFileName</a></td>
+                <td>@issue.CodeRegion</td>
+                <td>@issue.Message</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+<h1>Suppressed Issues</h1>
+@if (Model.SuppressedIssues.Count == 0)
+{
+    <i>None</i>
+}
+else
+{
+    <table class="data-table sortable">
+        <thead>
+        <tr>
+            <th>Diag. Id</th>
+            <th>Type</th>
+            <th>Object Name or File Name</th>
+            <th>Location</th>
+            <th>Message</th>
+            <th>Suppression Reason</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var issue in Model.SuppressedIssues
+                      .OrderBy(a => a.Issue.DiagnosticDefinition.DiagnosticId)
+                      .ThenBy(a => a.Issue.FullObjectNameOrFileName)
+                      .ThenBy(a => a.Issue.RelativeScriptFilePath)
+                      .ThenBy(a => a.Issue.CodeRegion))
+        {
+            <tr>
+                <td><a href="@issue.Issue.DiagnosticDefinition.HelpUrl"
+                       target="_blank">@issue.Issue.DiagnosticDefinition.DiagnosticId</a></td>
+                <td><span
+                        class="issue-type-@issue.Issue.DiagnosticDefinition.IssueType.ToString().ToLower()">@issue.Issue.DiagnosticDefinition.IssueType.ToName()</span>
+                </td>
+                <td><a href="@MakeFullPath(issue.Issue.RelativeScriptFilePath)"
+                       target="_blank">@issue.Issue.FullObjectNameOrFileName</a></td>
+                <td>@issue.Issue.CodeRegion</td>
+                <td>@issue.Issue.Message</td>
+                <td>@issue.Reason</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+
+@Html.Partial("/Reporting/Html/Scripts.cshtml")
+</body>
+</html>
+
+@{
+    string MakeFullPath(string relativeFilePath) => System.IO.Path.Combine(Model.ScriptsRootDirectoryPath, relativeFilePath);
+
+    string GetCssClassForIssueCount(int issueCount) => issueCount == 0 ? "stats-has-no-issues" : "stats-has-issues";
+}

@@ -110,7 +110,7 @@ public sealed class UnnecessarySemicolonAnalyzer : IScriptAnalyzer
         public static DiagnosticDefinition Default { get; } = new
         (
             "AJ5028",
-            IssueType.Warning,
+            IssueType.Formatting,
             "Semicolon is not necessary",
             "Semicolon is not necessary.",
             [],

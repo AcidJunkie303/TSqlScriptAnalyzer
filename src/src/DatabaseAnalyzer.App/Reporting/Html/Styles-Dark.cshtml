@@ -1,0 +1,203 @@
+<style>
+    /* Define light and dark theme variables */
+    :root {
+        --background-color: #121212;
+        --text-color: #e0e0e0;
+        --table-header-bg: #1e1e1e;
+        --table-row-bg: #202020;
+        --table-row-alt-bg: #1c1c1c;
+        --table-border-color: #333333;
+    }
+
+    body {
+        background-color: var(--background-color);
+        color: var(--text-color);
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 5px;
+    }
+
+    header {
+        padding: 20px;
+        text-align: center;
+    }
+
+    h1 {
+        margin: 20px 0 0 0;
+    }
+
+    /* Table styling */
+    table.data-table {
+        border-collapse: collapse;
+    }
+
+    table.data-table thead {
+        background-color: var(--table-header-bg);
+    }
+
+    table.data-table thead th {
+        color: var(--text-color);
+        padding: 10px;
+    }
+
+    table.data-table tbody tr:nth-child(odd) {
+        background-color: var(--table-row-bg);
+    }
+
+    table.data-table tbody tr:nth-child(even) {
+        background-color: var(--table-row-alt-bg);
+    }
+
+    table.data-table tbody td {
+        color: var(--text-color);
+        padding: 10px;
+    }
+
+    table.data-table, th, td {
+        border: solid 1px var(--table-border-color);
+    }
+
+    /* Add hover effect for rows */
+    table.data-table tbody tr:hover {
+        background-color: #2a2a2a;
+    }
+
+    table.data-table > thead > tr > th,
+    table.data-table > tbody > tr > td:nth-child(1),
+    table.data-table > tbody > tr > td:nth-child(2),
+    table.data-table > tbody > tr > td:nth-child(3),
+    table.data-table > tbody > tr > td:nth-child(4) {
+        white-space: nowrap;
+    }
+
+    table.data-table > thead > tr > th {
+        cursor: pointer;
+    }
+
+    a,
+    a:visited {
+        color: #6C9AD1;
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    .info-box {
+        margin: 10px 0 10px 0;
+        color: #aaa;
+    }
+
+    .issue-type-warning {
+        color: #ff9800;
+    }
+
+    .issue-type-formatting {
+        color: #c08060;
+    }
+
+    .issue-type-information {
+        color: #0098ff;
+    }
+
+    .issue-type-error {
+        color: #c02020;
+    }
+
+    .issue-type-missingindex {
+        color: #c020c0;
+    }
+
+    .stats-has-no-issues {
+        color: #20c020;
+    }
+
+    .stats-has-issues {
+        color: #c02020;
+    }
+
+</style>
+<style>
+    /*
+    html, body {
+        background-color: #2a2a2a;
+        color: #ddd;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 12pt;
+    }
+
+    a,
+    a:visited {
+        color: #6C9AD1;
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    table.data-table > thead > tr > th {
+        white-space: nowrap;
+    }
+
+    table.data-table {
+        border: 1px solid #555;
+    }
+
+    table.data-table > thead > tr > th,
+    table.data-table > tbody > tr > td {
+        border: solid 1px black;
+        background-color: #222;
+        padding: 5px;
+        border: none;
+    }
+
+    table.data-table > tbody > tr > td:nth-child(1),
+    table.data-table > tbody > tr > td:nth-child(2),
+    table.data-table > tbody > tr > td:nth-child(3) {
+        white-space: nowrap;
+    }
+
+
+        html, body {
+            background-color: #2a2a2a;
+            color: #ddd;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 12pt;
+        }
+
+        a,
+        a:visited {
+            color: #6C9AD1;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        table.data-table > thead > tr > th {
+            white-space: nowrap;
+        }
+
+        table.data-table {
+            border-collapse: collapse;
+            border: solid 1px black;
+        }
+
+        table.data-table > thead > tr > th,
+        table.data-table > tbody > tr > td {
+            border-collapse: collapse;
+            border: solid 1px black;
+            background-color: #222;
+            padding: 5px;
+        }
+
+        table.data-table > tbody > tr > td:nth-child(1),
+        table.data-table > tbody > tr > td:nth-child(2),
+        table.data-table > tbody > tr > td:nth-child(3) {
+            white-space: nowrap;
+        }
+    */
+</style>

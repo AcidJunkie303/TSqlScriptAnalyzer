@@ -34,7 +34,7 @@ public sealed class ObjectCreationWithoutOrAlterAnalyzer : IScriptAnalyzer
         public static DiagnosticDefinition Default { get; } = new
         (
             "AJ5009",
-            IssueType.Formatting,
+            IssueType.Warning,
             "Object creation without 'OR ALTER' clause",
             "Object creation without 'OR ALTER' clause.",
             [],

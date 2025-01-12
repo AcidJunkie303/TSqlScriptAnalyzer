@@ -6,7 +6,7 @@ namespace DatabaseAnalyzer.App.Reporting.Json;
 
 internal sealed class JsonFullReportRenderer : IReportRenderer
 {
-    public string RenderReport(AnalysisResult analysisResult)
+    public Task<string> RenderReportAsync(AnalysisResult analysisResult)
     {
         var report = new
         {
@@ -37,7 +37,8 @@ internal sealed class JsonFullReportRenderer : IReportRenderer
         };
 
         var options = CreateJsonSerializerOptions();
-        return JsonSerializer.Serialize(report, options).Trim();
+        var renderedReport = JsonSerializer.Serialize(report, options).Trim();
+        return Task.FromResult(renderedReport);
     }
 
     private static JsonSerializerOptions CreateJsonSerializerOptions()

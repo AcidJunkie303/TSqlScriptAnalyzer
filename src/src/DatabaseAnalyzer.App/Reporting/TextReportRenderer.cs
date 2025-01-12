@@ -7,7 +7,7 @@ namespace DatabaseAnalyzer.App.Reporting;
 
 internal sealed class TextReportRenderer : IReportRenderer
 {
-    public string RenderReport(AnalysisResult analysisResult)
+    public Task<string> RenderReportAsync(AnalysisResult analysisResult)
     {
         var buffer = new StringBuilder();
 
@@ -38,7 +38,7 @@ internal sealed class TextReportRenderer : IReportRenderer
             }
         }
 
-        return buffer.ToString().Trim();
+        return Task.FromResult(buffer.ToString().Trim());
     }
 
     private static IEnumerable<T> OrderIssues<T>(IEnumerable<T> items, Func<T, IIssue> issueSelector)

@@ -4,5 +4,5 @@ namespace DatabaseAnalyzer.App.Reporting;
 
 internal interface IReportRenderer
 {
-    string RenderReport(AnalysisResult analysisResult);
+    Task<string> RenderReportAsync(AnalysisResult analysisResult);
 }

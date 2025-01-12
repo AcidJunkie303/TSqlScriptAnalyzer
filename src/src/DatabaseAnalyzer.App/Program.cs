@@ -1,12 +1,14 @@
 ﻿using System.CommandLine;
+using DatabaseAnalyzer.App;
 using DatabaseAnalyzer.App.Reporting;
+using DatabaseAnalyzer.App.Reporting.Html;
 using DatabaseAnalyzer.App.Reporting.Json;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using DatabaseAnalyzer.Core;
 using DatabaseAnalyzer.Core.Configuration;
 
-namespace DatabaseAnalyzer.App;
+namespace DatabaseAnalyzer;
 
 internal static class Program
 {
@@ -50,7 +52,7 @@ internal static class Program
             var textReportFilePath = context.ParseResult.GetValueForOption(textReportFilePathOption);
 
             var options = new AnalyzeOptions(filePath, consoleReportType, htmlReportFilePath, jsonReportFilePath, textReportFilePath);
-            context.ExitCode = Analyze(options);
+            context.ExitCode = AnalyzeAsync(options).GetAwaiter().GetResult();
         });
 
         rootCommand.AddCommand(analyzeCommand);
@@ -58,7 +60,7 @@ internal static class Program
         return rootCommand.Invoke(args);
     }
 
-    private static int Analyze(AnalyzeOptions options)
+    private static async Task<int> AnalyzeAsync(AnalyzeOptions options)
     {
         try
         {
@@ -67,29 +69,29 @@ internal static class Program
             var analysisResult = analyzer.Analyze();
 
             var consoleReportRenderer = ReportRendererFactory.Create(options.ConsoleReportType);
-            var consoleReport = consoleReportRenderer.RenderReport(analysisResult);
+            var consoleReport = await consoleReportRenderer.RenderReportAsync(analysisResult);
 
             Console.WriteLine("{{Report-Start}}");
             Console.WriteLine(consoleReport);
             Console.WriteLine("{{Report-End}}");
 
             Console.WriteLine("{{Mini-Json-Report-Start}}");
-            Console.WriteLine(new JsonMiniReportRenderer().RenderReport(analysisResult));
+            Console.WriteLine(await new JsonMiniReportRenderer().RenderReportAsync(analysisResult));
             Console.WriteLine("{{Mini-Json-Report-Start}}");
 
             if (!options.HtmlReportFilePath.IsNullOrWhiteSpace())
             {
-                ReportFileRenderer.Render(new HtmlReportRenderer(), analysisResult, options.HtmlReportFilePath);
+                await ReportFileRenderer.RenderAsync(new HtmlReportRenderer(), analysisResult, options.HtmlReportFilePath);
             }
 
             if (!options.JsonReportFilePath.IsNullOrWhiteSpace())
             {
-                ReportFileRenderer.Render(new JsonFullReportRenderer(), analysisResult, options.JsonReportFilePath);
+                await ReportFileRenderer.RenderAsync(new JsonFullReportRenderer(), analysisResult, options.JsonReportFilePath);
             }
 
             if (!options.TextReportFilePath.IsNullOrWhiteSpace())
             {
-                ReportFileRenderer.Render(new TextReportRenderer(), analysisResult, options.TextReportFilePath);
+                await ReportFileRenderer.RenderAsync(new TextReportRenderer(), analysisResult, options.TextReportFilePath);
             }
 
             var nonInfoIssueCount = analysisResult.Issues.Count(a => a.DiagnosticDefinition.IssueType != IssueType.Info);

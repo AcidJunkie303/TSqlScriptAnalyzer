@@ -16,7 +16,6 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
     {
         var databasesByName = new DatabaseObjectExtractor(context.IssueReporter)
             .Extract(context.Scripts, context.DefaultSchemaName);
-
         AnalyzeModules(context, databasesByName);
         AnalyzeForeignKeys(context, databasesByName);
     }

@@ -189,7 +189,7 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
         public static DiagnosticDefinition Default { get; } = new
         (
             "AJ5038",
-            IssueType.Warning,
+            IssueType.Formatting,
             "Object name quoting",
             "The {0} name part '{1}' is quoted wrongly which does not comply with the configured policy. It should be: '{2}'.",
             ["Object type name", "Name", "Expected name"],

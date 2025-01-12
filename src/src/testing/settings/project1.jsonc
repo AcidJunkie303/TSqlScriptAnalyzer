@@ -2,7 +2,7 @@
   "DefaultSchemaName": "dbo",
   "ScriptSource": {
     "ExclusionFilters": [],
-    "ScriptsRootDirectoryPath": "..\\..\\..\\..\\testing\\scripts\\",
+    "ScriptsRootDirectoryPath": "..\\..\\testing\\scripts\\",
     "DatabaseScriptsRootPathByDatabaseName": {
       "database-1": "..\\..\\..\\..\\testing\\scripts\\database-1",
       "database-2": "..\\..\\..\\..\\testing\\scripts\\database-2",
@@ -139,9 +139,15 @@
       "NameQuotingPolicyForTableReferences": "SquareBracketsRequired",
       "NameQuotingPolicyForDataTypes": "Undefined"
     },
-    "AJ5040": { // Empty lines before/after GO statement
-      "RequireEmptyLineBeforeGo": false,
-      "RequireEmptyLineAfterGo": true
+    "AJ5040": { // Banned functions
+      "BannedFunctionNamesByReason": {
+        "GETDATE" : "Use 'GETUTCDATE()' instead"
+      }
+    },
+    "AJ5044": { // Missing object
+      "IgnoredObjectNamePatterns": [
+        "*.sys.*"
+      ]
     },
     "AJ5045": { // Empty lines before/after GO statement
       "RequireEmptyLineBeforeGo": false,

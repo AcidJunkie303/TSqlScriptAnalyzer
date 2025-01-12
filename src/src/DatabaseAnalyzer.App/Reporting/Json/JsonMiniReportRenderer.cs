@@ -5,7 +5,7 @@ namespace DatabaseAnalyzer.App.Reporting.Json;
 
 internal sealed class JsonMiniReportRenderer : IReportRenderer
 {
-    public string RenderReport(AnalysisResult analysisResult)
+    public Task<string> RenderReportAsync(AnalysisResult analysisResult)
     {
         var totalIssueCount = analysisResult.Issues.Count;
         var suppressedIssueCount = analysisResult.SuppressedIssues.Count;
@@ -21,7 +21,8 @@ internal sealed class JsonMiniReportRenderer : IReportRenderer
         };
 
         var options = CreateJsonSerializerOptions();
-        return JsonSerializer.Serialize(report, options).Trim();
+        var renderedReport = JsonSerializer.Serialize(report, options).Trim();
+        return Task.FromResult(renderedReport);
     }
 
     private static JsonSerializerOptions CreateJsonSerializerOptions()
