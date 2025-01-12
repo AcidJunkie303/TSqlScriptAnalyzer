@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <IsTestProject>true</IsTestProject>
+        <NoWarn>CA1707;MA0051</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Using Include="Xunit"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\DatabaseAnalyzer.Contracts.DefaultImplementations\DatabaseAnalyzer.Contracts.DefaultImplementations.csproj"/>
+        <ProjectReference Include="..\DatabaseAnalyzer.Testing\DatabaseAnalyzer.Testing.csproj"/>
+    </ItemGroup>
+
+</Project>

@@ -1,2 +1,3 @@
-# TSqlScriptAnalyzer
-An framework to analyze multiple T-SQL script files
+# About
+
+An extendable analyzer for T-SQL scripts.
