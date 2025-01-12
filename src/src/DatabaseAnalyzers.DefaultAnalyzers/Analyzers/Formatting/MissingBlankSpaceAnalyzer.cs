@@ -79,7 +79,6 @@ public sealed class MissingBlankSpaceAnalyzer : IScriptAnalyzer
                 TSqlTokenType.LessThan,
                 TSqlTokenType.GreaterThan,
                 TSqlTokenType.Tilde,
-                TSqlTokenType.SingleLineComment,
                 TSqlTokenType.LeftShift,
                 TSqlTokenType.RightShift
             }
