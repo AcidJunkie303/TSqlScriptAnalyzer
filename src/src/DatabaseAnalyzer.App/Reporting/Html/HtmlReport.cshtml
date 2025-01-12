@@ -22,64 +22,83 @@
         <tbody>
         <tr>
             <td>Total Issues</td>
-            <td><span
-                    class="@GetCssClassForIssueCount(Model.Statistics.TotalIssueCount)">@Model.Statistics.TotalIssueCount</span>
+            <td>
+                <span class="@GetCssClassForIssueCount(Model.Statistics.TotalIssueCount)">
+                    @Model.Statistics.TotalIssueCount
+                </span>
             </td>
         </tr>
         <tr>
             <td>Total Information Messages</td>
-            <td><span
-                    class="@GetCssClassForIssueCount(Model.Statistics.TotalInformationIssueCount)">@Model.Statistics.TotalInformationIssueCount</span>
+            <td>
+                <span class="@GetCssClassForIssueCount(Model.Statistics.TotalInformationIssueCount)">
+                    @Model.Statistics.TotalInformationIssueCount
+                </span>
             </td>
         </tr>
         <tr>
             <td>Total Formatting Issues</td>
-            <td><span
-                    class="@GetCssClassForIssueCount(Model.Statistics.TotalFormattingIssueCount)">@Model.Statistics.TotalFormattingIssueCount</span>
+            <td>
+                <span class="@GetCssClassForIssueCount(Model.Statistics.TotalFormattingIssueCount)">
+                    @Model.Statistics.TotalFormattingIssueCount
+                </span>
             </td>
         </tr>
         <tr>
             <td>Total Warnings</td>
-            <td><span
-                    class="@GetCssClassForIssueCount(Model.Statistics.TotalWarningCount)">@Model.Statistics.TotalWarningCount</span>
+            <td>
+                <span
+                    class="@GetCssClassForIssueCount(Model.Statistics.TotalWarningCount)">@Model.Statistics.TotalWarningCount
+                </span>
             </td>
         </tr>
         <tr>
             <td>Total Errors</td>
-            <td><span
-                    class="@GetCssClassForIssueCount(Model.Statistics.TotalErrorCount)">@Model.Statistics.TotalErrorCount</span>
+            <td>
+                <span
+                    class="@GetCssClassForIssueCount(Model.Statistics.TotalErrorCount)">@Model.Statistics.TotalErrorCount
+                </span>
             </td>
         </tr>
         <tr>
-            <td>Total Missing Indexes</td>
-            <td><span
-                    class="@GetCssClassForIssueCount(Model.Statistics.TotalMissingIndexIssueCount)">@Model.Statistics.TotalMissingIndexIssueCount</span>
+            <td>Total Missing Indices</td>
+            <td>
+                <span
+                    class="@GetCssClassForIssueCount(Model.Statistics.TotalMissingIndexIssueCount)">@Model.Statistics.TotalMissingIndexIssueCount
+                </span>
             </td>
         </tr>
         <tr>
             <td>Suppressed Issues</td>
-            <td><span
-                    class="@GetCssClassForIssueCount(Model.Statistics.TotalSuppressedIssueCount)">@Model.Statistics.TotalSuppressedIssueCount</span>
+            <td>
+                <span class="@GetCssClassForIssueCount(Model.Statistics.TotalSuppressedIssueCount)">
+                    @Model.Statistics.TotalSuppressedIssueCount
+                </span>
             </td>
         </tr>
         <tr>
             <td>Disabled Diagnostics</td>
             <td>
-                <span
-                    class="@GetCssClassForIssueCount(Model.DisabledDiagnostics.Count)">@Model.DisabledDiagnostics.Count</span>
+                <span class="@GetCssClassForIssueCount(Model.DisabledDiagnostics.Count)">
+                    @Model.DisabledDiagnostics.Count
+                </span>
 
-                @foreach (var diagnosticId in Model.DisabledDiagnostics.Order(StringComparer.OrdinalIgnoreCase))
+                @if (Model.DisabledDiagnostics.Count > 0)
                 {
-                    var url = Model.DiagnosticDefinitionsById.GetValueOrDefault(diagnosticId);
-                    if (url is null)
+                    <span> → </span>
+                    foreach (var diagnosticId in Model.DisabledDiagnostics.Order(StringComparer.OrdinalIgnoreCase))
                     {
-                        <span style="margin-left: 5px" title="No help link available">@diagnosticId</span>
-                    }
-                    else
-                    {
-                        <a href="https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/@(diagnosticId).md"
-                           style="margin-left: 5px"
-                           target="_blank">@diagnosticId</a>
+                        var url = Model.DiagnosticDefinitionsById.GetValueOrDefault(diagnosticId);
+                        if (url is null)
+                        {
+                            <span style="margin-left: 5px" title="No help link available">@diagnosticId</span>
+                        }
+                        else
+                        {
+                            <a href="https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/@(diagnosticId).md"
+                               style="margin-left: 5px"
+                               target="_blank">@diagnosticId</a>
+                        }
                     }
                 }
             </td>
@@ -185,7 +204,7 @@ else
     HtmlString HighLightCodeParts(string message)
     {
         var markup = CodeBlockFinder.Replace(
-            message,
+            HttpUtility.HtmlEncode(message),
             match =>
             {
                 var content = match.Groups["content"].Value;

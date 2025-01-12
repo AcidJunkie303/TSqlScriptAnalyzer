@@ -1,6 +1,6 @@
 USE [database-3]
 
--- #pragma diagnostic disable AJ5027 -> Needs to be a heap
+-- #pragma diagnostic disable AJ5027 -> Table must be a heap
 CREATE TABLE MyTable3
 (
     Id INT IDENTITY(1, 1) PRIMARY KEY,
