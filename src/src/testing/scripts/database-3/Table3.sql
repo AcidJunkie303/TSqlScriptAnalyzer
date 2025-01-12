@@ -15,3 +15,5 @@ CREATE INDEX IX_MyTable3_Column2_Column3 ON dbo.MyTable3 (Column2, Column3);
 
 -- Create an individual index on Column4
 CREATE INDEX IX_MyTable3_Column4 ON dbo.MyTable3 (Column4);
+
+-- todo: Don't forget to implement XYZ

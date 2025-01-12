@@ -138,7 +138,7 @@ internal sealed class Analyzer : IAnalyzer
             TotalDisabledDiagnosticCount: _applicationSettings.Diagnostics.DisabledDiagnostics.Count,
             TotalErrorCount: issues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Error),
             TotalFormattingIssueCount: issues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Formatting),
-            TotalInformationIssueCount: issues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Info),
+            TotalInformationIssueCount: issues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Information),
             TotalIssueCount: issues.Count,
             TotalMissingIndexIssueCount: issues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.MissingIndex),
             TotalSuppressedIssueCount: suppressedIssues.Count,

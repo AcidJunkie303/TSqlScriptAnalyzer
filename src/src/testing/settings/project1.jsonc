@@ -23,9 +23,12 @@
       ]
     },
     "AJ5004": { // open points / todo 
-      "TopicsByPattern": {
-        "TODO\\s*:\\s*(?<message>[^\r\n]+)": "to do" // named capture 'message' is used to extract the text after the 'todo'
-      }
+      "TopicsAndPatterns": [
+        {
+          "Topic" : "to do",
+          "Pattern": "TODO[\\s:]*(?<message>[^\r\n]+)"
+        }
+      ]
     },
     "AJ5006": { // Banned data types
       "BannedColumnDataTypes": [

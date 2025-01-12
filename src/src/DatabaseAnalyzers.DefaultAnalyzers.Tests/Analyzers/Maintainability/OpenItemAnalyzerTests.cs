@@ -10,11 +10,19 @@ public sealed class OpenItemAnalyzerTests(ITestOutputHelper testOutputHelper)
 {
     private static readonly Aj5004Settings Settings = new Aj5004SettingsRaw
     {
-        TopicsByPattern = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase)
-        {
-            { """TODO\s*:\s*(?<message>[^\r\n]+)""", "to do" },
-            { """\{OpenPoint\}(?<message>[^\r\n]+)\{OpenPoint\}""", "open point" }
-        }
+        TopicsAndPatterns =
+        [
+            new TopicAndPatternRaw
+            {
+                Topic = "to do",
+                Pattern = """TODO\s*:\s*(?<message>[^\r\n]+)"""
+            },
+            new TopicAndPatternRaw
+            {
+                Topic = "open point",
+                Pattern = """\{OpenPoint\}(?<message>[^\r\n]+)\{OpenPoint\}"""
+            }
+        ]
     }.ToSettings();
 
     [Fact]

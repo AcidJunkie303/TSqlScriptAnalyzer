@@ -23,7 +23,7 @@ public sealed class OpenItemAnalyzer : IScriptAnalyzer
 
     private static void AnalyzeToken(IAnalysisContext context, IScriptModel script, Aj5004Settings settings, TSqlParserToken commentToken)
     {
-        foreach (var (expression, topic) in settings.TopicsByPattern)
+        foreach (var (topic, expression) in settings.TopicsAndPatterns)
         {
             var match = expression.Match(commentToken.Text);
             if (!match.Success)
@@ -49,7 +49,7 @@ public sealed class OpenItemAnalyzer : IScriptAnalyzer
         public static DiagnosticDefinition Default { get; } = new
         (
             "AJ5004",
-            IssueType.Warning,
+            IssueType.Information,
             "Open Item",
             "Found `{0}`: {1}",
             ["Topic", "Message"],
