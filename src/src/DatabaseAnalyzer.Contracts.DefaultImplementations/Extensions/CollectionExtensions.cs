@@ -55,18 +55,18 @@ public static class CollectionExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [OverloadResolutionPriority(3)]
-    public static IReadOnlyList<T> NullIfEmpty<T>(this IReadOnlyList<T>? items)
-        => items ?? [];
+    public static IReadOnlyList<T>? NullIfEmpty<T>(this IReadOnlyList<T>? items)
+        => items is null || items.Count == 0 ? null : items;
 
     [OverloadResolutionPriority(2)]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static IReadOnlyCollection<T> NullIfEmpty<T>(this IReadOnlyCollection<T>? items)
-        => items ?? [];
+    public static IReadOnlyCollection<T>? NullIfEmpty<T>(this IReadOnlyCollection<T>? items)
+        => items is null || items.Count == 0 ? null : items;
 
     [OverloadResolutionPriority(1)]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static IEnumerable<T> NullIfEmpty<T>(this IEnumerable<T>? items)
-        => items ?? [];
+    public static IEnumerable<T>? NullIfEmpty<T>(this IEnumerable<T>? items)
+        => items?.Any() ?? false ? items : null;
 
     [OverloadResolutionPriority(2)]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

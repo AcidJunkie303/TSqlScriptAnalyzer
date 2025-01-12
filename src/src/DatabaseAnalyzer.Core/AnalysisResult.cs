@@ -9,5 +9,6 @@ public sealed record AnalysisResult(
     IReadOnlyList<SuppressedIssue> SuppressedIssues,
     IReadOnlyDictionary<string, IReadOnlyList<IIssue>> IssuesByObjectName,
     IReadOnlySet<string> DisabledDiagnostics,
+    IReadOnlyDictionary<string, IDiagnosticDefinition> DiagnosticDefinitionsById,
     AnalysisResultStatistics Statistics
 );

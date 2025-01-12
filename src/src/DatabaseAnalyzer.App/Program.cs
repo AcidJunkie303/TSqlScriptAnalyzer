@@ -20,10 +20,10 @@ internal static class Program
         {
             IsRequired = true
         };
-        var consoleReportTypeOption = new Option<ConsoleReportType>(
+        var consoleReportTypeOption = new Option<ConsoleReportType[]>(
             ["-crt", "--console-report-type"],
-            () => ConsoleReportType.Text,
-            $"The console report type. Either '{nameof(ConsoleReportType.Text)}' or '{nameof(ConsoleReportType.Json)}'.");
+            () => [ConsoleReportType.Text],
+            $"The console report types to render. Following values are valid: '{nameof(ConsoleReportType.Json)}','{nameof(ConsoleReportType.JsonSummary)}', '{nameof(ConsoleReportType.Html)}' or '{nameof(ConsoleReportType.Text)}'.");
         var htmlReportOption = new Option<string?>(
             ["-h", "--html"],
             "The path of file to render the html report to.");
@@ -34,7 +34,7 @@ internal static class Program
             ["-t", "--text"],
             "The path of file to render the text report to.");
 
-        var rootCommand = new RootCommand("Sample app for System.CommandLine");
+        var rootCommand = new RootCommand("T-SQL script file analyzer");
         var analyzeCommand = new Command("analyze", "Analyze a project");
 
         analyzeCommand.AddOption(settingsFileOption);
@@ -45,13 +45,20 @@ internal static class Program
 
         analyzeCommand.SetHandler(context =>
         {
-            var consoleReportType = context.ParseResult.GetValueForOption(consoleReportTypeOption);
+            var consoleReportTypes = context
+                                         .ParseResult
+                                         .GetValueForOption(consoleReportTypeOption)
+                                         .NullIfEmpty()
+                                         ?.Distinct()
+                                         .ToList()
+                                     ?? [ConsoleReportType.Text];
+
             var filePath = context.ParseResult.GetValueForOption(settingsFileOption)!;
             var htmlReportFilePath = context.ParseResult.GetValueForOption(htmlReportOption);
             var jsonReportFilePath = context.ParseResult.GetValueForOption(jsonReportOption);
             var textReportFilePath = context.ParseResult.GetValueForOption(textReportFilePathOption);
 
-            var options = new AnalyzeOptions(filePath, consoleReportType, htmlReportFilePath, jsonReportFilePath, textReportFilePath);
+            var options = new AnalyzeOptions(filePath, consoleReportTypes, htmlReportFilePath, jsonReportFilePath, textReportFilePath);
             context.ExitCode = AnalyzeAsync(options).GetAwaiter().GetResult();
         });
 
@@ -68,16 +75,14 @@ internal static class Program
             var analyzer = AnalyzerFactory.Create(configuration, settings, new ProgressCallbackConsoleWriter());
             var analysisResult = analyzer.Analyze();
 
-            var consoleReportRenderer = ReportRendererFactory.Create(options.ConsoleReportType);
-            var consoleReport = await consoleReportRenderer.RenderReportAsync(analysisResult);
-
-            Console.WriteLine("{{Report-Start}}");
-            Console.WriteLine(consoleReport);
-            Console.WriteLine("{{Report-End}}");
-
-            Console.WriteLine("{{Mini-Json-Report-Start}}");
-            Console.WriteLine(await new JsonMiniReportRenderer().RenderReportAsync(analysisResult));
-            Console.WriteLine("{{Mini-Json-Report-Start}}");
+            foreach (var consoleReportType in options.ConsoleReportTypes)
+            {
+                Console.WriteLine($"{{{{Report-Start-{consoleReportType}}}}}");
+                var consoleReportRenderer = ReportRendererFactory.Create(consoleReportType);
+                var report = await consoleReportRenderer.RenderReportAsync(analysisResult);
+                Console.WriteLine(report.Trim());
+                Console.WriteLine($"{{{{Report-End-{consoleReportType}}}}}");
+            }
 
             if (!options.HtmlReportFilePath.IsNullOrWhiteSpace())
             {
@@ -112,7 +117,7 @@ internal static class Program
 
     private sealed record AnalyzeOptions(
         string ProjectFilePath,
-        ConsoleReportType ConsoleReportType,
+        IReadOnlyCollection<ConsoleReportType> ConsoleReportTypes,
         string? HtmlReportFilePath,
         string? JsonReportFilePath,
         string? TextReportFilePath

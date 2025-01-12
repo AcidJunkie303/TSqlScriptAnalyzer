@@ -17,6 +17,7 @@ namespace DatabaseAnalyzer.Core;
 internal sealed class Analyzer : IAnalyzer
 {
     private readonly ApplicationSettings _applicationSettings;
+    private readonly IReadOnlyDictionary<string, IDiagnosticDefinition> _diagnosticDefinitionsById;
     private readonly IDiagnosticSettingsProvider _diagnosticSettingsProvider;
     private readonly IDiagnosticSuppressionExtractor _diagnosticSuppressionExtractor;
     private readonly IEnumerable<IGlobalAnalyzer> _globalAnalyzers;
@@ -34,7 +35,8 @@ internal sealed class Analyzer : IAnalyzer
         IDiagnosticSettingsProvider diagnosticSettingsProvider,
         IEnumerable<IScriptAnalyzer> scriptAnalyzers,
         IEnumerable<IGlobalAnalyzer> globalAnalyzers,
-        IDiagnosticSuppressionExtractor diagnosticSuppressionExtractor)
+        IDiagnosticSuppressionExtractor diagnosticSuppressionExtractor,
+        IReadOnlyDictionary<string, IDiagnosticDefinition> diagnosticDefinitionsById)
     {
         _progressCallback = progressCallback;
         _scriptSourceProvider = scriptSourceProvider;
@@ -44,6 +46,7 @@ internal sealed class Analyzer : IAnalyzer
         _scriptAnalyzers = scriptAnalyzers;
         _globalAnalyzers = globalAnalyzers;
         _diagnosticSuppressionExtractor = diagnosticSuppressionExtractor;
+        _diagnosticDefinitionsById = diagnosticDefinitionsById;
     }
 
     public AnalysisResult Analyze()
@@ -131,7 +134,7 @@ internal sealed class Analyzer : IAnalyzer
                 StringComparer.OrdinalIgnoreCase
             );
 
-        var staticitics = new AnalysisResultStatistics(
+        var statistics = new AnalysisResultStatistics(
             TotalDisabledDiagnosticCount: _applicationSettings.Diagnostics.DisabledDiagnostics.Count,
             TotalErrorCount: issues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Error),
             TotalFormattingIssueCount: issues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Formatting),
@@ -141,13 +144,15 @@ internal sealed class Analyzer : IAnalyzer
             TotalSuppressedIssueCount: suppressedIssues.Count,
             TotalWarningCount: issues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Warning)
         );
+
         return new AnalysisResult(
             ScriptsRootDirectoryPath: _applicationSettings.ScriptSource.ScriptsRootDirectoryPath,
             Issues: unsuppressedIssues,
             SuppressedIssues: suppressedIssues,
             IssuesByObjectName: issuesByObjectName,
             DisabledDiagnostics: _applicationSettings.Diagnostics.DisabledDiagnostics,
-            Statistics: staticitics
+            Statistics: statistics,
+            DiagnosticDefinitionsById: _diagnosticDefinitionsById
         );
     }
 

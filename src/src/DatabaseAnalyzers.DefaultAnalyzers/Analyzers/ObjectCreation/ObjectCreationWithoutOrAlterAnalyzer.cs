@@ -35,8 +35,8 @@ public sealed class ObjectCreationWithoutOrAlterAnalyzer : IScriptAnalyzer
         (
             "AJ5009",
             IssueType.Warning,
-            "Object creation without 'OR ALTER' clause",
-            "Object creation without 'OR ALTER' clause.",
+            "Object creation without `OR ALTER` clause",
+            "Object creation without `OR ALTER` clause.",
             [],
             new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
