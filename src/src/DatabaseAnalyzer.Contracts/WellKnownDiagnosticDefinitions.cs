@@ -9,7 +9,7 @@ public static class WellKnownDiagnosticDefinitions
     (
         "AJ9000",
         IssueType.Warning,
-        "The first statement in a script must be USE <DATABASE>'",
+        "The first statement in a script must be 'USE <DATABASE>'",
         "The very first statement in a script must be a `USE` statements at location 1,1",
         [],
         new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/AJ9000.md")
