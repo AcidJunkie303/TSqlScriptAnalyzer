@@ -1,7 +1,7 @@
 using System.Collections.Frozen;
 using System.ComponentModel;
+using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 

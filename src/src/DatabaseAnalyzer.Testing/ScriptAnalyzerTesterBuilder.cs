@@ -1,8 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
+using DatabaseAnalyzer.Common.Extensions;
+using DatabaseAnalyzer.Common.Models;
+using DatabaseAnalyzer.Common.Services;
 using DatabaseAnalyzer.Contracts;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Services;
 using Xunit.Abstractions;
 
 namespace DatabaseAnalyzer.Testing;

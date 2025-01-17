@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
+using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using FluentAssertions;
 using Xunit.Abstractions;
 

@@ -3,8 +3,8 @@ using DatabaseAnalyzer.App;
 using DatabaseAnalyzer.App.Reporting;
 using DatabaseAnalyzer.App.Reporting.Html;
 using DatabaseAnalyzer.App.Reporting.Json;
+using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using DatabaseAnalyzer.Core;
 using DatabaseAnalyzer.Core.Configuration;
 

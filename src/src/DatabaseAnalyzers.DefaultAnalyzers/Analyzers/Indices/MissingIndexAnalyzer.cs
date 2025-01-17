@@ -1,8 +1,8 @@
+using DatabaseAnalyzer.Common.Extensions;
+using DatabaseAnalyzer.Common.SqlParsing;
+using DatabaseAnalyzer.Common.SqlParsing.Extraction;
+using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 using DatabaseAnalyzer.Contracts;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.SqlParsing.Extraction.Models;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 

@@ -1,5 +1,5 @@
+using DatabaseAnalyzer.Common.Models;
 using DatabaseAnalyzer.Contracts;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Models;
 using FluentAssertions;
 using Xunit;
 

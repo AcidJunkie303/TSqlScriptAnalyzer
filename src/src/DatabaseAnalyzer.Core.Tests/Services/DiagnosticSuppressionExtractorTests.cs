@@ -1,6 +1,6 @@
+using DatabaseAnalyzer.Common.Extensions;
+using DatabaseAnalyzer.Common.Services;
 using DatabaseAnalyzer.Contracts;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Services;
 using FluentAssertions;
 
 namespace DatabaseAnalyzer.Core.Tests.Services;
