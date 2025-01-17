@@ -1,7 +1,7 @@
 using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
+using DatabaseAnalyzer.Common.Services;
 using DatabaseAnalyzer.Contracts;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Services;
 using DatabaseAnalyzer.Core.Configuration;
 using DatabaseAnalyzer.Core.Plugins;
 using DatabaseAnalyzer.Core.Services;

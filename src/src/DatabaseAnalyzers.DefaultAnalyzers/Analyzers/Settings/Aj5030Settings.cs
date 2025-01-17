@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Text.RegularExpressions;
+using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 
 // ReSharper disable once CheckNamespace
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;

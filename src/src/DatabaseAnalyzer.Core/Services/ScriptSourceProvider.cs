@@ -1,4 +1,4 @@
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
+using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Core.Configuration;
 using DatabaseAnalyzer.Core.Extensions;
 using DatabaseAnalyzer.Core.Models;

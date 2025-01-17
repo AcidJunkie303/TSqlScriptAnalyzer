@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 using Ardalis.GuardClauses;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
+using DatabaseAnalyzer.Common.Extensions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
 

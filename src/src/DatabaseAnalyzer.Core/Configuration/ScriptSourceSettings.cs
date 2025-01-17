@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using Ardalis.GuardClauses;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
+using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Core.Extensions;
 
 namespace DatabaseAnalyzer.Core.Configuration;

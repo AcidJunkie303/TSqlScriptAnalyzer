@@ -1,6 +1,6 @@
 using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
+using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Core.Extensions;
 
 namespace DatabaseAnalyzer.Core.Configuration;

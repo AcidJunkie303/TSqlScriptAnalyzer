@@ -8,7 +8,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\DatabaseAnalyzer.Contracts.DefaultImplementations\DatabaseAnalyzer.Contracts.DefaultImplementations.csproj"/>
+        <ProjectReference Include="..\DatabaseAnalyzer.Common\DatabaseAnalyzer.Common.csproj"/>
         <ProjectReference Include="..\DatabaseAnalyzer.Contracts\DatabaseAnalyzer.Contracts.csproj"/>
     </ItemGroup>
 

@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using BetterConsoleTables;
+using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 using FluentAssertions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.InfrastructureTasks.Docs;

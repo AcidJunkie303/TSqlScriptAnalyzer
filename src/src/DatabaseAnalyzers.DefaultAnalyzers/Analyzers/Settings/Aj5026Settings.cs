@@ -1,8 +1,8 @@
 using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
+using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
-using DatabaseAnalyzer.Contracts.DefaultImplementations.Extensions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
