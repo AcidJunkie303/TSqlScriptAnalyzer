@@ -155,6 +155,20 @@
     "AJ5045": { // Empty lines before/after GO statement
       "RequireEmptyLineBeforeGo": false,
       "RequireEmptyLineAfterGo": true
+    },
+    "AJ5048":{
+      "KeywordNamingPolicy": "PascalCase", // Possible values: 'Disabled', 'UpperCase', 'LowerCase', 'CamelCase' or 'PascalCase'. Default is 'UpperCase'
+      "ExcludedKeywordTokenTypes":[
+        "AsciiStringLiteral",
+        "UnicodeStringLiteral",
+        "Identifier",
+        "QuotedIdentifier",
+        "AsciiStringOrQuotedIdentifier",
+        "Variable",
+        "MultilineComment",
+        "SingleLineComment"
+      ]
     }
   }
 }
+

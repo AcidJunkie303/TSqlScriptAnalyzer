@@ -14,8 +14,6 @@ A framework to analyze multiple T-SQL script files
       and table name
 - Stored procedure, functions etc. documentation header analyzer
 - index creation on table without specified table schema name
-- scripts containing standard headers like:
-  `/****** Object: ……. Script Date:`
 - unused indices (except FK indices)
 - procedure invocation without schema
 - Keywords must be uppercase or lower case (configurable). maybe make the list of keywords configurable -> big though
@@ -58,6 +56,8 @@ A framework to analyze multiple T-SQL script files
   can be configured)
 - No empty line after GO batch separator
 - Multiple consecutive GO batch separator
+- scripts containing standard headers like:
+  `/****** Object: ……. Script Date:`
 
 ### Other
 

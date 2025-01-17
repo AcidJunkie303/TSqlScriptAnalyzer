@@ -53,6 +53,7 @@
 | [AJ5045](diagnostics/AJ5045.md) | Missing empty line before/after GO batch separators                     | Formatting   |
 | [AJ5046](diagnostics/AJ5046.md) | Consecutive GO statements                                               | Formatting   |
 | [AJ5047](diagnostics/AJ5047.md) | Default Object Creation Comments                                        | Warning      |
+| [AJ5048](diagnostics/AJ5048.md) | Keyword uses wrong casing                                               | Formatting   |
 | [AJ9000](diagnostics/AJ9000.md) | The first statement in a script must be 'USE <DATABASE>'                | Warning      |
 | [AJ9001](diagnostics/AJ9001.md) | Missing table alias                                                     | Warning      |
 | [AJ9002](diagnostics/AJ9002.md) | Duplicate object creation statement                                     | Error        |
