@@ -14,9 +14,13 @@ public sealed class KeywordCasingAnalyzerTests(ITestOutputHelper testOutputHelpe
     [InlineData(KeywordNamingPolicy.UpperCase, "PRINT 303")]
     [InlineData(KeywordNamingPolicy.CamelCase, "▶️AJ5048💛script_0.sql💛💛PRINT💛print💛CamelCase✅PRINT◀️ 303")]
     [InlineData(KeywordNamingPolicy.PascalCase, "▶️AJ5048💛script_0.sql💛💛PRINT💛Print💛PascalCase✅PRINT◀️ 303")]
-    public void Theory1(object policy, string code)
+    public void SingleWordTheory(object policy, string code)
     {
-        var settings = new Aj5048Settings((KeywordNamingPolicy) policy);
+        var settings = new Aj5048SettingsRaw
+        {
+            KeywordNamingPolicy = (KeywordNamingPolicy) policy,
+            ExcludedKeywordTokenTypes = ["Identifier"]
+        }.ToSettings();
 
         Verify(settings, code);
     }
@@ -25,9 +29,13 @@ public sealed class KeywordCasingAnalyzerTests(ITestOutputHelper testOutputHelpe
     [InlineData(KeywordNamingPolicy.UpperCase, "WAITFOR DELAY '00:00:10'")]
     [InlineData(KeywordNamingPolicy.CamelCase, "▶️AJ5048💛script_0.sql💛💛WAITFOR💛waitFor💛CamelCase✅WAITFOR◀️ DELAY '00:00:10'")]
     [InlineData(KeywordNamingPolicy.PascalCase, "▶️AJ5048💛script_0.sql💛💛WAITFOR💛WaitFor💛PascalCase✅WAITFOR◀️ DELAY '00:00:10'")]
-    public void Theory2(object policy, string code)
+    public void MultiWordTheory(object policy, string code)
     {
-        var settings = new Aj5048Settings((KeywordNamingPolicy) policy);
+        var settings = new Aj5048SettingsRaw
+        {
+            KeywordNamingPolicy = (KeywordNamingPolicy) policy,
+            ExcludedKeywordTokenTypes = ["Identifier"]
+        }.ToSettings();
 
         Verify(settings, code);
     }
