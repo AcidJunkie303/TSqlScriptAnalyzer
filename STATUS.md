@@ -22,7 +22,6 @@ A framework to analyze multiple T-SQL script files
 - table alias naming analyzer (small only etc. -> regex)
 - XML or JSON string extraction of banned types -> integrate into banned type analyzer
 - Foreign key constraint creation without specifying the source table schema name
-- empty line after BEGIN/END block
 
 ### Resiliency / Robustness
 
@@ -57,6 +56,7 @@ A framework to analyze multiple T-SQL script files
 - scripts containing standard headers like: `/****** Object: ……. Script Date:`
 - Keywords must be uppercase or lower case (configurable). maybe make the list of keywords configurable -> big though
 - procedure invocation without schema
+- empty line after BEGIN/END block
 
 ### Other
 
