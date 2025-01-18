@@ -85,9 +85,18 @@ internal sealed class Analyzer : IAnalyzer
 
     private void PerformAnalysis(AnalysisContext analysisContext)
     {
+        var parallelOptions = new ParallelOptions
+        {
+#if DEBUG
+            MaxDegreeOfParallelism = 1
+#else
+            MaxDegreeOfParallelism = Environment.ProcessorCount
+#endif
+        };
+
         using (_progressCallback.OnProgressWithAutoEndActionNotification("Running analyzers"))
         {
-            Parallel.ForEach(analysisContext.Scripts, script =>
+            Parallel.ForEach(analysisContext.Scripts, parallelOptions, script =>
             {
                 foreach (var analyzer in _scriptAnalyzers)
                 {
@@ -95,7 +104,10 @@ internal sealed class Analyzer : IAnalyzer
                 }
             });
 
-            Parallel.ForEach(_globalAnalyzers, analyzer => ExecuteAndCaptureExceptions(analyzer, string.Empty, string.Empty, analysisContext, () => analyzer.Analyze(analysisContext)));
+            Parallel.ForEach(
+                _globalAnalyzers,
+                parallelOptions,
+                analyzer => ExecuteAndCaptureExceptions(analyzer, string.Empty, string.Empty, analysisContext, () => analyzer.Analyze(analysisContext)));
         }
 
         static void ExecuteAndCaptureExceptions(IObjectAnalyzer analyzer, string databaseName, string relativeScriptFilePath, AnalysisContext analysisContext, Action action)

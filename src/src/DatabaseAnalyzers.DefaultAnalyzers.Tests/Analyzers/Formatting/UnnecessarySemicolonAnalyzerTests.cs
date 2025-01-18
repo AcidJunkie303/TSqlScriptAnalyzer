@@ -52,4 +52,20 @@ public sealed class UnnecessarySemicolonAnalyzerTests(ITestOutputHelper testOutp
                             """;
         Verify(code);
     }
+
+    [Fact]
+    public void WhenSemiColonAfterEnd_ThenDiagnose()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            IF (@a = 'b')
+                            BEGIN
+                                PRINT 22
+                            END▶️AJ5028💛script_0.sql💛✅;◀️
+
+                            """;
+        Verify(code);
+    }
 }

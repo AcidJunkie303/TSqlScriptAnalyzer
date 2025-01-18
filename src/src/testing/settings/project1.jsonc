@@ -157,7 +157,7 @@
       "RequireEmptyLineAfterGo": true
     },
     "AJ5048":{
-      "KeywordNamingPolicy": "PascalCase", // Possible values: 'Disabled', 'UpperCase', 'LowerCase', 'CamelCase' or 'PascalCase'. Default is 'UpperCase'
+      "KeywordNamingPolicy": "UpperCase", // Possible values: 'Disabled', 'UpperCase', 'LowerCase', 'CamelCase' or 'PascalCase'. Default is 'UpperCase'
       "ExcludedKeywordTokenTypes":[
         "AsciiStringLiteral",
         "UnicodeStringLiteral",

@@ -69,10 +69,7 @@ public sealed class UnnecessarySemicolonAnalyzer : IScriptAnalyzer
                 continue;
             }
 
-            if (token.TokenType == TSqlTokenType.With)
-            {
-                return true;
-            }
+            return token.TokenType == TSqlTokenType.With;
         }
 
         return false;
