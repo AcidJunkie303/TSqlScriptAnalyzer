@@ -46,26 +46,6 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzerTests(ITestOutputHelper
     }
 
     [Fact]
-    public void WhenEmptyLineAfterEndFinallyBlock_ThenOk()
-    {
-        const string code = """
-                            USE MyDb
-                            GO
-
-                            BEGIN TRY
-                                PRINT 'tb'
-                            END TRY
-                            BEGIN FINALLY
-                                PRINT '303'
-                            END FINALLY
-
-
-                            """;
-
-        Verify(code);
-    }
-
-    [Fact]
     public void WhenNoEmptyLineAfterEndBlock_ButEndOfFile_ThenOk()
     {
         const string code = """
@@ -108,25 +88,7 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzerTests(ITestOutputHelper
                             END TRY
                             BEGIN CATCH
                                 PRINT '303'
-                            ▶️AJ5050💛script_0.sql💛✅END CATCH◀️
-                            PRINT 'Hello'
-                            """;
-
-        Verify(code);
-    }
-
-    [Fact]
-    public void WhenNoEmptyLineAfterEndFinallyBlock_ThenDiagnose()
-    {
-        const string code = """
-                            USE MyDb
-
-                            BEGIN TRY
-                                PRINT 'tb'
-                            END TRY
-                            BEGIN FINALLY
-                                PRINT '303'
-                            ▶️AJ5050💛script_0.sql💛✅END FINALLY◀️
+                            END ▶️AJ5050💛script_0.sql💛✅CATCH◀️
                             PRINT 'Hello'
                             """;
 

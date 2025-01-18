@@ -18,17 +18,33 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzer : IScriptAnalyzer
                 continue;
             }
 
+            // in case the next non-comment and non-whitespace token is a try (of 'END TRY') we skip it because we don't want to enforce an extra line after END TRY
+            var tryTokenIndex = FindNextTokenIndexWithCommentSkip(script.ParsedScript.ScriptTokenStream, i, IsTry);
+            if (tryTokenIndex >= 0)
+            {
+                continue;
+            }
 
-            AnalyzeEndToken(context, script, token, i);
+            // in case the next non-comment and non-whitespace token is catch, we use this instead of the END (END CATCH)
+            var catchTokenIndex = FindNextTokenIndexWithCommentSkip(script.ParsedScript.ScriptTokenStream, i, IsCatch);
+            if (catchTokenIndex < 0)
+            {
+                AnalyzeEndToken(context, script, token, i);
+            }
+            else
+            {
+                var alternativeToken = script.ParsedScript.ScriptTokenStream[catchTokenIndex];
+                AnalyzeEndToken(context, script, alternativeToken, catchTokenIndex);
+            }
         }
     }
 
-    private int FindNextImmediateCatchOrFinallyToken(IList<TSqlParserToken> tokens, int tokenIndex)
+    private static int FindNextTokenIndexWithCommentSkip(IList<TSqlParserToken> tokens, int tokenIndex, Predicate<TSqlParserToken> predicate)
     {
         var tokenCount = 0;
-        var immediateCatchOrFinallyTokenAfter = tokens
+        var immediateCatchTokenAfter = tokens
             .Skip(tokenIndex + 1)
-            .TakeWhile(a =>
+            .SkipWhile(a =>
             {
                 var result = a.TokenType == TSqlTokenType.WhiteSpace || a.TokenType == TSqlTokenType.SingleLineComment || a.TokenType == TSqlTokenType.MultilineComment;
                 if (result)
@@ -39,6 +55,10 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzer : IScriptAnalyzer
                 return result;
             })
             .FirstOrDefault();
+
+        return immediateCatchTokenAfter is not null && predicate(immediateCatchTokenAfter)
+            ? tokenIndex + tokenCount + 1
+            : -1;
     }
 
     private static void AnalyzeEndToken(IAnalysisContext context, IScriptModel script, TSqlParserToken endToken, int tokenIndex)
@@ -97,6 +117,12 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzer : IScriptAnalyzer
                 .TakeWhile(t => t.TokenType == TSqlTokenType.WhiteSpace)
                 .Sum(a => a.Text.Count(c => c == '\n'));
     }
+
+    private static bool IsCatch(TSqlParserToken? token)
+        => token is not null && token.TokenType == TSqlTokenType.Identifier && string.Equals(token.Text, "CATCH", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsTry(TSqlParserToken? token)
+        => token is not null && token.TokenType == TSqlTokenType.Identifier && string.Equals(token.Text, "TRY", StringComparison.OrdinalIgnoreCase);
 
     private static class DiagnosticDefinitions
     {
