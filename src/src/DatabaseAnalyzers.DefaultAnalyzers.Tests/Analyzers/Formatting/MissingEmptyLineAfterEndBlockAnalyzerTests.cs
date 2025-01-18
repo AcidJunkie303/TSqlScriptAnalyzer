@@ -66,6 +66,7 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzerTests(ITestOutputHelper
     {
         const string code = """
                             USE MyDb
+                            GO
 
                             IF (1=1)
                             BEGIN
@@ -82,6 +83,7 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzerTests(ITestOutputHelper
     {
         const string code = """
                             USE MyDb
+                            GO
 
                             BEGIN TRY
                                 PRINT 'tb'
@@ -90,6 +92,26 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzerTests(ITestOutputHelper
                                 PRINT '303'
                             END ▶️AJ5050💛script_0.sql💛✅CATCH◀️
                             PRINT 'Hello'
+                            """;
+
+        Verify(code);
+    }
+
+    [Fact]
+    public void WhenSemiColonAndEmptyLineAfterEndCatchBlock_Ok()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            BEGIN TRY
+                                PRINT 'tb'
+                            END TRY
+                            BEGIN CATCH
+                                PRINT '303'
+                            END CATCH ;
+
+
                             """;
 
         Verify(code);

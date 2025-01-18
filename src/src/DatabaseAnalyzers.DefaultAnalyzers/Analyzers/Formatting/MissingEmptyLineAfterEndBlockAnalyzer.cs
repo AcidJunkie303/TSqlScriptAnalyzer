@@ -46,13 +46,13 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzer : IScriptAnalyzer
             .Skip(tokenIndex + 1)
             .SkipWhile(a =>
             {
-                var result = a.TokenType == TSqlTokenType.WhiteSpace || a.TokenType == TSqlTokenType.SingleLineComment || a.TokenType == TSqlTokenType.MultilineComment;
-                if (result)
+                var isSkipToken = IsSkipToken(a);
+                if (isSkipToken)
                 {
                     tokenCount++;
                 }
 
-                return result;
+                return isSkipToken;
             })
             .FirstOrDefault();
 
@@ -86,37 +86,22 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzer : IScriptAnalyzer
 
         bool IsNextOrNextAfterNextTokenEndOfFileToken()
         {
-            var tokensAfterEndToken = script.ParsedScript.ScriptTokenStream.Skip(tokenIndex + 1).Take(2).ToList();
-            if (tokensAfterEndToken.Count == 1)
-            {
-                if (tokensAfterEndToken[0].TokenType == TSqlTokenType.EndOfFile)
-                {
-                    return true;
-                }
-            }
-
-            if (tokensAfterEndToken.Count == 2)
-            {
-                if (tokensAfterEndToken[0].TokenType != TSqlTokenType.WhiteSpace)
-                {
-                    return false;
-                }
-
-                if (tokensAfterEndToken[1].TokenType == TSqlTokenType.EndOfFile)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            var tokenAfterSkipTokens = script.ParsedScript.ScriptTokenStream
+                .Skip(tokenIndex + 1)
+                .SkipWhile(IsSkipToken)
+                .FirstOrDefault();
+            return tokenAfterSkipTokens is not null && tokenAfterSkipTokens.TokenType == TSqlTokenType.EndOfFile;
         }
 
         int GetNewLineCountAfterToken()
             => script.ParsedScript.ScriptTokenStream
                 .Skip(tokenIndex + 1)
-                .TakeWhile(t => t.TokenType == TSqlTokenType.WhiteSpace)
+                .TakeWhile(IsSkipToken)
                 .Sum(a => a.Text.Count(c => c == '\n'));
     }
+
+    private static bool IsSkipToken(TSqlParserToken token)
+        => token.TokenType is TSqlTokenType.WhiteSpace or TSqlTokenType.SingleLineComment or TSqlTokenType.MultilineComment or TSqlTokenType.Semicolon;
 
     private static bool IsCatch(TSqlParserToken? token)
         => token is not null && token.TokenType == TSqlTokenType.Identifier && string.Equals(token.Text, "CATCH", StringComparison.OrdinalIgnoreCase);
@@ -131,7 +116,7 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzer : IScriptAnalyzer
             "AJ5050",
             IssueType.Formatting,
             "Missing empty line after END block",
-            "Missing empty line after END block",
+            "Missing empty line after END block.",
             [],
             new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
