@@ -156,7 +156,7 @@
       "RequireEmptyLineBeforeGo": false,
       "RequireEmptyLineAfterGo": true
     },
-    "AJ5048":{
+    "AJ5048":{ // Keyword casing
       "KeywordNamingPolicy": "UpperCase", // Possible values: 'Disabled', 'UpperCase', 'LowerCase', 'CamelCase' or 'PascalCase'. Default is 'UpperCase'
       "ExcludedKeywordTokenTypes":[
         "AsciiStringLiteral",
@@ -167,6 +167,11 @@
         "Variable",
         "MultilineComment",
         "SingleLineComment"
+      ]
+    },
+    "AJ5049" : { // Object invocation without specified schema name
+      "IgnoredObjectNamePatterns" :[
+        
       ]
     }
   }
