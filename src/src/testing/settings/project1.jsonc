@@ -156,7 +156,7 @@
       "RequireEmptyLineBeforeGo": false,
       "RequireEmptyLineAfterGo": true
     },
-    "AJ5048":{
+    "AJ5048":{ // Keyword casing
       "KeywordNamingPolicy": "UpperCase", // Possible values: 'Disabled', 'UpperCase', 'LowerCase', 'CamelCase' or 'PascalCase'. Default is 'UpperCase'
       "ExcludedKeywordTokenTypes":[
         "AsciiStringLiteral",
@@ -169,42 +169,9 @@
         "SingleLineComment"
       ]
     },
-    "AJ504900" : {
+    "AJ5049" : { // Object invocation without specified schema name
       "IgnoredObjectNamePatterns" :[
-        "ABS",
-        "ACOS",
-        "ASIN",
-        "ATAN",
-        "ATN2",
-        "AVG",
-        "CEILING",
-        "CHARINDEX",
-        "CONCAT",
-        "CONVERT",
-        "COUNT",
-        "CURRENT_USER",
-        "DATALENGTH",
-        "DATEADD",
-        "DATEDIFF",
-        "FORMAT",
-        "GETDATE",
-        "ISNULL",
-        "LEN",
-        "LOWER",
-        "LTRIM",
-        "NCHAR",
-        "NULLIF",
-        "PATINDEX",
-        "REPLACE",
-        "REPLICATE",
-        "ROUND",
-        "RTRIM",
-        "SUBSTRING",
-        "UPPER",
-        "YEAR",
-        "STRING_SPLIT",
-        "OPENJSON",
-        "GENERATE_SERIES"
+        
       ]
     }
   }

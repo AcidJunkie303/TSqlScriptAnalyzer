@@ -14,17 +14,11 @@ public sealed class ObjectInvocationWithoutSchemaNameAnalyzer : IScriptAnalyzer
         var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5049Settings>();
 
         var procedureCalls = script.ParsedScript.GetChildren<ExecutableProcedureReference>(recursive: true);
-        var scalarFunctionCalls = script.ParsedScript.GetChildren<FunctionCall>(recursive: true);
         var tableValuedFunctionCalls = script.ParsedScript.GetChildren<SchemaObjectFunctionTableReference>(recursive: true);
 
         foreach (var procedureCall in procedureCalls)
         {
             AnalyzeProcedureCall(context, script, settings, procedureCall);
-        }
-
-        foreach (var functionCall in scalarFunctionCalls)
-        {
-            AnalyzeScalarFunctionCall(context, script, settings, functionCall);
         }
 
         foreach (var tableValuedFunctionCall in tableValuedFunctionCalls)
@@ -65,21 +59,6 @@ public sealed class ObjectInvocationWithoutSchemaNameAnalyzer : IScriptAnalyzer
         }
 
         Report(context, script, procedureReference, "procedure", pureProcedureName);
-    }
-
-    private static void AnalyzeScalarFunctionCall(IAnalysisContext context, IScriptModel script, Aj5049Settings settings, FunctionCall functionCall)
-    {
-        if (functionCall.CallTarget is not null)
-        {
-            return;
-        }
-
-        if (IsObjectNameIgnored(settings, functionCall.FunctionName.Value))
-        {
-            return;
-        }
-
-        Report(context, script, functionCall, "scalar function", functionCall.FunctionName.Value);
     }
 
     private static void AnalyzeTableValuedFunctionCall(IAnalysisContext context, IScriptModel script, Aj5049Settings settings, SchemaObjectFunctionTableReference functionReference)
