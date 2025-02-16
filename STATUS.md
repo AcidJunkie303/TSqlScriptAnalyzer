@@ -57,6 +57,7 @@ A framework to analyze multiple T-SQL script files
 - procedure invocation without schema
 - empty line after BEGIN/END block
 - unused indices (except FK indices)
+- missing index
 
 ### Other
 
