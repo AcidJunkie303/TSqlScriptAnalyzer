@@ -14,7 +14,6 @@ A framework to analyze multiple T-SQL script files
       and table name
 - Stored procedure, functions etc. documentation header analyzer
 - index creation on table without specified table schema name
-- unused indices (except FK indices)
 - table alias with different casing (not done already?)
 - unconditional table or index creation (not embedded in IF exists check)
 - referenced stored procedure not found
@@ -57,6 +56,8 @@ A framework to analyze multiple T-SQL script files
 - Keywords must be uppercase or lower case (configurable). maybe make the list of keywords configurable -> big though
 - procedure invocation without schema
 - empty line after BEGIN/END block
+- unused indices (except FK indices)
+- missing index
 
 ### Other
 

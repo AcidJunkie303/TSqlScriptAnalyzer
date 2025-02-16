@@ -16,6 +16,7 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
     {
         var databasesByName = new DatabaseObjectExtractor(context.IssueReporter)
             .Extract(context.Scripts, context.DefaultSchemaName);
+
         AnalyzeModules(context, databasesByName);
         AnalyzeForeignKeys(context, databasesByName);
     }
@@ -81,12 +82,12 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
                     continue;
                 }
 
-                AnalyzeStatements(context, settings, script, statementList, databasesByName);
+                AnalyzeStatements(context, script, settings, statementList, databasesByName);
             }
         }
     }
 
-    private static void AnalyzeStatements(IAnalysisContext context, Aj5015Settings settings, IScriptModel script, TSqlFragment fragment, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
+    private static void AnalyzeStatements(IAnalysisContext context, IScriptModel script, Aj5015Settings settings, TSqlFragment fragment, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
     {
         var finder = new FilteringColumnFinder(context.IssueReporter, script.ParsedScript, script.RelativeScriptFilePath, context.DefaultSchemaName, script.ParentFragmentProvider);
 
