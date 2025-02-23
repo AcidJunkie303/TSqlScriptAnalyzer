@@ -11,6 +11,7 @@
     <File Path="..\CreatingAnalyzers.md" />
     <File Path="..\UnitTestingAnalyzers.md" />
     <File Path="TSqlScriptAnalyzer.sln.DotSettings" />
+    <File Path="src\testing\settings\project1.jsonc" />
   </Folder>
   <Folder Name="/Tests/">
     <Project Path="src\DatabaseAnalyzer.Common.Tests\DatabaseAnalyzer.Common.Tests.csproj" Type="Classic C#" />

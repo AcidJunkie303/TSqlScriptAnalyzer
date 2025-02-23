@@ -1,6 +1,7 @@
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
+using DatabaseAnalyzers.DefaultAnalyzers.Model;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
@@ -12,8 +13,11 @@ public sealed class IndexNamingAnalyzer : IScriptAnalyzer
     public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
         var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5052Settings>();
+        var createIndexStatements = script.ParsedScript
+            .GetChildren(recursive: true)
+            .Where(IsCreateIndexStatement);
 
-        foreach (var statement in script.ParsedScript.GetChildren<CreateIndexStatement>(recursive: true))
+        foreach (var statement in createIndexStatements)
         {
             AnalyzeCreateIndexStatement(context, script, settings, statement);
         }
@@ -22,110 +26,259 @@ public sealed class IndexNamingAnalyzer : IScriptAnalyzer
         {
             AnalyzeCreateTableStatement(context, script, settings, statement);
         }
+
+        foreach (var statement in script.ParsedScript.GetChildren<AlterTableAddTableElementStatement>(recursive: true))
+        {
+            AnalyeAlterTableStatement(context, script, settings, statement);
+        }
     }
+
+    private static bool IsCreateIndexStatement(TSqlFragment statement)
+        => statement is
+            CreateIndexStatement
+            or CreateSpatialIndexStatement
+            or CreateXmlIndexStatement
+            or CreateSelectiveXmlIndexStatement
+            or CreateColumnStoreIndexStatement
+            or CreateFullTextIndexStatement;
 
     private static void AnalyzeCreateTableStatement(IAnalysisContext context, IScriptModel script, Aj5052Settings settings, CreateTableStatement statement)
     {
-    }
+        var primaryKeyDefinition = statement.Definition.TableConstraints
+            .OfType<UniqueConstraintDefinition>()
+            .FirstOrDefault(a => a.IsPrimaryKey);
 
-    private static void AnalyzeCreateIndexStatement(IAnalysisContext context, IScriptModel script, Aj5052Settings settings, CreateIndexStatement statement)
-    {
-        if (!HasSucceedingSiblings(branchExecutionTerminatorStatement, script.ParentFragmentProvider))
+        if (primaryKeyDefinition is null)
         {
             return;
         }
 
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(branchExecutionTerminatorStatement) ?? DatabaseNames.Unknown;
-        var fullObjectName = branchExecutionTerminatorStatement.TryGetFirstClassObjectName(context, script);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, branchExecutionTerminatorStatement.GetCodeRegion(), statementName);
-
-        static bool HasSucceedingSiblings(TSqlFragment fragment, IParentFragmentProvider parentFragmentProvider)
-            => fragment.GetSucceedingSiblings(parentFragmentProvider).Any();
+        var tableSchemaName = statement.SchemaObjectName?.SchemaIdentifier?.Value ?? context.DefaultSchemaName;
+        var tableName = statement.SchemaObjectName?.BaseIdentifier.Value ?? Constants.UnknownObjectName;
+        AnalyzeUniqueConstraintDefinition(context, script, settings, primaryKeyDefinition, tableSchemaName, tableName);
     }
 
-    private static void AnalyzeGoToStatements(IAnalysisContext context, IScriptModel script)
+    private static void AnalyeAlterTableStatement(IAnalysisContext context, IScriptModel script, Aj5052Settings settings, AlterTableAddTableElementStatement statement)
     {
-        foreach (var statement in script.ParsedScript.GetChildren<GoToStatement>(recursive: true))
-        {
-            AnalyzeGoToStatement(context, script, statement);
-        }
-    }
+        var primaryKeyDefinition = statement.Definition.TableConstraints
+            .OfType<UniqueConstraintDefinition>()
+            .FirstOrDefault(a => a.IsPrimaryKey);
 
-    private static void AnalyzeGoToStatement(IAnalysisContext context, IScriptModel script, GoToStatement goToStatement)
-    {
-        foreach (var batch in script.ParsedScript.Batches)
-        {
-            AnalyzeGoToStatement(context, script, batch, goToStatement);
-        }
-    }
-
-    private static void AnalyzeGoToStatement(IAnalysisContext context, IScriptModel script, TSqlBatch batch, GoToStatement goToStatement)
-    {
-        if (!IsCodeAfterGotoDead(script, batch, goToStatement))
+        if (primaryKeyDefinition is null)
         {
             return;
         }
 
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(goToStatement) ?? DatabaseNames.Unknown;
-        var fullObjectName = goToStatement.TryGetFirstClassObjectName(context, script);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, goToStatement.GetCodeRegion(), "GOTO");
+        var tableSchemaName = statement.SchemaObjectName?.SchemaIdentifier?.Value ?? context.DefaultSchemaName;
+        var tableName = statement.SchemaObjectName?.BaseIdentifier.Value ?? Constants.UnknownObjectName;
+
+        AnalyzeUniqueConstraintDefinition(context, script, settings, primaryKeyDefinition, tableSchemaName, tableName);
     }
 
-    private static bool IsCodeAfterGotoDead(IScriptModel script, TSqlBatch batch, GoToStatement goToStatement)
+    private static void AnalyzeUniqueConstraintDefinition(IAnalysisContext context, IScriptModel script, Aj5052Settings settings, UniqueConstraintDefinition primaryKeyDefinition, string tableSchemaName, string tableName)
     {
-        // The code after GOTO is only dead if the siblings after the GOTO statement aren't any other labels than the target label
-        var labelName = goToStatement.LabelName?.Value.TrimEnd(':') + ':'; // we make sure that it ends with a colon
-        if (labelName.IsNullOrWhiteSpace())
+        if (!primaryKeyDefinition.IsPrimaryKey)
         {
-            return false;
+            return;
         }
 
-        var targetLabel = batch
-            .GetChildren<LabelStatement>(recursive: true)
-            .SingleOrDefault(a => a.Value.EqualsOrdinalIgnoreCase(labelName));
-
-        if (targetLabel is null)
+        var indexProperties = primaryKeyDefinition.Clustered switch
         {
-            return false;
+            true  => IndexProperties.PrimaryKey | IndexProperties.Clustered,
+            false => IndexProperties.PrimaryKey | IndexProperties.NonClustered,
+            _     => IndexProperties.PrimaryKey
+        };
+
+        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(primaryKeyDefinition) ?? Constants.UnknownObjectName;
+        var indexData = new IndexData
+        (
+            indexProperties,
+            primaryKeyDefinition.ConstraintIdentifier,
+            primaryKeyDefinition.ConstraintIdentifier.Value,
+            databaseName,
+            tableSchemaName,
+            tableName,
+            primaryKeyDefinition.Columns.Select(a => a.Column.MultiPartIdentifier.Identifiers.Select(x => x.Value).StringJoin(".").NullIfEmptyOrWhiteSpace() ?? Constants.UnknownObjectName).ToList()
+        );
+
+        var expectedIndexName = CreateIndexName(settings, indexData);
+        if (indexData.Name.Equals(expectedIndexName, StringComparison.OrdinalIgnoreCase))
+        {
+            return;
         }
 
-        var countOfSucceedingFragments = goToStatement.GetSucceedingSiblings(script.ParentFragmentProvider).Count();
-        if (countOfSucceedingFragments == 0)
+        context.IssueReporter.Report(DiagnosticDefinitions.Default, indexData.DatabaseName, script.RelativeScriptFilePath, indexData.FullObjectName, indexData.Identifier.GetCodeRegion(),
+            indexData.Name, expectedIndexName, indexData.IndexProperties);
+    }
+
+    private static void AnalyzeCreateIndexStatement(IAnalysisContext context, IScriptModel script, Aj5052Settings settings, TSqlFragment fragment)
+    {
+        var indexData = GetIndexProperties(script, context.DefaultSchemaName, fragment);
+        if (indexData is null)
         {
-            return false;
+            return;
         }
 
-        var succeedingSiblingLabels = goToStatement
-            .GetSucceedingSiblings(script.ParentFragmentProvider)
-            .OfType<LabelStatement>()
-            .ToList();
-
-        var isTargetLabelSucceedingSibling = succeedingSiblingLabels.Exists(a => a == targetLabel);
-        if (isTargetLabelSucceedingSibling)
+        var expectedIndexName = CreateIndexName(settings, indexData);
+        if (indexData.Name.Equals(expectedIndexName, StringComparison.OrdinalIgnoreCase))
         {
-            var countOfStatementsBetweenGotoAndNextLabel = goToStatement
-                .GetSucceedingSiblings(script.ParentFragmentProvider)
-                .TakeWhile(a => a is not LabelStatement)
-                .Count();
+            return;
+        }
 
-            if (countOfStatementsBetweenGotoAndNextLabel == 0)
+        context.IssueReporter.Report(DiagnosticDefinitions.Default, indexData.DatabaseName, script.RelativeScriptFilePath, indexData.FullObjectName, indexData.Identifier.GetCodeRegion(),
+            indexData.Name, expectedIndexName, indexData.IndexProperties);
+    }
+
+    private static string CreateIndexName(Aj5052Settings settings, IndexData indexData)
+    {
+        var pattern = GetPatternForIndexProperties(settings, indexData.IndexProperties);
+        return PopulatePattern(pattern, indexData);
+    }
+
+    private static string PopulatePattern(string pattern, IndexData indexData)
+    {
+        var result = pattern
+            .Replace(Aj5052Settings.Placeholders.DatabaseName, indexData.DatabaseName, StringComparison.OrdinalIgnoreCase)
+            .Replace(Aj5052Settings.Placeholders.TableSchemaName, indexData.TableSchemaName, StringComparison.OrdinalIgnoreCase)
+            .Replace(Aj5052Settings.Placeholders.TableName, indexData.TableName, StringComparison.OrdinalIgnoreCase);
+
+        if (indexData.ColumnNames.Count > 0)
+        {
+            var flatColumnNames = indexData.ColumnNames.StringJoin("_");
+            result = result.Replace(Aj5052Settings.Placeholders.ColumnNames, flatColumnNames, StringComparison.OrdinalIgnoreCase);
+        }
+
+        return result;
+    }
+
+    private static string GetPatternForIndexProperties(Aj5052Settings settings, IndexProperties indexProperties)
+    {
+        foreach (var (properties, pattern) in settings.NamingPatternByIndexProperties)
+        {
+            if (indexProperties.HasFlag(properties))
             {
-                return false;
+                return pattern;
             }
         }
 
-        return true;
+        return settings.DefaultPattern;
+    }
+
+    private static IndexData? GetIndexProperties(IScriptModel script, string defaultSchemaName, TSqlFragment fragment)
+        => fragment switch
+        {
+            CreateIndexStatement createIndexStatement                         => GetIndexProperties(script, defaultSchemaName, createIndexStatement),
+            CreateSpatialIndexStatement createSpatialIndexStatement           => GetIndexProperties(script, defaultSchemaName, createSpatialIndexStatement),
+            CreateXmlIndexStatement createXmlIndexStatement                   => GetIndexProperties(script, defaultSchemaName, createXmlIndexStatement),
+            CreateSelectiveXmlIndexStatement createSelectiveXmlIndexStatement => GetIndexProperties(script, defaultSchemaName, createSelectiveXmlIndexStatement),
+            CreateColumnStoreIndexStatement createColumnStoreIndexStatement   => GetIndexProperties(script, defaultSchemaName, createColumnStoreIndexStatement),
+            CreateFullTextIndexStatement createFullTextIndexStatement         => GetIndexProperties(script, defaultSchemaName, createFullTextIndexStatement),
+            _                                                                 => null
+        };
+
+    private static IndexData GetIndexProperties(IScriptModel script, string defaultSchemaName, CreateIndexStatement statement)
+    {
+        var indexProperties = statement.Clustered == true ? IndexProperties.Clustered : IndexProperties.None;
+        indexProperties |= statement.Clustered == false ? IndexProperties.NonClustered : IndexProperties.None;
+        indexProperties |= statement.FilterPredicate is null ? IndexProperties.None : IndexProperties.Filtered;
+        indexProperties |= statement.IncludeColumns.IsNullOrEmpty() ? IndexProperties.None : IndexProperties.WithIncludedColumns;
+        indexProperties |= statement.Unique ? IndexProperties.Unique : IndexProperties.None;
+
+        return new IndexData
+        (
+            indexProperties,
+            statement.Name,
+            statement.Name.Value,
+            script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(statement) ?? Constants.UnknownObjectName,
+            statement.OnName.SchemaIdentifier?.Value ?? defaultSchemaName,
+            statement.OnName.BaseIdentifier?.Value ?? Constants.UnknownObjectName,
+            statement.Columns.Select(a => a.Column.MultiPartIdentifier.Identifiers.Select(x => x.Value).StringJoin(".").NullIfEmptyOrWhiteSpace() ?? Constants.UnknownObjectName).ToList()
+        );
+    }
+
+    private static IndexData GetIndexProperties(IScriptModel script, string defaultSchemaName, CreateColumnStoreIndexStatement statement)
+    {
+        var indexProperties = statement.Clustered == true ? IndexProperties.Clustered : IndexProperties.None;
+        indexProperties |= statement.Clustered == false ? IndexProperties.NonClustered : IndexProperties.None;
+        indexProperties |= statement.FilterPredicate is null ? IndexProperties.None : IndexProperties.Filtered;
+
+        return new IndexData(
+            IndexProperties: indexProperties,
+            Identifier: statement.Name,
+            Name: statement.Name.Value,
+            DatabaseName: script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(fragment: statement) ?? Constants.UnknownObjectName,
+            TableSchemaName: statement.OnName.SchemaIdentifier?.Value ?? defaultSchemaName,
+            TableName: statement.OnName.BaseIdentifier?.Value ?? Constants.UnknownObjectName,
+            ColumnNames: statement.Columns.Select(selector: a => a.MultiPartIdentifier.ToString() ?? Constants.UnknownObjectName).ToList()
+        );
+    }
+
+    private static IndexData GetIndexProperties(IScriptModel script, string defaultSchemaName, CreateSpatialIndexStatement statement)
+        => new(
+            IndexProperties: IndexProperties.Spatial,
+            Identifier: statement.Name,
+            Name: statement.Name.Value,
+            DatabaseName: script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(fragment: statement) ?? Constants.UnknownObjectName,
+            TableSchemaName: statement.Object.SchemaIdentifier?.Value ?? defaultSchemaName,
+            TableName: statement.Object.BaseIdentifier?.Value ?? Constants.UnknownObjectName,
+            ColumnNames: [statement.SpatialColumnName.Value]
+        );
+
+    private static IndexData GetIndexProperties(IScriptModel script, string defaultSchemaName, CreateXmlIndexStatement statement)
+        => new(
+            IndexProperties: IndexProperties.Xml,
+            Identifier: statement.Name,
+            Name: statement.Name.Value,
+            DatabaseName: script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(fragment: statement) ?? Constants.UnknownObjectName,
+            TableSchemaName: statement.OnName.SchemaIdentifier?.Value ?? defaultSchemaName,
+            TableName: statement.OnName.BaseIdentifier?.Value ?? Constants.UnknownObjectName,
+            ColumnNames: [statement.XmlColumn.Value]
+        );
+
+    private static IndexData GetIndexProperties(IScriptModel script, string defaultSchemaName, CreateSelectiveXmlIndexStatement statement)
+        => new(
+            IndexProperties: IndexProperties.Xml,
+            Identifier: statement.Name,
+            Name: statement.Name.Value,
+            DatabaseName: script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(fragment: statement) ?? Constants.UnknownObjectName,
+            TableSchemaName: statement.OnName.SchemaIdentifier?.Value ?? defaultSchemaName,
+            TableName: statement.OnName.BaseIdentifier?.Value ?? Constants.UnknownObjectName,
+            ColumnNames: [statement.XmlColumn.Value]
+        );
+
+    private static IndexData GetIndexProperties(IScriptModel script, string defaultSchemaName, CreateFullTextIndexStatement statement)
+        => new(
+            IndexProperties: IndexProperties.FullText,
+            Identifier: statement.KeyIndexName,
+            Name: statement.KeyIndexName.Value,
+            DatabaseName: script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(fragment: statement) ?? Constants.UnknownObjectName,
+            TableSchemaName: statement.OnName.SchemaIdentifier?.Value ?? defaultSchemaName,
+            TableName: statement.OnName.BaseIdentifier?.Value ?? Constants.UnknownObjectName,
+            ColumnNames: statement.FullTextIndexColumns.Select(a => a.Name.Value).ToList()
+        );
+
+    private sealed record IndexData(
+        IndexProperties IndexProperties,
+        Identifier Identifier,
+        string Name,
+        string DatabaseName,
+        string TableSchemaName,
+        string TableName,
+        IReadOnlyList<string> ColumnNames
+    )
+    {
+        public string FullObjectName => $"{DatabaseName}.{TableSchemaName}.{TableName}";
     }
 
     private static class DiagnosticDefinitions
     {
         public static DiagnosticDefinition Default { get; } = new
         (
-            "AJ5035",
+            "AJ5052",
             IssueType.Warning,
-            "Dead Code",
-            "The code after `{0}` cannot be reached and is considered dead code.",
-            ["Statement"],
+            "Index Naming",
+            "The index `{0}` should be named as `{1}`. Index flags: `{2}`.",
+            ["Index Name", "Expected index name", "Index Properties"],
             new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
         );
     }
