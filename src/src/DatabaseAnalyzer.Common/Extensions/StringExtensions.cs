@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using DatabaseAnalyzer.Contracts;
@@ -211,4 +212,11 @@ public static class StringExtensions
             }
         }
     }
+
+#if NET8_0
+    public static FrozenSet<string> ToFrozenSet(this string value, StringComparer comparer)
+        => new[] { value }.ToFrozenSet(comparer);
+#else
+    // TODO: remove NET8_0 part
+#endif
 }

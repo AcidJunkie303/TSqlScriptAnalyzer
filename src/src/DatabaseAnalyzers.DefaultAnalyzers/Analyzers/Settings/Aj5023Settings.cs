@@ -29,6 +29,6 @@ internal sealed record Aj5023Settings(
     FrozenSet<TSqlTokenType> StatementTypesToIgnore
 ) : ISettings<Aj5023Settings>
 {
-    public static Aj5023Settings Default { get; } = new([]);
+    public static Aj5023Settings Default { get; } = new(FrozenSet<TSqlTokenType>.Empty);
     public static string DiagnosticId => "AJ5023";
 }

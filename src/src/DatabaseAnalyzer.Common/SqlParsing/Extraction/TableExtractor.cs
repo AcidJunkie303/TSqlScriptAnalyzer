@@ -34,7 +34,7 @@ public sealed class TableExtractor : Extractor<TableInformation>
             .Select(a =>
             {
                 var isPrimaryKey = a.ColumnDefinition.Constraints.Any(b => b is UniqueConstraintDefinition { IsPrimaryKey: true });
-                var isClustered = a.ColumnDefinition.Constraints.Any(b => b is UniqueConstraintDefinition { Clustered: true });
+                var isClustered = a.ColumnDefinition.Constraints.Any(b => b is UniqueConstraintDefinition { Clustered    : true });
                 var indexType = TableColumnIndexTypes.None;
 
                 if (isPrimaryKey)
@@ -59,8 +59,8 @@ public sealed class TableExtractor : Extractor<TableInformation>
                     tableName,
                     IndexName: null,
                     indexType,
-                    [a.ObjectName],
-                    [],
+                    a.ObjectName.ToFrozenSet(StringComparer.Ordinal),
+                    FrozenSet<string>.Empty,
                     a.ColumnDefinition,
                     script.RelativeScriptFilePath
                 );
@@ -143,7 +143,7 @@ public sealed class TableExtractor : Extractor<TableInformation>
             constraint.Columns
                 .Select(static a => a.Column.MultiPartIdentifier.Identifiers[0].Value)
                 .ToFrozenSet(StringComparer.OrdinalIgnoreCase),
-            [],
+            FrozenSet<string>.Empty,
             constraint,
             relativeScriptFilePath
         );

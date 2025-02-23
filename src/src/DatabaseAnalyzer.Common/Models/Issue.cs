@@ -31,15 +31,15 @@ public sealed class Issue : IIssue
     public IReadOnlyList<object> MessageInsertions { get; }
     public string Message { get; }
 
-    public static Issue Create(IDiagnosticDefinition diagnosticDefinition, string databaseName, string relativeScriptFilePath, string? fullObjectName, CodeRegion codeRegion, params IReadOnlyList<object> insertions)
+    public static Issue Create(IDiagnosticDefinition diagnosticDefinition, string databaseName, string relativeScriptFilePath, string? fullObjectName, CodeRegion codeRegion, params object[] insertions)
     {
         ArgumentNullException.ThrowIfNull(diagnosticDefinition);
         ArgumentNullException.ThrowIfNull(insertions);
 
         var expectedInsertionCount = InsertionStringHelpers.CountInsertionStringPlaceholders(diagnosticDefinition.MessageTemplate);
-        if (expectedInsertionCount != insertions.Count)
+        if (expectedInsertionCount != insertions.Length)
         {
-            throw new ArgumentException($"Expected {expectedInsertionCount} insertions, but got {insertions.Count}.", nameof(insertions));
+            throw new ArgumentException($"Expected {expectedInsertionCount} insertions, but got {insertions.Length}.", nameof(insertions));
         }
 
         var messageInsertionStrings = insertions

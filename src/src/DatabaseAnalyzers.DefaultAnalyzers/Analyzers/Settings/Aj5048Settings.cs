@@ -39,7 +39,7 @@ internal sealed record Aj5048Settings(
     FrozenSet<TSqlTokenType> ExcludedKeywordTokenTypes
 ) : ISettings<Aj5048Settings>
 {
-    public static Aj5048Settings Default { get; } = new(KeywordNamingPolicy.UpperCase, []);
+    public static Aj5048Settings Default { get; } = new(KeywordNamingPolicy.UpperCase, FrozenSet<TSqlTokenType>.Empty);
     public static string DiagnosticId => "AJ5048";
 }
 
