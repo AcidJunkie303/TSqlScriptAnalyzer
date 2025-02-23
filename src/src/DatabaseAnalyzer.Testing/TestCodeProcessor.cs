@@ -65,7 +65,7 @@ internal sealed partial class TestCodeProcessor
                     var fullObjectName = parts[2].NullIfEmptyOrWhiteSpace();
                     var innerCode = match.Groups["code"].Value;
                     var insertions = parts.Count >= 4
-                        ? parts[3..]
+                        ? parts[3..].ToArray()
                         : [];
 
                     // tricky part: the code can span across multiple lines

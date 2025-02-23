@@ -26,7 +26,7 @@ public sealed class MissingPrimaryKeyAnalyzer : IGlobalAnalyzer
 
     private static void Analyze(IAnalysisContext context, Aj5026Settings settings, TableInformation table)
     {
-        if (table.Indices.Any(static a => a.IndexTypes.HasFlag(TableColumnIndexTypes.PrimaryKey)))
+        if (table.Indices.Any(static a => a.IndexType.HasFlag(TableColumnIndexTypes.PrimaryKey)))
         {
             return;
         }

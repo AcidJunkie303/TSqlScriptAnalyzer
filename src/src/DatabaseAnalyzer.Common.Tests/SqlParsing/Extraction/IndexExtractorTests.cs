@@ -34,7 +34,7 @@ public sealed class IndexExtractorTests
         indices[0].DatabaseName.Should().Be("MyDb");
         indices[0].SchemaName.Should().Be("dbo");
         indices[0].ColumnNames.Should().BeEquivalentTo("Value1");
-        indices[0].IndexTypes.Should().Be(TableColumnIndexTypes.None);
+        indices[0].IndexType.Should().Be(TableColumnIndexTypes.None);
         indices[0].IncludedColumnNames.Should().BeEmpty();
     }
 }

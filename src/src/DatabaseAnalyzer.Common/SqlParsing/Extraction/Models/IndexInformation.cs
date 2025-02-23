@@ -10,7 +10,7 @@ public sealed record IndexInformation(
     string SchemaName,
     string TableName,
     string? IndexName,
-    TableColumnIndexTypes IndexTypes,
+    TableColumnIndexTypes IndexType,
     FrozenSet<string> ColumnNames,
     FrozenSet<string> IncludedColumnNames,
     TSqlFragment CreationStatement,

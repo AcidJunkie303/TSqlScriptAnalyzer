@@ -26,7 +26,7 @@ public sealed class MissingClusteredIndexAnalyzer : IGlobalAnalyzer
 
     private static void Analyze(IAnalysisContext context, Aj5027Settings settings, TableInformation table)
     {
-        if (table.Indices.Any(static a => a.IndexTypes.HasFlag(TableColumnIndexTypes.Clustered)))
+        if (table.Indices.Any(static a => a.IndexType.HasFlag(TableColumnIndexTypes.Clustered)))
         {
             return;
         }
