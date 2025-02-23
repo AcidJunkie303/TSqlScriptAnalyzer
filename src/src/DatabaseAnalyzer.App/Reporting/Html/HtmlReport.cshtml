@@ -5,7 +5,7 @@
 @inherits Microsoft.AspNetCore.Mvc.Razor.RazorPage<DatabaseAnalyzer.Core.AnalysisResult>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head title="Database Analysis Result">
-    @Html.Partial("/Reporting/Html/Styles-Dark.cshtml")
+    @await Html.PartialAsync("/Reporting/Html/Styles-Dark.cshtml")
 </head>
 <body>
 
@@ -189,7 +189,7 @@ else
     </table>
 }
 
-@Html.Partial("/Reporting/Html/Scripts.cshtml")
+@await Html.PartialAsync("/Reporting/Html/Scripts.cshtml")
 </body>
 </html>
 
@@ -199,9 +199,9 @@ else
 
     string MakeFullPath(string relativeFilePath) => System.IO.Path.Combine(Model.ScriptsRootDirectoryPath, relativeFilePath);
 
-    string GetCssClassForIssueCount(int issueCount) => issueCount == 0 ? "stats-has-no-issues" : "stats-has-issues";
+    static string GetCssClassForIssueCount(int issueCount) => issueCount == 0 ? "stats-has-no-issues" : "stats-has-issues";
 
-    HtmlString HighLightCodeParts(string message)
+    static HtmlString HighLightCodeParts(string message)
     {
         var markup = CodeBlockFinder.Replace(
             HttpUtility.HtmlEncode(message),
