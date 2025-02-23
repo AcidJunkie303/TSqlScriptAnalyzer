@@ -57,6 +57,7 @@
 | [AJ5049](diagnostics/AJ5049.md) | Object Invocation without explicitly specified schema name              | Warning      |
 | [AJ5050](diagnostics/AJ5050.md) | Missing empty line after END block                                      | Formatting   |
 | [AJ5051](diagnostics/AJ5051.md) | Unused Index                                                            | Warning      |
+| [AJ5052](diagnostics/AJ5052.md) | Index Naming                                                            | Warning      |
 | [AJ9000](diagnostics/AJ9000.md) | The first statement in a script must be 'USE <DATABASE>'                | Warning      |
 | [AJ9001](diagnostics/AJ9001.md) | Missing table alias                                                     | Warning      |
 | [AJ9002](diagnostics/AJ9002.md) | Duplicate object creation statement                                     | Error        |

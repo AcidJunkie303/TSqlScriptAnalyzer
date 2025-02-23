@@ -13,12 +13,12 @@ A framework to analyze multiple T-SQL script files
     - if the object is tied to a table, add placeholders to the expression pattern which represent the current schema
       and table name
 - Stored procedure, functions etc. documentation header analyzer
-- index creation on table without specified table schema name
-- table alias with different casing (not done already?)
-- unconditional table or index creation (not embedded in IF exists check)
-- referenced stored procedure not found
-- referenced object name casing difference (procedure, table, view, column etc.) also schema name
-- table alias naming analyzer (small only etc. -> regex)
+- Index creation on table without specified table schema name
+- Table alias with different casing (not done already?)
+- Unconditional table or index creation (not embedded in IF exists check)
+- Referenced stored procedure not found
+- Referenced object name casing difference (procedure, table, view, column etc.) also schema name
+- Table alias naming analyzer (small only etc. -> regex)
 - XML or JSON string extraction of banned types -> integrate into banned type analyzer
 - Foreign key constraint creation without specifying the source table schema name
 
@@ -70,6 +70,8 @@ A framework to analyze multiple T-SQL script files
 - Remove IssueReporter.Report() extension methods. Instead, every script should provide the database name. Passing in
   the IScriptModel is easier but sometime, when the script contains additional USE DATABASE statements, the real
   database name can be a different one
+- DescriptionAttributes should be on the properties of the Raw settings type because that's the one which reflects the
+  json settings 1:1
 
 ### Resiliency / Robustness
 
