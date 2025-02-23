@@ -107,7 +107,7 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
             if (databaseObjects.Count > 1)
             {
                 var databaseObject = databaseObjects[0];
-                var scriptFilePaths = databaseObjects.Select(static a => $"'{a.RelativeScriptFilePath}'").StringJoin(", ");
+                var scriptFilePaths = databaseObjects.Select(static a => $"{a.RelativeScriptFilePath}").StringJoin(", ");
 
                 _issueReporter.Report(WellKnownDiagnosticDefinitions.DuplicateObjectCreationStatement,
                     databaseObject.DatabaseName,

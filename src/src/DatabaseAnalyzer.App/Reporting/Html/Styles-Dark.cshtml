@@ -23,8 +23,17 @@
         background-color: var(--background-color);
         color: var(--text-color);
         font-family: Verdana, Arial, sans-serif;
+
         margin: 0;
         padding: 5px;
+    }
+
+    html, body {
+        font-size: 12px;
+    }
+
+    table, th, tr, td, th {
+        font-size: inherit;
     }
 
     header {
@@ -57,7 +66,6 @@
         border-collapse: collapse;
         border-spacing: 0;
         border-radius: 4px;
-
         overflow: hidden; /* Ensures inner elements don't overflow the rounded corners */
     }
 
@@ -78,13 +86,16 @@
         background-color: var(--table-row-alt-bg);
     }
 
-    table.data-table tbody td {
+    table.data-table > thead > tr > th {
         color: var(--text-color);
-        padding: 10px;
+        border: solid 1px var(--table-border-color);
+        padding: 10px 5px 10px 5px;
     }
 
-    table.data-table, th, td {
+    table.data-table > tbody > tr > td {
+        color: var(--text-color);
         border: solid 1px var(--table-border-color);
+        padding: 6px 5px 6px 5px;
     }
 
     table.data-table tbody tr:hover {
