@@ -117,8 +117,9 @@ else
     <table class="data-table sortable">
         <thead>
         <tr>
-            <th>Diag. Id</th>
+            <th>Diag</th>
             <th>Type</th>
+            <th>Database Name</th>
             <th>Object Name or File Name</th>
             <th>Location</th>
             <th>Message</th>
@@ -127,6 +128,7 @@ else
         <tbody>
         @foreach (var issue in Model.Issues
                       .OrderBy(a => a.DiagnosticDefinition.DiagnosticId)
+                      .ThenBy(a => a.DatabaseName)
                       .ThenBy(a => a.FullObjectNameOrFileName)
                       .ThenBy(a => a.RelativeScriptFilePath)
                       .ThenBy(a => a.CodeRegion))
@@ -137,6 +139,7 @@ else
                 <td><span
                         class="issue-type-@issue.DiagnosticDefinition.IssueType.ToString().ToLower()">@issue.DiagnosticDefinition.IssueType.ToName()</span>
                 </td>
+                <td>@issue.DatabaseName</td>
                 <td><a href="@MakeFullPath(issue.RelativeScriptFilePath)"
                        target="_blank">@issue.FullObjectNameOrFileName</a></td>
                 <td>@issue.CodeRegion.ToString().Replace("(", "").Replace(")", "")</td>
@@ -157,7 +160,7 @@ else
     <table class="data-table sortable">
         <thead>
         <tr>
-            <th>Diag. Id</th>
+            <th>Diag</th>
             <th>Type</th>
             <th>Object Name or File Name</th>
             <th>Location</th>

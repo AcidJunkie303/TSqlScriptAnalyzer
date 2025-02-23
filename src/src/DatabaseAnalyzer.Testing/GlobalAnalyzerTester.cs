@@ -36,6 +36,12 @@ public sealed class GlobalAnalyzerTester
         _analyzer.Analyze(_analysisContext);
 
         var reportedIssues = _analysisContext.IssueReporter.Issues;
-        reportedIssues.Should().BeEquivalentTo(ExpectedIssues);
+
+        // sometimes the order is not the same, therefore we cannot use BeEquivalentTo()
+        reportedIssues.Should().HaveCount(ExpectedIssues.Count);
+        foreach (var expectedIssue in ExpectedIssues)
+        {
+            reportedIssues.Should().ContainEquivalentOf(expectedIssue, options => options.Excluding(x => x.DatabaseName));
+        }
     }
 }

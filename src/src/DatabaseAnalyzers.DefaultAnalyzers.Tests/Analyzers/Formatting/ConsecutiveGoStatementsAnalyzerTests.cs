@@ -23,6 +23,7 @@ public sealed class ConsecutiveGoStatementsAnalyzerTests(ITestOutputHelper testO
     public void WhenTwoConsecutiveGoStatement_ThenDiagnose()
     {
         const string code = """
+                            USE MyDb
                             ▶️AJ5046💛script_0.sql💛✅GO
                             GO◀️
                             PRINT 303
