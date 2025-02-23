@@ -25,6 +25,9 @@
         <None Update="docs\source\AJ5052.settings.md">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
+        <None Update="docs\source\AJ5051.settings.md">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
     <ItemGroup>

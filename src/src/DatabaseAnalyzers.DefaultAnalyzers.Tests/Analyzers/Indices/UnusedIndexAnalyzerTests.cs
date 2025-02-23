@@ -11,60 +11,114 @@ public sealed class UnusedIndexAnalyzerTests(ITestOutputHelper testOutputHelper)
     [Fact]
     public void WhenFilteringOnIndexedColumn_ThenOk()
     {
-        const string procedures = """
-                                  USE MyDb
-                                  GO
+        const string code = """
+                            USE MyDb
+                            GO
 
-                                  CREATE TABLE A
-                                  (
-                                      Id            INT NOT NULL PRIMARY KEY,               -- indexed
-                                      Name          NVARCHAR(250) NOT NULL                  -- not indexed
-                                  )
-                                  GO
+                            CREATE TABLE A
+                            (
+                                Id            INT NOT NULL PRIMARY KEY,               -- indexed
+                                Name          NVARCHAR(250) NOT NULL                  -- not indexed
+                            )
+                            GO
 
-                                  CREATE PROCEDURE [dbo].[P1]
-                                  AS
-                                  BEGIN
-                                      SELECT    *
-                                      FROM      dbo.A
-                                      WHERE     Id = 4 -- Id column is indexed
-                                  END
-                                  """;
+                            CREATE PROCEDURE [dbo].[P1]
+                            AS
+                            BEGIN
+                                SELECT    *
+                                FROM      dbo.A
+                                WHERE     Id = 4 -- Id column is indexed
+                            END
+                            """;
 
-        var tester = GetDefaultTesterBuilder(procedures)
-            .WithSettings(Aj5015Settings.Default)
-            .WithSettings(Aj5017Settings.Default)
-            .Build();
-        Verify(tester);
+        var settings = new Aj5051Settings(IgnoreUnusedPrimaryKeyIndices: false);
+        Verify(settings, code);
     }
 
     [Fact]
     public void WhenFilteringOnNonIndexedColumn_ThenDiagnose()
     {
-        const string procedures = """
-                                  USE MyDb
-                                  GO
+        const string code = """
+                            USE MyDb
+                            GO
 
-                                  CREATE TABLE A
-                                  (
-                                      ▶️AJ5051💛script_0.sql💛💛MyDb💛dbo💛A💛Id💛<Unknown>✅Id            INT NOT NULL PRIMARY KEY◀️,               -- indexed
-                                      Name            NVARCHAR(250) NOT NULL                  -- not indexed
-                                  )
-                                  GO
+                            CREATE TABLE A
+                            (
+                                Id            INT NOT NULL PRIMARY KEY,
+                                Name            NVARCHAR(250) NOT NULL
+                            )
+                            GO
 
-                                  CREATE PROCEDURE [dbo].[P1]
-                                  AS
-                                  BEGIN
-                                      SELECT    *
-                                      FROM      dbo.A
-                                      WHERE     Name = 4 -- Name column is not indexed. That leaves the PK index unused
-                                  END
-                                  """;
+                            ▶️AJ5051💛script_0.sql💛IX_A_Name💛MyDb💛dbo💛A💛Name💛IX_A_Name✅CREATE NONCLUSTERED INDEX [IX_A_Name] ON [dbo].[A]
+                            (
+                                [Name] ASC
+                            )◀️
+                            GO
 
-        var tester = GetDefaultTesterBuilder(procedures)
-            .WithSettings(Aj5015Settings.Default)
-            .WithSettings(Aj5017Settings.Default)
-            .Build();
-        Verify(tester);
+                            CREATE PROCEDURE [dbo].[P1]
+                            AS
+                            BEGIN
+                                SELECT    *
+                                FROM      dbo.A
+                                WHERE     Id = 1 -- ID is indexed, Name is indexed as well but not used
+                            END
+                            """;
+
+        var settings = new Aj5051Settings(IgnoreUnusedPrimaryKeyIndices: false);
+        Verify(settings, code);
+    }
+
+    [Fact]
+    public void WhenPrimaryKeyIsNotUsed_WhenUnusedPrimaryKeysAreIgnored_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            CREATE TABLE A
+                            (
+                                Id            INT NOT NULL PRIMARY KEY,
+                                Name          NVARCHAR(250) NOT NULL                  -- not indexed
+                            )
+                            GO
+
+                            CREATE PROCEDURE [dbo].[P1]
+                            AS
+                            BEGIN
+                                SELECT    *
+                                FROM      dbo.A
+                                WHERE     Name = 'tb' -- Name column is not indexed. That leaves the PK index unused
+                            END
+                            """;
+
+        var settings = new Aj5051Settings(IgnoreUnusedPrimaryKeyIndices: true);
+        Verify(settings, code);
+    }
+
+    [Fact]
+    public void WhenPrimaryKeyIsNotUsed_ThenReport()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            CREATE TABLE A
+                            (
+                                ▶️AJ5051💛script_0.sql💛💛MyDb💛dbo💛A💛Id💛<Unknown>✅Id            INT NOT NULL PRIMARY KEY◀️,
+                                Name          NVARCHAR(250) NOT NULL                  -- not indexed
+                            )
+                            GO
+
+                            CREATE PROCEDURE [dbo].[P1]
+                            AS
+                            BEGIN
+                                SELECT    *
+                                FROM      dbo.A
+                                WHERE     Name = 'tb' -- Name column is not indexed. That leaves the PK index unused
+                            END
+                            """;
+
+        var settings = new Aj5051Settings(IgnoreUnusedPrimaryKeyIndices: false);
+        Verify(settings, code);
     }
 }

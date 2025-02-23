@@ -2,8 +2,10 @@ using System.Collections.Immutable;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.SqlParsing;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction;
+using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 using DatabaseAnalyzer.Common.Various;
 using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
@@ -14,6 +16,8 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
 
     public void Analyze(IAnalysisContext context)
     {
+        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5051Settings>();
+
         var filteringColumnsByName = GetFilteringColumns(context)
             .Select(col => (Key: new Key(col.DatabaseName, col.SchemaName, col.TableName, col.ColumnName), Column: col))
             .GroupBy(a => a.Key)
@@ -32,6 +36,11 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
         {
             foreach (var column in index.ColumnNames)
             {
+                if (settings.IgnoreUnusedPrimaryKeyIndices && index.IndexType.HasFlag(TableColumnIndexTypes.PrimaryKey))
+                {
+                    continue;
+                }
+
                 var key = new Key(index.DatabaseName, index.SchemaName, index.TableName, column);
                 if (filteringColumnsByName.ContainsKey(key))
                 {
@@ -39,7 +48,7 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
                 }
 
                 context.IssueReporter.Report(DiagnosticDefinitions.Default, index.DatabaseName, index.RelativeScriptFilePath, index.IndexName, index.CreationStatement.GetCodeRegion(),
-                    index.DatabaseName, index.SchemaName, index.TableName, column, index.IndexName ?? "<Unknown>");
+                    index.DatabaseName, index.SchemaName, index.TableName, column, index.IndexName ?? Constants.UnknownObjectName);
             }
         }
     }

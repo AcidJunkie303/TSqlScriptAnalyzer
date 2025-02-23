@@ -199,6 +199,10 @@
             "IgnoredObjectNamePatterns": [
             ]
         },
+        "AJ5051": {
+            // Unused index
+            "IgnoreUnusedPrimaryKeyIndices": false
+        },
         "AJ5052": {
             // Index naming enforcement
             "NamingPatternByIndexProperties": {

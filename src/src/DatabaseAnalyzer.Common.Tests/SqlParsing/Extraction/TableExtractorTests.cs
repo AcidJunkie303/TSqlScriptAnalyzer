@@ -188,7 +188,7 @@ public sealed class TableExtractorTests
         tables[0].Indices.Should().NotBeNull();
         tables[0].Indices.Should().HaveCount(1);
         tables[0].Indices[0].IndexName.Should().Be("PK_T1");
-        tables[0].Indices[0].IndexTypes.Should().Be(TableColumnIndexTypes.Clustered | TableColumnIndexTypes.PrimaryKey | TableColumnIndexTypes.Unique);
+        tables[0].Indices[0].IndexType.Should().Be(TableColumnIndexTypes.Clustered | TableColumnIndexTypes.PrimaryKey | TableColumnIndexTypes.Unique);
     }
 
     [Fact]
