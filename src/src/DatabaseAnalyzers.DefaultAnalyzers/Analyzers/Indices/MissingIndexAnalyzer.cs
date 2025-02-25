@@ -150,7 +150,7 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
         (
             "AJ5017",
             IssueType.MissingIndex,
-            "Missing Index",
+            "Missing Index on foreign key column",
             "The foreign-key column `{0}.{1}.{2}.{3}` is not indexed. Although this columns might not be used for filtering directly, it is still recommended to create an index on it because it will improve performance when checking for referential integrity when deleting columns from the table being referenced for example.",
             ["Table name", "Schema name", "Table name", "Column name"],
             new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
