@@ -43,6 +43,11 @@ public sealed class NamelessConstraintAnalyzer : IScriptAnalyzer
         {
             AnalyzeConstraint(context, script, constraint);
         }
+
+        if (column.DefaultConstraint is not null)
+        {
+            AnalyzeConstraint(context, script, column.DefaultConstraint);
+        }
     }
 
     private static void AnalyzeConstraint(IAnalysisContext context, IScriptModel script, ConstraintDefinition constraint)

@@ -199,8 +199,7 @@ public sealed class NamelessConstraintAnalyzerTests(ITestOutputHelper testOutput
         Verify(code);
     }
 
-    // TODO: Check if this issue has been solved
-    [Fact(Skip = "Doesn't work at the moment because the default constraints are not parsed during ALTER TABLE statements. Issue: https://github.com/microsoft/SqlScriptDOM/issues/107")]
+    [Fact]
     public void WithAlterTable_WhenCreatingUnnamedDefaultConstraint_ThenDiagnose()
     {
         const string code = """
