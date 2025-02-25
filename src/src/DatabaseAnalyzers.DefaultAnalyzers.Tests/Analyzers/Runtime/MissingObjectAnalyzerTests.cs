@@ -14,8 +14,10 @@ public sealed class MissingObjectAnalyzerTests(ITestOutputHelper testOutputHelpe
 
                                       CREATE PROCEDURE  schema1.P1 AS BEGIN PRINT 303 END
                                       GO
+
                                       CREATE FUNCTION   schema1.F1 () RETURNS INT AS BEGIN RETURN 1 END
                                       GO
+
                                       CREATE TABLE      schema1.T1 (Id INT, Column1 INT)
                                       """;
 
@@ -137,5 +139,46 @@ public sealed class MissingObjectAnalyzerTests(ITestOutputHelper testOutputHelpe
                     """;
 
         Verify(Settings, code, SharedCode);
+    }
+
+    [Fact]
+    public void WhenSelectingFromTempTable_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            CREATE TABLE #T
+                            (
+                                Id      INT
+                            )
+
+                            SELECT Bla FROM #T
+                            """;
+
+        Verify(Settings, code, SharedCode);
+    }
+
+    [Fact]
+    public void WhenSelectingFromCte_ThenOk()
+    {
+        const string code = """
+                            USE Db1
+                            GO
+
+                            CREATE TABLE      schema1.T1 (Id INT, Column1 INT)
+                            GO
+
+                            WITH MyCTE AS
+                            (
+                                SELECT  Column1
+                                FROM    DB1.schema1.T1
+                            )
+
+                            SELECT      DoesNotExist
+                            FROM        MyCTE;
+                            """;
+
+        Verify(Settings, code);
     }
 }
