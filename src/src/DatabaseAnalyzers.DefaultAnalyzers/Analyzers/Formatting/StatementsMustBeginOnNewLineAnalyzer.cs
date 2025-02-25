@@ -36,6 +36,11 @@ public sealed class StatementsMustBeginOnNewLineAnalyzer : IScriptAnalyzer
         {
             var token = statement.ScriptTokenStream[i];
 
+            if (token.TokenType == TSqlTokenType.Semicolon)
+            {
+                continue;
+            }
+
             if (token.TokenType == TSqlTokenType.WhiteSpace)
             {
                 if (token.Text.Contains('\n', StringComparison.Ordinal))
