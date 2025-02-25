@@ -26,6 +26,12 @@ public sealed class MissingPrimaryKeyAnalyzer : IGlobalAnalyzer
 
     private static void Analyze(IAnalysisContext context, Aj5026Settings settings, TableInformation table)
     {
+        var isTempTable = table.ObjectName.StartsWith('#');
+        if (isTempTable)
+        {
+            return;
+        }
+
         if (table.Indices.Any(static a => a.IndexType.HasFlag(TableColumnIndexTypes.PrimaryKey)))
         {
             return;

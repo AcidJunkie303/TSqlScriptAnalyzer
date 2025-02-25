@@ -78,4 +78,21 @@ public sealed class MissingPrimaryKeyAnalyzerTests(ITestOutputHelper testOutputH
 
         Verify(settings, code);
     }
+
+    [Fact]
+    public void WhenTempTable_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            CREATE TABLE #T
+                            (
+                                Id            INT NOT NULL,
+                                Value1        NVARCHAR(128) NOT NULL
+                            )
+                            """;
+
+        VerifyWithDefaultSettings<Aj5026Settings>(code);
+    }
 }
