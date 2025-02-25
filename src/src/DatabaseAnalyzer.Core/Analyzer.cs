@@ -20,9 +20,9 @@ internal sealed class Analyzer : IAnalyzer
     private readonly IReadOnlyDictionary<string, IDiagnosticDefinition> _diagnosticDefinitionsById;
     private readonly IDiagnosticSettingsProvider _diagnosticSettingsProvider;
     private readonly IDiagnosticSuppressionExtractor _diagnosticSuppressionExtractor;
-    private readonly IEnumerable<IGlobalAnalyzer> _globalAnalyzers;
     private readonly IProgressCallback _progressCallback;
-    private readonly IEnumerable<IScriptAnalyzer> _scriptAnalyzers;
+    private readonly IReadOnlyList<IScriptAnalyzer> _scriptAnalyzers;
+    private readonly IReadOnlyList<IGlobalAnalyzer> _globalAnalyzers;
     private readonly IScriptLoader _scriptLoader;
     private readonly IScriptSourceProvider _scriptSourceProvider;
 
@@ -43,10 +43,17 @@ internal sealed class Analyzer : IAnalyzer
         _scriptLoader = scriptLoader;
         _applicationSettings = applicationSettings;
         _diagnosticSettingsProvider = diagnosticSettingsProvider;
-        _scriptAnalyzers = scriptAnalyzers;
-        _globalAnalyzers = globalAnalyzers;
+        _scriptAnalyzers = scriptAnalyzers
+            .Where(a => !AreAllDiagnosticsForAnalyzerDisabled(a, applicationSettings.Diagnostics))
+            .ToList();
+        _globalAnalyzers = globalAnalyzers
+            .Where(a => !AreAllDiagnosticsForAnalyzerDisabled(a, applicationSettings.Diagnostics))
+            .ToList();
         _diagnosticSuppressionExtractor = diagnosticSuppressionExtractor;
         _diagnosticDefinitionsById = diagnosticDefinitionsById;
+
+        static bool AreAllDiagnosticsForAnalyzerDisabled(IObjectAnalyzer analyzer, DiagnosticsSettings diagnosticsSettings)
+            => analyzer.SupportedDiagnostics.All(a => diagnosticsSettings.DisabledDiagnostics.Contains(a.DiagnosticId));
     }
 
     public AnalysisResult Analyze()
