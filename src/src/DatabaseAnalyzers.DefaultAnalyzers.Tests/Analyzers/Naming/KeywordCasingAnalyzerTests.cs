@@ -26,6 +26,7 @@ public sealed class KeywordCasingAnalyzerTests(ITestOutputHelper testOutputHelpe
     }
 
     [Theory]
+    [InlineData(KeywordNamingPolicy.UpperCase, "SELECT 0x1aBcDeF")]
     [InlineData(KeywordNamingPolicy.UpperCase, "WAITFOR DELAY '00:00:10'")]
     [InlineData(KeywordNamingPolicy.CamelCase, "▶️AJ5048💛script_0.sql💛💛WAITFOR💛waitFor💛CamelCase✅WAITFOR◀️ DELAY '00:00:10'")]
     [InlineData(KeywordNamingPolicy.PascalCase, "▶️AJ5048💛script_0.sql💛💛WAITFOR💛WaitFor💛PascalCase✅WAITFOR◀️ DELAY '00:00:10'")]
@@ -34,7 +35,7 @@ public sealed class KeywordCasingAnalyzerTests(ITestOutputHelper testOutputHelpe
         var settings = new Aj5048SettingsRaw
         {
             KeywordNamingPolicy = (KeywordNamingPolicy) policy,
-            ExcludedKeywordTokenTypes = ["Identifier"]
+            ExcludedKeywordTokenTypes = ["Identifier", "HexLiteral"]
         }.ToSettings();
 
         Verify(settings, code);
