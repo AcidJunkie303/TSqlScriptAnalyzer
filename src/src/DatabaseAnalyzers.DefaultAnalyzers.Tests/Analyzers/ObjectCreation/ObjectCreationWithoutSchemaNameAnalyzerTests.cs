@@ -177,4 +177,20 @@ public sealed class ObjectCreationWithoutSchemaNameAnalyzerTests(ITestOutputHelp
 
         Verify(code);
     }
+
+    [Fact]
+    public void WhenTempTable_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            CREATE TABLE #T
+                            (
+                                Id            INT NOT NULL
+                            )
+                            """;
+
+        Verify(code);
+    }
 }

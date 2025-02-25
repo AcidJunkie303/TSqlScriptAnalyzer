@@ -13,7 +13,9 @@ public sealed class ObjectCreationWithoutSchemaNameAnalyzer : IScriptAnalyzer
         Analyze(
             context,
             script,
-            script.ParsedScript.GetChildren<CreateTableStatement>(recursive: true),
+            script.ParsedScript
+                .GetChildren<CreateTableStatement>(recursive: true)
+                .Where(a => !a.SchemaObjectName.BaseIdentifier.Value.IsTempTableName()),
             static s => s.SchemaObjectName.SchemaIdentifier?.Value,
             static s => s.SchemaObjectName.GetCodeRegion(),
             "table");
