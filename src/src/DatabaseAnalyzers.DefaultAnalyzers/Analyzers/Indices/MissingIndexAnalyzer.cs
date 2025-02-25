@@ -103,6 +103,11 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
                 continue;
             }
 
+            if (table.ObjectName.IsTempTableName())
+            {
+                continue;
+            }
+
             if (table.Indices.Any(a => a.ColumnNames.Contains(filteringColumn.ColumnName)))
             {
                 return;

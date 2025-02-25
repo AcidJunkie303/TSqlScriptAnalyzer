@@ -26,8 +26,7 @@ public sealed class MissingPrimaryKeyAnalyzer : IGlobalAnalyzer
 
     private static void Analyze(IAnalysisContext context, Aj5026Settings settings, TableInformation table)
     {
-        var isTempTable = table.ObjectName.StartsWith('#');
-        if (isTempTable)
+        if (table.ObjectName.IsTempTableName())
         {
             return;
         }

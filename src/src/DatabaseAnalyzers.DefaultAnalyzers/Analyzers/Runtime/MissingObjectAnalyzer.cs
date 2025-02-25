@@ -57,8 +57,7 @@ public sealed class MissingObjectAnalyzer : IGlobalAnalyzer
             return;
         }
 
-        var isTempTable = column.TableName.StartsWith('#');
-        if (isTempTable)
+        if (column.TableName.IsTempTableName())
         {
             return;
         }
@@ -105,8 +104,7 @@ public sealed class MissingObjectAnalyzer : IGlobalAnalyzer
     private static void AnalyzeTableReference(IAnalysisContext context, Aj5044Settings settings, IReadOnlyDictionary<string, DatabaseInformation> databasesByName, IScriptModel script, NamedTableReference tableReference, CteBatchInformationProvider cteBatchInformationProvider)
     {
         var tableName = tableReference.SchemaObject.BaseIdentifier.Value;
-        var isTempTable = tableName.StartsWith('#');
-        if (isTempTable)
+        if (tableName.IsTempTableName())
         {
             return;
         }

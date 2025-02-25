@@ -26,8 +26,7 @@ public sealed class MissingClusteredIndexAnalyzer : IGlobalAnalyzer
 
     private static void Analyze(IAnalysisContext context, Aj5027Settings settings, TableInformation table)
     {
-        var isTempTable = table.ObjectName.StartsWith('#');
-        if (isTempTable)
+        if (table.ObjectName.IsTempTableName())
         {
             return;
         }

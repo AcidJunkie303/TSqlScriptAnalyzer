@@ -240,4 +240,54 @@ public sealed class MissingIndexAnalyzerTests(ITestOutputHelper testOutputHelper
             .Build();
         Verify(tester);
     }
+
+    [Fact]
+    public void WhenTempTable_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            CREATE TABLE #T
+                            (
+                                Id          INT NOT NULL,
+                                Value1      NVARCHAR(128) NOT NULL
+                            )
+
+                            SELECT          *
+                            FROM            #T
+                            WHERE           Value1 = 'tb-303'
+                            """;
+
+        var tester = GetDefaultTesterBuilder(code)
+            .WithSettings(Aj5015Settings.Default)
+            .WithSettings(Aj5017Settings.Default)
+            .Build();
+        Verify(tester);
+    }
+
+    [Fact]
+    public void WhenCte_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            WITH MyCTE AS
+                            (
+                                SELECT  Column1
+                                FROM    DB1.schema1.T1
+                            )
+
+                            SELECT      DoesNotExist
+                            FROM        MyCTE
+                            WHERE       Column1 = 'tb-303'
+                            """;
+
+        var tester = GetDefaultTesterBuilder(code)
+            .WithSettings(Aj5015Settings.Default)
+            .WithSettings(Aj5017Settings.Default)
+            .Build();
+        Verify(tester);
+    }
 }
