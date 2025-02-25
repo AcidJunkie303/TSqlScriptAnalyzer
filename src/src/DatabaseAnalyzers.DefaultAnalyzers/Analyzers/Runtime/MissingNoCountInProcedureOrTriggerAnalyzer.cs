@@ -75,7 +75,7 @@ public sealed class MissingNoCountInProcedureOrTriggerAnalyzer : IScriptAnalyzer
             "The first statement in a procedure should be 'SET NOCOUNT ON'",
             "The first statement in a procedure should be `SET NOCOUNT ON`.",
             [],
-            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
+            UrlPatterns.DefaultDiagnosticHelp
         );
     }
 }

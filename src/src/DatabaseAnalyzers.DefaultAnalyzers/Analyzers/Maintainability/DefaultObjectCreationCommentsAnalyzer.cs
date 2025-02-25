@@ -39,7 +39,7 @@ public sealed partial class DefaultObjectCreationCommentsAnalyzer : IScriptAnaly
             "Default Object Creation Comments",
             "Remove the default object creation comments as they are useless",
             [],
-            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
+            UrlPatterns.DefaultDiagnosticHelp
         );
     }
 }

@@ -60,9 +60,9 @@ public sealed class SelectStarAnalyzer : IScriptAnalyzer
             => tableReference switch
             {
                 JoinTableReference joinTableReference => DoesAliasOriginateFromDerivedTable(joinTableReference.FirstTableReference, alias) || DoesAliasOriginateFromDerivedTable(joinTableReference.SecondTableReference, alias),
-                QueryDerivedTable queryDerivedTable => alias.EqualsOrdinalIgnoreCase(queryDerivedTable.Alias.Value),
+                QueryDerivedTable queryDerivedTable   => alias.EqualsOrdinalIgnoreCase(queryDerivedTable.Alias.Value),
                 InlineDerivedTable inlineDerivedTable => alias.EqualsOrdinalIgnoreCase(inlineDerivedTable.Alias.Value),
-                _ => false
+                _                                     => false
             };
     }
 
@@ -75,7 +75,7 @@ public sealed class SelectStarAnalyzer : IScriptAnalyzer
             "Usage of 'SELECT *' ",
             "Usage of `SELECT *` from a non-CTE or non-derived table source.",
             [],
-            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
+            UrlPatterns.DefaultDiagnosticHelp
         );
     }
 }

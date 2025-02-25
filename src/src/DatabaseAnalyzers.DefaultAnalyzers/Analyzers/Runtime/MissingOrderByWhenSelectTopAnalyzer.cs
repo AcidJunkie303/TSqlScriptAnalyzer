@@ -47,7 +47,7 @@ public sealed class MissingOrderByWhenSelectTopAnalyzer : IScriptAnalyzer
             "Missing ORDER BY clause when using TOP",
             "Not using `ORDER BY` in combination with `TOP` might lead to non-deterministic results.",
             [],
-            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
+            UrlPatterns.DefaultDiagnosticHelp
         );
     }
 }

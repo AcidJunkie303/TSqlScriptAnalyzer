@@ -107,7 +107,7 @@ public sealed class ExcessiveStringConcatenationAnalyzer : IScriptAnalyzer
             "Excessive string concatenations",
             "More than `{0}` allowed string concatenations. Consider using `FORMATMESSAGE()`.",
             ["Maximum allowed string concatenations"],
-            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
+            UrlPatterns.DefaultDiagnosticHelp
         );
     }
 }

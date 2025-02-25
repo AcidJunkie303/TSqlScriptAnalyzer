@@ -279,7 +279,7 @@ public sealed class IndexNamingAnalyzer : IScriptAnalyzer
             "Index Naming",
             "The index `{0}` should be named as `{1}`. Index flags: `{2}`.",
             ["Index Name", "Expected index name", "Index Properties"],
-            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
+            UrlPatterns.DefaultDiagnosticHelp
         );
     }
 }

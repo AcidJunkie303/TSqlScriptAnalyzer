@@ -104,7 +104,7 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
             "Unused Index",
             "The column `{0}.{1}.{2}.{3}` is part of the index `{4}` but none of the scripts seems to use it as a filtering predicate.",
             ["Database name", "Schema name", "Table name", "Column name", "Index Name"],
-            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
+            UrlPatterns.DefaultDiagnosticHelp
         );
     }
 }

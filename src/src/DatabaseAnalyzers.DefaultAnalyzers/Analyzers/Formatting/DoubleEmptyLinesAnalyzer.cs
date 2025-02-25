@@ -77,7 +77,7 @@ public sealed class DoubleEmptyLinesAnalyzer : IScriptAnalyzer
             "Multiple empty lines",
             "Multiple empty lines.",
             [],
-            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
+            UrlPatterns.DefaultDiagnosticHelp
         );
     }
 }
