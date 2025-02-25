@@ -1,6 +1,7 @@
 using DatabaseAnalyzer.Testing;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
 using Xunit.Abstractions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Formatting;
@@ -73,5 +74,23 @@ public sealed class StatementsMustBeginOnNewLineAnalyzerTests(ITestOutputHelper 
                             """;
 
         Verify(Aj5023Settings.Default, code);
+    }
+
+    [Fact]
+    public void WhenCteWithSemiColon_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            ; WITH MyCTE AS
+                            (
+                                SELECT 2
+                            )
+                            SELECT * FROM MyCTE
+                            """;
+
+        var settings = new Aj5023Settings([TSqlTokenType.Semicolon]);
+        Verify(settings, code);
     }
 }
