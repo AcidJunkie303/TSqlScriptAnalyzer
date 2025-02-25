@@ -116,4 +116,23 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzerTests(ITestOutputHelper
 
         Verify(code);
     }
+
+    [Fact]
+    public void WhenEndOfCaseWhen_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            SELECT
+                                    CASE
+                                        WHEN 0=1 THEN 'a'
+                                        ELSE 'b'
+                                    END AS Bla,
+                                    OtherColumn
+                            FROM Whatever
+                            """;
+
+        Verify(code);
+    }
 }

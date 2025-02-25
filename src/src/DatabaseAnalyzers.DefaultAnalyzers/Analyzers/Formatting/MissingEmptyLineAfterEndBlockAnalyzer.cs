@@ -74,6 +74,12 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzer : IScriptAnalyzer
             return;
         }
 
+        var statement = script.ParsedScript.TryGetSqlFragmentAtPosition(endToken);
+        if (IsIgnoredStatement(statement))
+        {
+            return;
+        }
+
         var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtLocation(endToken.Line, endToken.Column) ?? DatabaseNames.Unknown;
         var codeRegion = endToken.GetCodeRegion();
         var fullObjectName = script.ParsedScript
@@ -99,6 +105,8 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzer : IScriptAnalyzer
                 .TakeWhile(IsSkipToken)
                 .Sum(a => a.Text.Count(c => c == '\n'));
     }
+
+    private static bool IsIgnoredStatement(TSqlFragment? fragment) => fragment is SearchedCaseExpression;
 
     private static bool IsSkipToken(TSqlParserToken token)
         => token.TokenType is TSqlTokenType.WhiteSpace or TSqlTokenType.SingleLineComment or TSqlTokenType.MultilineComment or TSqlTokenType.Semicolon;
