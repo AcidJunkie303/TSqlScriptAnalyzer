@@ -104,7 +104,7 @@ public sealed class ObjectInvocationWithoutSchemaNameAnalyzer : IScriptAnalyzer
             "Object Invocation without explicitly specified schema name",
             "The invocation of `{0}` `{1}` is missing the schema name ",
             ["Object type name", "Invoked object name"],
-            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
+            UrlPatterns.DefaultDiagnosticHelp
         );
     }
 }

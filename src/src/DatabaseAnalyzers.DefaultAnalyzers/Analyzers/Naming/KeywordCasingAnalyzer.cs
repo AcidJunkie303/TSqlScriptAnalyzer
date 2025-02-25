@@ -76,7 +76,7 @@ public sealed class KeywordCasingAnalyzer : IScriptAnalyzer
             "Keyword uses wrong casing",
             "The keyword `{0}` should be written as `{1}` because of the configured keyword casing policy `{2}`.",
             ["The actual used keyword", "The expected keyword casing", "The configure keyword casing policy"],
-            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
+            UrlPatterns.DefaultDiagnosticHelp
         );
     }
 }
@@ -99,12 +99,12 @@ internal static class CachedKeywordCasingAnalyzerSettingsProvider
     private static Func<string, string> GetTransformer(KeywordNamingPolicy policy)
         => policy switch
         {
-            KeywordNamingPolicy.Disabled => TransformToPascalCasing,
-            KeywordNamingPolicy.UpperCase => TransformToUpperCase,
-            KeywordNamingPolicy.LowerCase => TransformToLowerCase,
-            KeywordNamingPolicy.CamelCase => TransformToCamelCasing,
+            KeywordNamingPolicy.Disabled   => TransformToPascalCasing,
+            KeywordNamingPolicy.UpperCase  => TransformToUpperCase,
+            KeywordNamingPolicy.LowerCase  => TransformToLowerCase,
+            KeywordNamingPolicy.CamelCase  => TransformToCamelCasing,
             KeywordNamingPolicy.PascalCase => TransformToPascalCasing,
-            _ => throw new ArgumentOutOfRangeException(nameof(policy), policy, $"Value {policy} is not handled")
+            _                              => throw new ArgumentOutOfRangeException(nameof(policy), policy, $"Value {policy} is not handled")
         };
 
     private static string TransformToPascalCasing(string value) => value;

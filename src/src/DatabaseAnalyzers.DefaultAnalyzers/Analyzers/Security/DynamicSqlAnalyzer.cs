@@ -37,10 +37,10 @@ public sealed class DynamicSqlAnalyzer : IScriptAnalyzer
 
             return statement.ExecuteSpecification.ExecutableEntity switch
             {
-                ExecutableProcedureReference => false,
-                ExecutableStringList executableStringList when executableStringList.Strings.IsNullOrEmpty() => false,
+                ExecutableProcedureReference                                                                 => false,
+                ExecutableStringList executableStringList when executableStringList.Strings.IsNullOrEmpty()  => false,
                 ExecutableStringList executableStringList when !executableStringList.Strings.IsNullOrEmpty() => !executableStringList.Strings.All(s => s is StringLiteral),
-                _ => false
+                _                                                                                            => false
             };
         }
     }
@@ -54,7 +54,7 @@ public sealed class DynamicSqlAnalyzer : IScriptAnalyzer
             "Dynamic SQL",
             "Executing dynamic or external provided SQL code can be dangerous and should be avoided.",
             [],
-            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
+            UrlPatterns.DefaultDiagnosticHelp
         );
     }
 }

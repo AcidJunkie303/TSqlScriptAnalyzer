@@ -60,7 +60,7 @@ public sealed class WeakHashingAlgorithmAnalyzer : IScriptAnalyzer
             "Usage of weak hashing algorithm",
             "The hashing algorithm `{0}` is considered weak and should not be used anymore.",
             ["Algorithm name"],
-            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
+            UrlPatterns.DefaultDiagnosticHelp
         );
     }
 }

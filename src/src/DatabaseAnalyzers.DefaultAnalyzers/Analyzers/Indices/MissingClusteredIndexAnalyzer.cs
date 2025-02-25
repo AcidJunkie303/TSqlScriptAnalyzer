@@ -58,7 +58,7 @@ public sealed class MissingClusteredIndexAnalyzer : IGlobalAnalyzer
             "Table has no clustered index",
             "The table `{0}` has no clustered index.",
             ["Table name"],
-            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
+            UrlPatterns.DefaultDiagnosticHelp
         );
     }
 }

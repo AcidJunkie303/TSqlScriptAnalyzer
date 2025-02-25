@@ -65,7 +65,7 @@ public sealed class UnreferencedParameterAnalyzer : IScriptAnalyzer
             "Unreferenced parameter",
             "The parameter `{0}` is not referenced.",
             ["Parameter name"],
-            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
+            UrlPatterns.DefaultDiagnosticHelp
         );
     }
 }

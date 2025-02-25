@@ -37,7 +37,7 @@ public sealed class RedundantPairOfParenthesesAnalyzer : IScriptAnalyzer
             "Redundant pair of parentheses",
             "One of the redundant pair of parentheses `{0}` can be removed.",
             ["Expression"],
-            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
+            UrlPatterns.DefaultDiagnosticHelp
         );
     }
 }

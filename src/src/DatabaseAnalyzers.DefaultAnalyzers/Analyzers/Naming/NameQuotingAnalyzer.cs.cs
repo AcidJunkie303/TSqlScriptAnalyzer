@@ -175,12 +175,12 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
 
         return quotingPolicy switch
         {
-            NameQuotingPolicy.Undefined => null,
-            NameQuotingPolicy.Required => identifier.QuoteType is QuoteType.DoubleQuote or QuoteType.SquareBracket ? null : $"[{identifier.Value}]",
-            NameQuotingPolicy.DoubleQuotesRequired => identifier.QuoteType == QuoteType.DoubleQuote ? null : $"\"{identifier.Value}\"",
+            NameQuotingPolicy.Undefined              => null,
+            NameQuotingPolicy.Required               => identifier.QuoteType is QuoteType.DoubleQuote or QuoteType.SquareBracket ? null : $"[{identifier.Value}]",
+            NameQuotingPolicy.DoubleQuotesRequired   => identifier.QuoteType == QuoteType.DoubleQuote ? null : $"\"{identifier.Value}\"",
             NameQuotingPolicy.SquareBracketsRequired => identifier.QuoteType == QuoteType.SquareBracket ? null : $"[{identifier.Value}]",
-            NameQuotingPolicy.NotAllowed => identifier.QuoteType == QuoteType.NotQuoted ? null : identifier.Value,
-            _ => throw new ArgumentOutOfRangeException(nameof(quotingPolicy), quotingPolicy, $"{nameof(NameQuotingPolicy)}.{quotingPolicy} is not handled")
+            NameQuotingPolicy.NotAllowed             => identifier.QuoteType == QuoteType.NotQuoted ? null : identifier.Value,
+            _                                        => throw new ArgumentOutOfRangeException(nameof(quotingPolicy), quotingPolicy, $"{nameof(NameQuotingPolicy)}.{quotingPolicy} is not handled")
         };
     }
 
@@ -193,7 +193,7 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
             "Object name quoting",
             "The {0} name part `{1}` is quoted wrongly which does not comply with the configured policy. It should be: `{2}`.",
             ["Object type name", "Name", "Expected name"],
-            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
+            UrlPatterns.DefaultDiagnosticHelp
         );
     }
 }

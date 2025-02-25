@@ -125,7 +125,7 @@ public sealed class DeadCodeAnalyzer : IScriptAnalyzer
             "Dead Code",
             "The code after `{0}` cannot be reached and is considered dead code.",
             ["Statement"],
-            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
+            UrlPatterns.DefaultDiagnosticHelp
         );
     }
 }

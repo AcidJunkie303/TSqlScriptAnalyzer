@@ -38,7 +38,7 @@ public sealed class ObjectCreationWithoutOrAlterAnalyzer : IScriptAnalyzer
             "Object creation without `OR ALTER` clause",
             "Object creation without `OR ALTER` clause.",
             [],
-            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
+            UrlPatterns.DefaultDiagnosticHelp
         );
     }
 }

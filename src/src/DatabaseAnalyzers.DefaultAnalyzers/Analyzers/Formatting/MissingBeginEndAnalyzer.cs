@@ -70,7 +70,7 @@ public sealed class MissingBeginEndAnalyzer : IScriptAnalyzer
             "Missing BEGIN/END blocks",
             "The children of `{0}` should be enclosed in BEGIN/END blocks.",
             ["Statement name"],
-            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
+            UrlPatterns.DefaultDiagnosticHelp
         );
     }
 }

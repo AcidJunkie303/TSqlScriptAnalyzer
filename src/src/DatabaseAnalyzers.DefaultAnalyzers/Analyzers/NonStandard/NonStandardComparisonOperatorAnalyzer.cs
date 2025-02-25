@@ -73,7 +73,7 @@ public sealed class NonStandardComparisonOperatorAnalyzer : IScriptAnalyzer
             "Non-standard comparison operator",
             "The non-standard comparison operator `{0}` should not be used.",
             ["Comparison operator"],
-            new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/{DiagnosticId}.md")
+            UrlPatterns.DefaultDiagnosticHelp
         );
     }
 }
