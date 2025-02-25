@@ -10,8 +10,8 @@ public sealed class ParameterReferenceWithDifferentCasingAnalyzer : IScriptAnaly
 
     public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
-        var functions = script.ParsedScript.GetTopLevelDescendantsOfType<FunctionStatementBody>();
-        var procedures = script.ParsedScript.GetTopLevelDescendantsOfType<ProcedureStatementBody>();
+        var functions = script.ParsedScript.GetTopLevelDescendantsOfType<FunctionStatementBody>(script.ParentFragmentProvider);
+        var procedures = script.ParsedScript.GetTopLevelDescendantsOfType<ProcedureStatementBody>(script.ParentFragmentProvider);
 
         AnalyzeFunctions(context, script, functions);
         AnalyzeProcedures(context, script, procedures);

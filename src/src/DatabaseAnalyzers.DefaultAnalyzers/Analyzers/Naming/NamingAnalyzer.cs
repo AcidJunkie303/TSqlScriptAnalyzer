@@ -14,16 +14,16 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
         var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5030Settings>();
 
         var functions = script.ParsedScript
-            .GetTopLevelDescendantsOfType<FunctionStatementBody>()
+            .GetTopLevelDescendantsOfType<FunctionStatementBody>(script.ParentFragmentProvider)
             .ToList();
         var procedures = script.ParsedScript
-            .GetTopLevelDescendantsOfType<ProcedureStatementBody>()
+            .GetTopLevelDescendantsOfType<ProcedureStatementBody>(script.ParentFragmentProvider)
             .ToList();
-        var tables = script.ParsedScript.GetTopLevelDescendantsOfType<CreateTableStatement>();
-        var triggers = script.ParsedScript.GetTopLevelDescendantsOfType<TriggerStatementBody>();
-        var primaryKeyConstraints = script.ParsedScript.GetTopLevelDescendantsOfType<UniqueConstraintDefinition>().Where(static a => a.IsPrimaryKey);
-        var variables = script.ParsedScript.GetTopLevelDescendantsOfType<DeclareVariableStatement>();
-        var views = script.ParsedScript.GetTopLevelDescendantsOfType<ViewStatementBody>();
+        var tables = script.ParsedScript.GetTopLevelDescendantsOfType<CreateTableStatement>(script.ParentFragmentProvider);
+        var triggers = script.ParsedScript.GetTopLevelDescendantsOfType<TriggerStatementBody>(script.ParentFragmentProvider);
+        var primaryKeyConstraints = script.ParsedScript.GetTopLevelDescendantsOfType<UniqueConstraintDefinition>(script.ParentFragmentProvider).Where(static a => a.IsPrimaryKey);
+        var variables = script.ParsedScript.GetTopLevelDescendantsOfType<DeclareVariableStatement>(script.ParentFragmentProvider);
+        var views = script.ParsedScript.GetTopLevelDescendantsOfType<ViewStatementBody>(script.ParentFragmentProvider);
 
         IReadOnlyList<ProcedureParameter> parameters =
         [

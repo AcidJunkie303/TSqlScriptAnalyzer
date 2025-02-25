@@ -97,6 +97,20 @@ public sealed class ExcessiveStringConcatenationAnalyzerTests(ITestOutputHelper 
     }
 
     [Fact]
+    public void WithSettings_MaxAllowedConcatenationsIsOne_WhenSettingsWhenFourConcatenations_ThenDiagnoseO()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+                            SET @x = ▶️AJ5001💛script_0.sql💛💛1✅'a' + 'b' + 'c' + 'd' + 'e'◀️
+                            """;
+
+        var settings = new Aj5001Settings(1);
+
+        Verify(settings, code);
+    }
+
+    [Fact]
     public void WhenVariableIsParameter_WhenMoreThanTwoStringConcatenation_ThenDiagnose()
     {
         const string code = """
