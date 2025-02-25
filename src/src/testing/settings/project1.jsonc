@@ -191,7 +191,8 @@
                 "AsciiStringOrQuotedIdentifier",
                 "Variable",
                 "MultilineComment",
-                "SingleLineComment"
+                "SingleLineComment",
+                "HexLiteral"
             ]
         },
         "AJ5049": {
