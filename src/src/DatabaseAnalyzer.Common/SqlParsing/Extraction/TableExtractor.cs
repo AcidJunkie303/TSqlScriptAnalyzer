@@ -59,7 +59,7 @@ public sealed class TableExtractor : Extractor<TableInformation>
                     tableName,
                     IndexName: null,
                     indexType,
-                    a.ObjectName.ToFrozenSet(StringComparer.Ordinal),
+                    a.ObjectName.ToSingleItemFrozenSet(StringComparer.Ordinal),
                     FrozenSet<string>.Empty,
                     a.ColumnDefinition,
                     script.RelativeScriptFilePath

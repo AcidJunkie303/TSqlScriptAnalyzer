@@ -44,6 +44,18 @@ public sealed class StringConcatenationUnicodeAsciiMixAnalyzerTests(ITestOutputH
     }
 
     [Fact]
+    public void WhenConcatenatingUnicodeAndAsciiStrings_WithMultiple_ThenDiagnoseOnce()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+                            SET @x = ▶️AJ5002💛script_0.sql💛✅N'a' + 'b' + N'c' + 'd'◀️
+                            """;
+
+        Verify(code);
+    }
+
+    [Fact]
     public void WhenConvertingPartToSameStringType_ThenOk()
     {
         const string code = """

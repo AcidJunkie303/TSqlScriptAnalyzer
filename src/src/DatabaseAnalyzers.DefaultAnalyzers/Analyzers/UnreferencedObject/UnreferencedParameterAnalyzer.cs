@@ -10,8 +10,8 @@ public sealed class UnreferencedParameterAnalyzer : IScriptAnalyzer
 
     public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
-        var procedures = script.ParsedScript.GetTopLevelDescendantsOfType<ProcedureStatementBody>();
-        var functions = script.ParsedScript.GetTopLevelDescendantsOfType<FunctionStatementBody>();
+        var procedures = script.ParsedScript.GetTopLevelDescendantsOfType<ProcedureStatementBody>(script.ParentFragmentProvider);
+        var functions = script.ParsedScript.GetTopLevelDescendantsOfType<FunctionStatementBody>(script.ParentFragmentProvider);
 
         Analyze(context, script, procedures, static a => a.Parameters, static a => a.StatementList);
         Analyze(context, script, functions, static a => a.Parameters, static a => a.StatementList);

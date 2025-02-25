@@ -10,7 +10,7 @@ public sealed class StringConcatenationUnicodeAsciiMixAnalyzer : IScriptAnalyzer
 
     public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
-        foreach (var expression in script.ParsedScript.GetTopLevelDescendantsOfType<BinaryExpression>())
+        foreach (var expression in script.ParsedScript.GetTopLevelDescendantsOfType<BinaryExpression>(script.ParentFragmentProvider))
         {
             Analyze(context, script, expression);
         }
@@ -52,13 +52,13 @@ public sealed class StringConcatenationUnicodeAsciiMixAnalyzer : IScriptAnalyzer
         private StringTypes GetStringTypeFromExpression(ScalarExpression expression)
             => expression switch
             {
-                BinaryExpression => StringTypes.None,
-                StringLiteral { IsNational: true } => StringTypes.Unicode,
+                BinaryExpression                    => StringTypes.None,
+                StringLiteral { IsNational: true }  => StringTypes.Unicode,
                 StringLiteral { IsNational: false } => StringTypes.Ascii,
                 VariableReference variableReference => GetStringType(variableReference),
-                ConvertCall convert => GetStringType(convert.DataType),
-                CastCall cast => GetStringType(cast.DataType),
-                _ => StringTypes.None
+                ConvertCall convert                 => GetStringType(convert.DataType),
+                CastCall cast                       => GetStringType(cast.DataType),
+                _                                   => StringTypes.None
             };
 
         private StringTypes GetStringType(VariableReference variableReference)

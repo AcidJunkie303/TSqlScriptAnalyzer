@@ -13,7 +13,7 @@ public sealed class ExcessiveStringConcatenationAnalyzer : IScriptAnalyzer
     {
         var maxAllowedStringConcatenations = GetMaxAllowedStringConcatenations(context);
 
-        foreach (var expression in script.ParsedScript.GetTopLevelDescendantsOfType<BinaryExpression>())
+        foreach (var expression in script.ParsedScript.GetTopLevelDescendantsOfType<BinaryExpression>(script.ParentFragmentProvider))
         {
             Analyze(context, script, expression, maxAllowedStringConcatenations);
         }

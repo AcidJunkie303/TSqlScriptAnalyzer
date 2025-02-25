@@ -5,7 +5,11 @@ namespace DatabaseAnalyzer.App;
 
 internal sealed partial class ProgressCallbackConsoleWriter : IProgressCallback
 {
+#if NET9_0_OR_GREATER
+    private static readonly Lock LockObject = new();
+#else
     private static readonly object LockObject = new();
+#endif
 
     public void OnProgress(ProgressCallbackArgs args)
     {

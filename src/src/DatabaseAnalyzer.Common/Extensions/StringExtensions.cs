@@ -213,10 +213,7 @@ public static class StringExtensions
         }
     }
 
-#if NET8_0
-    public static FrozenSet<string> ToFrozenSet(this string value, StringComparer comparer)
+    // TODO: remove this and replace its usages with the new collection initializers for .net 9.0
+    public static FrozenSet<string> ToSingleItemFrozenSet(this string value, StringComparer comparer)
         => new[] { value }.ToFrozenSet(comparer);
-#else
-    // TODO: remove NET8_0 part
-#endif
 }

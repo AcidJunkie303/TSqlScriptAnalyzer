@@ -9,12 +9,12 @@ public static class SqlScriptExtensions
     public static IParentFragmentProvider CreateParentFragmentProvider(this TSqlFragment fragment)
         => ParentFragmentProviderFactory.Build(fragment);
 
-    public static IEnumerable<T> GetTopLevelDescendantsOfType<T>(this TSqlFragment fragment)
+    public static IEnumerable<T> GetTopLevelDescendantsOfType<T>(this TSqlFragment fragment, IParentFragmentProvider parentFragmentProvider)
         where T : TSqlFragment
     {
         ArgumentNullException.ThrowIfNull(fragment);
 
-        var visitor = new GetTopLevelDescendantVisitor<T>();
+        var visitor = new GetTopLevelDescendantVisitor<T>(parentFragmentProvider);
         fragment.Accept(visitor);
         return visitor.Nodes;
     }
@@ -61,17 +61,28 @@ public static class SqlScriptExtensions
     private sealed class GetTopLevelDescendantVisitor<T> : TSqlFragmentVisitor
         where T : TSqlFragment
     {
+        private readonly IParentFragmentProvider _parentFragmentProvider;
+
+        public GetTopLevelDescendantVisitor(IParentFragmentProvider parentFragmentProvider)
+        {
+            _parentFragmentProvider = parentFragmentProvider;
+        }
+
         public List<T> Nodes { get; } = [];
 
         public override void Visit(TSqlFragment fragment)
         {
             if (fragment is T node)
             {
-                Nodes.Add(node);
-                return;
-            }
+                var anyParentIsOfSameType = _parentFragmentProvider.GetParents(fragment).Any(a => a is T);
+                if (!anyParentIsOfSameType)
+                {
+                    Nodes.Add(node);
+                    return;
+                }
 
-            base.Visit(fragment);
+                base.Visit(fragment);
+            }
         }
     }
 }
