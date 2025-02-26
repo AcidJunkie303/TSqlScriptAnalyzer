@@ -16,9 +16,10 @@ public sealed class NamingAnalyzerTests(ITestOutputHelper testOutputHelper)
         PrimaryKeyConstraintName = new Aj5030SettingsRaw.PatternEntryRaw { Pattern = "\\APK_", Description = "DDD" },
         ProcedureName = new Aj5030SettingsRaw.PatternEntryRaw { Pattern = "\\AProcedure", Description = "EEE" },
         TableName = new Aj5030SettingsRaw.PatternEntryRaw { Pattern = "\\ATable", Description = "FFF" },
-        TriggerName = new Aj5030SettingsRaw.PatternEntryRaw { Pattern = "\\ATRG_", Description = "GGG" },
-        VariableName = new Aj5030SettingsRaw.PatternEntryRaw { Pattern = "\\AVariable", Description = "HHH" },
-        ViewName = new Aj5030SettingsRaw.PatternEntryRaw { Pattern = "\\AView", Description = "III" }
+        TempTableName = new Aj5030SettingsRaw.PatternEntryRaw { Pattern = "\\A##?Table", Description = "GGG" },
+        TriggerName = new Aj5030SettingsRaw.PatternEntryRaw { Pattern = "\\ATRG_", Description = "HHH" },
+        VariableName = new Aj5030SettingsRaw.PatternEntryRaw { Pattern = "\\AVariable", Description = "III" },
+        ViewName = new Aj5030SettingsRaw.PatternEntryRaw { Pattern = "\\AView", Description = "JJJ" }
     }.ToSettings();
 
     [Theory]
@@ -119,8 +120,8 @@ public sealed class NamingAnalyzerTests(ITestOutputHelper testOutputHelper)
 
     [Theory]
     [InlineData("TRG_303")]
-    [InlineData("▶️AJ5030💛script_0.sql💛MyDb.dbo.T_303💛trigger💛T_303💛GGG✅T_303◀️")]
-    [InlineData("▶️AJ5030💛script_0.sql💛MyDb.dbo.trg_303💛trigger💛trg_303💛GGG✅trg_303◀️")]
+    [InlineData("▶️AJ5030💛script_0.sql💛MyDb.dbo.T_303💛trigger💛T_303💛HHH✅T_303◀️")]
+    [InlineData("▶️AJ5030💛script_0.sql💛MyDb.dbo.trg_303💛trigger💛trg_303💛HHH✅trg_303◀️")]
     public void TriggerName_Theory(string tiggerName)
     {
         var code = $"""
@@ -163,8 +164,8 @@ public sealed class NamingAnalyzerTests(ITestOutputHelper testOutputHelper)
 
     [Theory]
     [InlineData("@Variable303")]
-    [InlineData("▶️AJ5030💛script_0.sql💛💛variable💛Var303💛HHH✅@Var303◀️")]
-    [InlineData("▶️AJ5030💛script_0.sql💛💛variable💛variable303💛HHH✅@variable303◀️")]
+    [InlineData("▶️AJ5030💛script_0.sql💛💛variable💛Var303💛III✅@Var303◀️")]
+    [InlineData("▶️AJ5030💛script_0.sql💛💛variable💛variable303💛III✅@variable303◀️")]
     public void VariableName_Theory(string variableName)
     {
         //
@@ -179,8 +180,8 @@ public sealed class NamingAnalyzerTests(ITestOutputHelper testOutputHelper)
 
     [Theory]
     [InlineData("View303")]
-    [InlineData("▶️AJ5030💛script_0.sql💛MyDb.dbo.V303💛view💛V303💛III✅V303◀️")]
-    [InlineData("▶️AJ5030💛script_0.sql💛MyDb.dbo.view303💛view💛view303💛III✅view303◀️")]
+    [InlineData("▶️AJ5030💛script_0.sql💛MyDb.dbo.V303💛view💛V303💛JJJ✅V303◀️")]
+    [InlineData("▶️AJ5030💛script_0.sql💛MyDb.dbo.view303💛view💛view303💛JJJ✅view303◀️")]
     public void ViewName_Theory(string viewName)
     {
         //
@@ -191,6 +192,27 @@ public sealed class NamingAnalyzerTests(ITestOutputHelper testOutputHelper)
                     CREATE VIEW dbo.{viewName}
                     AS
                     SELECT 1 AS Expr1
+                    """;
+        Verify(Settings, code);
+    }
+
+    [Theory]
+    [InlineData("/* 0001 */ #Table303")]
+    [InlineData("/* 0002 */ ##Table303")]
+    [InlineData("/* 0003 */ ▶️AJ5030💛script_0.sql💛#Tab303💛temp-table💛#Tab303💛GGG✅#Tab303◀️")]
+    [InlineData("/* 0004 */ ▶️AJ5030💛script_0.sql💛##Tab303💛temp-table💛##Tab303💛GGG✅##Tab303◀️")]
+    [InlineData("/* 0005 */ ▶️AJ5030💛script_0.sql💛#table303💛temp-table💛#table303💛GGG✅#table303◀️")]
+    [InlineData("/* 0006 */ ▶️AJ5030💛script_0.sql💛##table303💛temp-table💛##table303💛GGG✅##table303◀️")]
+    public void TempTableName_Theory(string tempTableName)
+    {
+        var code = $"""
+                    USE MyDb
+                    GO
+
+                    CREATE TABLE {tempTableName}
+                    (
+                        Column303        NVARCHAR(128) NOT NULL
+                    )
                     """;
         Verify(Settings, code);
     }

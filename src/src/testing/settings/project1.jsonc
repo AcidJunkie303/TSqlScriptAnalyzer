@@ -141,6 +141,10 @@
                 "Pattern": "\\A[A-Z][A-Za-z0-1]+",
                 "Description": "Table names must start with a capital letter followed by characters or numbers only"
             },
+            "TempTableName": {
+                "Pattern": "\\A##?[A-Z][A-Za-z0-1]+",
+                "Description": "Temp table names must start with one or two #, followed by a capital letter followed by characters or numbers only"
+            },
             "TriggerName": {
                 "Pattern": "\\ATRG_[A-Za-z0-1]+",
                 "Description": "Trigger names must start with a capital letter followed by characters or numbers only"
