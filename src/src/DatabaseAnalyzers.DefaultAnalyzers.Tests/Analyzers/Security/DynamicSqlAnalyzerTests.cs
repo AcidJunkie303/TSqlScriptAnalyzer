@@ -84,4 +84,17 @@ public sealed class DynamicSqlAnalyzerTests(ITestOutputHelper testOutputHelper)
 
         Verify(code);
     }
+
+    [Fact]
+    public void WithExec_WhenDirect_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            EXEC dbo.usp_ProcessLog @Variable1, @Variable2
+                            """;
+
+        Verify(code);
+    }
 }

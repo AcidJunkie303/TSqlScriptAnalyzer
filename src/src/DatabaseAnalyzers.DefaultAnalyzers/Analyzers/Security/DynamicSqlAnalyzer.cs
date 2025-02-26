@@ -29,9 +29,21 @@ public sealed class DynamicSqlAnalyzer : IScriptAnalyzer
 
         bool IsDynamicSql()
         {
-            if (statement.ExecuteSpecification.ExecutableEntity is ExecutableProcedureReference procedureReference)
+            if (statement.ExecuteSpecification.ExecutableEntity is ExecutableProcedureReference executableProcedureReference)
             {
-                var firstParameter = procedureReference.Parameters.FirstOrDefault();
+                var procedureReference = executableProcedureReference.ProcedureReference;
+                if (procedureReference is null)
+                {
+                    return false;
+                }
+
+                var procedureName = procedureReference.ProcedureReference.Name?.BaseIdentifier?.Value;
+                if (!procedureName.EqualsOrdinalIgnoreCase("sp_executeSql"))
+                {
+                    return false;
+                }
+
+                var firstParameter = executableProcedureReference.Parameters.FirstOrDefault();
                 return firstParameter?.ParameterValue is VariableReference;
             }
 
