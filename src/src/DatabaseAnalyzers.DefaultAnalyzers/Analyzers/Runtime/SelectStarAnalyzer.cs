@@ -6,7 +6,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime;
 
 public sealed class SelectStarAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
+    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.SelectStar, DiagnosticDefinitions.SelectStarForExistenceCheck];
 
     public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
@@ -18,16 +18,21 @@ public sealed class SelectStarAnalyzer : IScriptAnalyzer
 
     private static void Analyze(IAnalysisContext context, IScriptModel script, SelectStarExpression expression)
     {
-        if (IsSafeSelectStart())
+        if (IsSafeSelectStar())
         {
             return;
         }
 
         var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(expression) ?? DatabaseNames.Unknown;
         var fullObjectName = expression.TryGetFirstClassObjectName(context, script);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, expression.GetCodeRegion());
 
-        bool IsSafeSelectStart()
+        var diagnosticDefinition = IsExistenceCheck(script, expression)
+            ? DiagnosticDefinitions.SelectStarForExistenceCheck
+            : DiagnosticDefinitions.SelectStar;
+
+        context.IssueReporter.Report(diagnosticDefinition, databaseName, script.RelativeScriptFilePath, fullObjectName, expression.GetCodeRegion());
+
+        bool IsSafeSelectStar()
         {
             var fromClause =
                 expression
@@ -66,14 +71,38 @@ public sealed class SelectStarAnalyzer : IScriptAnalyzer
             };
     }
 
+    private static bool IsExistenceCheck(IScriptModel script, SelectStarExpression expression)
+    {
+        var parents = expression.GetParents(script)
+            .Take(3)
+            .ToList();
+
+        return parents is
+        [
+            QuerySpecification,
+            ScalarSubquery,
+            ExistsPredicate
+        ];
+    }
+
     private static class DiagnosticDefinitions
     {
-        public static DiagnosticDefinition Default { get; } = new
+        public static DiagnosticDefinition SelectStar { get; } = new
         (
             "AJ5041",
             IssueType.Warning,
-            "Usage of 'SELECT *' ",
+            "Usage of 'SELECT *'",
             "Usage of `SELECT *` from a non-CTE or non-derived table source.",
+            [],
+            UrlPatterns.DefaultDiagnosticHelp
+        );
+
+        public static DiagnosticDefinition SelectStarForExistenceCheck { get; } = new
+        (
+            "AJ5053",
+            IssueType.Warning,
+            "Usage of 'SELECT *' in existence check",
+            "Usage of `SELECT *` in existence checks. Use `SELECT 1` instead",
             [],
             UrlPatterns.DefaultDiagnosticHelp
         );
