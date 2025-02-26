@@ -15,5 +15,5 @@ public enum IndexProperties
     Spatial = 1 << 8,
     Xml = 1 << 9,
     Bitmap = 1 << 10,
-    WithIncludedColumns = 1 << 12
+    WithIncludedColumns = 1 << 11
 }

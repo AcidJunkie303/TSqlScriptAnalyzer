@@ -29,7 +29,7 @@ public sealed class IndexNamingAnalyzer : IScriptAnalyzer
 
         foreach (var statement in script.ParsedScript.GetChildren<AlterTableAddTableElementStatement>(recursive: true))
         {
-            AnalyeAlterTableStatement(context, script, settings, statement);
+            AnalyzeAlterTableStatement(context, script, settings, statement);
         }
     }
 
@@ -44,6 +44,11 @@ public sealed class IndexNamingAnalyzer : IScriptAnalyzer
 
     private static void AnalyzeCreateTableStatement(IAnalysisContext context, IScriptModel script, Aj5052Settings settings, CreateTableStatement statement)
     {
+        if (statement.IsTempTable())
+        {
+            return;
+        }
+
         var primaryKeyDefinition = statement.Definition.TableConstraints
             .OfType<UniqueConstraintDefinition>()
             .FirstOrDefault(a => a.IsPrimaryKey);
@@ -58,7 +63,7 @@ public sealed class IndexNamingAnalyzer : IScriptAnalyzer
         AnalyzeUniqueConstraintDefinition(context, script, settings, primaryKeyDefinition, tableSchemaName, tableName);
     }
 
-    private static void AnalyeAlterTableStatement(IAnalysisContext context, IScriptModel script, Aj5052Settings settings, AlterTableAddTableElementStatement statement)
+    private static void AnalyzeAlterTableStatement(IAnalysisContext context, IScriptModel script, Aj5052Settings settings, AlterTableAddTableElementStatement statement)
     {
         var primaryKeyDefinition = statement.Definition.TableConstraints
             .OfType<UniqueConstraintDefinition>()
