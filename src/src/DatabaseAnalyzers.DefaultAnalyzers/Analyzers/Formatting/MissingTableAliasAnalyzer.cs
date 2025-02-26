@@ -23,7 +23,7 @@ public sealed class MissingTableAliasAnalyzer : IScriptAnalyzer
             .OfType<QuerySpecification>()
             .FirstOrDefault();
 
-        if (querySpecification?.FromClause is null)
+        if (querySpecification?.FromClause is null || columnReference.MultiPartIdentifier is null)
         {
             return;
         }
