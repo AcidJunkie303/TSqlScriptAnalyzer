@@ -83,4 +83,43 @@ public sealed class SelectStarAnalyzerTests(ITestOutputHelper testOutputHelper)
                             """;
         Verify(code);
     }
+
+    [Theory]
+    [InlineData("/* 0001 */ 1")]
+    [InlineData("/* 0002 */ ▶️AJ5053💛script_0.sql💛✅*◀️")]
+    public void WhenExistsCheckInSubqueryWithSelectStar_ThenDiagnose(string insertion)
+    {
+        var code = $"""
+                    USE MyDb
+                    GO
+
+                    SELECT      t1.Value
+                    FROM        Table1 AS t
+                    WHERE EXISTS (
+                        SELECT  {insertion}
+                        FROM    Table2 t2
+                        WHERE   t2.Id = t1.Id
+                    );
+
+                    """;
+        Verify(code);
+    }
+
+    [Theory]
+    [InlineData("/* 0001 */ 1")]
+    [InlineData("/* 0002 */ ▶️AJ5053💛script_0.sql💛✅*◀️")]
+    public void WhenExistsCheckWithSelectStar_ThenDiagnose(string insertion)
+    {
+        var code = $"""
+                    USE MyDb
+                    GO
+
+                    IF EXISTS (SELECT {insertion} FROM T1 WHERE Value = 'value')
+                    BEGIN
+                        PRINT 'Hello'
+                    END
+
+                    """;
+        Verify(code);
+    }
 }
