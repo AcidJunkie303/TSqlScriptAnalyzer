@@ -164,7 +164,7 @@
         },
         "AJ5040": {
             // Banned functions
-            "BannedFunctionNamesByReason": {
+            "BanReasonByFunctionName": {
                 "GETDATE": "Use 'GETUTCDATE()' instead"
             }
         },

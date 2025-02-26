@@ -62,7 +62,7 @@ public sealed class BannedFunctionAnalyzer : IScriptAnalyzer
             return;
         }
 
-        if (!settings.BannedFunctionNamesByReason.TryGetValue(functionName, out var reason))
+        if (!settings.BanReasonByFunctionName.TryGetValue(functionName, out var reason))
         {
             return;
         }

@@ -10,7 +10,7 @@ public sealed class BannedFunctionAnalyzerTests(ITestOutputHelper testOutputHelp
 {
     private static readonly Aj5040Settings Settings = new Aj5040SettingsRaw
     {
-        BannedFunctionNamesByReason = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase)
+        BanReasonByFunctionName = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase)
         {
             ["LEN"] = "Reason1",
             ["My.BannedFunction"] = "Reason2"
