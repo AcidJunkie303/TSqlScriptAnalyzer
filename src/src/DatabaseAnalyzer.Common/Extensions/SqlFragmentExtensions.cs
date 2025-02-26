@@ -88,6 +88,11 @@ public static class SqlFragmentExtensions
             var name = TryGetFirstClassObjectNameCore(parent, defaultSchemaName);
             if (!name.IsNullOrWhiteSpace())
             {
+                if (name.IsTempTableName())
+                {
+                    return name;
+                }
+
                 var databaseName = script.TryFindCurrentDatabaseNameAtFragment(parent) ?? DatabaseNames.Unknown;
                 return $"{databaseName}.{name}";
             }
@@ -100,13 +105,13 @@ public static class SqlFragmentExtensions
         => fragment switch
         {
             ProcedureStatementBody s => s.ProcedureReference.Name.GetConcatenatedTwoPartObjectName(defaultSchemaName),
-            FunctionStatementBody s => s.Name.GetConcatenatedTwoPartObjectName(defaultSchemaName),
-            CreateTableStatement s => s.SchemaObjectName.GetConcatenatedTwoPartObjectName(defaultSchemaName),
-            AlterTableStatement s => s.SchemaObjectName.GetConcatenatedTwoPartObjectName(defaultSchemaName),
-            CreateIndexStatement s => s.Name.Value,
-            ViewStatementBody s => s.SchemaObjectName.GetConcatenatedTwoPartObjectName(defaultSchemaName),
-            TriggerStatementBody s => s.Name.GetConcatenatedTwoPartObjectName(defaultSchemaName),
-            _ => null
+            FunctionStatementBody s  => s.Name.GetConcatenatedTwoPartObjectName(defaultSchemaName),
+            CreateTableStatement s   => s.IsTempTable() ? s.SchemaObjectName.BaseIdentifier.Value : s.SchemaObjectName.GetConcatenatedTwoPartObjectName(defaultSchemaName),
+            AlterTableStatement s    => s.SchemaObjectName.GetConcatenatedTwoPartObjectName(defaultSchemaName),
+            CreateIndexStatement s   => s.Name.Value,
+            ViewStatementBody s      => s.SchemaObjectName.GetConcatenatedTwoPartObjectName(defaultSchemaName),
+            TriggerStatementBody s   => s.Name.GetConcatenatedTwoPartObjectName(defaultSchemaName),
+            _                        => null
         };
 
     public static IEnumerable<TSqlFragment> GetParents(this TSqlFragment fragment, IScriptModel script)

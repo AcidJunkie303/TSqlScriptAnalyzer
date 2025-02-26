@@ -17,6 +17,7 @@ public sealed class Aj5030SettingsRaw : IRawSettings<Aj5030Settings>
     public PatternEntryRaw? PrimaryKeyConstraintName { get; set; }
     public PatternEntryRaw? ProcedureName { get; set; }
     public PatternEntryRaw? TableName { get; set; }
+    public PatternEntryRaw? TempTableName { get; set; }
     public PatternEntryRaw? TriggerName { get; set; }
     public PatternEntryRaw? VariableName { get; set; }
     public PatternEntryRaw? ViewName { get; set; }
@@ -29,6 +30,7 @@ public sealed class Aj5030SettingsRaw : IRawSettings<Aj5030Settings>
         ToPatternEntry(PrimaryKeyConstraintName),
         ToPatternEntry(ProcedureName),
         ToPatternEntry(TableName),
+        ToPatternEntry(TempTableName),
         ToPatternEntry(TriggerName),
         ToPatternEntry(VariableName),
         ToPatternEntry(ViewName)
@@ -61,6 +63,8 @@ public sealed record Aj5030Settings(
     Aj5030Settings.PatternEntry ProcedureName,
     [property: Description("The naming policy for tables.")]
     Aj5030Settings.PatternEntry TableName,
+    [property: Description("The naming policy for temp tables.")]
+    Aj5030Settings.PatternEntry TempTableName,
     [property: Description("The naming policy for triggers.")]
     Aj5030Settings.PatternEntry TriggerName,
     [property: Description("The naming policy for variables.")]
@@ -71,6 +75,7 @@ public sealed record Aj5030Settings(
 {
     public static Aj5030Settings Default { get; } = new
     (
+        new PatternEntry(Aj5030SettingsRaw.AlwaysMatchRegex, string.Empty),
         new PatternEntry(Aj5030SettingsRaw.AlwaysMatchRegex, string.Empty),
         new PatternEntry(Aj5030SettingsRaw.AlwaysMatchRegex, string.Empty),
         new PatternEntry(Aj5030SettingsRaw.AlwaysMatchRegex, string.Empty),
