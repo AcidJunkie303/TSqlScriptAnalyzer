@@ -199,4 +199,21 @@ public sealed class BannedDataTypeAnalyzerTests(ITestOutputHelper testOutputHelp
 
         Verify(Settings, code);
     }
+
+    [Fact]
+    public void WhenCreatingTableWithPersistedValue_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            CREATE TABLE        [dbo].[T1]
+                            (
+                                [Id]            [BIGINT] NOT NULL,
+                                [Something]     AS CAST(4 AS TINYINT) PERSISTED
+                            )
+                            """;
+
+        VerifyWithDefaultSettings<Aj5006Settings>(code);
+    }
 }

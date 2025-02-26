@@ -65,8 +65,13 @@ public sealed class BannedDataTypeAnalyzer : IScriptAnalyzer
         }
     }
 
-    private static void AnalyzeDataType(IAnalysisContext context, IScriptModel script, DataTypeReference dataType, TSqlFragment parameter, IReadOnlyCollection<Regex> bannedTypesExpressions, string pluralObjectType)
+    private static void AnalyzeDataType(IAnalysisContext context, IScriptModel script, DataTypeReference? dataType, TSqlFragment parameter, IReadOnlyCollection<Regex> bannedTypesExpressions, string pluralObjectType)
     {
+        if (dataType is null)
+        {
+            return;
+        }
+
         var dataTypeName = dataType.GetSql().Replace(" ", string.Empty, StringComparison.Ordinal);
         var isBanned = bannedTypesExpressions.Any(a => a.IsMatch(dataTypeName));
         if (!isBanned)
