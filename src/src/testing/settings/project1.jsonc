@@ -210,12 +210,24 @@
         },
         "AJ5052": {
             // Index naming enforcement
-            "NamingPatternByIndexProperties": {
-                "PrimaryKey": "PK_{TableSchemaName}_{TableName}",
-                "Unique, Clustered": "UXC_{TableSchemaName}_{TableName}_{ColumnNames}",
-                "Unique": "UXC_{TableSchemaName}_{TableName}_{ColumnNames}",
-                "Clustered": "IXC_{TableSchemaName}_{TableName}_{ColumnNames}"
-            },
+            "NamingPatterns": [
+                {
+                    "IndexProperties": "PrimaryKey",
+                    "Pattern": "PK_{TableSchemaName}_{TableName}"
+                },
+                {
+                    "IndexProperties": "Unique, Clustered",
+                    "Pattern": "UXC_{TableSchemaName}_{TableName}_{ColumnNames}"
+                },
+                {
+                    "IndexProperties": "Unique",
+                    "Pattern": "UXC_{TableSchemaName}_{TableName}_{ColumnNames}"
+                },
+                {
+                    "IndexProperties": "Clustered",
+                    "Pattern": "IXC_{TableSchemaName}_{TableName}_{ColumnNames}"
+                }
+            ],
             "DefaultPattern": "IX_{TableSchemaName}_{TableName}_{ColumnNames}"
         }
     }

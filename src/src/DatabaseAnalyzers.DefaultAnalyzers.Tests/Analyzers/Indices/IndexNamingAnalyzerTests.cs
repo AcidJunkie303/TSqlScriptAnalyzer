@@ -9,15 +9,15 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Indices;
 public sealed class IndexNamingAnalyzerTests(ITestOutputHelper testOutputHelper)
     : ScriptAnalyzerTestsBase<IndexNamingAnalyzer>(testOutputHelper)
 {
-    private static readonly Aj5052Settings Settings = new Aj5052SettingsRaw
-    {
-        DefaultPattern = "IX_{TableSchemaName}_{TableName}_{ColumnNames}",
-        NamingPatternByIndexProperties =
+    private static readonly Aj5052Settings Settings = new
+    (
+        DefaultPattern: "IX_{TableSchemaName}_{TableName}_{ColumnNames}",
+        NamingPatterns:
         [
-            new KeyValuePair<IndexProperties?, string>(IndexProperties.PrimaryKey, "PK_{TableSchemaName}_{TableName}"),
-            new KeyValuePair<IndexProperties?, string>(IndexProperties.Unique, "UX_{TableSchemaName}_{TableName}_{ColumnNames}")
+            new Aj5052SettingsEntry(IndexProperties.PrimaryKey, "PK_{TableSchemaName}_{TableName}"),
+            new Aj5052SettingsEntry(IndexProperties.Unique, "UX_{TableSchemaName}_{TableName}_{ColumnNames}")
         ]
-    }.ToSettings();
+    );
 
     [Fact]
     public void WhenNoRuleApplies_ThenFallbackToDefault()
