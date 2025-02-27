@@ -29,7 +29,7 @@
 | [AJ5020](diagnostics/AJ5020.md) | Usage of weak hashing algorithm                                         | Warning      |
 | [AJ5021](diagnostics/AJ5021.md) | Specific options should not be turned off                               | Warning      |
 | [AJ5022](diagnostics/AJ5022.md) | Missing BEGIN/END blocks                                                | Formatting   |
-| [AJ5023](diagnostics/AJ5023.md) | Statements must begin on a new line                                     | Formatting   |
+| [AJ5023](diagnostics/AJ5023.md) | Statements should begin on a new line                                   | Formatting   |
 | [AJ5024](diagnostics/AJ5024.md) | Multiple variable declaration on same line                              | Formatting   |
 | [AJ5026](diagnostics/AJ5026.md) | Table has no primary key                                                | Warning      |
 | [AJ5027](diagnostics/AJ5027.md) | Table has no clustered index                                            | Warning      |

@@ -65,8 +65,8 @@ public sealed class StatementsMustBeginOnNewLineAnalyzer : IScriptAnalyzer
         (
             "AJ5023",
             IssueType.Formatting,
-            "Statements must begin on a new line",
-            "Statements must begin on a new line.",
+            "Statements should begin on a new line",
+            "Statements should begin on a new line.",
             [],
             UrlPatterns.DefaultDiagnosticHelp
         );
