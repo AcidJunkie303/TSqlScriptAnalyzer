@@ -158,7 +158,7 @@ public sealed class IndexNamingAnalyzer : IScriptAnalyzer
 
     private static string GetPatternForIndexProperties(Aj5052Settings settings, IndexProperties indexProperties)
     {
-        foreach (var (properties, pattern) in settings.NamingPatternByIndexProperties)
+        foreach (var (properties, pattern) in settings.NamingPatterns)
         {
             if (indexProperties.HasFlag(properties))
             {
