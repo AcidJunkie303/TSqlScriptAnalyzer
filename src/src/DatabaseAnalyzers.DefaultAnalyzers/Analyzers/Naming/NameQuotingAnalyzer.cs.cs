@@ -191,7 +191,7 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
             "AJ5038",
             IssueType.Formatting,
             "Object name quoting",
-            "The {0} name part `{1}` is quoted wrongly which does not comply with the configured policy. It should be: `{2}`.",
+            "The `{0}` name segment `{1}` is incorrectly quoted, which violates the configured naming policy. It should be `{2}` instead.",
             ["Object type name", "Name", "Expected name"],
             UrlPatterns.DefaultDiagnosticHelp
         );
