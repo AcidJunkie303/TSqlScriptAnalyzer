@@ -46,10 +46,22 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
             return;
         }
 
+        var tableReferences = script.ParsedScript
+            .GetChildren<NamedTableReference>(recursive: true)
+            .Where(a =>
+            {
+                if (a.SchemaObject?.BaseIdentifier?.Value is null)
+                {
+                    return true;
+                }
+
+                return !a.SchemaObject.BaseIdentifier.Value.StartsWith('#');
+            });
+
         Analyze(
             context,
             script,
-            script.ParsedScript.GetChildren<NamedTableReference>(recursive: true),
+            tableReferences,
             static a => a.SchemaObject.Identifiers.TakeLast(1),
             "table reference",
             policy);
