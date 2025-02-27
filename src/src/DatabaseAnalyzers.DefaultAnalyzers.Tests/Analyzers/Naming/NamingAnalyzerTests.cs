@@ -199,10 +199,10 @@ public sealed class NamingAnalyzerTests(ITestOutputHelper testOutputHelper)
     [Theory]
     [InlineData("/* 0001 */ #Table303")]
     [InlineData("/* 0002 */ ##Table303")]
-    [InlineData("/* 0003 */ ▶️AJ5030💛script_0.sql💛#Tab303💛temp-table💛#Tab303💛GGG✅#Tab303◀️")]
-    [InlineData("/* 0004 */ ▶️AJ5030💛script_0.sql💛##Tab303💛temp-table💛##Tab303💛GGG✅##Tab303◀️")]
-    [InlineData("/* 0005 */ ▶️AJ5030💛script_0.sql💛#table303💛temp-table💛#table303💛GGG✅#table303◀️")]
-    [InlineData("/* 0006 */ ▶️AJ5030💛script_0.sql💛##table303💛temp-table💛##table303💛GGG✅##table303◀️")]
+    [InlineData("/* 0003 */ ▶️AJ5030💛script_0.sql💛💛temp-table💛#Tab303💛GGG✅#Tab303◀️")]
+    [InlineData("/* 0004 */ ▶️AJ5030💛script_0.sql💛💛temp-table💛##Tab303💛GGG✅##Tab303◀️")]
+    [InlineData("/* 0005 */ ▶️AJ5030💛script_0.sql💛💛temp-table💛#table303💛GGG✅#table303◀️")]
+    [InlineData("/* 0006 */ ▶️AJ5030💛script_0.sql💛💛temp-table💛##table303💛GGG✅##table303◀️")]
     public void TempTableName_Theory(string tempTableName)
     {
         var code = $"""
