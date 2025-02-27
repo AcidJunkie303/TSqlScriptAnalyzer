@@ -54,12 +54,12 @@ public sealed class NameQuotingAnalyzerTests(ITestOutputHelper testOutputHelper)
         // therefore, we quote them as needed. There's a separate test
         var columnName = nameQuotingPolicy switch
         {
-            NameQuotingPolicy.Undefined => "Column1",
-            NameQuotingPolicy.Required => "[Column1]",
-            NameQuotingPolicy.DoubleQuotesRequired => "\"Column1\"",
+            NameQuotingPolicy.Undefined              => "Column1",
+            NameQuotingPolicy.Required               => "[Column1]",
+            NameQuotingPolicy.DoubleQuotesRequired   => "\"Column1\"",
             NameQuotingPolicy.SquareBracketsRequired => "[Column1]",
-            NameQuotingPolicy.NotAllowed => "Column1",
-            _ => throw new ArgumentOutOfRangeException(nameof(nameQuotingPolicy), nameQuotingPolicy, message: null)
+            NameQuotingPolicy.NotAllowed             => "Column1",
+            _                                        => throw new ArgumentOutOfRangeException(nameof(nameQuotingPolicy), nameQuotingPolicy, message: null)
         };
 
         var code = $"""
@@ -370,6 +370,21 @@ public sealed class NameQuotingAnalyzerTests(ITestOutputHelper testOutputHelper)
 
                     DECLARE @myVar {typeCode}
                     """;
+
+        Verify(settings, code);
+    }
+
+    [Fact]
+    public void WhenTempTable_ThenIgnore()
+    {
+        var settings = Aj5038Settings.Default with { NameQuotingPolicyForTableReferences = NameQuotingPolicy.Required };
+
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            SELECT * FROM #MyTable
+                            """;
 
         Verify(settings, code);
     }
