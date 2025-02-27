@@ -75,7 +75,7 @@ public sealed class NamelessConstraintAnalyzer : IScriptAnalyzer
             "AJ5039",
             IssueType.Formatting,
             "Nameless constraints",
-            "Do not create nameless constraints. It will make schema comparison, execution plan comparison etc. more difficult.",
+            "Do not create nameless constraints. It will make schema and execution plan comparison more difficult.",
             [],
             UrlPatterns.DefaultDiagnosticHelp
         );
