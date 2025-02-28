@@ -14,18 +14,18 @@
             "AB1111",
             "AB2222"
         ],
-        "AJ5001": {
-            // Excessive string concatenation
+        "AJ5001": // Excessive string concatenation
+        {
             "MaxAllowedConcatenations": 2
         },
-        "AJ5003": {
-            // Wrong USE DATABASE name statement
+        "AJ5003": // Wrong USE DATABASE name statement
+        {
             "ExcludedFilePathPatterns": [
                 "0000 Create*.sql"
             ]
         },
-        "AJ5004": {
-            // open points / todo
+        "AJ5004": // open points / todo
+        {
             "TopicsAndPatterns": [
                 {
                     "Topic": "to do",
@@ -33,8 +33,8 @@
                 }
             ]
         },
-        "AJ5006": {
-            // Banned data types
+        "AJ5006": // Banned data types
+        {
             "BannedColumnDataTypes": [
                 "decimal",
                 // use numeric because decimal is a synonym for numeric
@@ -60,8 +60,8 @@
                 // use nvarchar instead
             ]
         },
-        "AJ5015": {
-            // Missing index on column being filtered
+        "AJ5015": // Missing index on column being filtered
+        {
             "MissingIndexSuppressions": [
                 {
                     "FullColumnNamePattern": "MyDb.MySchema.MyTable.MyColumn",
@@ -73,8 +73,8 @@
                 }
             ]
         },
-        "AJ5017": {
-            // Missing index on foreign key column
+        "AJ5017": // Missing index on foreign key column
+        {
             "MissingIndexOnForeignKeyColumnSuppressions": [
                 {
                     "FullColumnNamePattern": "MyDb.MySchema.MyTable.ForeignKeyId",
@@ -86,37 +86,37 @@
                 }
             ]
         },
-        "AJ5022": {
-            // Missing BEGIN/END blocks
+        "AJ5022": // Missing BEGIN/END blocks
+        {
             "IfRequiresBeginEndBlock": true,
             "WhileRequiresBeginEndBlock": true
         },
-        "AJ5023": {
-            // Statements must begin on a new line
+        "AJ5023": // Statements must begin on a new line
+        {
             "StatementTypesToIgnore": [
                 "goto",
                 "print",
                 "set"
             ]
         },
-        "AJ5026": {
-            // Missing primary key
+        "AJ5026": // Missing primary key
+        {
             "FullTableNamesToIgnore": [
                 "MyDb*",
                 "MyDb.MySchema.*",
                 "MyDb.MySchema.My*"
             ]
         },
-        "AJ5027": {
-            // Table has no clustered index
+        "AJ5027": // Table has no clustered index
+        {
             "FullTableNamesToIgnore": [
                 "MyDb*",
                 "MyDb.MySchema.*",
                 "MyDb.MySchema.My*"
             ]
         },
-        "AJ5030": {
-            // Object and variable naming
+        "AJ5030": // Object and variable naming
+        {
             "ColumnName": {
                 "Pattern": "\\A[A-Z][A-Za-z0-1]+",
                 "Description": "Column names must start with a capital letter followed by characters or numbers only"
@@ -158,35 +158,35 @@
                 "Description": "View names must start with a capital letter followed by characters or numbers only"
             }
         },
-        "AJ5038": {
-            // Name quoting. Possible values: Undefined, Required, DoubleQuotesRequired, SquareBracketsRequired or NotAllowed
+        "AJ5038": // Name quoting. Possible values: Undefined, Required, DoubleQuotesRequired, SquareBracketsRequired or NotAllowed
+        {
             "NameQuotingPolicyDuringObjectCreation": "NotAllowed",
             "NameQuotingPolicyForColumnReferences": "Undefined",
             "NameQuotingPolicyForColumnDefinitions": "SquareBracketsRequired",
             "NameQuotingPolicyForTableReferences": "SquareBracketsRequired",
             "NameQuotingPolicyForDataTypes": "Undefined"
         },
-        "AJ5040": {
-            // Banned functions
+        "AJ5040": // Banned functions
+        {
             "BanReasonByFunctionName": {
                 "GETDATE": "Use 'GETUTCDATE()' instead"
             }
         },
-        "AJ5044": {
-            // Missing object
+        "AJ5044": // Missing object
+        {
             "IgnoredObjectNamePatterns": [
                 "*.sys.*"
             ]
         },
-        "AJ5045": {
-            // Empty lines before/after GO statement
+        "AJ5045": // Empty lines before/after GO statement
+        {
             "RequireEmptyLineBeforeGo": false,
             "RequireEmptyLineAfterGo": true
         },
-        "AJ5048": {
-            // Keyword casing
-            "KeywordNamingPolicy": "UpperCase",
+        "AJ5048": // Keyword casing
+        {
             // Possible values: 'Disabled', 'UpperCase', 'LowerCase', 'CamelCase' or 'PascalCase'. Default is 'UpperCase'
+            "KeywordNamingPolicy": "UpperCase",
             "ExcludedKeywordTokenTypes": [
                 "AsciiStringLiteral",
                 "UnicodeStringLiteral",
@@ -199,17 +199,17 @@
                 "HexLiteral"
             ]
         },
-        "AJ5049": {
-            // Object invocation without specified schema name
+        "AJ5049": // Object invocation without specified schema name
+        {
             "IgnoredObjectNamePatterns": [
             ]
         },
-        "AJ5051": {
-            // Unused index
+        "AJ5051": // Unused index
+        {
             "IgnoreUnusedPrimaryKeyIndices": false
         },
-        "AJ5052": {
-            // Index naming enforcement
+        "AJ5052": // Index naming enforcement
+        {
             "NamingPatterns": [
                 {
                     "IndexProperties": "PrimaryKey",
@@ -229,6 +229,12 @@
                 }
             ],
             "DefaultPattern": "IX_{TableSchemaName}_{TableName}_{ColumnNames}"
+        },
+        "AJ5054": {
+            "DatabasesToExclude": [],
+            "ColumnNamesToExclude": [
+                "Id"
+            ]
         }
     }
 }
