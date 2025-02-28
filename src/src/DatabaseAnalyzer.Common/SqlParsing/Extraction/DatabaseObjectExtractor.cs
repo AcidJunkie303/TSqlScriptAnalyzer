@@ -107,7 +107,7 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
             if (databaseObjects.Count > 1)
             {
                 var databaseObject = databaseObjects[0];
-                var scriptFilePaths = databaseObjects.Select(static a => $"{a.RelativeScriptFilePath}").StringJoin(", ");
+                var scriptFilePaths = databaseObjects.Select(static a => $"{a.RelativeScriptFilePath}").StringJoin("; ");
 
                 _issueReporter.Report(WellKnownDiagnosticDefinitions.DuplicateObjectCreationStatement,
                     databaseObject.DatabaseName,
@@ -127,7 +127,7 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
             .ToArray();
     }
 
-    private static List<TableInformation> AggregateTables(IReadOnlyList<TableInformation> tables, IReadOnlyList<ForeignKeyConstraintInformation> foreignKeyConstraints, IReadOnlyList<IndexInformation> indices)
+    private List<TableInformation> AggregateTables(IReadOnlyList<TableInformation> tables, IReadOnlyList<ForeignKeyConstraintInformation> foreignKeyConstraints, IReadOnlyList<IndexInformation> indices)
     {
         var foreignKeyConstraintsByTableFullName = foreignKeyConstraints
             .GroupBy(
@@ -151,8 +151,21 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
             .GroupBy(a => $"{a.DatabaseName}.{a.SchemaName}.{a.ObjectName}", StringComparer.OrdinalIgnoreCase)
             .Select(a =>
             {
+                var matchingTables = a.ToList();
+                var table = matchingTables[0];
+                if (matchingTables.Count > 1)
+                {
+                    _issueReporter.Report(WellKnownDiagnosticDefinitions.DuplicateObjectCreationStatement,
+                        table.DatabaseName,
+                        table.RelativeScriptFilePath,
+                        table.FullNameParts.StringJoin('.'),
+                        table.CreationStatement.GetCodeRegion(),
+                        table.FullNameParts.StringJoin('.'),
+                        tables.Select(x => x.RelativeScriptFilePath.StringJoin("; "))
+                    );
+                }
+
                 var key = a.Key;
-                var table = a.First();
                 var tableIndices = indicesByFullTableName.GetValueOrDefault(key, []);
                 var tableForeignKeyConstraints = foreignKeyConstraintsByTableFullName.GetValueOrDefault(key, []);
 

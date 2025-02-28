@@ -2,6 +2,7 @@ using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.Models;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Common.Tests.Fakes;
+using DatabaseAnalyzer.Contracts;
 using FluentAssertions;
 
 namespace DatabaseAnalyzer.Common.Tests.SqlParsing.Extraction;
@@ -11,7 +12,7 @@ public sealed class DatabaseObjectExtractorTests
     private int _scriptNameSuffix;
 
     [Fact]
-    public void ToDo()
+    public void Extract_ExtractVariousObjects()
     {
         const string code = """
                             USE [DB-1]
@@ -105,6 +106,41 @@ public sealed class DatabaseObjectExtractorTests
         p1.Parameters.Should().HaveCount(1);
     }
 
+    [Fact]
+    public void Extract_WhenDuplicateObjectCreation_ThenDiagnose()
+    {
+        const string code = """
+                            USE [DB-1]
+                            GO
+
+                            CREATE TABLE [dbo].[T1]
+                            (
+                                [Id] [int] NOT NULL
+                            )
+                            GO
+
+                            CREATE TABLE [dbo].[T1]
+                            (
+                                [Id] [int] NOT NULL
+                            )
+                            """;
+        // arrange
+        var issueReporter = new FakeIssueReporter();
+        var sut = new DatabaseObjectExtractor(issueReporter);
+        var script = ParseScript("DB-1", code);
+
+        // act
+        var objects = sut.Extract([script], "dbo");
+
+        // assert
+        objects.Should().HaveCount(1);
+        issueReporter.Issues.Should().HaveCount(1);
+        var issue = issueReporter.Issues[0];
+        issue.DiagnosticDefinition.Should().BeSameAs(WellKnownDiagnosticDefinitions.DuplicateObjectCreationStatement);
+        issue.DatabaseName.Should().Be("DB-1");
+        issue.ObjectName.Should().Be("DB-1.dbo.T1");
+    }
+
     private ScriptModel ParseScript(string databaseName, string code)
     {
         var relativeScriptFilePath = @$".\\script_{_scriptNameSuffix++}";
@@ -119,14 +155,5 @@ public sealed class DatabaseObjectExtractorTests
             [],
             []
         );
-        /*
-    string DatabaseName,
-    string RelativeScriptFilePath,
-    string Contents,
-    TSqlScript ParsedScript,
-    IParentFragmentProvider ParentFragmentProvider,
-    IReadOnlyList<string> Errors,
-    IReadOnlyList<DiagnosticSuppression> DiagnosticSuppressions
-         */
     }
 }
