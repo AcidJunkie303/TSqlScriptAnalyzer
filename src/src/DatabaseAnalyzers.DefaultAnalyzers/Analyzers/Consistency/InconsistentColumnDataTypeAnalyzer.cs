@@ -3,7 +3,7 @@ using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
-namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Maintainability;
+namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Consistency;
 
 public sealed class InconsistentColumnDataTypeAnalyzer : IGlobalAnalyzer
 {

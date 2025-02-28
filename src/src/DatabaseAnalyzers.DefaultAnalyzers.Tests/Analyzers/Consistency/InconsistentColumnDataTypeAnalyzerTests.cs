@@ -1,9 +1,9 @@
 using DatabaseAnalyzer.Testing;
-using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Maintainability;
+using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Consistency;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using Xunit.Abstractions;
 
-namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Maintainability;
+namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Consistency;
 
 public sealed class InconsistentColumnDataTypeAnalyzerTests(ITestOutputHelper testOutputHelper)
     : GlobalAnalyzerTestsBase<InconsistentColumnDataTypeAnalyzer>(testOutputHelper)
