@@ -31,7 +31,7 @@ public static class WellKnownDiagnosticDefinitions
         "AJ9002",
         IssueType.Error,
         "Duplicate object creation statement",
-        "The object `{0}` is created more than once. Script files: `{1}`.",
+        "The object `{0}` is created more than once. Script file(s): `{1}`.",
         ["Object name", "Script file path"],
         new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/AJ9002.md")
     );

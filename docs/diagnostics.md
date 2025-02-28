@@ -59,6 +59,7 @@
 | [AJ5051](diagnostics/AJ5051.md) | Unused Index                                                            | Warning      |
 | [AJ5052](diagnostics/AJ5052.md) | Index Naming                                                            | Warning      |
 | [AJ5053](diagnostics/AJ5053.md) | Usage of 'SELECT *' in existence check                                  | Warning      |
+| [AJ5054](diagnostics/AJ5054.md) | Inconsistent Column Data Type                                           | Warning      |
 | [AJ9000](diagnostics/AJ9000.md) | The first statement in a script must be 'USE <DATABASE>'                | Warning      |
 | [AJ9001](diagnostics/AJ9001.md) | Missing table alias                                                     | Warning      |
 | [AJ9002](diagnostics/AJ9002.md) | Duplicate object creation statement                                     | Error        |

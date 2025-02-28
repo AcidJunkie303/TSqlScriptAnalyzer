@@ -107,7 +107,10 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
             if (databaseObjects.Count > 1)
             {
                 var databaseObject = databaseObjects[0];
-                var scriptFilePaths = databaseObjects.Select(static a => $"{a.RelativeScriptFilePath}").StringJoin("; ");
+                var scriptFilePaths = databaseObjects
+                    .Select(static a => a.RelativeScriptFilePath)
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .StringJoin("    ;    ");
 
                 _issueReporter.Report(WellKnownDiagnosticDefinitions.DuplicateObjectCreationStatement,
                     databaseObject.DatabaseName,
@@ -160,8 +163,8 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
                         table.RelativeScriptFilePath,
                         table.FullNameParts.StringJoin('.'),
                         table.CreationStatement.GetCodeRegion(),
-                        table.FullNameParts.StringJoin('.'),
-                        tables.Select(x => x.RelativeScriptFilePath.StringJoin("; "))
+                        table.FullName,
+                        tables.Select(x => x.RelativeScriptFilePath).Distinct(StringComparer.OrdinalIgnoreCase).StringJoin("    ;    ")
                     );
                 }
 

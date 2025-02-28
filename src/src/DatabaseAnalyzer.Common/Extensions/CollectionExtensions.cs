@@ -136,4 +136,19 @@ public static class CollectionExtensions
             .GroupBy(keySelector, comparer)
             .Select(a => a.First());
     }
+
+    public static int DistinctCount<T>(this IEnumerable<T> items)
+        => items.Distinct().Count();
+
+    public static int DistinctCount<T, TElement>(this IEnumerable<T> items, Func<T, TElement> elementSelector)
+        => items
+            .Select(elementSelector)
+            .Distinct()
+            .Count();
+
+    public static int DistinctCount<T, TElement>(this IEnumerable<T> items, Func<T, TElement> elementSelector, IEqualityComparer<TElement> comparer)
+        => items
+            .Select(elementSelector)
+            .Distinct(comparer)
+            .Count();
 }
