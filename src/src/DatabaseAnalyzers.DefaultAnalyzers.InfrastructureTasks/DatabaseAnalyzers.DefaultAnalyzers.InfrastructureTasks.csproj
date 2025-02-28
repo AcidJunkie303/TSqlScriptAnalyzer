@@ -19,24 +19,6 @@
         <None Update="docs\source\*">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="docs\source\AJ5052.main.md">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-        <None Update="docs\source\AJ5052.settings.md">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-        <None Update="docs\source\AJ5051.settings.md">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-        <None Update="docs\source\AJ5053.main.md">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-        <None Update="docs\source\AJ5054.settings.md">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-        <None Update="docs\source\AJ5054.main.md">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
     </ItemGroup>
 
     <ItemGroup>
