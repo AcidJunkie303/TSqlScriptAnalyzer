@@ -186,18 +186,7 @@
         "AJ5048": // Keyword casing
         {
             // Possible values: 'Disabled', 'UpperCase', 'LowerCase', 'CamelCase' or 'PascalCase'. Default is 'UpperCase'
-            "KeywordNamingPolicy": "UpperCase",
-            "ExcludedKeywordTokenTypes": [
-                "AsciiStringLiteral",
-                "UnicodeStringLiteral",
-                "Identifier",
-                "QuotedIdentifier",
-                "AsciiStringOrQuotedIdentifier",
-                "Variable",
-                "MultilineComment",
-                "SingleLineComment",
-                "HexLiteral"
-            ]
+            "KeywordNamingPolicy": "UpperCase"
         },
         "AJ5049": // Object invocation without specified schema name
         {

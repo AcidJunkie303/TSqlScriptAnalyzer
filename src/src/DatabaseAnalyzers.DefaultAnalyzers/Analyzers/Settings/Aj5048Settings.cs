@@ -1,9 +1,6 @@
-using System.Collections.Frozen;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
-using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
@@ -11,35 +8,19 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 internal sealed class Aj5048SettingsRaw : IRawSettings<Aj5048Settings>
 {
     public KeywordNamingPolicy KeywordNamingPolicy { get; set; }
-    public IReadOnlyCollection<string?>? ExcludedKeywordTokenTypes { get; set; }
 
     public Aj5048Settings ToSettings() => new
     (
-        KeywordNamingPolicy,
-        GetExcludedKeywordTokenTypes()
+        KeywordNamingPolicy
     );
-
-    private FrozenSet<TSqlTokenType> GetExcludedKeywordTokenTypes()
-        => ExcludedKeywordTokenTypes
-            .EmptyIfNull()
-            .WhereNotNullOrWhiteSpaceOnly()
-            .Select(a =>
-                Enum.TryParse<TSqlTokenType>(a, ignoreCase: true, out var tokenType)
-                    ? tokenType
-                    : (TSqlTokenType?) null)
-            .Where(a => a != null)
-            .Select(a => a!.Value)
-            .ToFrozenSet();
 }
 
 internal sealed record Aj5048Settings(
     [property: Description("A policy which describes which casing type keyword must use. Possible values: `Disabled`, `UpperCase`, `LowerCase`, `CamelCase` or `PascalCase`. Default is `UpperCase`.")]
-    KeywordNamingPolicy KeywordNamingPolicy,
-    [property: Description("A list of keywords to exclude from the policy. Complete list can be found here: https://github.com/microsoft/SqlScriptDOM/blob/main/SqlScriptDom/Parser/TSql/TSqlTokenTypes.g")]
-    FrozenSet<TSqlTokenType> ExcludedKeywordTokenTypes
+    KeywordNamingPolicy KeywordNamingPolicy
 ) : ISettings<Aj5048Settings>
 {
-    public static Aj5048Settings Default { get; } = new(KeywordNamingPolicy.UpperCase, FrozenSet<TSqlTokenType>.Empty);
+    public static Aj5048Settings Default { get; } = new(KeywordNamingPolicy.UpperCase);
     public static string DiagnosticId => "AJ5048";
 }
 

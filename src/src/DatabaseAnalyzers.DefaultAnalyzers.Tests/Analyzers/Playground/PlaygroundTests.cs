@@ -13,14 +13,8 @@ public sealed class PlaygroundTests(ITestOutputHelper testOutputHelper)
         const string code = """
                             USE MyDB
                             GO
-
-                            select TOP 1 ID
-                            from Table1
-                            ORDER BY Id
-
-                            update TOP (1) t1
-                            SET Value1 = 123
-                            FROM Table1 t1
+                            DECLARE @name varchar(100)
+                            SELECT @name
 
                             """;
 
