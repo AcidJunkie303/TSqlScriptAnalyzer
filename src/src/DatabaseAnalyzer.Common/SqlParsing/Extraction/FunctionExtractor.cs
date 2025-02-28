@@ -18,15 +18,14 @@ internal sealed class FunctionExtractor : Extractor<FunctionInformation>
         script.ParsedScript.AcceptChildren(visitor);
 
         return visitor.Objects
-            .Select(a => GetFunction(a.Object, a.DatabaseName, script))
+            .Where(a => !a.DatabaseName.IsNullOrWhiteSpace())
+            .Select(a => GetFunction(a.Object, a.DatabaseName!, script))
             .WhereNotNull()
             .ToList();
     }
 
-    private FunctionInformation GetFunction(FunctionStatementBody statement, string? databaseName, IScriptModel script)
+    private FunctionInformation GetFunction(FunctionStatementBody statement, string databaseName, IScriptModel script)
     {
-        // TODO: make sure databaseName is not null
-
         var parameters = statement.Parameters
             .Select(GetParameter)
             .ToList();
