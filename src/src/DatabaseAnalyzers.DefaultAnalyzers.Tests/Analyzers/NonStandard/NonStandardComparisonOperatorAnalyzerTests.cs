@@ -30,7 +30,7 @@ public sealed class NonStandardComparisonOperatorAnalyzerTests(ITestOutputHelper
                             USE MyDb
                             GO
 
-                            IF (1 ▶️AJ5032💛script_0.sql💛💛!=✅!=◀️ 2)
+                            IF (1 ▶️AJ5032💛script_0.sql💛💛!=💛<>✅!=◀️ 2)
                             BEGIN
                                 PRINT 'Hello'
                             END
