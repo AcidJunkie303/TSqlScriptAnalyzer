@@ -26,7 +26,7 @@ public sealed class NonStandardComparisonOperatorAnalyzer : IScriptAnalyzer
         var codeRegion = GetOperatorCodeRegion(script.ParsedScript.ScriptTokenStream, expression);
         var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(expression) ?? DatabaseNames.Unknown;
         var fullObjectName = expression.TryGetFirstClassObjectName(context, script);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, codeRegion, "!=");
+        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, codeRegion, "!=", "<>");
     }
 
     private static CodeRegion GetOperatorCodeRegion(IList<TSqlParserToken> scriptTokens, BooleanComparisonExpression expression)
@@ -71,8 +71,8 @@ public sealed class NonStandardComparisonOperatorAnalyzer : IScriptAnalyzer
             "AJ5032",
             IssueType.Warning,
             "Non-standard comparison operator",
-            "The non-standard comparison operator `{0}` should not be used.",
-            ["Comparison operator"],
+            "The non-standard comparison operator `{0}` should not be used. Use `{1}` instead.",
+            ["Comparison Operator", "Standard Comparison Operator"],
             UrlPatterns.DefaultDiagnosticHelp
         );
     }
