@@ -1,46 +1,42 @@
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
-using DatabaseAnalyzers.DefaultAnalyzers.Services;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Naming;
 
-public sealed class KeywordCasingAnalyzer : IScriptAnalyzer
+public sealed class IdentifierCasingAnalyzer : IScriptAnalyzer
 {
     public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics =>
         [DiagnosticDefinitions.Default];
 
     public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
-        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5056Settings>();
-        if (settings.KeywordNamingPolicy == KeywordNamingPolicy.Disabled)
+        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5057Settings>();
+        if (settings.CasingByIdentifier.Count == 0)
         {
             return;
         }
 
         foreach (var token in script.ParsedScript.ScriptTokenStream)
         {
-            AnalyzeToken(context, script, token, settings);
+            if (token.TokenType == TSqlTokenType.Identifier)
+            {
+                AnalyzeIdentifier(context, script, token, settings);
+                return;
+            }
         }
     }
 
-    private static void AnalyzeToken(IAnalysisContext context, IScriptModel script, TSqlParserToken token, Aj5056Settings settings) => AnalyzeKeyword(context, script, token, settings);
-
-    private static void AnalyzeKeyword(IAnalysisContext context, IScriptModel script, TSqlParserToken token, Aj5056Settings settings)
+    private static void AnalyzeIdentifier(IAnalysisContext context, IScriptModel script, TSqlParserToken token, Aj5057Settings settings)
     {
-        var shouldBeWrittenAs = KeywordCasingProvider.GetTokenCasing(token.TokenType, settings.KeywordNamingPolicy);
-        if (shouldBeWrittenAs is null)
-        {
-            return;
-        }
-
         if (token.Text.IsNullOrWhiteSpace())
         {
             return;
         }
 
-        if (shouldBeWrittenAs.EqualsOrdinal(token.Text))
+        var shouldBeWrittenAs = settings.CasingByIdentifier.GetValueOrDefault(token.Text);
+        if (shouldBeWrittenAs is null || token.Text.EqualsOrdinal(shouldBeWrittenAs))
         {
             return;
         }
@@ -55,18 +51,18 @@ public sealed class KeywordCasingAnalyzer : IScriptAnalyzer
             script.RelativeScriptFilePath,
             fullObjectName,
             token.GetCodeRegion(),
-            token.Text, shouldBeWrittenAs, settings.KeywordNamingPolicy.ToString());
+            token.Text, shouldBeWrittenAs);
     }
 
     private static class DiagnosticDefinitions
     {
         public static DiagnosticDefinition Default { get; } = new
         (
-            "AJ5056",
+            "AJ5057",
             IssueType.Formatting,
-            "Keyword uses wrong casing",
-            "The keyword `{0}` should be written as `{1}` because of the configured keyword casing policy `{2}`.",
-            ["The actual used keyword", "The expected keyword casing", "The configure keyword casing policy"],
+            "Identifier uses wrong casing",
+            "The identifier `{0}` should be written as `{1}`.",
+            ["The actual used keyword", "The expected keyword casing"],
             UrlPatterns.DefaultDiagnosticHelp
         );
     }

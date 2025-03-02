@@ -183,11 +183,6 @@
             "RequireEmptyLineBeforeGo": false,
             "RequireEmptyLineAfterGo": true
         },
-        "AJ5048": // Keyword casing
-        {
-            // Possible values: 'Disabled', 'UpperCase', 'LowerCase', 'CamelCase' or 'PascalCase'. Default is 'UpperCase'
-            "KeywordNamingPolicy": "UpperCase"
-        },
         "AJ5049": // Object invocation without specified schema name
         {
             "IgnoredObjectNamePatterns": [
@@ -224,6 +219,22 @@
             "ColumnNamesToExclude": [
                 "Id"
             ]
+        },
+        "AJ5056": // Keyword casing
+        {
+            // Possible values: 'Disabled', 'UpperCase', 'LowerCase', 'CamelCase' or 'PascalCase'. Default is 'UpperCase'
+            "KeywordNamingPolicy": "UpperCase"
+        },
+        "AJ5057": // Keyword casing
+        {
+            "CasingByIdentifier": {
+                "Owner": "OWNER",
+                "Output": "OUTPUT",
+                "NVarChar": "NVARCHAR",
+                "varChar": "VARCHAR",
+                "dbo": "dbo",
+                "Name": "NAME"
+            }
         }
     }
 }

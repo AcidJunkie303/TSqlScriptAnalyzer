@@ -5,23 +5,24 @@ using DatabaseAnalyzer.Contracts;
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
-internal sealed class Aj5048SettingsRaw : IRawSettings<Aj5048Settings>
+internal sealed class Aj5056SettingsRaw : IRawSettings<Aj5056Settings>
 {
     public KeywordNamingPolicy KeywordNamingPolicy { get; set; }
 
-    public Aj5048Settings ToSettings() => new
+    public Aj5056Settings ToSettings() => new
     (
         KeywordNamingPolicy
     );
 }
 
-internal sealed record Aj5048Settings(
+internal sealed record Aj5056Settings(
     [property: Description("A policy which describes which casing type keyword must use. Possible values: `Disabled`, `UpperCase`, `LowerCase`, `CamelCase` or `PascalCase`. Default is `UpperCase`.")]
     KeywordNamingPolicy KeywordNamingPolicy
-) : ISettings<Aj5048Settings>
+) : ISettings<Aj5056Settings>
 {
-    public static Aj5048Settings Default { get; } = new(KeywordNamingPolicy.UpperCase);
-    public static string DiagnosticId => "AJ5048";
+    public static Aj5056Settings Default { get; } = new(KeywordNamingPolicy.UpperCase);
+
+    public static string DiagnosticId => "AJ5056";
 }
 
 [SuppressMessage("Design", "MA0048:File name must match type name", Justification = "Belongs to this setting only. No point of creating a new file.")]

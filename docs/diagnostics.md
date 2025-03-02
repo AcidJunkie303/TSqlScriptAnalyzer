@@ -53,7 +53,6 @@
 | [AJ5045](diagnostics/AJ5045.md) | Missing empty line before/after GO batch separators                     | Formatting   |
 | [AJ5046](diagnostics/AJ5046.md) | Consecutive GO statements                                               | Formatting   |
 | [AJ5047](diagnostics/AJ5047.md) | Default Object Creation Comments                                        | Warning      |
-| [AJ5048](diagnostics/AJ5048.md) | Keyword uses wrong casing                                               | Formatting   |
 | [AJ5049](diagnostics/AJ5049.md) | Object Invocation without explicitly specified schema name              | Warning      |
 | [AJ5050](diagnostics/AJ5050.md) | Missing empty line after END block                                      | Formatting   |
 | [AJ5051](diagnostics/AJ5051.md) | Unused Index                                                            | Warning      |
@@ -61,6 +60,8 @@
 | [AJ5053](diagnostics/AJ5053.md) | Usage of 'SELECT *' in existence check                                  | Warning      |
 | [AJ5054](diagnostics/AJ5054.md) | Inconsistent Column Data Type                                           | Warning      |
 | [AJ5055](diagnostics/AJ5055.md) | Inconsistent Column Name Casing                                         | Warning      |
+| [AJ5056](diagnostics/AJ5056.md) | Keyword uses wrong casing                                               | Formatting   |
+| [AJ5057](diagnostics/AJ5057.md) | Identifier uses wrong casing                                            | Formatting   |
 | [AJ9000](diagnostics/AJ9000.md) | The first statement in a script must be 'USE <DATABASE>'                | Warning      |
 | [AJ9001](diagnostics/AJ9001.md) | Missing table alias                                                     | Warning      |
 | [AJ9002](diagnostics/AJ9002.md) | Duplicate object creation statement                                     | Error        |
