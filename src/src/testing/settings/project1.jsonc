@@ -11,8 +11,7 @@
     },
     "Diagnostics": {
         "DisabledDiagnostics": [
-            "AB1111",
-            "AB2222"
+            "AJ5003"
         ],
         "AJ5001": // Excessive string concatenation
         {
@@ -238,6 +237,20 @@
                 "varChar": "VARCHAR",
                 "dbo": "dbo",
                 "Name": "NAME"
+            }
+        },
+        "AJ5058": // Drop statements
+        {
+            "AllowedInFilesByDropStatementType": {
+                "DropTable": [
+                    "*__drop__*.sql"
+                ],
+                "DropProcedure": [
+                    "*__drop__*.sql"
+                ],
+                "AlterTableDropTableElement": [
+                    "*__drop__*.sql"
+                ]
             }
         }
     }
