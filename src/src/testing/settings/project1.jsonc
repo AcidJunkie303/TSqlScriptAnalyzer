@@ -183,6 +183,10 @@
             "RequireEmptyLineBeforeGo": false,
             "RequireEmptyLineAfterGo": true
         },
+        "AJ5048": // Long/Short Keyword notation enforcement
+        {
+            "KeywordNotationType": "Long"
+        },
         "AJ5049": // Object invocation without specified schema name
         {
             "IgnoredObjectNamePatterns": [

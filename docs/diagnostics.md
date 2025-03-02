@@ -53,6 +53,7 @@
 | [AJ5045](diagnostics/AJ5045.md) | Missing empty line before/after GO batch separators                     | Formatting   |
 | [AJ5046](diagnostics/AJ5046.md) | Consecutive GO statements                                               | Formatting   |
 | [AJ5047](diagnostics/AJ5047.md) | Default Object Creation Comments                                        | Warning      |
+| [AJ5048](diagnostics/AJ5048.md) | Long/Short keyword notation violation                                   | Formatting   |
 | [AJ5049](diagnostics/AJ5049.md) | Object Invocation without explicitly specified schema name              | Warning      |
 | [AJ5050](diagnostics/AJ5050.md) | Missing empty line after END block                                      | Formatting   |
 | [AJ5051](diagnostics/AJ5051.md) | Unused Index                                                            | Warning      |
