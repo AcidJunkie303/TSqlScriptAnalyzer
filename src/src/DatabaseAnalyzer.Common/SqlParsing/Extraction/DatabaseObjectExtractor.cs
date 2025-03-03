@@ -23,18 +23,20 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
         var schemas = new SchemaExtractor(defaultSchemaName).Extract(scripts).ToList();
         var functions = new FunctionExtractor(defaultSchemaName).Extract(scripts).ToList();
         var procedures = new ProcedureExtractor(defaultSchemaName).Extract(scripts).ToList();
+        var synonyms = new SynonymExtractor(defaultSchemaName).Extract(scripts).ToList();
         var tables = new TableExtractor(defaultSchemaName).Extract(scripts).ToList();
         var indices = new IndexExtractor(defaultSchemaName).Extract(scripts).ToList();
         var foreignKeyConstraints = new ForeignKeyConstraintExtractor(defaultSchemaName).Extract(scripts).ToList();
         var aggregatedTables = AggregateTables(tables, foreignKeyConstraints, indices);
         var views = new ViewExtractor(defaultSchemaName).Extract(scripts).ToList();
-        ISchemaBoundObject[] allObjects = [.. schemas, .. aggregatedTables, .. functions, .. procedures];
+        ISchemaBoundObject[] allObjects = [.. schemas, .. aggregatedTables, .. functions, .. procedures, .. synonyms];
         allObjects = RemoveAndReportDuplicates(allObjects);
 
         functions = allObjects.OfType<FunctionInformation>().ToList();
         aggregatedTables = allObjects.OfType<TableInformation>().ToList();
         procedures = allObjects.OfType<ProcedureInformation>().ToList();
 
+        var synonymsByDatabaseNameBySchemaName = GroupByDatabaseNameBySchemaName(synonyms, a => a.SchemaName);
         var functionsByDatabaseNameBySchemaName = GroupByDatabaseNameBySchemaName(functions, a => a.SchemaName);
         var proceduresByDatabaseNameBySchemaName = GroupByDatabaseNameBySchemaName(procedures, a => a.SchemaName);
         var tablesByDatabaseNameBySchemaName = GroupByDatabaseNameBySchemaName(aggregatedTables, a => a.SchemaName);
@@ -61,26 +63,27 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
                                     .GetValueOrDefault(db.Key)
                                     ?.GetValueOrDefault(schema.Key)
                                     ?.ToDictionary(static table => table.ObjectName, table => table, StringComparer.OrdinalIgnoreCase)
-                                    .AsIReadOnlyDictionary()
-                                ?? FrozenDictionary<string, TableInformation>.Empty.AsIReadOnlyDictionary(),
+                                    .AsIReadOnlyDictionary() ?? FrozenDictionary<string, TableInformation>.Empty.AsIReadOnlyDictionary(),
                                 viewsByDatabaseNameBySchemaName
                                     .GetValueOrDefault(db.Key)
                                     ?.GetValueOrDefault(schema.Key)
                                     ?.ToDictionary(static table => table.ObjectName, table => table, StringComparer.OrdinalIgnoreCase)
-                                    .AsIReadOnlyDictionary()
-                                ?? FrozenDictionary<string, ViewInformation>.Empty.AsIReadOnlyDictionary(),
+                                    .AsIReadOnlyDictionary() ?? FrozenDictionary<string, ViewInformation>.Empty.AsIReadOnlyDictionary(),
                                 proceduresByDatabaseNameBySchemaName
                                     .GetValueOrDefault(db.Key)
                                     ?.GetValueOrDefault(schema.Key)
                                     ?.ToDictionary(static procedure => procedure.ObjectName, procedure => procedure, StringComparer.OrdinalIgnoreCase)
-                                    .AsIReadOnlyDictionary()
-                                ?? FrozenDictionary<string, ProcedureInformation>.Empty.AsIReadOnlyDictionary(),
+                                    .AsIReadOnlyDictionary() ?? FrozenDictionary<string, ProcedureInformation>.Empty.AsIReadOnlyDictionary(),
                                 functionsByDatabaseNameBySchemaName
                                     .GetValueOrDefault(db.Key)
                                     ?.GetValueOrDefault(schema.Key)
                                     ?.ToDictionary(static function => function.ObjectName, function => function, StringComparer.OrdinalIgnoreCase)
-                                    .AsIReadOnlyDictionary()
-                                ?? FrozenDictionary<string, FunctionInformation>.Empty.AsIReadOnlyDictionary(),
+                                    .AsIReadOnlyDictionary() ?? FrozenDictionary<string, FunctionInformation>.Empty.AsIReadOnlyDictionary(),
+                                synonymsByDatabaseNameBySchemaName
+                                    .GetValueOrDefault(db.Key)
+                                    ?.GetValueOrDefault(schema.Key)
+                                    ?.ToDictionary(static synonym => synonym.ObjectName, synonym => synonym, StringComparer.OrdinalIgnoreCase)
+                                    .AsIReadOnlyDictionary() ?? FrozenDictionary<string, SynonymInformation>.Empty.AsIReadOnlyDictionary(),
                                 new CreateSchemaStatement(),
                                 string.Empty
                             )
