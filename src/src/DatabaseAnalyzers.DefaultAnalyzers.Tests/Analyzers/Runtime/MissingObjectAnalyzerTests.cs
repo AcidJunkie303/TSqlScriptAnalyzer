@@ -94,7 +94,26 @@ public sealed class MissingObjectAnalyzerTests(ITestOutputHelper testOutputHelpe
 
                             CREATE PROCEDURE  dbo.MyProcedure AS
                             BEGIN
-                                EXEC xxx.ignored.yyy◀️
+                                EXEC xxx.ignored.yyy
+                            END
+                            """;
+
+        Verify(Settings, code, SharedCode);
+    }
+
+    [Fact]
+    public void WhenStoredProcedureDoesNotExist_ButSynonymDoes_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            CREATE SYNONYM aaa.SynonymProc FOR MyServer.MyDatabase.MySchema.MyProc
+                            GO
+
+                            CREATE PROCEDURE dbo.MyProcedure AS
+                            BEGIN
+                                EXEC aaa.SynonymProc
                             END
                             """;
 
