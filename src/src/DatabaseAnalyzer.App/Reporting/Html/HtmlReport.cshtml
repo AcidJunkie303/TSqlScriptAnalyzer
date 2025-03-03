@@ -13,7 +13,7 @@
 
 <div class="info-box">
     Generated at (UTC): @DateTime.UtcNow.ToString("u")<br/>
-    Generated at: @DateTime.Now.ToString("u")<br/>
+    Generated at (Local Time): @DateTime.Now.ToString("u")<br/>
 </div>
 
 <h1>Summary</h1>
@@ -211,7 +211,9 @@ else
             match =>
             {
                 var content = match.Groups["content"].Value;
-                var encodedContent = HttpUtility.HtmlEncode(content);
+                var encodedContent = HttpUtility.HtmlEncode(content)
+                    .Replace("&amp;#39;", "'"); // allow single-quotes
+
                 return $"<pre class=\"code\">{encodedContent}</pre>";
             });
 
