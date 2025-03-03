@@ -8,7 +8,6 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Runtime;
 public sealed class DropStatementAnalyzerTests(ITestOutputHelper testOutputHelper)
     : ScriptAnalyzerTestsBase<DropStatementAnalyzer>(testOutputHelper)
 {
-    //
     private static readonly Aj5058Settings DropTableAllowedSettings = new Aj5058SettingsRaw
     {
         AllowedInFilesByDropStatementType = new Dictionary<string, IReadOnlyCollection<string?>?>(StringComparer.OrdinalIgnoreCase)
