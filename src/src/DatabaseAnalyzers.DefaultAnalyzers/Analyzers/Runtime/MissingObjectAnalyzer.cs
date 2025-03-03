@@ -64,9 +64,11 @@ public sealed class MissingObjectAnalyzer : IGlobalAnalyzer
         var schemaName = procedureObjectName.SchemaIdentifier?.Value.NullIfEmptyOrWhiteSpace() ?? context.DefaultSchemaName;
         var procedureName = procedureObjectName.BaseIdentifier.Value;
 
-        var calledProcedure = databasesByName.GetValueOrDefault(databaseName)
-            ?.SchemasByName.GetValueOrDefault(schemaName)
-            ?.ProceduresByName.GetValueOrDefault(procedureName);
+        var schema = databasesByName.GetValueOrDefault(databaseName)
+            ?.SchemasByName.GetValueOrDefault(schemaName);
+
+        var calledProcedure = schema?.ProceduresByName.GetValueOrDefault(procedureName)
+                              ?? (IDatabaseObject?) schema?.SynonymsByName.GetValueOrDefault(procedureName);
 
         if (calledProcedure is not null)
         {
