@@ -1,7 +1,7 @@
 USE [database-1]
 GO
 
-CREATE PROC [dbo].[P1]
+create PROC  [dbo].[P1]
     @Param1 VARCHAR(MAX)
 AS
 BEGIN
