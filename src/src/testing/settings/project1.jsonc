@@ -98,6 +98,10 @@
                 "set"
             ]
         },
+        "AJ5025": // Existence checks for creation statements
+        {
+            "ExistenceCheckPatternForTableCreation": "IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE object_id = OBJECT_ID(N'[{TableSchemaName}].[{TableName}]'))"
+        },
         "AJ5026": // Missing primary key
         {
             "FullTableNamesToIgnore": [

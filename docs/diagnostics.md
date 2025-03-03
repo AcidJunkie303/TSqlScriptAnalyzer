@@ -32,6 +32,7 @@
 | [AJ5022](diagnostics/AJ5022.md) | Missing BEGIN/END blocks                                                | Formatting   |
 | [AJ5023](diagnostics/AJ5023.md) | Statements should begin on a new line                                   | Formatting   |
 | [AJ5024](diagnostics/AJ5024.md) | Multiple variable declaration on same line                              | Formatting   |
+| [AJ5025](diagnostics/AJ5025.md) | Object Creation not embedded in negative existence check                | Warning      |
 | [AJ5026](diagnostics/AJ5026.md) | Table has no primary key                                                | Warning      |
 | [AJ5027](diagnostics/AJ5027.md) | Table has no clustered index                                            | Warning      |
 | [AJ5028](diagnostics/AJ5028.md) | Semicolon is not necessary                                              | Formatting   |

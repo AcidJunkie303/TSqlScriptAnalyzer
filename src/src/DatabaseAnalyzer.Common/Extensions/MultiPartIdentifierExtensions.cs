@@ -16,7 +16,7 @@ public static class MultiPartIdentifierExtensions
         ArgumentNullException.ThrowIfNull(identifier);
 
         return identifier.Identifiers.Count >= 2
-            ? identifier.Identifiers[1].Value
+            ? identifier.Identifiers[0].Value
             : defaultSchemaName;
     }
 
