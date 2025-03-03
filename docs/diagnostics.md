@@ -66,6 +66,7 @@
 | [AJ5056](diagnostics/AJ5056.md) | Keyword uses wrong casing                                               | Formatting   |
 | [AJ5057](diagnostics/AJ5057.md) | Identifier uses wrong casing                                            | Formatting   |
 | [AJ5058](diagnostics/AJ5058.md) | Drop statement in non-allowed file                                      | Warning      |
+| [AJ5059](diagnostics/AJ5059.md) | Procedure Call without explicit Parameter Names                         | Warning      |
 | [AJ9000](diagnostics/AJ9000.md) | The first statement in a script must be 'USE <DATABASE>'                | Warning      |
 | [AJ9001](diagnostics/AJ9001.md) | Missing table alias                                                     | Warning      |
 | [AJ9002](diagnostics/AJ9002.md) | Duplicate object creation statement                                     | Error        |
