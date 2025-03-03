@@ -8,6 +8,7 @@ using DatabaseAnalyzer.Core.Configuration;
 using DatabaseAnalyzer.Core.Extensions;
 using DatabaseAnalyzer.Core.Models;
 using DatabaseAnalyzer.Core.Services;
+using Microsoft.Extensions.Logging;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Core;
@@ -20,9 +21,10 @@ internal sealed class Analyzer : IAnalyzer
     private readonly IReadOnlyDictionary<string, IDiagnosticDefinition> _diagnosticDefinitionsById;
     private readonly IDiagnosticSettingsProvider _diagnosticSettingsProvider;
     private readonly IDiagnosticSuppressionExtractor _diagnosticSuppressionExtractor;
+    private readonly IReadOnlyList<IGlobalAnalyzer> _globalAnalyzers;
+    private readonly ILogger<Analyzer> _logger;
     private readonly IProgressCallback _progressCallback;
     private readonly IReadOnlyList<IScriptAnalyzer> _scriptAnalyzers;
-    private readonly IReadOnlyList<IGlobalAnalyzer> _globalAnalyzers;
     private readonly IScriptLoader _scriptLoader;
     private readonly IScriptSourceProvider _scriptSourceProvider;
 
@@ -36,7 +38,8 @@ internal sealed class Analyzer : IAnalyzer
         IEnumerable<IScriptAnalyzer> scriptAnalyzers,
         IEnumerable<IGlobalAnalyzer> globalAnalyzers,
         IDiagnosticSuppressionExtractor diagnosticSuppressionExtractor,
-        IReadOnlyDictionary<string, IDiagnosticDefinition> diagnosticDefinitionsById)
+        IReadOnlyDictionary<string, IDiagnosticDefinition> diagnosticDefinitionsById,
+        ILogger<Analyzer> logger)
     {
         _progressCallback = progressCallback;
         _scriptSourceProvider = scriptSourceProvider;
@@ -51,6 +54,7 @@ internal sealed class Analyzer : IAnalyzer
             .ToList();
         _diagnosticSuppressionExtractor = diagnosticSuppressionExtractor;
         _diagnosticDefinitionsById = diagnosticDefinitionsById;
+        _logger = logger;
 
         static bool AreAllDiagnosticsForAnalyzerDisabled(IObjectAnalyzer analyzer, DiagnosticsSettings diagnosticsSettings)
             => analyzer.SupportedDiagnostics.All(a => diagnosticsSettings.DisabledDiagnostics.Contains(a.DiagnosticId));
@@ -58,6 +62,8 @@ internal sealed class Analyzer : IAnalyzer
 
     public AnalysisResult Analyze()
     {
+        _logger.LogTrace("Starting analysis");
+
         var issueReporter = new IssueReporter();
         var scripts = ParseScripts();
 

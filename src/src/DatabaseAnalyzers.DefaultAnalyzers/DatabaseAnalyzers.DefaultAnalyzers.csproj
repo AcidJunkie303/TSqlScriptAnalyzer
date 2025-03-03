@@ -9,6 +9,12 @@
         <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.2"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <Reference Include="Microsoft.Extensions.Logging.Abstractions">
+            <HintPath>..\..\..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\9.0.2\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
     <Target Name="PreBuild" BeforeTargets="Build">
         <Exec Command="IF NOT EXIST $(SolutionDir)src\DatabaseAnalyzer.App\bin\$(Configuration)\$(TargetFramework)\Plugins\DefaultAnalyzers md $(SolutionDir)src\DatabaseAnalyzer.App\bin\$(Configuration)\$(TargetFramework)\Plugins\DefaultAnalyzers"/>
         <Exec Command="copy /y $(SolutionDir)src\DatabaseAnalyzers.DefaultAnalyzers\bin\$(Configuration)\$(TargetFramework)\DatabaseAnalyzers.DefaultAnalyzers.dll $(SolutionDir)src\DatabaseAnalyzer.App\bin\$(Configuration)\$(TargetFramework)\Plugins\DefaultAnalyzers"/>
