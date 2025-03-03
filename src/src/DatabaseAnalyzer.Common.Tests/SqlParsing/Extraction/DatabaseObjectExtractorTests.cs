@@ -57,6 +57,8 @@ public sealed class DatabaseObjectExtractorTests
                             AS
                             BEGIN PRINT @Param1 END
 
+                            CREATE SYNONYM dbo.MySynonym FOR MyServer.MyDatabase.MySchema.MyProc
+
                             """;
         // arrange
         var sut = new DatabaseObjectExtractor(new FakeIssueReporter());
@@ -73,37 +75,44 @@ public sealed class DatabaseObjectExtractorTests
         db.DatabaseName.Should().Be("DB-1");
         db.SchemasByName.Should().HaveCount(1);
 
-        var schema = db.SchemasByName["dbo"];
-        schema.DatabaseName.Should().Be("DB-1");
-        schema.ObjectName.Should().Be("dbo");
-        schema.FunctionsByName.Should().HaveCount(1);
+        var dboSchema = db.SchemasByName["dbo"];
+        dboSchema.DatabaseName.Should().Be("DB-1");
+        dboSchema.ObjectName.Should().Be("dbo");
+        dboSchema.FunctionsByName.Should().HaveCount(1);
 
-        var function = schema.FunctionsByName["F1"];
+        var function = dboSchema.FunctionsByName["F1"];
         function.DatabaseName.Should().Be("DB-1");
         function.SchemaName.Should().Be("dbo");
         function.ObjectName.Should().Be("F1");
 
-        schema.TablesByName.Should().HaveCount(2);
+        dboSchema.TablesByName.Should().HaveCount(2);
 
-        var t1 = schema.TablesByName["T1"];
+        var t1 = dboSchema.TablesByName["T1"];
         t1.DatabaseName.Should().Be("DB-1");
         t1.SchemaName.Should().Be("dbo");
         t1.ObjectName.Should().Be("T1");
         t1.Indices.Should().HaveCount(2); // Id & Status
         t1.ForeignKeys.Should().HaveCount(1);
 
-        var t2 = schema.TablesByName["T2"];
+        var t2 = dboSchema.TablesByName["T2"];
         t2.DatabaseName.Should().Be("DB-1");
         t2.SchemaName.Should().Be("dbo");
         t2.ObjectName.Should().Be("T2");
         t2.Indices.Should().HaveCount(1); // Name
 
-        schema.ProceduresByName.Should().HaveCount(1);
-        var p1 = schema.ProceduresByName["P1"];
+        dboSchema.ProceduresByName.Should().HaveCount(1);
+        var p1 = dboSchema.ProceduresByName["P1"];
         p1.DatabaseName.Should().Be("DB-1");
         p1.SchemaName.Should().Be("dbo");
         p1.ObjectName.Should().Be("P1");
         p1.Parameters.Should().HaveCount(1);
+
+        dboSchema.SynonymsByName.Should().HaveCount(1);
+        var synonym = dboSchema.SynonymsByName["MySynonym"];
+        synonym.TargetServerName.Should().Be("MyServer");
+        synonym.TargetDatabaseName.Should().Be("MyDatabase");
+        synonym.TargetSchemaName.Should().Be("MySchema");
+        synonym.TargetObjectName.Should().Be("MyProc");
     }
 
     [Fact]

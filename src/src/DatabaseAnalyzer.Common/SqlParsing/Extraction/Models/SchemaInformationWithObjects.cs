@@ -11,6 +11,7 @@ public sealed record SchemaInformationWithObjects(
     IReadOnlyDictionary<string, ViewInformation> ViewsByName,
     IReadOnlyDictionary<string, ProcedureInformation> ProceduresByName,
     IReadOnlyDictionary<string, FunctionInformation> FunctionsByName,
+    IReadOnlyDictionary<string, SynonymInformation> SynonymsByName,
     TSqlFragment CreationStatement,
     string RelativeScriptFilePath
 ) : ISchemaBoundObject
