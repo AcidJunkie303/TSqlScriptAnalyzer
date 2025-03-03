@@ -51,6 +51,11 @@ public static class SqlFragmentExtensions
         ArgumentNullException.ThrowIfNull(fragment);
 
         var tokens = fragment.ScriptTokenStream;
+        if (tokens is null)
+        {
+            return string.Empty;
+        }
+
         var startIndex = fragment.FirstTokenIndex;
         var endIndex = fragment.LastTokenIndex;
         var sb = new StringBuilder();

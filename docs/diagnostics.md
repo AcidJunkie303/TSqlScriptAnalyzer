@@ -13,6 +13,7 @@
 | [AJ5002](diagnostics/AJ5002.md) | Unicode/ASCII string mix                                                | Warning      |
 | [AJ5003](diagnostics/AJ5003.md) | Wrong database name in 'USE' statement                                  | Warning      |
 | [AJ5004](diagnostics/AJ5004.md) | Open Item                                                               | Information  |
+| [AJ5005](diagnostics/AJ5005.md) | File must end with an empty line                                        | Formatting   |
 | [AJ5006](diagnostics/AJ5006.md) | Usage of banned data type                                               | Warning      |
 | [AJ5007](diagnostics/AJ5007.md) | Multiple empty lines                                                    | Formatting   |
 | [AJ5008](diagnostics/AJ5008.md) | Tab character                                                           | Formatting   |
