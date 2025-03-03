@@ -45,40 +45,60 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
     {
         foreach (var parameter in parameters)
         {
-            Analyze(context, script, parameter, "parameter", settings.ParameterName, static a => a.VariableName.Value.Trim('@'), static a => a.VariableName);
+            Analyze(context, script, parameter, "parameter", settings.ParameterName, ParameterNameGetter, FragmentToReportGetter, ParameterNameToReportGetter);
         }
+
+        static string ParameterNameGetter(ProcedureParameter a) => a.VariableName.Value.Trim('@');
+        static TSqlFragment FragmentToReportGetter(ProcedureParameter a) => a.VariableName;
+        static string ParameterNameToReportGetter(ProcedureParameter a) => a.VariableName.Value;
     }
 
     private static void AnalyzeFunctions(IAnalysisContext context, IScriptModel script, Aj5030Settings settings, IEnumerable<FunctionStatementBody> functions)
     {
         foreach (var function in functions)
         {
-            Analyze(context, script, function, "function", settings.FunctionName, static a => a.Name.BaseIdentifier.Value, static a => a.Name.BaseIdentifier);
+            Analyze(context, script, function, "function", settings.FunctionName, FunctionNameGetter, FragmentToReportGetter, ParameterNameToReportGetter);
         }
+
+        static string FunctionNameGetter(FunctionStatementBody a) => a.Name.BaseIdentifier.Value;
+        static TSqlFragment FragmentToReportGetter(FunctionStatementBody a) => a.Name.BaseIdentifier;
+        static string ParameterNameToReportGetter(FunctionStatementBody a) => a.Name.BaseIdentifier.Value;
     }
 
     private static void AnalyzeProcedures(IAnalysisContext context, IScriptModel script, Aj5030Settings settings, IEnumerable<ProcedureStatementBody> procedures)
     {
         foreach (var procedure in procedures)
         {
-            Analyze(context, script, procedure, "procedure", settings.ProcedureName, static a => a.ProcedureReference.Name.BaseIdentifier.Value, static a => a.ProcedureReference.Name.BaseIdentifier);
+            Analyze(context, script, procedure, "procedure", settings.ProcedureName, ProcedureNameGetter, FragmentToReportGetter, ProcedureNameToReportGetter);
         }
+
+        static string ProcedureNameGetter(ProcedureStatementBody a) => a.ProcedureReference.Name.BaseIdentifier.Value;
+        static TSqlFragment FragmentToReportGetter(ProcedureStatementBody a) => a.ProcedureReference.Name.BaseIdentifier;
+        static string ProcedureNameToReportGetter(ProcedureStatementBody a) => a.ProcedureReference.Name.BaseIdentifier.Value;
     }
 
     private static void AnalyzePrimaryKeyConstraints(IAnalysisContext context, IScriptModel script, Aj5030Settings settings, IEnumerable<UniqueConstraintDefinition> primaryKeyConstraints)
     {
         foreach (var constraint in primaryKeyConstraints)
         {
-            Analyze(context, script, constraint, "primary key constraint", settings.PrimaryKeyConstraintName, static a => a.ConstraintIdentifier?.Value, static a => a.ConstraintIdentifier);
+            Analyze(context, script, constraint, "primary key constraint", settings.PrimaryKeyConstraintName, PrimaryKeyConstraintNameGetter, FragmentToReportGetter, PrimaryKeyConstraintNameToReportGetter);
         }
+
+        static string? PrimaryKeyConstraintNameGetter(UniqueConstraintDefinition a) => a.ConstraintIdentifier?.Value;
+        static TSqlFragment FragmentToReportGetter(UniqueConstraintDefinition a) => a.ConstraintIdentifier;
+        static string? PrimaryKeyConstraintNameToReportGetter(UniqueConstraintDefinition a) => a.ConstraintIdentifier?.Value;
     }
 
     private static void AnalyzeTriggers(IAnalysisContext context, IScriptModel script, Aj5030Settings settings, IEnumerable<TriggerStatementBody> tiggers)
     {
         foreach (var trigger in tiggers)
         {
-            Analyze(context, script, trigger, "trigger", settings.TriggerName, static a => a.Name.BaseIdentifier.Value, static a => a.Name.BaseIdentifier);
+            Analyze(context, script, trigger, "trigger", settings.TriggerName, TriggerNameGetter, FragmentToReportGetter, TriggerNameToReportGetter);
         }
+
+        static string? TriggerNameGetter(TriggerStatementBody a) => a.Name.BaseIdentifier.Value;
+        static TSqlFragment FragmentToReportGetter(TriggerStatementBody a) => a.Name.BaseIdentifier;
+        static string? TriggerNameToReportGetter(TriggerStatementBody a) => a.Name.BaseIdentifier.Value;
     }
 
     private static void AnalyzeVariables(IAnalysisContext context, IScriptModel script, Aj5030Settings settings, IEnumerable<DeclareVariableStatement> variables)
@@ -92,17 +112,25 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
                     continue;
                 }
 
-                Analyze(context, script, declaration, "variable", settings.VariableName, static a => a.VariableName.Value.Trim('@'), static a => a.VariableName);
+                Analyze(context, script, declaration, "variable", settings.VariableName, VariableNameGetter, FragmentToReportGetter, VariableNameToReportGetter);
             }
         }
+
+        static string VariableNameGetter(DeclareVariableElement a) => a.VariableName.Value.Trim('@');
+        static TSqlFragment FragmentToReportGetter(DeclareVariableElement a) => a.VariableName;
+        static string? VariableNameToReportGetter(DeclareVariableElement a) => a.VariableName.Value;
     }
 
     private static void AnalyzeViews(IAnalysisContext context, IScriptModel script, Aj5030Settings settings, IEnumerable<ViewStatementBody> views)
     {
         foreach (var view in views)
         {
-            Analyze(context, script, view, "view", settings.ViewName, static a => a.SchemaObjectName.BaseIdentifier.Value, static a => a.SchemaObjectName.BaseIdentifier);
+            Analyze(context, script, view, "view", settings.ViewName, ViewNameGetter, FragmentToReportGetter, ViewNameToReportGetter);
         }
+
+        static string? ViewNameGetter(ViewStatementBody a) => a.SchemaObjectName.BaseIdentifier.Value;
+        static TSqlFragment FragmentToReportGetter(ViewStatementBody a) => a.SchemaObjectName.BaseIdentifier;
+        static string? ViewNameToReportGetter(ViewStatementBody a) => a.SchemaObjectName.BaseIdentifier.Value;
     }
 
     private static void AnalyzeTables(IAnalysisContext context, IScriptModel script, Aj5030Settings settings, IEnumerable<CreateTableStatement> tables)
@@ -111,21 +139,41 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
         {
             if (table.IsTempTable())
             {
-                Analyze(context, script, table, "temp-table", settings.TempTableName, static a => a.SchemaObjectName.BaseIdentifier.Value, static a => a.SchemaObjectName.BaseIdentifier);
+                Analyze(context, script, table, "temp-table", settings.TempTableName, TableNameGetter, TableFragmentToReportGetter, TableNameToReportGetter);
             }
             else
             {
-                Analyze(context, script, table, "table", settings.TableName, static a => a.SchemaObjectName.BaseIdentifier.Value, static a => a.SchemaObjectName.BaseIdentifier);
+                Analyze(context, script, table, "table", settings.TableName, TableNameGetter, TableFragmentToReportGetter, TableNameToReportGetter);
             }
 
             foreach (var column in table.Definition.ColumnDefinitions)
             {
-                Analyze(context, script, column, "column", settings.ColumnName, static a => a.ColumnIdentifier.Value, static a => a.ColumnIdentifier);
+                Analyze(context, script, column, "column", settings.ColumnName, ColumnNameGetter, ColumnFragmentToReportGetter, ColumnNameToReportGetter);
             }
         }
+
+        static string? TableNameGetter(CreateTableStatement a) => a.SchemaObjectName.BaseIdentifier.Value;
+        static TSqlFragment TableFragmentToReportGetter(CreateTableStatement a) => a.SchemaObjectName.BaseIdentifier;
+        static string? TableNameToReportGetter(CreateTableStatement a) => a.SchemaObjectName.BaseIdentifier.Value;
+
+        static string? ColumnNameGetter(ColumnDefinition a) => a.ColumnIdentifier.Value;
+        static TSqlFragment ColumnFragmentToReportGetter(ColumnDefinition a) => a.ColumnIdentifier;
+        static string? ColumnNameToReportGetter(ColumnDefinition a) => a.ColumnIdentifier.Value;
     }
 
-    private static void Analyze<T>(IAnalysisContext context, IScriptModel script, T statement, string objectTypeName, Aj5030Settings.PatternEntry patternEntry, Func<T, string?> nameGetter, Func<T, TSqlFragment> fragmentToReportGetter)
+#pragma warning disable S107 // too many parameters
+    private static void Analyze<T>
+    (
+        IAnalysisContext context,
+        IScriptModel script,
+        T statement,
+        string objectTypeName,
+        Aj5030Settings.PatternEntry patternEntry,
+        Func<T, string?> nameGetter,
+        Func<T, TSqlFragment> fragmentToReportGetter,
+        Func<T, string?> nameToReportGetter
+    )
+#pragma warning restore S107
         where T : TSqlFragment
     {
         var name = nameGetter(statement);
@@ -134,7 +182,9 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
             return;
         }
 
-        Report(context, script, fragmentToReportGetter(statement), objectTypeName, name, patternEntry.Description);
+        var nameToReport = nameToReportGetter(statement) ?? name;
+
+        Report(context, script, fragmentToReportGetter(statement), objectTypeName, nameToReport, patternEntry.Description);
     }
 
     private static void Report(IAnalysisContext context, IScriptModel script, TSqlFragment fragment, string objectTypeName, string objectName, string ruleDescription)

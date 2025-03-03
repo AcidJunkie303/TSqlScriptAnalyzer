@@ -24,8 +24,8 @@ public sealed class NamingAnalyzerTests(ITestOutputHelper testOutputHelper)
 
     [Theory]
     [InlineData("@Parameter303")]
-    [InlineData("▶️AJ5030💛script_0.sql💛MyDb.dbo.Procedure111💛parameter💛p💛CCC✅@p◀️")]
-    [InlineData("▶️AJ5030💛script_0.sql💛MyDb.dbo.Procedure111💛parameter💛parameter303💛CCC✅@parameter303◀️")]
+    [InlineData("▶️AJ5030💛script_0.sql💛MyDb.dbo.Procedure111💛parameter💛@p💛CCC✅@p◀️")]
+    [InlineData("▶️AJ5030💛script_0.sql💛MyDb.dbo.Procedure111💛parameter💛@parameter303💛CCC✅@parameter303◀️")]
     public void ProcedureParameterName_Theory(string parameterName)
     {
         var code = $"""
@@ -164,8 +164,8 @@ public sealed class NamingAnalyzerTests(ITestOutputHelper testOutputHelper)
 
     [Theory]
     [InlineData("@Variable303")]
-    [InlineData("▶️AJ5030💛script_0.sql💛💛variable💛Var303💛III✅@Var303◀️")]
-    [InlineData("▶️AJ5030💛script_0.sql💛💛variable💛variable303💛III✅@variable303◀️")]
+    [InlineData("▶️AJ5030💛script_0.sql💛💛variable💛@Var303💛III✅@Var303◀️")]
+    [InlineData("▶️AJ5030💛script_0.sql💛💛variable💛@variable303💛III✅@variable303◀️")]
     public void VariableName_Theory(string variableName)
     {
         //
