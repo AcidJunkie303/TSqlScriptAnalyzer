@@ -33,6 +33,9 @@ internal static class Program
         var textReportFilePathOption = new Option<string?>(
             ["-t", "--text"],
             "The path of file to render the text report to.");
+        var logFilePathOption = new Option<string?>(
+            ["-l", "--log-file-path"],
+            "The path of the log file.");
 
         var rootCommand = new RootCommand("T-SQL script file analyzer");
         var analyzeCommand = new Command("analyze", "Analyze a project");
@@ -42,6 +45,7 @@ internal static class Program
         analyzeCommand.AddOption(htmlReportOption);
         analyzeCommand.AddOption(jsonReportOption);
         analyzeCommand.AddOption(textReportFilePathOption);
+        analyzeCommand.AddOption(logFilePathOption);
 
         analyzeCommand.SetHandler(context =>
         {
@@ -57,8 +61,9 @@ internal static class Program
             var htmlReportFilePath = context.ParseResult.GetValueForOption(htmlReportOption);
             var jsonReportFilePath = context.ParseResult.GetValueForOption(jsonReportOption);
             var textReportFilePath = context.ParseResult.GetValueForOption(textReportFilePathOption);
+            var logFilePath = context.ParseResult.GetValueForOption(logFilePathOption);
 
-            var options = new AnalyzeOptions(filePath, consoleReportTypes, htmlReportFilePath, jsonReportFilePath, textReportFilePath);
+            var options = new AnalyzeOptions(filePath, consoleReportTypes, htmlReportFilePath, jsonReportFilePath, textReportFilePath, logFilePath);
             context.ExitCode = AnalyzeAsync(options).GetAwaiter().GetResult();
         });
 
@@ -72,7 +77,7 @@ internal static class Program
         try
         {
             var (configuration, settings) = ApplicationSettingsProvider.GetSettings(options.ProjectFilePath);
-            var analyzer = AnalyzerFactory.Create(configuration, settings, new ProgressCallbackConsoleWriter());
+            var analyzer = AnalyzerFactory.Create(configuration, settings, new ProgressCallbackConsoleWriter(), options.LogFilePath);
             var analysisResult = analyzer.Analyze();
 
             foreach (var consoleReportType in options.ConsoleReportTypes)
@@ -120,6 +125,7 @@ internal static class Program
         IReadOnlyCollection<ConsoleReportType> ConsoleReportTypes,
         string? HtmlReportFilePath,
         string? JsonReportFilePath,
-        string? TextReportFilePath
+        string? TextReportFilePath,
+        string? LogFilePath
     );
 }

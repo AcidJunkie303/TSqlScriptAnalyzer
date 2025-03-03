@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using DatabaseAnalyzer.Common.Services;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Core.Configuration;
+using DatabaseAnalyzer.Core.Logging;
 using DatabaseAnalyzer.Core.Plugins;
 using DatabaseAnalyzer.Core.Services;
 using Microsoft.Extensions.Configuration;
@@ -14,15 +15,15 @@ namespace DatabaseAnalyzer.Core;
 [SuppressMessage("Major Code Smell", "S1200:Classes should not be coupled to too many other classes")]
 public static class AnalyzerFactory
 {
-    public static IAnalyzer Create(IConfiguration configuration, ApplicationSettings settings) => Create(configuration, settings, null);
+    public static IAnalyzer Create(IConfiguration configuration, ApplicationSettings settings, string? logFilePath) => Create(configuration, settings, null, logFilePath);
 
-    public static IAnalyzer Create(IConfiguration configuration, ApplicationSettings settings, IProgressCallback? progressCallback)
+    public static IAnalyzer Create(IConfiguration configuration, ApplicationSettings settings, IProgressCallback? progressCallback, string? logFilePath)
     {
-        var host = CreateHostBuilder(configuration, settings, progressCallback).Build();
+        var host = CreateHostBuilder(configuration, settings, progressCallback, logFilePath).Build();
         return host.Services.GetRequiredService<IAnalyzer>();
     }
 
-    private static IHostBuilder CreateHostBuilder(IConfiguration configuration, ApplicationSettings settings, IProgressCallback? progressCallback)
+    private static IHostBuilder CreateHostBuilder(IConfiguration configuration, ApplicationSettings settings, IProgressCallback? progressCallback, string? logFilePath)
         => Host
             .CreateDefaultBuilder()
             .ConfigureServices((_, services) =>
@@ -32,6 +33,7 @@ public static class AnalyzerFactory
                 services.AddSingleton(settings.Diagnostics);
                 services.AddSingleton(settings.ScriptSource);
                 services.AddSingleton(progressCallback ?? new NullProgressWriter());
+                services.AddLogging(logFilePath);
 
                 services.AddSingleton<IAnalyzer, Analyzer>();
                 services.AddSingleton<IScriptLoader, ScriptLoader>();
