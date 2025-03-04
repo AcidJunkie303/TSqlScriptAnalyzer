@@ -13,17 +13,17 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
     {
         var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5038Settings>();
 
-        AnalyzeObjectCreations(context, script, settings.NameQuotingPolicyDuringObjectCreation);
-        AnalyzeColumnReferences(context, script, settings.NameQuotingPolicyForColumnReferences);
-        AnalyzeColumnDefinitions(context, script, settings.NameQuotingPolicyForColumnDefinitions);
-        AnalyzeTableReferences(context, script, settings.NameQuotingPolicyForTableReferences);
-        AnalyzeDataTypeReferences(context, script, settings.NameQuotingPolicyForDataTypes);
+        AnalyzeObjectCreations(context, script, settings.NameQuotingPolicyDuringObjectCreation, nameof(Aj5038SettingsRaw.NameQuotingPolicyDuringObjectCreation));
+        AnalyzeColumnReferences(context, script, settings.NameQuotingPolicyForColumnReferences, nameof(Aj5038SettingsRaw.NameQuotingPolicyForColumnReferences));
+        AnalyzeColumnDefinitions(context, script, settings.NameQuotingPolicyForColumnDefinitions, nameof(Aj5038SettingsRaw.NameQuotingPolicyForColumnDefinitions));
+        AnalyzeTableReferences(context, script, settings.NameQuotingPolicyForTableReferences, nameof(Aj5038SettingsRaw.NameQuotingPolicyForTableReferences));
+        AnalyzeDataTypeReferences(context, script, settings.NameQuotingPolicyForDataTypes, nameof(Aj5038SettingsRaw.NameQuotingPolicyForDataTypes));
 
         // TODO: Identifiers in object creation (lots of types to check)
         // TODO: Schema name references. Kinda hard...
     }
 
-    private static void AnalyzeDataTypeReferences(IAnalysisContext context, IScriptModel script, NameQuotingPolicy policy)
+    private static void AnalyzeDataTypeReferences(IAnalysisContext context, IScriptModel script, NameQuotingPolicy policy, string configurationKeyName)
     {
         if (policy == NameQuotingPolicy.Undefined)
         {
@@ -36,10 +36,11 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
             script.ParsedScript.GetChildren<SqlDataTypeReference>(recursive: true),
             static a => a.Name.Identifiers,
             "data type",
-            policy);
+            policy,
+            configurationKeyName);
     }
 
-    private static void AnalyzeTableReferences(IAnalysisContext context, IScriptModel script, NameQuotingPolicy policy)
+    private static void AnalyzeTableReferences(IAnalysisContext context, IScriptModel script, NameQuotingPolicy policy, string configurationKeyName)
     {
         if (policy == NameQuotingPolicy.Undefined)
         {
@@ -64,10 +65,11 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
             tableReferences,
             static a => a.SchemaObject.Identifiers.TakeLast(1),
             "table reference",
-            policy);
+            policy,
+            configurationKeyName);
     }
 
-    private static void AnalyzeColumnDefinitions(IAnalysisContext context, IScriptModel script, NameQuotingPolicy policy)
+    private static void AnalyzeColumnDefinitions(IAnalysisContext context, IScriptModel script, NameQuotingPolicy policy, string configurationKeyName)
     {
         if (policy == NameQuotingPolicy.Undefined)
         {
@@ -80,10 +82,11 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
             script.ParsedScript.GetChildren<ColumnDefinition>(recursive: true),
             static a => [a.ColumnIdentifier],
             "column definition",
-            policy);
+            policy,
+            configurationKeyName);
     }
 
-    private static void AnalyzeColumnReferences(IAnalysisContext context, IScriptModel script, NameQuotingPolicy policy)
+    private static void AnalyzeColumnReferences(IAnalysisContext context, IScriptModel script, NameQuotingPolicy policy, string configurationKeyName)
     {
         if (policy == NameQuotingPolicy.Undefined)
         {
@@ -96,10 +99,11 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
             script.ParsedScript.GetChildren<ColumnReferenceExpression>(recursive: true),
             static a => a.MultiPartIdentifier.Identifiers.TakeLast(1),
             "column",
-            policy);
+            policy,
+            configurationKeyName);
     }
 
-    private static void AnalyzeObjectCreations(IAnalysisContext context, IScriptModel script, NameQuotingPolicy policy)
+    private static void AnalyzeObjectCreations(IAnalysisContext context, IScriptModel script, NameQuotingPolicy policy, string configurationKeyName)
     {
         if (policy == NameQuotingPolicy.Undefined)
         {
@@ -112,7 +116,8 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
             script.ParsedScript.GetChildren<CreateTableStatement>(recursive: true),
             static a => a.SchemaObjectName.Identifiers,
             "table",
-            policy);
+            policy,
+            configurationKeyName);
 
         Analyze(
             context,
@@ -120,7 +125,8 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
             script.ParsedScript.GetChildren<ViewStatementBody>(recursive: true),
             static a => a.SchemaObjectName.Identifiers,
             "view",
-            policy);
+            policy,
+            configurationKeyName);
 
         Analyze(
             context,
@@ -128,7 +134,8 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
             script.ParsedScript.GetChildren<ProcedureStatementBody>(recursive: true),
             static a => a.ProcedureReference.Name.Identifiers,
             "procedure",
-            policy);
+            policy,
+            configurationKeyName);
 
         Analyze(
             context,
@@ -136,7 +143,8 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
             script.ParsedScript.GetChildren<FunctionStatementBody>(recursive: true),
             static a => a.Name.Identifiers,
             "function",
-            policy);
+            policy,
+            configurationKeyName);
 
         Analyze(
             context,
@@ -144,19 +152,20 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
             script.ParsedScript.GetChildren<TriggerStatementBody>(recursive: true),
             static a => a.Name.Identifiers,
             "trigger",
-            policy);
+            policy,
+            configurationKeyName);
     }
 
-    private static void Analyze<T>(IAnalysisContext context, IScriptModel script, IEnumerable<T> statements, Func<T, IEnumerable<Identifier>> identifierGetter, string typeName, NameQuotingPolicy nameQuotingPolicy)
+    private static void Analyze<T>(IAnalysisContext context, IScriptModel script, IEnumerable<T> statements, Func<T, IEnumerable<Identifier>> identifierGetter, string typeName, NameQuotingPolicy nameQuotingPolicy, string configurationKeyName)
         where T : TSqlFragment
     {
         foreach (var statement in statements)
         {
-            Analyze(context, script, statement, identifierGetter, typeName, nameQuotingPolicy);
+            Analyze(context, script, statement, identifierGetter, typeName, nameQuotingPolicy, configurationKeyName);
         }
     }
 
-    private static void Analyze<T>(IAnalysisContext context, IScriptModel script, T statement, Func<T, IEnumerable<Identifier>> identifierGetter, string typeName, NameQuotingPolicy nameQuotingPolicy)
+    private static void Analyze<T>(IAnalysisContext context, IScriptModel script, T statement, Func<T, IEnumerable<Identifier>> identifierGetter, string typeName, NameQuotingPolicy nameQuotingPolicy, string configurationKeyName)
         where T : TSqlFragment
     {
         foreach (var identifier in identifierGetter(statement))
@@ -174,7 +183,7 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
                 script.RelativeScriptFilePath,
                 fullObjectName,
                 identifier.GetCodeRegion(),
-                typeName, identifier.GetSql(), shouldBeWrittenAs);
+                typeName, identifier.GetSql(), shouldBeWrittenAs, configurationKeyName);
         }
     }
 
@@ -203,8 +212,8 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
             "AJ5038",
             IssueType.Formatting,
             "Object name quoting",
-            "The `{0}` name segment `{1}` is incorrectly quoted, which violates the configured naming policy. It should be `{2}` instead.",
-            ["Object type name", "Name", "Expected name"],
+            "The `{0}` name segment `{1}` is incorrectly quoted, which violates the configured naming policy. It should be `{2}` instead. Configuration key is `{3}`.",
+            ["Object type name", "Name", "Expected name", "Configuration Key name"],
             UrlPatterns.DefaultDiagnosticHelp
         );
     }
