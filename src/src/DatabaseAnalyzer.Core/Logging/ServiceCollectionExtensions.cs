@@ -2,13 +2,14 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Events;
 using Serilog.Formatting.Compact;
 
 namespace DatabaseAnalyzer.Core.Logging;
 
 internal static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddLogging(this IServiceCollection services, string? logFilePath)
+    public static IServiceCollection AddLogging(this IServiceCollection services, string? logFilePath, LogEventLevel minimumLogLevel)
     {
         logFilePath ??= GetDefaultLogFilePath();
         var logFileDirectoryPath = Path.GetDirectoryName(logFilePath);
@@ -18,7 +19,7 @@ internal static class ServiceCollectionExtensions
         }
 
         Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Verbose()
+            .MinimumLevel.Is(minimumLogLevel)
             .WriteTo.File(new CompactJsonFormatter(), logFilePath)
             .CreateLogger();
 

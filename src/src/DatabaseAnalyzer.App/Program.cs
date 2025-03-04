@@ -7,6 +7,7 @@ using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Core;
 using DatabaseAnalyzer.Core.Configuration;
+using Serilog.Events;
 
 namespace DatabaseAnalyzer;
 
@@ -36,6 +37,9 @@ internal static class Program
         var logFilePathOption = new Option<string?>(
             ["-l", "--log-file-path"],
             "The path of the log file.");
+        var minimumLogLevelOption = new Option<LogEventLevel?>(
+            ["-m", "--minimum-log-level"],
+            "The minimum log level. Default is 'Information'.");
 
         var rootCommand = new RootCommand("T-SQL script file analyzer");
         var analyzeCommand = new Command("analyze", "Analyze a project");
@@ -46,6 +50,7 @@ internal static class Program
         analyzeCommand.AddOption(jsonReportOption);
         analyzeCommand.AddOption(textReportFilePathOption);
         analyzeCommand.AddOption(logFilePathOption);
+        analyzeCommand.AddOption(minimumLogLevelOption);
 
         analyzeCommand.SetHandler(context =>
         {
@@ -62,8 +67,9 @@ internal static class Program
             var jsonReportFilePath = context.ParseResult.GetValueForOption(jsonReportOption);
             var textReportFilePath = context.ParseResult.GetValueForOption(textReportFilePathOption);
             var logFilePath = context.ParseResult.GetValueForOption(logFilePathOption);
+            var minimumLogLevel = context.ParseResult.GetValueForOption(minimumLogLevelOption);
 
-            var options = new AnalyzeOptions(filePath, consoleReportTypes, htmlReportFilePath, jsonReportFilePath, textReportFilePath, logFilePath);
+            var options = new AnalyzeOptions(filePath, consoleReportTypes, htmlReportFilePath, jsonReportFilePath, textReportFilePath, logFilePath, minimumLogLevel);
             context.ExitCode = AnalyzeAsync(options).GetAwaiter().GetResult();
         });
 
@@ -77,7 +83,7 @@ internal static class Program
         try
         {
             var (configuration, settings) = ApplicationSettingsProvider.GetSettings(options.ProjectFilePath);
-            var analyzer = AnalyzerFactory.Create(configuration, settings, new ProgressCallbackConsoleWriter(), options.LogFilePath);
+            var analyzer = AnalyzerFactory.Create(configuration, settings, new ProgressCallbackConsoleWriter(), options.LogFilePath, options.MinimumLogLevel ?? LogEventLevel.Information);
             var analysisResult = analyzer.Analyze();
 
             foreach (var consoleReportType in options.ConsoleReportTypes)
@@ -126,6 +132,7 @@ internal static class Program
         string? HtmlReportFilePath,
         string? JsonReportFilePath,
         string? TextReportFilePath,
-        string? LogFilePath
+        string? LogFilePath,
+        LogEventLevel? MinimumLogLevel
     );
 }
