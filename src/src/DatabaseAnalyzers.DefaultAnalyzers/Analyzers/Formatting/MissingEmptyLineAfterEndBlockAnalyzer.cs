@@ -18,6 +18,13 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzer : IScriptAnalyzer
                 continue;
             }
 
+            // in case the next non-comment and non-whitespace token is another END token, we skip it
+            var nextEndTokenIndex = FindNextTokenIndexWithCommentSkip(script.ParsedScript.ScriptTokenStream, i, IsEnd);
+            if (nextEndTokenIndex >= 0)
+            {
+                continue;
+            }
+
             // in case the next non-comment and non-whitespace token is a try (of 'END TRY') we skip it because we don't want to enforce an extra line after END TRY
             var tryTokenIndex = FindNextTokenIndexWithCommentSkip(script.ParsedScript.ScriptTokenStream, i, IsTry);
             if (tryTokenIndex >= 0)
@@ -116,6 +123,9 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzer : IScriptAnalyzer
 
     private static bool IsTry(TSqlParserToken? token)
         => token is not null && token.TokenType == TSqlTokenType.Identifier && string.Equals(token.Text, "TRY", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsEnd(TSqlParserToken? token)
+        => token is not null && token.TokenType == TSqlTokenType.End;
 
     private static class DiagnosticDefinitions
     {
