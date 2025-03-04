@@ -9,21 +9,20 @@ using DatabaseAnalyzer.Core.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog.Events;
 
 namespace DatabaseAnalyzer.Core;
 
 [SuppressMessage("Major Code Smell", "S1200:Classes should not be coupled to too many other classes")]
 public static class AnalyzerFactory
 {
-    public static IAnalyzer Create(IConfiguration configuration, ApplicationSettings settings, string? logFilePath) => Create(configuration, settings, null, logFilePath);
-
-    public static IAnalyzer Create(IConfiguration configuration, ApplicationSettings settings, IProgressCallback? progressCallback, string? logFilePath)
+    public static IAnalyzer Create(IConfiguration configuration, ApplicationSettings settings, IProgressCallback? progressCallback, string? logFilePath, LogEventLevel minimumLogLevel)
     {
-        var host = CreateHostBuilder(configuration, settings, progressCallback, logFilePath).Build();
+        var host = CreateHostBuilder(configuration, settings, progressCallback, logFilePath, minimumLogLevel).Build();
         return host.Services.GetRequiredService<IAnalyzer>();
     }
 
-    private static IHostBuilder CreateHostBuilder(IConfiguration configuration, ApplicationSettings settings, IProgressCallback? progressCallback, string? logFilePath)
+    private static IHostBuilder CreateHostBuilder(IConfiguration configuration, ApplicationSettings settings, IProgressCallback? progressCallback, string? logFilePath, LogEventLevel minimumLogLevel)
         => Host
             .CreateDefaultBuilder()
             .ConfigureServices((_, services) =>
@@ -33,7 +32,7 @@ public static class AnalyzerFactory
                 services.AddSingleton(settings.Diagnostics);
                 services.AddSingleton(settings.ScriptSource);
                 services.AddSingleton(progressCallback ?? new NullProgressWriter());
-                services.AddLogging(logFilePath);
+                services.AddLogging(logFilePath, minimumLogLevel);
 
                 services.AddSingleton<IAnalyzer, Analyzer>();
                 services.AddSingleton<IScriptLoader, ScriptLoader>();
