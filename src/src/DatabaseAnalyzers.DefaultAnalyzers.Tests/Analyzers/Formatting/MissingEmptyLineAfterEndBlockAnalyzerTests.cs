@@ -56,6 +56,7 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzerTests(ITestOutputHelper
                             BEGIN
                                 PRINT 303
                             END
+
                             """;
 
         Verify(code);
@@ -109,7 +110,7 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzerTests(ITestOutputHelper
                             END TRY
                             BEGIN CATCH
                                 PRINT '303'
-                            END CATCH ;
+                            END CATCH;
 
 
                             """;
@@ -131,6 +132,27 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzerTests(ITestOutputHelper
                                     END AS Bla,
                                     OtherColumn
                             FROM Whatever
+                            """;
+
+        Verify(code);
+    }
+
+    [Fact]
+    public void WhenNoEmptyLineAfterEnd_ButAnotherEnd_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            IF (1=1)
+                            BEGIN
+                                IF (1=1)
+                                BEGIN
+                                    PRINT 303
+                                END
+                            END
+
+
                             """;
 
         Verify(code);
