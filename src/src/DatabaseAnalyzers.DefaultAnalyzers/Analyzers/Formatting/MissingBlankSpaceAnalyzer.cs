@@ -11,13 +11,13 @@ public sealed class MissingBlankSpaceAnalyzer : IScriptAnalyzer
 
     public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
-        var tokens = script.ParsedScript.ScriptTokenStream.ToList();
+        var tokens = script.ParsedScript.ScriptTokenStream;
 
         // we skip the first and last since it doesn't make sense to check them, and it also makes the checking easier (out of bounds checking)
         for (var i = 1; i < tokens.Count - 1; i++)
         {
             var token = tokens[i];
-            if (RequiresSpaceBefore(token))
+            if (RequiresSpaceBefore(token, i, tokens))
             {
                 var previousToken = tokens[i - 1];
                 if (previousToken.TokenType != TSqlTokenType.WhiteSpace)
@@ -26,7 +26,7 @@ public sealed class MissingBlankSpaceAnalyzer : IScriptAnalyzer
                 }
             }
 
-            if (RequiresSpaceAfter(token))
+            if (RequiresSpaceAfter(token, i, tokens))
             {
                 var nextToken = tokens[i + 1];
                 if (nextToken.TokenType != TSqlTokenType.WhiteSpace)
@@ -47,14 +47,70 @@ public sealed class MissingBlankSpaceAnalyzer : IScriptAnalyzer
         }
     }
 
-    private static bool RequiresSpaceBefore(TSqlParserToken token)
-        => Sets.TokenTypesWhichRequireSpaceBeforeAndAfter.Contains(token.TokenType);
-
-    private static bool RequiresSpaceAfter(TSqlParserToken token)
+    private static bool RequiresSpaceBefore(TSqlParserToken token, int tokenIndex, IList<TSqlParserToken> tokens)
     {
-        return Sets.TokenTypesWhichRequireSpaceBeforeAndAfter.Contains(token.TokenType)
-               || Sets.TokenTypesWhichRequireSpaceAfter.Contains(token.TokenType);
+        var previousToken = tokens[tokenIndex - 1];
+        if (previousToken.TokenType is TSqlTokenType.WhiteSpace)
+        {
+            return false;
+        }
+
+        if (token.TokenType is TSqlTokenType.EqualsSign)
+        {
+            return previousToken.TokenType != TSqlTokenType.LessThan && previousToken.TokenType != TSqlTokenType.GreaterThan;
+        }
+
+        if (token.TokenType is TSqlTokenType.GreaterThan)
+        {
+            return previousToken.TokenType != TSqlTokenType.LessThan;
+        }
+
+        return Sets.TokenTypesWhichRequireSpaceBeforeAndAfter.Contains(token.TokenType);
     }
+
+    private static bool RequiresSpaceAfter(TSqlParserToken token, int tokenIndex, IList<TSqlParserToken> tokens)
+    {
+        if (!Sets.TokenTypesWhichRequireSpaceBeforeAndAfter.Contains(token.TokenType)
+            && !Sets.TokenTypesWhichRequireSpaceAfter.Contains(token.TokenType))
+        {
+            return false;
+        }
+
+        if (token.TokenType == TSqlTokenType.Minus)
+        {
+            var previousNonWhiteSpaceToken = GetPreviousToken(tokens, tokenIndex, a => a.TokenType == TSqlTokenType.WhiteSpace);
+            if (previousNonWhiteSpaceToken is null)
+            {
+                return false;
+            }
+
+            return previousNonWhiteSpaceToken.TokenType
+                is not (TSqlTokenType.GreaterThan
+                or TSqlTokenType.LessThan
+                or TSqlTokenType.EqualsSign);
+        }
+
+        if (token.TokenType == TSqlTokenType.LessThan)
+        {
+            var nextToken = tokens[tokenIndex + 1];
+            return nextToken.TokenType != TSqlTokenType.EqualsSign && nextToken.TokenType != TSqlTokenType.GreaterThan;
+        }
+
+        if (token.TokenType == TSqlTokenType.GreaterThan)
+        {
+            var nextToken = tokens[tokenIndex + 1];
+            return nextToken.TokenType != TSqlTokenType.EqualsSign;
+        }
+
+        return true;
+    }
+
+    private static TSqlParserToken? GetPreviousToken(IList<TSqlParserToken> tokens, int index, Func<TSqlParserToken, bool> skipWhile)
+        => tokens
+            .Take(index)
+            .Reverse()
+            .SkipWhile(skipWhile)
+            .FirstOrDefault();
 
     private static class Sets
     {
