@@ -20,17 +20,19 @@ public static class TokenVisualizer
         table.Config.hasInnerRows = false;
 
         table
+            .AddColumn("Index", Alignment.Right)
             .AddColumn("Type")
             .AddColumn("Region")
             .AddColumn("Contents");
 
+        var index = 0;
         foreach (var token in tokens)
         {
             var text = token.Text.EmptyIfNull()
                 .Replace("\r\n", "\\r\\n", StringComparison.Ordinal)
                 .Replace("\n", "\\n", StringComparison.Ordinal);
             text = text.IsNullOrWhiteSpace() ? $"¦{text}¦" : text;
-            table.AddRow(token.TokenType, token.GetCodeRegion(), text);
+            table.AddRow(index++, token.TokenType, token.GetCodeRegion(), text);
         }
 
         return table.ToString();

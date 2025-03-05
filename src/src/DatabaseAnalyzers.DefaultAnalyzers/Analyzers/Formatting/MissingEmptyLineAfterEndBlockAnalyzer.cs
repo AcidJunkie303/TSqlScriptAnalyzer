@@ -75,6 +75,12 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzer : IScriptAnalyzer
             return;
         }
 
+        var nextEndTokenIndex = FindNextTokenIndexWithCommentSkip(script.ParsedScript.ScriptTokenStream, tokenIndex, IsEnd);
+        if (nextEndTokenIndex >= 0)
+        {
+            return;
+        }
+
         var missing = IsMissingEmptyLineAfter();
         if (!missing)
         {

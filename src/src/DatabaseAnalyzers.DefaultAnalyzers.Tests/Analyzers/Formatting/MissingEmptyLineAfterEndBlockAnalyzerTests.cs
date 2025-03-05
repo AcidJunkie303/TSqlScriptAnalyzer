@@ -157,4 +157,26 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzerTests(ITestOutputHelper
 
         Verify(code);
     }
+
+    [Fact]
+    public void WhenEndIsAfterEndCatchBlock_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            IF (1=1)
+                            BEGIN
+                                BEGIN TRY
+                                    PRINT 303
+                                END TRY
+                                BEGIN CATCH
+                                    THROW;
+                                END CATCH
+                            END
+
+                            """;
+
+        Verify(code);
+    }
 }
