@@ -22,6 +22,8 @@
         <EmbeddedResource Include="Reporting\Html\HtmlReport.cshtml"/>
         <EmbeddedResource Include="Reporting\Html\Scripts.cshtml"/>
         <EmbeddedResource Include="Reporting\Html\Styles-Dark.cshtml"/>
+        <EmbeddedResource Include="Reporting\Html\Styles-Light.cshtml"/>
+        <EmbeddedResource Include="Reporting\Html\Styles.cshtml"/>
         <None Update="Settings\common.jsonc" CopyToOutputDirectory="Always" CopyToPublishDirectory="Never"/>
         <None Update="Settings\DB1.jsonc" CopyToOutputDirectory="Always" CopyToPublishDirectory="Never"/>
     </ItemGroup>

@@ -5,13 +5,13 @@ namespace DatabaseAnalyzer.App.Reporting;
 
 internal static class ReportRendererFactory
 {
-    public static IReportRenderer Create(ConsoleReportType analysisResult)
+    public static IReportRenderer Create(ReportType analysisResult, ReportTheme reportTheme)
         => analysisResult switch
         {
-            ConsoleReportType.Text => new TextReportRenderer(),
-            ConsoleReportType.Json => new JsonFullReportRenderer(),
-            ConsoleReportType.JsonSummary => new JsonMiniReportRenderer(),
-            ConsoleReportType.Html => new HtmlReportRenderer(),
-            _ => throw new ArgumentOutOfRangeException(nameof(analysisResult), analysisResult, message: null)
+            ReportType.Text        => new TextReportRenderer(),
+            ReportType.Json        => new JsonFullReportRenderer(),
+            ReportType.JsonSummary => new JsonMiniReportRenderer(),
+            ReportType.Html        => new HtmlReportRenderer(reportTheme),
+            _                      => throw new ArgumentOutOfRangeException(nameof(analysisResult), analysisResult, message: null)
         };
 }

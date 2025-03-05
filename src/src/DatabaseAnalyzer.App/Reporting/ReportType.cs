@@ -1,8 +1,9 @@
 namespace DatabaseAnalyzer.App.Reporting;
 
-internal enum FileReportType
+internal enum ReportType
 {
     Text = 1,
     Json = 2,
-    Html = 3
+    JsonSummary = 3,
+    Html = 4
 }

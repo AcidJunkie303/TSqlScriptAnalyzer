@@ -1,5 +1,4 @@
 ﻿using System.CommandLine;
-using DatabaseAnalyzer.App;
 using DatabaseAnalyzer.App.Reporting;
 using DatabaseAnalyzer.App.Reporting.Html;
 using DatabaseAnalyzer.App.Reporting.Json;
@@ -9,7 +8,7 @@ using DatabaseAnalyzer.Core;
 using DatabaseAnalyzer.Core.Configuration;
 using Serilog.Events;
 
-namespace DatabaseAnalyzer;
+namespace DatabaseAnalyzer.App;
 
 internal static class Program
 {
@@ -21,18 +20,21 @@ internal static class Program
         {
             IsRequired = true
         };
-        var consoleReportTypeOption = new Option<ConsoleReportType[]>(
+        var consoleReportTypeOption = new Option<ReportType[]>(
             ["-crt", "--console-report-type"],
-            () => [ConsoleReportType.Text],
-            $"The console report types to render. Following values are valid: '{nameof(ConsoleReportType.Json)}','{nameof(ConsoleReportType.JsonSummary)}', '{nameof(ConsoleReportType.Html)}' or '{nameof(ConsoleReportType.Text)}'.");
-        var htmlReportOption = new Option<string?>(
-            ["-h", "--html"],
+            () => [ReportType.Text],
+            $"The console report types to render. Following values are valid: '{nameof(ReportType.Json)}','{nameof(ReportType.JsonSummary)}', '{nameof(ReportType.Html)}' or '{nameof(ReportType.Text)}'.");
+        var htmlFileReportOption = new Option<string?>(
+            ["-h", "--html-report-file-path"],
             "The path of file to render the html report to.");
-        var jsonReportOption = new Option<string?>(
-            ["-j", "--json"],
+        var htmlReportThemeOptions = new Option<ReportTheme>(
+            ["-hrt", "--html-report-theme"],
+            $"The theme for the HTML report. Default is `{nameof(ReportTheme.Dark)}`");
+        var jsonFileReportOption = new Option<string?>(
+            ["-j", "--json-report-file-path"],
             "The path of file to render the json report to.");
-        var textReportFilePathOption = new Option<string?>(
-            ["-t", "--text"],
+        var textFileReportFilePathOption = new Option<string?>(
+            ["-t", "--text-report-file-path"],
             "The path of file to render the text report to.");
         var logFilePathOption = new Option<string?>(
             ["-l", "--log-file-path"],
@@ -46,9 +48,10 @@ internal static class Program
 
         analyzeCommand.AddOption(settingsFileOption);
         analyzeCommand.AddOption(consoleReportTypeOption);
-        analyzeCommand.AddOption(htmlReportOption);
-        analyzeCommand.AddOption(jsonReportOption);
-        analyzeCommand.AddOption(textReportFilePathOption);
+        analyzeCommand.AddOption(htmlFileReportOption);
+        analyzeCommand.AddOption(htmlReportThemeOptions);
+        analyzeCommand.AddOption(jsonFileReportOption);
+        analyzeCommand.AddOption(textFileReportFilePathOption);
         analyzeCommand.AddOption(logFilePathOption);
         analyzeCommand.AddOption(minimumLogLevelOption);
 
@@ -60,16 +63,17 @@ internal static class Program
                                          .NullIfEmpty()
                                          ?.Distinct()
                                          .ToList()
-                                     ?? [ConsoleReportType.Text];
+                                     ?? [ReportType.Text];
 
             var filePath = context.ParseResult.GetValueForOption(settingsFileOption)!;
-            var htmlReportFilePath = context.ParseResult.GetValueForOption(htmlReportOption);
-            var jsonReportFilePath = context.ParseResult.GetValueForOption(jsonReportOption);
-            var textReportFilePath = context.ParseResult.GetValueForOption(textReportFilePathOption);
+            var htmlReportFilePath = context.ParseResult.GetValueForOption(htmlFileReportOption);
+            var jsonReportFilePath = context.ParseResult.GetValueForOption(jsonFileReportOption);
+            var textReportFilePath = context.ParseResult.GetValueForOption(textFileReportFilePathOption);
             var logFilePath = context.ParseResult.GetValueForOption(logFilePathOption);
             var minimumLogLevel = context.ParseResult.GetValueForOption(minimumLogLevelOption);
+            var htmlReportTheme = context.ParseResult.GetValueForOption(htmlReportThemeOptions);
 
-            var options = new AnalyzeOptions(filePath, consoleReportTypes, htmlReportFilePath, jsonReportFilePath, textReportFilePath, logFilePath, minimumLogLevel);
+            var options = new AnalyzeOptions(filePath, consoleReportTypes, htmlReportFilePath, jsonReportFilePath, textReportFilePath, logFilePath, minimumLogLevel, htmlReportTheme);
             context.ExitCode = AnalyzeAsync(options).GetAwaiter().GetResult();
         });
 
@@ -88,16 +92,16 @@ internal static class Program
 
             foreach (var consoleReportType in options.ConsoleReportTypes)
             {
-                Console.WriteLine($"{{{{Report-Start-{consoleReportType}}}}}");
-                var consoleReportRenderer = ReportRendererFactory.Create(consoleReportType);
+                Console.WriteLine($"{{{{{consoleReportType}-Report-Start}}}}");
+                var consoleReportRenderer = ReportRendererFactory.Create(consoleReportType, options.HtmlReportTheme);
                 var report = await consoleReportRenderer.RenderReportAsync(analysisResult);
                 Console.WriteLine(report.Trim());
-                Console.WriteLine($"{{{{Report-End-{consoleReportType}}}}}");
+                Console.WriteLine($"{{{{{consoleReportType}-Report-End}}}}");
             }
 
             if (!options.HtmlReportFilePath.IsNullOrWhiteSpace())
             {
-                await ReportFileRenderer.RenderAsync(new HtmlReportRenderer(), analysisResult, options.HtmlReportFilePath);
+                await ReportFileRenderer.RenderAsync(new HtmlReportRenderer(options.HtmlReportTheme), analysisResult, options.HtmlReportFilePath);
             }
 
             if (!options.JsonReportFilePath.IsNullOrWhiteSpace())
@@ -128,11 +132,12 @@ internal static class Program
 
     private sealed record AnalyzeOptions(
         string ProjectFilePath,
-        IReadOnlyCollection<ConsoleReportType> ConsoleReportTypes,
+        IReadOnlyCollection<ReportType> ConsoleReportTypes,
         string? HtmlReportFilePath,
         string? JsonReportFilePath,
         string? TextReportFilePath,
         string? LogFilePath,
-        LogEventLevel? MinimumLogLevel
+        LogEventLevel? MinimumLogLevel,
+        ReportTheme HtmlReportTheme
     );
 }
