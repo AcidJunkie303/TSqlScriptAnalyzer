@@ -65,4 +65,23 @@ public sealed class MissingBlankSpaceAnalyzerTests(ITestOutputHelper testOutputH
                             """;
         Verify(code);
     }
+
+    [Theory]
+    [InlineData("<")]
+    [InlineData(">")]
+    [InlineData("<=")]
+    [InlineData(">=")]
+    [InlineData("=")]
+    [InlineData("<>")]
+    public void Theory_ComparisonWithNegativeValue(string comparisonOperator)
+    {
+        var code = $"""
+                    USE MyDb
+                    GO
+
+                    IF (@a {comparisonOperator} -1)
+                        PRINT 303
+                    """;
+        Verify(code);
+    }
 }
