@@ -1,0 +1,140 @@
+<style>
+    body {
+        background-color: var(--background-color);
+        color: var(--text-color);
+        font-family: Verdana, Arial, sans-serif;
+
+        margin: 0;
+        padding: 5px;
+    }
+
+    html, body {
+        font-size: 12px;
+    }
+
+    table, th, tr, td, th {
+        font-size: inherit;
+    }
+
+    header {
+        padding: 20px;
+        text-align: center;
+    }
+
+    pre.code {
+        display: inline-block;
+        background-color: var(--code-bg-color);
+        color: var(--code-fg-color);
+        padding: 0px 5px 1px 5px;
+
+        margin: -3px 0 -3px 0;
+        font-size: 1.0em;
+        border-radius: 3px;
+    }
+
+    h1 {
+        margin: 20px 0 5px 0;
+    }
+
+    table.data-table td,
+    table.data-table th {
+        border-collapse: collapse;
+        margin: 0;
+    }
+
+    table.data-table {
+        border-collapse: collapse;
+        border-spacing: 0;
+        border-radius: 4px;
+        overflow: hidden; /* Ensures inner elements don't overflow the rounded corners */
+    }
+
+    table.data-table thead {
+        background-color: var(--table-header-bg);
+    }
+
+    table.data-table thead th {
+        color: var(--text-color);
+        padding: 10px;
+    }
+
+    table.data-table tbody tr:nth-child(odd) {
+        background-color: var(--table-row-bg);
+    }
+
+    table.data-table tbody tr:nth-child(even) {
+        background-color: var(--table-row-alt-bg);
+    }
+
+    table.data-table > thead > tr > th {
+        color: var(--text-color);
+        border: solid 1px var(--table-border-color);
+        padding: 10px 5px 10px 5px;
+    }
+
+    table.data-table > tbody > tr > td {
+        color: var(--text-color);
+        border: solid 1px var(--table-border-color);
+        padding: 6px 5px 6px 5px;
+    }
+
+    table.data-table tbody tr:hover {
+        background-color: var(--table-row-hover-bg);
+    }
+
+    table.data-table > thead > tr > th,
+    table.data-table > tbody > tr > td:nth-child(1),
+    table.data-table > tbody > tr > td:nth-child(2),
+    table.data-table > tbody > tr > td:nth-child(3),
+    table.data-table > tbody > tr > td:nth-child(4) {
+        white-space: nowrap;
+    }
+
+    table.data-table > thead > tr > th {
+        cursor: pointer;
+    }
+
+    a,
+    a:visited {
+        color: var(--link-fg-color);
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    .info-box {
+        margin: 10px 0 10px 0;
+        color: var(--info-box-fg-color);
+    }
+
+    .issue-type-warning {
+        color: var(--issue-warning-fg-color);
+    }
+
+    .issue-type-formatting {
+        color: var(--issue-formatting-fg-color);
+    }
+
+    .issue-type-information {
+        color: var(--issue-information-fg-color);
+    }
+
+    .issue-type-error {
+        color: var(--red);
+    }
+
+    .issue-type-missingindex {
+        color: var(--issue-missingindex-fg-color);
+    }
+
+    .stats-has-no-issues {
+        color: var(--green);
+    }
+
+    .stats-has-issues {
+        color: var(--red);
+    }
+
+</style>

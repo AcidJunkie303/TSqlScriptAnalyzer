@@ -1,11 +1,23 @@
 @using System.Text.RegularExpressions
 @using System.Web
 @using DatabaseAnalyzer.App.Extensions
+@using DatabaseAnalyzer.App.Reporting.Html
 @using Microsoft.AspNetCore.Html
 @inherits Microsoft.AspNetCore.Mvc.Razor.RazorPage<DatabaseAnalyzer.Core.AnalysisResult>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head title="Database Analysis Result">
-    @await Html.PartialAsync("/Reporting/Html/Styles-Dark.cshtml")
+
+    @switch (ViewBag.Theme)
+    {
+        case ReportTheme.Light:
+            @await Html.PartialAsync("/Reporting/Html/Styles-Light.cshtml")
+            break;
+
+        default:
+            @await Html.PartialAsync("/Reporting/Html/Styles-Dark.cshtml")
+            break;
+    }
+    @await Html.PartialAsync("/Reporting/Html/Styles.cshtml")
 </head>
 <body>
 
