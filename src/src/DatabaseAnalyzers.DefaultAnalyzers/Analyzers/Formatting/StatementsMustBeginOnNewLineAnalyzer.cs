@@ -7,7 +7,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 
 public sealed class StatementsMustBeginOnNewLineAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
+    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
     public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {

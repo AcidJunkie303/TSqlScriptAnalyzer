@@ -21,4 +21,10 @@ public static class SchemaObjectNameExtensions
             ? $"{defaultSchemaName}.{objectName.BaseIdentifier.Value}"
             : $"{objectName.SchemaIdentifier.Value}.{objectName.BaseIdentifier.Value}";
     }
+
+    public static bool Equals(this SchemaObjectName name, SchemaObjectName other, string defaultSchemaName)
+        => string.Equals(name.ServerIdentifier?.Value, other.ServerIdentifier?.Value, StringComparison.OrdinalIgnoreCase)
+           && string.Equals(name.DatabaseIdentifier?.Value, other.DatabaseIdentifier?.Value, StringComparison.OrdinalIgnoreCase)
+           && string.Equals(name.SchemaIdentifier?.Value ?? defaultSchemaName, other.SchemaIdentifier?.Value ?? defaultSchemaName, StringComparison.OrdinalIgnoreCase)
+           && string.Equals(name.BaseIdentifier?.Value, other.BaseIdentifier?.Value, StringComparison.OrdinalIgnoreCase);
 }

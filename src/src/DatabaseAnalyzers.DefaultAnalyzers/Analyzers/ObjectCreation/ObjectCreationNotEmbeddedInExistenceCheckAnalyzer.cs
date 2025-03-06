@@ -8,7 +8,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.ObjectCreation;
 public sealed class ObjectCreationNotEmbeddedInExistenceCheckAnalyzer : IScriptAnalyzer
 {
     // IF NOT EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[dbo].[V1]'))
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
+    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
     public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
