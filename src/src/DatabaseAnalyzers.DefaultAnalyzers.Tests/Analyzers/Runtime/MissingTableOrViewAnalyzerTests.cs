@@ -1,6 +1,12 @@
+using DatabaseAnalyzer.Testing;
+using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime.MissingObjectAnalyzers;
+using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
+using Xunit.Abstractions;
+
 namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Runtime;
 
-public sealed partial class MissingObjectAnalyzerTests
+public sealed class MissingTableOrViewAnalyzerTests(ITestOutputHelper testOutputHelper)
+    : GlobalAnalyzerTestsBase<MissingTableOrViewAnalyzer>(testOutputHelper)
 {
     private const string SharedCodeForTables = """
                                                USE MyDb
@@ -19,6 +25,11 @@ public sealed partial class MissingObjectAnalyzerTests
                                                )
 
                                                """;
+
+    private static readonly Aj5044Settings Settings = new Aj5044SettingsRaw
+    {
+        IgnoredObjectNamePatterns = ["*.ignored.*"]
+    }.ToSettings();
 
     [Fact]
     public void WhenSimpleSelect_WhenTableExists_ThenOk()

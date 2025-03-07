@@ -1,4 +1,5 @@
 using DatabaseAnalyzer.Common.Extensions;
+using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
@@ -6,25 +7,26 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime.MissingObjectAnalyzers;
 
-internal sealed class MissingProcedureAnalyzer : AnalyzerBase
+public sealed class MissingProcedureAnalyzer : IGlobalAnalyzer
 {
-    public MissingProcedureAnalyzer(IAnalysisContext context, Aj5044Settings settings, IReadOnlyDictionary<string, DatabaseInformation> databasesByName) : base(context, settings, databasesByName)
-    {
-    }
+    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [SharedDiagnosticDefinitions.MissingObject];
 
-    public override void Analyze()
+    public void Analyze(IAnalysisContext context)
     {
-        var procedures = DatabasesByName
+        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5044Settings>();
+        var databasesByName = new DatabaseObjectExtractor(context.IssueReporter)
+            .Extract(context.Scripts, context.DefaultSchemaName);
+        var procedures = databasesByName
             .SelectMany(a => a.Value.SchemasByName.Values)
             .SelectMany(a => a.ProceduresByName.Values);
 
         foreach (var procedure in procedures)
         {
-            AnalyzeCalls(procedure);
+            AnalyzeCalls(context, settings, databasesByName, procedure);
         }
     }
 
-    private void AnalyzeCalls(ProcedureInformation callingProcedure)
+    private static void AnalyzeCalls(IAnalysisContext context, Aj5044Settings settings, IReadOnlyDictionary<string, DatabaseInformation> databasesByName, ProcedureInformation callingProcedure)
     {
         if (callingProcedure.CreationStatement.StatementList is null)
         {
@@ -33,11 +35,11 @@ internal sealed class MissingProcedureAnalyzer : AnalyzerBase
 
         foreach (var executeStatement in callingProcedure.CreationStatement.StatementList.GetChildren<ExecuteStatement>(recursive: true))
         {
-            AnalyzeCall(callingProcedure, executeStatement);
+            AnalyzeCall(context, settings, databasesByName, callingProcedure, executeStatement);
         }
     }
 
-    private void AnalyzeCall(ProcedureInformation callingProcedure, ExecuteStatement executeStatement)
+    private static void AnalyzeCall(IAnalysisContext context, Aj5044Settings settings, IReadOnlyDictionary<string, DatabaseInformation> databasesByName, ProcedureInformation callingProcedure, ExecuteStatement executeStatement)
     {
         if (executeStatement.ExecuteSpecification?.ExecutableEntity is not ExecutableProcedureReference executableProcedureReference)
         {
@@ -51,10 +53,10 @@ internal sealed class MissingProcedureAnalyzer : AnalyzerBase
         }
 
         var databaseName = procedureObjectName.DatabaseIdentifier?.Value.NullIfEmptyOrWhiteSpace() ?? callingProcedure.DatabaseName;
-        var schemaName = procedureObjectName.SchemaIdentifier?.Value.NullIfEmptyOrWhiteSpace() ?? Context.DefaultSchemaName;
+        var schemaName = procedureObjectName.SchemaIdentifier?.Value.NullIfEmptyOrWhiteSpace() ?? context.DefaultSchemaName;
         var procedureName = procedureObjectName.BaseIdentifier.Value;
 
-        var schema = DatabasesByName.GetValueOrDefault(databaseName)
+        var schema = databasesByName.GetValueOrDefault(databaseName)
             ?.SchemasByName.GetValueOrDefault(schemaName);
 
         var calledProcedure = schema?.ProceduresByName.GetValueOrDefault(procedureName)
@@ -65,12 +67,23 @@ internal sealed class MissingProcedureAnalyzer : AnalyzerBase
             return;
         }
 
-        var calledProcedureName = $"{databaseName}.{schemaName}.{procedureName}";
-        if (IsIgnored(calledProcedureName))
+        var fullStoredProcedureName = $"{databaseName}.{schemaName}.{procedureName}";
+        if (IsIgnored(settings, fullStoredProcedureName))
         {
             return;
         }
 
-        Context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, callingProcedure.RelativeScriptFilePath, callingProcedure.FullName, procedureObjectName.GetCodeRegion(), "procedure", calledProcedureName);
+        context.IssueReporter.Report(SharedDiagnosticDefinitions.MissingObject, databaseName, callingProcedure.RelativeScriptFilePath, callingProcedure.FullName, procedureObjectName.GetCodeRegion(),
+            "procedure", fullStoredProcedureName);
+    }
+
+    private static bool IsIgnored(Aj5044Settings settings, string fullObjectName)
+    {
+        if (settings.IgnoredObjectNamePatterns.Count == 0)
+        {
+            return false;
+        }
+
+        return settings.IgnoredObjectNamePatterns.Any(a => a.IsMatch(fullObjectName));
     }
 }

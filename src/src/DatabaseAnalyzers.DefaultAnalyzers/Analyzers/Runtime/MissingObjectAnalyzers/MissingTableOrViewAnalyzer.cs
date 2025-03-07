@@ -1,5 +1,6 @@
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.SqlParsing;
+using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
@@ -7,34 +8,36 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime.MissingObjectAnalyzers;
 
-internal sealed class MissingTableOrViewAnalyzer : AnalyzerBase
+public sealed class MissingTableOrViewAnalyzer : IGlobalAnalyzer
 {
-    public MissingTableOrViewAnalyzer(IAnalysisContext context, Aj5044Settings settings, IReadOnlyDictionary<string, DatabaseInformation> databasesByName) : base(context, settings, databasesByName)
-    {
-    }
+    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [SharedDiagnosticDefinitions.MissingObject];
 
-    public override void Analyze()
+    public void Analyze(IAnalysisContext context)
     {
-        foreach (var script in Context.Scripts)
+        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5044Settings>();
+        var databasesByName = new DatabaseObjectExtractor(context.IssueReporter)
+            .Extract(context.Scripts, context.DefaultSchemaName);
+
+        foreach (var script in context.Scripts)
         {
             foreach (var batch in script.ParsedScript.Batches)
             {
-                AnalyzeBatch(batch, script);
+                AnalyzeBatch(context, script, batch, databasesByName, settings);
             }
         }
     }
 
-    private void AnalyzeBatch(TSqlBatch batch, IScriptModel script)
+    private static void AnalyzeBatch(IAnalysisContext context, IScriptModel script, TSqlBatch batch, IReadOnlyDictionary<string, DatabaseInformation> databasesByName, Aj5044Settings settings)
     {
         foreach (var tableReference in batch.GetChildren<NamedTableReference>(recursive: true))
         {
-            AnalyzeTableReference(tableReference, script);
+            AnalyzeTableReference(context, script, tableReference, databasesByName, settings);
         }
     }
 
-    private void AnalyzeTableReference(NamedTableReference tableReference, IScriptModel script)
+    private static void AnalyzeTableReference(IAnalysisContext context, IScriptModel script, NamedTableReference tableReference, IReadOnlyDictionary<string, DatabaseInformation> databasesByName, Aj5044Settings settings)
     {
-        var tableResolver = new TableResolver(Context.IssueReporter, script.ParsedScript, script.RelativeScriptFilePath, script.ParentFragmentProvider, Context.DefaultSchemaName);
+        var tableResolver = new TableResolver(context.IssueReporter, script.ParsedScript, script.RelativeScriptFilePath, script.ParentFragmentProvider, context.DefaultSchemaName);
         var resolvedTable = tableResolver.Resolve(tableReference);
         if (resolvedTable is null)
         {
@@ -46,19 +49,24 @@ internal sealed class MissingTableOrViewAnalyzer : AnalyzerBase
             return;
         }
 
-        if (DoesTableOrViewExist(resolvedTable.DatabaseName, resolvedTable.SchemaName, resolvedTable.ObjectName))
+        if (DoesTableOrViewExist(resolvedTable.DatabaseName, resolvedTable.SchemaName, resolvedTable.ObjectName, databasesByName))
         {
             return;
         }
 
-        var fullObjectName = tableReference.TryGetFirstClassObjectName(Context, script);
+        if (IsIgnored(settings, resolvedTable))
+        {
+            return;
+        }
 
-        Context.IssueReporter.Report(DiagnosticDefinitions.Default, resolvedTable.DatabaseName, script.RelativeScriptFilePath, fullObjectName, tableReference.GetCodeRegion(), "table or view", resolvedTable.FullName);
+        var fullObjectName = tableReference.TryGetFirstClassObjectName(context, script);
+
+        context.IssueReporter.Report(SharedDiagnosticDefinitions.MissingObject, resolvedTable.DatabaseName, script.RelativeScriptFilePath, fullObjectName, tableReference.GetCodeRegion(), "table or view", resolvedTable.FullName);
     }
 
-    private bool DoesTableOrViewExist(string databaseName, string schemaName, string tableOrViewName)
+    private static bool DoesTableOrViewExist(string databaseName, string schemaName, string tableOrViewName, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
     {
-        var schema = DatabasesByName
+        var schema = databasesByName
             .GetValueOrDefault(databaseName)
             ?.SchemasByName.GetValueOrDefault(schemaName);
 
@@ -69,5 +77,16 @@ internal sealed class MissingTableOrViewAnalyzer : AnalyzerBase
 
         return schema.TablesByName.ContainsKey(tableOrViewName)
                || schema.ViewsByName.ContainsKey(tableOrViewName);
+    }
+
+    private static bool IsIgnored(Aj5044Settings settings, TableOrViewReference reference)
+    {
+        if (settings.IgnoredObjectNamePatterns.Count == 0)
+        {
+            return false;
+        }
+
+        var fullObjectName = $"{reference.DatabaseName}.{reference.SchemaName}.{reference.ObjectName}";
+        return settings.IgnoredObjectNamePatterns.Any(a => a.IsMatch(fullObjectName));
     }
 }

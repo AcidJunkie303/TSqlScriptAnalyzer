@@ -1,6 +1,12 @@
+using DatabaseAnalyzer.Testing;
+using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime.MissingObjectAnalyzers;
+using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
+using Xunit.Abstractions;
+
 namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Runtime;
 
-public sealed partial class MissingObjectAnalyzerTests
+public sealed class MissingProcedureAnalyzerTests(ITestOutputHelper testOutputHelper)
+    : GlobalAnalyzerTestsBase<MissingProcedureAnalyzer>(testOutputHelper)
 {
     private const string SharedCodeForProcedures = """
                                                    USE DB1
@@ -9,6 +15,11 @@ public sealed partial class MissingObjectAnalyzerTests
                                                    CREATE PROCEDURE  schema1.P1 AS BEGIN PRINT 303 END
                                                    GO
                                                    """;
+
+    private static readonly Aj5044Settings Settings = new Aj5044SettingsRaw
+    {
+        IgnoredObjectNamePatterns = ["*.ignored.*"]
+    }.ToSettings();
 
     [Fact]
     public void WhenStoredProcedureExists_ThenOk()
