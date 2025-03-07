@@ -6,7 +6,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime;
 
 public sealed class SelectStarAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.SelectStar, DiagnosticDefinitions.SelectStarForExistenceCheck];
+    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.SelectStar, DiagnosticDefinitions.SelectStarForExistenceCheck];
 
     public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {

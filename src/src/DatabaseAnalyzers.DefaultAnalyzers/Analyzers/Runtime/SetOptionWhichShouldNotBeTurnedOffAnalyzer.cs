@@ -13,7 +13,7 @@ public sealed class SetOptionWhichShouldNotBeTurnedOffAnalyzer : IScriptAnalyzer
         KeyValuePair.Create(SetOptions.ArithAbort, "ARITHABORT")
     }.ToImmutableArray();
 
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
+    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
     public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {

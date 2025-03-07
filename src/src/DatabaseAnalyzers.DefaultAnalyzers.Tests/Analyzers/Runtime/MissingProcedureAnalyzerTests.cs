@@ -5,16 +5,16 @@ using Xunit.Abstractions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Runtime;
 
-public sealed class MissingObjectAnalyzerTests(ITestOutputHelper testOutputHelper)
-    : GlobalAnalyzerTestsBase<MissingObjectAnalyzer>(testOutputHelper)
+public sealed class MissingProcedureAnalyzerTests(ITestOutputHelper testOutputHelper)
+    : GlobalAnalyzerTestsBase<MissingProcedureAnalyzer>(testOutputHelper)
 {
-    private const string SharedCode = """
-                                      USE DB1
-                                      GO
+    private const string SharedCodeForProcedures = """
+                                                   USE DB1
+                                                   GO
 
-                                      CREATE PROCEDURE  schema1.P1 AS BEGIN PRINT 303 END
-                                      GO
-                                      """;
+                                                   CREATE PROCEDURE  schema1.P1 AS BEGIN PRINT 303 END
+                                                   GO
+                                                   """;
 
     private static readonly Aj5044Settings Settings = new Aj5044SettingsRaw
     {
@@ -34,7 +34,7 @@ public sealed class MissingObjectAnalyzerTests(ITestOutputHelper testOutputHelpe
                             END
                             """;
 
-        Verify(Settings, SharedCode, code);
+        Verify(Settings, SharedCodeForProcedures, code);
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public sealed class MissingObjectAnalyzerTests(ITestOutputHelper testOutputHelpe
                             END
                             """;
 
-        Verify(Settings, code, SharedCode);
+        Verify(Settings, code, SharedCodeForProcedures);
     }
 
     [Fact]
@@ -66,7 +66,7 @@ public sealed class MissingObjectAnalyzerTests(ITestOutputHelper testOutputHelpe
                             END
                             """;
 
-        Verify(Settings, code, SharedCode);
+        Verify(Settings, code, SharedCodeForProcedures);
     }
 
     [Fact]
@@ -82,7 +82,7 @@ public sealed class MissingObjectAnalyzerTests(ITestOutputHelper testOutputHelpe
                             END
                             """;
 
-        Verify(Settings, code, SharedCode);
+        Verify(Settings, code, SharedCodeForProcedures);
     }
 
     [Fact]
@@ -98,7 +98,7 @@ public sealed class MissingObjectAnalyzerTests(ITestOutputHelper testOutputHelpe
                             END
                             """;
 
-        Verify(Settings, code, SharedCode);
+        Verify(Settings, code, SharedCodeForProcedures);
     }
 
     [Fact]
@@ -117,6 +117,6 @@ public sealed class MissingObjectAnalyzerTests(ITestOutputHelper testOutputHelpe
                             END
                             """;
 
-        Verify(Settings, code, SharedCode);
+        Verify(Settings, code, SharedCodeForProcedures);
     }
 }

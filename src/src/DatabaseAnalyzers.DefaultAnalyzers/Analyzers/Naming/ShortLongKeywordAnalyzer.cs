@@ -18,7 +18,7 @@ public sealed class ShortLongKeywordAnalyzer : IScriptAnalyzer
         KeyValuePair.Create((TSqlTokenType.Transaction, Aj5048KeywordNotationType.Short), "Tran")
     }.ToFrozenDictionary();
 
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics => [DiagnosticDefinitions.Default];
+    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
     public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
