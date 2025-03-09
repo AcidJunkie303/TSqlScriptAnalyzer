@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using DatabaseAnalyzer.Core;
 
@@ -5,10 +6,12 @@ namespace DatabaseAnalyzer.App.Reporting.Json;
 
 internal sealed class JsonFullReportRenderer : IReportRenderer
 {
+    [SuppressMessage("Major Code Smell", "S6354:Use a testable date/time provider")]
     public Task<string> RenderReportAsync(AnalysisResult analysisResult)
     {
         var report = new
         {
+            CreatedAt = DateTimeOffset.UtcNow,
             analysisResult.DisabledDiagnostics,
             Issues = analysisResult.Issues
                 .OrderBy(static a => a.RelativeScriptFilePath, StringComparer.OrdinalIgnoreCase)

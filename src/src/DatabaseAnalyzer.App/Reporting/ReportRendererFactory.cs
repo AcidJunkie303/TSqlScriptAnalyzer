@@ -10,7 +10,7 @@ internal static class ReportRendererFactory
         {
             ReportType.Text        => new TextReportRenderer(),
             ReportType.Json        => new JsonFullReportRenderer(),
-            ReportType.JsonSummary => new JsonMiniReportRenderer(),
+            ReportType.JsonSummary => new JsonSummaryReportRenderer(),
             ReportType.Html        => new HtmlReportRenderer(reportTheme),
             _                      => throw new ArgumentOutOfRangeException(nameof(analysisResult), analysisResult, message: null)
         };
