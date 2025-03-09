@@ -132,10 +132,6 @@
                 "Pattern": "\\A[A-Z][A-Za-z0-1]+",
                 "Description": "Parameter names must start with a capital letter followed by characters or numbers only."
             },
-            "PrimaryKeyConstraintName": {
-                "Pattern": "\\APK_",
-                "Description": "Primary key constraints must start with 'PK_'."
-            },
             "ProcedureName": {
                 "Pattern": "\\A[A-Z][A-Za-z0-1]+",
                 "Description": "Procedure names must start with a capital letter followed by characters or numbers only"

@@ -27,7 +27,6 @@ public sealed class Aj5030SettingsRaw : IRawSettings<Aj5030Settings>
         ToPatternEntry(ColumnName),
         ToPatternEntry(FunctionName),
         ToPatternEntry(ParameterName),
-        ToPatternEntry(PrimaryKeyConstraintName),
         ToPatternEntry(ProcedureName),
         ToPatternEntry(TableName),
         ToPatternEntry(TempTableName),
@@ -57,8 +56,6 @@ public sealed record Aj5030Settings(
     Aj5030Settings.PatternEntry FunctionName,
     [property: Description("The naming policy for parameters.")]
     Aj5030Settings.PatternEntry ParameterName,
-    [property: Description("The naming policy for primary key constraints.")]
-    Aj5030Settings.PatternEntry PrimaryKeyConstraintName,
     [property: Description("The naming policy for procedures.")]
     Aj5030Settings.PatternEntry ProcedureName,
     [property: Description("The naming policy for tables.")]
@@ -75,7 +72,6 @@ public sealed record Aj5030Settings(
 {
     public static Aj5030Settings Default { get; } = new
     (
-        new PatternEntry(Aj5030SettingsRaw.AlwaysMatchRegex, string.Empty),
         new PatternEntry(Aj5030SettingsRaw.AlwaysMatchRegex, string.Empty),
         new PatternEntry(Aj5030SettingsRaw.AlwaysMatchRegex, string.Empty),
         new PatternEntry(Aj5030SettingsRaw.AlwaysMatchRegex, string.Empty),
