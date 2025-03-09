@@ -140,29 +140,6 @@ public sealed class NamingAnalyzerTests(ITestOutputHelper testOutputHelper)
     }
 
     [Theory]
-    [InlineData("PK_Table1")]
-    [InlineData("▶️AJ5030💛script_0.sql💛MyDb.dbo.Table1💛primary key constraint💛PK💛DDD✅PK◀️")]
-    [InlineData("▶️AJ5030💛script_0.sql💛MyDb.dbo.Table1💛primary key constraint💛pk_Table1💛DDD✅pk_Table1◀️")]
-    public void PrimaryKeyConstraintName_Theory(string primaryKeyIndexName)
-    {
-        //
-        var code = $"""
-                    USE MyDb
-                    GO
-
-                    CREATE TABLE Table1
-                    (
-                        Column1 INT IDENTITY(1, 1),
-                        CONSTRAINT {primaryKeyIndexName} PRIMARY KEY CLUSTERED
-                        (
-                            Column1 ASC
-                        )
-                    );
-                    """;
-        Verify(Settings, code);
-    }
-
-    [Theory]
     [InlineData("@Variable303")]
     [InlineData("▶️AJ5030💛script_0.sql💛💛variable💛@Var303💛III✅@Var303◀️")]
     [InlineData("▶️AJ5030💛script_0.sql💛💛variable💛@variable303💛III✅@variable303◀️")]

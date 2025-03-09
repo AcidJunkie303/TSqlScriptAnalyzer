@@ -15,7 +15,6 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
 
         var tables = script.ParsedScript.GetTopLevelDescendantsOfType<CreateTableStatement>(script.ParentFragmentProvider);
         var triggers = script.ParsedScript.GetTopLevelDescendantsOfType<TriggerStatementBody>(script.ParentFragmentProvider);
-        var primaryKeyConstraints = script.ParsedScript.GetTopLevelDescendantsOfType<UniqueConstraintDefinition>(script.ParentFragmentProvider).Where(static a => a.IsPrimaryKey);
         var variables = script.ParsedScript.GetTopLevelDescendantsOfType<DeclareVariableStatement>(script.ParentFragmentProvider);
         var views = script.ParsedScript.GetTopLevelDescendantsOfType<ViewStatementBody>(script.ParentFragmentProvider);
         var functions = script.ParsedScript
@@ -35,7 +34,6 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
         AnalyzeVariables(context, script, settings, variables);
         AnalyzeTables(context, script, settings, tables);
         AnalyzeTriggers(context, script, settings, triggers);
-        AnalyzePrimaryKeyConstraints(context, script, settings, primaryKeyConstraints);
         AnalyzeProcedures(context, script, settings, procedures);
         AnalyzeFunctions(context, script, settings, functions);
         AnalyzeParameters(context, script, settings, parameters);
@@ -75,18 +73,6 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
         static string ProcedureNameGetter(ProcedureStatementBody a) => a.ProcedureReference.Name.BaseIdentifier.Value;
         static TSqlFragment FragmentToReportGetter(ProcedureStatementBody a) => a.ProcedureReference.Name.BaseIdentifier;
         static string ProcedureNameToReportGetter(ProcedureStatementBody a) => a.ProcedureReference.Name.BaseIdentifier.Value;
-    }
-
-    private static void AnalyzePrimaryKeyConstraints(IAnalysisContext context, IScriptModel script, Aj5030Settings settings, IEnumerable<UniqueConstraintDefinition> primaryKeyConstraints)
-    {
-        foreach (var constraint in primaryKeyConstraints)
-        {
-            Analyze(context, script, constraint, "primary key constraint", settings.PrimaryKeyConstraintName, PrimaryKeyConstraintNameGetter, FragmentToReportGetter, PrimaryKeyConstraintNameToReportGetter);
-        }
-
-        static string? PrimaryKeyConstraintNameGetter(UniqueConstraintDefinition a) => a.ConstraintIdentifier?.Value;
-        static TSqlFragment FragmentToReportGetter(UniqueConstraintDefinition a) => a.ConstraintIdentifier;
-        static string? PrimaryKeyConstraintNameToReportGetter(UniqueConstraintDefinition a) => a.ConstraintIdentifier?.Value;
     }
 
     private static void AnalyzeTriggers(IAnalysisContext context, IScriptModel script, Aj5030Settings settings, IEnumerable<TriggerStatementBody> tiggers)
