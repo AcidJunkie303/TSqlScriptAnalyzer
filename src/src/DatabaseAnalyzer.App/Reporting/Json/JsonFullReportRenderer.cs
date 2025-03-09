@@ -19,6 +19,7 @@ internal sealed class JsonFullReportRenderer : IReportRenderer
                 .Select(static a => new
                 {
                     a.DiagnosticDefinition.DiagnosticId,
+                    a.DiagnosticDefinition.Title,
                     a.Message,
                     a.RelativeScriptFilePath,
                     a.CodeRegion,
