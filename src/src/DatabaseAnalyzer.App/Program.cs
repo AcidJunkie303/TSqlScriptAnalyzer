@@ -1,4 +1,5 @@
 ﻿using System.CommandLine;
+using System.Diagnostics.CodeAnalysis;
 using DatabaseAnalyzer.App.Reporting;
 using DatabaseAnalyzer.App.Reporting.Html;
 using DatabaseAnalyzer.App.Reporting.Json;
@@ -12,6 +13,7 @@ namespace DatabaseAnalyzer.App;
 
 internal static class Program
 {
+    [SuppressMessage("Design", "MA0051:Method is too long")]
     private static int Main(string[] args)
     {
         var settingsFileOption = new Option<string>(
@@ -33,6 +35,9 @@ internal static class Program
         var jsonFileReportOption = new Option<string?>(
             ["-j", "--json-report-file-path"],
             "The path of file to render the json report to.");
+        var jsonSummaryReportFilePathOption = new Option<string?>(
+            ["-s", "--json-summary-report-file-path"],
+            "The path of file to render the json summary report to.");
         var textFileReportFilePathOption = new Option<string?>(
             ["-t", "--text-report-file-path"],
             "The path of file to render the text report to.");
@@ -51,6 +56,7 @@ internal static class Program
         analyzeCommand.AddOption(htmlFileReportOption);
         analyzeCommand.AddOption(htmlReportThemeOptions);
         analyzeCommand.AddOption(jsonFileReportOption);
+        analyzeCommand.AddOption(jsonSummaryReportFilePathOption);
         analyzeCommand.AddOption(textFileReportFilePathOption);
         analyzeCommand.AddOption(logFilePathOption);
         analyzeCommand.AddOption(minimumLogLevelOption);
@@ -68,12 +74,24 @@ internal static class Program
             var filePath = context.ParseResult.GetValueForOption(settingsFileOption)!;
             var htmlReportFilePath = context.ParseResult.GetValueForOption(htmlFileReportOption);
             var jsonReportFilePath = context.ParseResult.GetValueForOption(jsonFileReportOption);
+            var jsonSummaryReportFilePath = context.ParseResult.GetValueForOption(jsonSummaryReportFilePathOption);
             var textReportFilePath = context.ParseResult.GetValueForOption(textFileReportFilePathOption);
             var logFilePath = context.ParseResult.GetValueForOption(logFilePathOption);
             var minimumLogLevel = context.ParseResult.GetValueForOption(minimumLogLevelOption);
             var htmlReportTheme = context.ParseResult.GetValueForOption(htmlReportThemeOptions);
 
-            var options = new AnalyzeOptions(filePath, consoleReportTypes, htmlReportFilePath, jsonReportFilePath, textReportFilePath, logFilePath, minimumLogLevel, htmlReportTheme);
+            var options = new AnalyzeOptions
+            (
+                ProjectFilePath: filePath,
+                ConsoleReportTypes: consoleReportTypes,
+                HtmlReportFilePath: htmlReportFilePath,
+                JsonReportFilePath: jsonReportFilePath,
+                JsonSummaryReportFilePath: jsonSummaryReportFilePath,
+                TextReportFilePath: textReportFilePath,
+                LogFilePath: logFilePath,
+                MinimumLogLevel: minimumLogLevel,
+                HtmlReportTheme: htmlReportTheme
+            );
             context.ExitCode = AnalyzeAsync(options).GetAwaiter().GetResult();
         });
 
@@ -109,6 +127,11 @@ internal static class Program
                 await ReportFileRenderer.RenderAsync(new JsonFullReportRenderer(), analysisResult, options.JsonReportFilePath);
             }
 
+            if (!options.JsonSummaryReportFilePath.IsNullOrWhiteSpace())
+            {
+                await ReportFileRenderer.RenderAsync(new JsonSummaryReportRenderer(), analysisResult, options.JsonSummaryReportFilePath);
+            }
+
             if (!options.TextReportFilePath.IsNullOrWhiteSpace())
             {
                 await ReportFileRenderer.RenderAsync(new TextReportRenderer(), analysisResult, options.TextReportFilePath);
@@ -135,6 +158,7 @@ internal static class Program
         IReadOnlyCollection<ReportType> ConsoleReportTypes,
         string? HtmlReportFilePath,
         string? JsonReportFilePath,
+        string? JsonSummaryReportFilePath,
         string? TextReportFilePath,
         string? LogFilePath,
         LogEventLevel? MinimumLogLevel,
