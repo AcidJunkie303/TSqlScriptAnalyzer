@@ -17,7 +17,10 @@ public sealed class TableExtractor : Extractor<TableInformation>
         var visitor = new ObjectExtractorVisitor<CreateTableStatement>(DefaultSchemaName);
         script.ParsedScript.AcceptChildren(visitor);
 
-        return visitor.Objects.ConvertAll(a => GetTable(a.Object, a.DatabaseName, script));
+        return visitor.Objects
+            .Select(a => GetTable(a.Object, a.DatabaseName, script))
+            .Where(a => !a.ObjectName.IsTempTableName())
+            .ToList();
     }
 
     private TableInformation GetTable(CreateTableStatement statement, string? databaseName, IScriptModel script)
