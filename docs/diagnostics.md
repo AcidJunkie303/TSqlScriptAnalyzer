@@ -44,7 +44,7 @@
 | [AJ5034](diagnostics/AJ5034.md) | Set options don't need to be separated by GO                            | Warning      |
 | [AJ5035](diagnostics/AJ5035.md) | Dead Code                                                               | Warning      |
 | [AJ5036](diagnostics/AJ5036.md) | Unreferenced Label                                                      | Warning      |
-| [AJ5037](diagnostics/AJ5037.md) | Object creation without schema name                                     | Formatting   |
+| [AJ5037](diagnostics/AJ5037.md) | Object creation without schema name                                     | Warning      |
 | [AJ5038](diagnostics/AJ5038.md) | Object name quoting                                                     | Formatting   |
 | [AJ5039](diagnostics/AJ5039.md) | Nameless constraints                                                    | Formatting   |
 | [AJ5040](diagnostics/AJ5040.md) | Usage of banned function                                                | Warning      |
