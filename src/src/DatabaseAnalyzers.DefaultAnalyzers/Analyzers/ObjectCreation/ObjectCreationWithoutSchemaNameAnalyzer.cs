@@ -81,7 +81,7 @@ public sealed class ObjectCreationWithoutSchemaNameAnalyzer : IScriptAnalyzer
         public static DiagnosticDefinition Default { get; } = new
         (
             "AJ5037",
-            IssueType.Formatting,
+            IssueType.Warning,
             "Object creation without schema name",
             "The creation statement of the {0} `{1}` doesn't use a schema name.",
             ["Object type name", "Object name"],
