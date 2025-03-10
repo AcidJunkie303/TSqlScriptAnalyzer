@@ -2,8 +2,9 @@
 @using System.Web
 @using DatabaseAnalyzer.App.Extensions
 @using DatabaseAnalyzer.App.Reporting.Html
+@using DatabaseAnalyzer.Core
 @using Microsoft.AspNetCore.Html
-@inherits Microsoft.AspNetCore.Mvc.Razor.RazorPage<DatabaseAnalyzer.Core.AnalysisResult>
+@inherits Microsoft.AspNetCore.Mvc.Razor.RazorPage<AnalysisResult>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head title="Database Analysis Result">
 
@@ -119,6 +120,54 @@
     </table>
 </div>
 
+<h1>Top 5 Issues</h1>
+<div class="overview">
+    @{
+        var top5IssueTypes = GetTop5IssueTypes(Model);
+    }
+    @if (top5IssueTypes.Count == 0)
+    {
+        <i>None</i>
+    }
+    else
+    {
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th>Issue Id</th>
+                <th>Count</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var (diagnosticId, count) in top5IssueTypes)
+            {
+                var url = Model.DiagnosticDefinitionsById.GetValueOrDefault(diagnosticId);
+                <tr>
+                    <td>
+                        @if (url is null)
+                        {
+                            <span style="margin-left: 5px" title="No help link available">@diagnosticId</span>
+                        }
+                        else
+                        {
+                            <a href="https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/@(diagnosticId).md"
+                               style="margin-left: 5px"
+                               target="_blank">@diagnosticId</a>
+                        }
+                    </td>
+                    <td>
+                        @count
+                    </td>
+                </tr>
+            }
+
+            </tbody>
+        </table>
+    }
+
+
+</div>
+
 <h1>Issues</h1>
 @if (Model.Issues.Count == 0)
 {
@@ -211,6 +260,15 @@ else
 
 @functions
 {
+    static IReadOnlyCollection<(string DiagnosticId, int Count)> GetTop5IssueTypes(AnalysisResult analysisResult)
+        => analysisResult.Issues
+            .GroupBy(a => a.DiagnosticDefinition.DiagnosticId, StringComparer.OrdinalIgnoreCase)
+            .Select(a => (DiagnosticId: a.Key, Count: a.Count()))
+            .OrderByDescending(a => a.Count)
+            .ThenBy(a=>a.DiagnosticId, StringComparer.OrdinalIgnoreCase)
+            .Take(5)
+            .ToList();
+
     static readonly Regex CodeBlockFinder = new("`(?<content>[^`]*)`", RegexOptions.Compiled | RegexOptions.NonBacktracking, TimeSpan.FromMilliseconds(100));
 
     string MakeFullPath(string relativeFilePath) => System.IO.Path.Combine(Model.ScriptsRootDirectoryPath, relativeFilePath);
