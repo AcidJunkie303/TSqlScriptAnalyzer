@@ -70,7 +70,7 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzer : IScriptAnalyzer
 
     private static void AnalyzeEndToken(IAnalysisContext context, IScriptModel script, TSqlParserToken endToken, int tokenIndex)
     {
-        if (IsNextOrNextAfterNextTokenEndOfFileToken())
+        if (IsNextTokenOfAnyType(TSqlTokenType.Else, TSqlTokenType.RightParenthesis, TSqlTokenType.EndOfFile))
         {
             return;
         }
@@ -103,13 +103,19 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzer : IScriptAnalyzer
 
         bool IsMissingEmptyLineAfter() => GetNewLineCountAfterToken() < 2;
 
-        bool IsNextOrNextAfterNextTokenEndOfFileToken()
+        bool IsNextTokenOfAnyType(params TSqlTokenType[] types)
         {
             var tokenAfterSkipTokens = script.ParsedScript.ScriptTokenStream
                 .Skip(tokenIndex + 1)
                 .SkipWhile(IsSkipToken)
                 .FirstOrDefault();
-            return tokenAfterSkipTokens is not null && tokenAfterSkipTokens.TokenType == TSqlTokenType.EndOfFile;
+
+            if (tokenAfterSkipTokens is null)
+            {
+                return false;
+            }
+
+            return types.Any(type => tokenAfterSkipTokens.TokenType == type);
         }
 
         int GetNewLineCountAfterToken()
@@ -119,7 +125,7 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzer : IScriptAnalyzer
                 .Sum(a => a.Text.Count(c => c == '\n'));
     }
 
-    private static bool IsIgnoredStatement(TSqlFragment? fragment) => fragment is SearchedCaseExpression;
+    private static bool IsIgnoredStatement(TSqlFragment? fragment) => fragment is SearchedCaseExpression or SimpleCaseExpression;
 
     private static bool IsSkipToken(TSqlParserToken token)
         => token.TokenType is TSqlTokenType.WhiteSpace or TSqlTokenType.SingleLineComment or TSqlTokenType.MultilineComment or TSqlTokenType.Semicolon;

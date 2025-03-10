@@ -26,6 +26,28 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzerTests(ITestOutputHelper
     }
 
     [Fact]
+    public void WithIfElse_WhenNoEmptyLineAfterFirstEnd_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            IF (1=1)
+                            BEGIN
+                                PRINT 'tb'
+                            END
+                            ELSE
+                            BEGIN
+                                PRINT 303
+                            END
+
+
+                            """;
+
+        Verify(code);
+    }
+
+    [Fact]
     public void WhenEmptyLineAfterEndCatchBlock_ThenOk()
     {
         const string code = """
@@ -174,6 +196,30 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzerTests(ITestOutputHelper
                                     THROW;
                                 END CATCH
                             END
+
+                            """;
+
+        Verify(code);
+    }
+
+    [Fact]
+    public void WhenEndDirectlyAfterClosingParenthesis_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            DECLARE @value NVARCHAR(max)
+
+                            if (1=1)
+                            BEGIN
+                                DECLARE @a int = (
+                                    CASE @value
+                                    WHEN 'a' THEN 1
+                                    WHEN 'b' THEN 2
+                                    ELSE 2 END)
+                            END
+
 
                             """;
 
