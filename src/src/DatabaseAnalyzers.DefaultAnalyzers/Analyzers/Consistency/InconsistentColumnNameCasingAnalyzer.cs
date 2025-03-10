@@ -1,6 +1,7 @@
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Consistency;
 
@@ -10,10 +11,13 @@ public sealed class InconsistentColumnNameCasingAnalyzer : IGlobalAnalyzer
 
     public void Analyze(IAnalysisContext context)
     {
+        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5055Settings>();
+
         var columnsAndScriptsByColumnName = new DatabaseObjectExtractor(context.IssueReporter)
             .Extract(context.Scripts, context.DefaultSchemaName)
             .SelectMany(static a => a.Value.SchemasByName)
             .SelectMany(static a => a.Value.TablesByName.Values.Select(x => (Script: x.ScriptModel, Table: x)))
+            .Where(a => !settings.ExcludedDatabaseNames.Contains(a.Table.DatabaseName))
             .SelectMany(static a => a.Table.Columns.Select(x => (a.Script, a.Table, Column: x)))
             .GroupBy(static a => a.Column.ObjectName, StringComparer.OrdinalIgnoreCase)
             .Select(a => (ColumnName: a.Key, ColumnsData: a.ToList()));

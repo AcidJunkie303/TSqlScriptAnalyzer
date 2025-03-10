@@ -1,5 +1,6 @@
 using DatabaseAnalyzer.Testing;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Consistency;
+using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using Xunit.Abstractions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Consistency;
@@ -7,6 +8,8 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Consistency;
 public sealed class InconsistentColumnNameCasingAnalyzerTests(ITestOutputHelper testOutputHelper)
     : GlobalAnalyzerTestsBase<InconsistentColumnNameCasingAnalyzer>(testOutputHelper)
 {
+    private static readonly Aj5055Settings Settings = new Aj5055SettingsRaw { ExcludedDatabaseNames = ["IgnoredDb"] }.ToSettings();
+
     [Fact]
     public void WhenColumnHasSameCasing_ThenOk()
     {
@@ -25,7 +28,7 @@ public sealed class InconsistentColumnNameCasingAnalyzerTests(ITestOutputHelper 
                                 Column1     BIGINT
                             )
                             """;
-        Verify(code);
+        Verify(Settings, code);
     }
 
     [Fact]
@@ -37,16 +40,18 @@ public sealed class InconsistentColumnNameCasingAnalyzerTests(ITestOutputHelper 
 
                             CREATE TABLE Table1
                             (
-                                ▶️AJ5055💛script_0.sql💛MyDb.dbo.Table1💛Column1💛COLUMN1, Column1💛MyDb.dbo.Table1.Column1, MyDb.dbo.Table2.COLUMN1✅Column1  INT◀️
+                                ▶️AJ5055💛script_0.sql💛MyDb.dbo.Table1💛Column1💛COLUMN1, Column1💛MyDb.dbo.Table1.Column1, OtherDatabase.dbo.Table2.COLUMN1✅Column1  INT◀️
                             )
                             GO
+
+                            USE OtherDatabase -- other DB
 
                             CREATE TABLE Table2
                             (
                                 COLUMN1  INT
                             )
                             """;
-        Verify(code);
+        Verify(Settings, code);
     }
 
     [Fact]
@@ -72,6 +77,30 @@ public sealed class InconsistentColumnNameCasingAnalyzerTests(ITestOutputHelper 
                                 CoLuMn1  INT
                             )
                             """;
-        Verify(code);
+        Verify(Settings, code);
+    }
+
+    [Fact]
+    public void WhenTreeColumnHasDifferentCasing_WhenDatabaseIgnored_ThenOk()
+    {
+        const string code = """
+                            USE AAA
+                            GO
+
+                            CREATE TABLE Table1
+                            (
+                                Column1     INT
+                            )
+                            GO
+
+                            USE IgnoredDb -- DB is ignored
+                            GO
+
+                            CREATE TABLE Table2
+                            (
+                                CoLuMn1     BIGINT
+                            )
+                            """;
+        Verify(Settings, code);
     }
 }
