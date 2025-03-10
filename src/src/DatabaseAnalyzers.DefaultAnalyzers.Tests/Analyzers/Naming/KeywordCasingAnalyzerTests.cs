@@ -11,6 +11,7 @@ public sealed class KeywordCasingAnalyzerTests(ITestOutputHelper testOutputHelpe
     : ScriptAnalyzerTestsBase<KeywordCasingAnalyzer>(testOutputHelper)
 {
     [Theory]
+    [InlineData(KeywordNamingPolicy.UpperCase, "PRINT 99999999999999999999999999.99")]
     [InlineData(KeywordNamingPolicy.UpperCase, "CHECKPOINT;")]
     [InlineData(KeywordNamingPolicy.LowerCase, "checkpoint;")]
     [InlineData(KeywordNamingPolicy.CamelCase, "checkPoint;")]
@@ -19,6 +20,7 @@ public sealed class KeywordCasingAnalyzerTests(ITestOutputHelper testOutputHelpe
     [InlineData(KeywordNamingPolicy.LowerCase, "▶️AJ5056💛script_0.sql💛💛ChEcKpOiNt💛checkpoint💛LowerCase✅ChEcKpOiNt◀️;")]
     [InlineData(KeywordNamingPolicy.CamelCase, "▶️AJ5056💛script_0.sql💛💛ChEcKpOiNt💛checkPoint💛CamelCase✅ChEcKpOiNt◀️;")]
     [InlineData(KeywordNamingPolicy.PascalCase, "▶️AJ5056💛script_0.sql💛💛ChEcKpOiNt💛CheckPoint💛PascalCase✅ChEcKpOiNt◀️;")]
+    [InlineData(KeywordNamingPolicy.UpperCase, "SET ▶️AJ5056💛script_0.sql💛💛identity_insert💛IDENTITY_INSERT💛UpperCase✅identity_insert◀️ Table1 ON")]
     public void Theory(object policy, string code)
     {
         var settings = new Aj5056Settings((KeywordNamingPolicy) policy);
