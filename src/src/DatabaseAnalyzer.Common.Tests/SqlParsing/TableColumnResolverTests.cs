@@ -1,9 +1,5 @@
-using DatabaseAnalyzer.Common.Extensions;
-using DatabaseAnalyzer.Common.Models;
 using DatabaseAnalyzer.Common.SqlParsing;
 using DatabaseAnalyzer.Common.Tests.Fakes;
-using DatabaseAnalyzer.Contracts;
-using DatabaseAnalyzer.Testing;
 using FluentAssertions;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 using Xunit.Abstractions;
@@ -12,8 +8,12 @@ namespace DatabaseAnalyzer.Common.Tests.SqlParsing;
 
 // TODO: CTEs
 
-public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
+public sealed class TableColumnResolverTests : ResolverTestBase
 {
+    public TableColumnResolverTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+    {
+    }
+
     [Fact]
     public void WhenDelete_WithFrom_WithSingleTable_WithFilteringInWhereClause_WithoutAlias()
     {
@@ -27,7 +27,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             """;
 
         // arrange
-        var (script, columnReference) = CreateScript(code);
+        var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
         var sut = new TableColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
@@ -54,7 +54,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             """;
 
         // arrange
-        var (script, columnReference) = CreateScript(code);
+        var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
         var sut = new TableColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
@@ -82,7 +82,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             """;
 
         // arrange
-        var (script, columnReference) = CreateScript(code);
+        var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
         var sut = new TableColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
@@ -112,7 +112,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             """;
 
         // arrange
-        var (script, columnReference) = CreateScript(code);
+        var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
         var sut = new TableColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
@@ -143,7 +143,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             """;
 
         // arrange
-        var (script, columnReference) = CreateScript(code);
+        var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var sut = new TableColumnResolver(new FakeIssueReporter(), script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
@@ -170,7 +170,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             """;
 
         // arrange
-        var (script, columnReference) = CreateScript(code);
+        var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
         var sut = new TableColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
@@ -198,7 +198,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             """;
 
         // arrange
-        var (script, columnReference) = CreateScript(code);
+        var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
         var sut = new TableColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
@@ -229,7 +229,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             """;
 
         // arrange
-        var (script, columnReference) = CreateScript(code);
+        var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
         var sut = new TableColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
@@ -262,7 +262,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             """;
 
         // arrange
-        var (script, columnReference) = CreateScript(code);
+        var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
         var sut = new TableColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
@@ -293,7 +293,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             """;
 
         // arrange
-        var (script, columnReference) = CreateScript(code);
+        var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
         var sut = new TableColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
@@ -322,7 +322,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             """;
 
         // arrange
-        var (script, columnReference) = CreateScript(code);
+        var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
         var sut = new TableColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
@@ -350,7 +350,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             """;
 
         // arrange
-        var (script, columnReference) = CreateScript(code);
+        var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
         var sut = new TableColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
@@ -379,7 +379,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             """;
 
         // arrange
-        var (script, columnReference) = CreateScript(code);
+        var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
         var sut = new TableColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
@@ -409,7 +409,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             """;
 
         // arrange
-        var (script, columnReference) = CreateScript(code);
+        var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
         var sut = new TableColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
@@ -439,7 +439,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             """;
 
         // arrange
-        var (script, columnReference) = CreateScript(code);
+        var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
         var sut = new TableColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
@@ -473,7 +473,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             """;
 
         // arrange
-        var (script, columnReference) = CreateScript(code);
+        var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
         var sut = new TableColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
@@ -509,7 +509,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             """;
 
         // arrange
-        var (script, columnReference) = CreateScript(code);
+        var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
         var sut = new TableColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
@@ -544,7 +544,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             """;
 
         // arrange
-        var (script, columnReference) = CreateScript(code);
+        var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
         var sut = new TableColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
@@ -579,7 +579,7 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
                             """;
 
         // arrange
-        var (script, columnReference) = CreateScript(code);
+        var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
         var sut = new TableColumnResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
@@ -592,57 +592,5 @@ public sealed class TableColumnResolverTests(ITestOutputHelper testOutputHelper)
         column.SchemaName.Should().Be("dbo");
         column.TableName.Should().Be("Table1");
         column.ColumnName.Should().Be("Status");
-    }
-
-    private (ScriptModel ScriptModel, ColumnReferenceExpression ColumnReference) CreateScript(string code)
-    {
-        var (markupFreeCode, codeRegion) = RemoveMarkupAndGetCodeRegion(code);
-        var parsedScript = markupFreeCode.ParseSqlScript();
-
-        testOutputHelper.WriteLine(string.Empty);
-        testOutputHelper.WriteLine(string.Empty);
-        testOutputHelper.WriteLine(string.Empty);
-        testOutputHelper.WriteLine("Syntax Tree:");
-        testOutputHelper.WriteLine(SyntaxTreeVisualizer.Visualize(parsedScript));
-
-        testOutputHelper.WriteLine(string.Empty);
-        testOutputHelper.WriteLine(string.Empty);
-        testOutputHelper.WriteLine(string.Empty);
-        testOutputHelper.WriteLine("Tokens:");
-        testOutputHelper.WriteLine(TokenVisualizer.Visualize(parsedScript));
-
-        var columnReference = parsedScript
-            .GetChildren<ColumnReferenceExpression>(recursive: true)
-            .Single(a => a.GetCodeRegion() == codeRegion);
-
-        var scriptModel = new ScriptModel(
-            "database-1",
-            "script.sql",
-            code,
-            parsedScript,
-            parsedScript.CreateParentFragmentProvider(),
-            [],
-            []
-        );
-
-        return (scriptModel, columnReference);
-
-        static (string MarkupFreeSql, CodeRegion CodeRegion) RemoveMarkupAndGetCodeRegion(string code)
-        {
-            var startIndex = code.IndexOf("▶️", StringComparison.Ordinal);
-            var endIndex = code.IndexOf("◀️", startIndex + 1, StringComparison.Ordinal);
-            if (startIndex < 0 || endIndex < 0)
-            {
-                throw new ArgumentException("The SQL code does not contain contain two markup markers '▶️' and '◀️'", nameof(code));
-            }
-
-            // currently, this only works if start and end marker are on the same line
-            var (startLineNumber, startColumnNumber) = code.GetLineAndColumnNumber(startIndex);
-            var (endLineNumber, endColumnNumber) = code.GetLineAndColumnNumber(endIndex - 1); // -1 because we'll remove the start and end marker
-            var codeRegion = CodeRegion.Create(startLineNumber, startColumnNumber, endLineNumber, endColumnNumber - 1);
-            var markupFreeSql = code.Remove(endIndex, 2).Remove(startIndex, 2);
-
-            return (markupFreeSql, codeRegion);
-        }
     }
 }

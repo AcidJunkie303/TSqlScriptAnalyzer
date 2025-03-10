@@ -63,7 +63,7 @@ public sealed class TableResolver
         }
     }
 
-    private TableOrViewReference? Check(MergeSpecification mergeSpecification, NamedTableReference referenceToCheck)
+    private TableOrViewReference? Check(MergeSpecification mergeSpecification, NamedTableReference referenceToCheckFor)
     {
         // The Alias is stored separately from the target table
         // to make our logic work, we do assign the alias to targetNamedTableReference
@@ -77,40 +77,40 @@ public sealed class TableResolver
 
         if (mergeSpecification.TableReference is not null)
         {
-            var column = CheckTableReference(mergeSpecification.TableReference as NamedTableReference, referenceToCheck);
+            var column = CheckTableReference(mergeSpecification.TableReference as NamedTableReference, referenceToCheckFor);
             if (column is not null)
             {
                 return column;
             }
         }
 
-        return CheckTableReference(mergeSpecification.Target as NamedTableReference, referenceToCheck);
+        return CheckTableReference(mergeSpecification.Target as NamedTableReference, referenceToCheckFor);
     }
 
-    private TableOrViewReference? Check(UpdateSpecification updateSpecification, NamedTableReference referenceToCheck)
+    private TableOrViewReference? Check(UpdateSpecification updateSpecification, NamedTableReference referenceToCheckFor)
     {
         if (updateSpecification.FromClause is not null)
         {
-            var column = Check(updateSpecification.FromClause, referenceToCheck);
+            var column = Check(updateSpecification.FromClause, referenceToCheckFor);
             if (column is not null)
             {
                 return column;
             }
         }
 
-        return CheckTableReference(updateSpecification.Target as NamedTableReference, referenceToCheck);
+        return CheckTableReference(updateSpecification.Target as NamedTableReference, referenceToCheckFor);
     }
 
-    private TableOrViewReference? Check(QuerySpecification querySpecification, NamedTableReference referenceToCheck)
-        => querySpecification.FromClause is null ? null : Check(querySpecification.FromClause, referenceToCheck);
+    private TableOrViewReference? Check(QuerySpecification querySpecification, NamedTableReference referenceToCheckFor)
+        => querySpecification.FromClause is null ? null : Check(querySpecification.FromClause, referenceToCheckFor);
 
-    private TableOrViewReference? Check(FromClause fromClause, NamedTableReference referenceToCheck)
+    private TableOrViewReference? Check(FromClause fromClause, NamedTableReference referenceToCheckFor)
     {
         foreach (var reference in fromClause.TableReferences ?? [])
         {
             if (reference is QualifiedJoin qualifiedJoin)
             {
-                var table = Check(qualifiedJoin, referenceToCheck);
+                var table = Check(qualifiedJoin, referenceToCheckFor);
                 if (table is not null)
                 {
                     return table;
@@ -118,7 +118,7 @@ public sealed class TableResolver
             }
             else
             {
-                var table = CheckTableReference(reference as NamedTableReference, referenceToCheck);
+                var table = CheckTableReference(reference as NamedTableReference, referenceToCheckFor);
                 if (table is not null)
                 {
                     return table;
@@ -129,77 +129,75 @@ public sealed class TableResolver
         return null;
     }
 
-    private TableOrViewReference? Check(DeleteSpecification deleteSpecification, NamedTableReference referenceToCheck)
+    private TableOrViewReference? Check(DeleteSpecification deleteSpecification, NamedTableReference referenceToCheckFor)
     {
         if (deleteSpecification.FromClause is not null)
         {
-            var column = Check(deleteSpecification.FromClause, referenceToCheck);
+            var column = Check(deleteSpecification.FromClause, referenceToCheckFor);
             if (column is not null)
             {
                 return column;
             }
         }
 
-        return CheckTableReference(deleteSpecification.Target as NamedTableReference, referenceToCheck);
+        return CheckTableReference(deleteSpecification.Target as NamedTableReference, referenceToCheckFor);
     }
 
-    private TableOrViewReference? Check(QualifiedJoin qualifiedJoin, NamedTableReference referenceToCheck)
+    private TableOrViewReference? Check(QualifiedJoin qualifiedJoin, NamedTableReference referenceToCheckFor)
     {
-        if (qualifiedJoin.FirstTableReference is not TableReferenceWithAlias)
+        if (qualifiedJoin.FirstTableReference is QualifiedJoin firstJoin)
+        {
+            var table = Check(firstJoin, referenceToCheckFor);
+            if (table is not null)
+            {
+                return table;
+            }
+        }
+        else if (qualifiedJoin.FirstTableReference is not TableReferenceWithAlias)
         {
             ReportMissingAlias(qualifiedJoin.FirstTableReference);
             return null;
         }
 
-        if (qualifiedJoin.SecondTableReference is not TableReferenceWithAlias)
+        if (qualifiedJoin.SecondTableReference is QualifiedJoin secondJoin)
+        {
+            var table = Check(secondJoin, referenceToCheckFor);
+            if (table is not null)
+            {
+                return table;
+            }
+        }
+        else if (qualifiedJoin.SecondTableReference is not TableReferenceWithAlias)
         {
             ReportMissingAlias(qualifiedJoin.SecondTableReference);
             return null;
         }
 
-        if (qualifiedJoin.FirstTableReference is QualifiedJoin firstJoin)
-        {
-            var column = Check(firstJoin, referenceToCheck);
-            if (column is not null)
-            {
-                return column;
-            }
-        }
-
-        if (qualifiedJoin.SecondTableReference is QualifiedJoin secondJoin)
-        {
-            var column = Check(secondJoin, referenceToCheck);
-            if (column is not null)
-            {
-                return column;
-            }
-        }
-
         // qualifiedJoin.FirstTableReference can also be joins -> check previous joins too
-        return CheckTableReference(qualifiedJoin.FirstTableReference as NamedTableReference, referenceToCheck)
-               ?? CheckTableReference(qualifiedJoin.SecondTableReference as NamedTableReference, referenceToCheck);
+        return CheckTableReference(qualifiedJoin.FirstTableReference as NamedTableReference, referenceToCheckFor)
+               ?? CheckTableReference(qualifiedJoin.SecondTableReference as NamedTableReference, referenceToCheckFor);
     }
 
-    private TableOrViewReference? CheckTableReference(NamedTableReference? namedTableReference, NamedTableReference referenceToCheck)
+    private TableOrViewReference? CheckTableReference(NamedTableReference? namedTableReference, NamedTableReference referenceToCheckFor)
     {
         if (namedTableReference is null)
         {
             return null;
         }
 
-        if (!IsSearchedTable(namedTableReference, referenceToCheck))
+        if (!IsSearchedTable(namedTableReference, referenceToCheckFor))
         {
             return null;
         }
 
         var currentDatabaseName = namedTableReference.SchemaObject.DatabaseIdentifier?.Value
-                                  ?? _script.TryFindCurrentDatabaseNameAtFragment(referenceToCheck)
+                                  ?? _script.TryFindCurrentDatabaseNameAtFragment(referenceToCheckFor)
                                   ?? DatabaseNames.Unknown;
         var tableName = namedTableReference.SchemaObject.BaseIdentifier.Value;
         var tableSchemaName = namedTableReference.SchemaObject.SchemaIdentifier?.Value ?? _defaultSchemaName;
-        var fullObjectName = referenceToCheck.TryGetFirstClassObjectName(_defaultSchemaName, _script, _parentFragmentProvider) ?? _relativeScriptFilePath;
+        var fullObjectName = referenceToCheckFor.TryGetFirstClassObjectName(_defaultSchemaName, _script, _parentFragmentProvider) ?? _relativeScriptFilePath;
 
-        return new TableOrViewReference(currentDatabaseName, tableSchemaName, tableName, TableSourceType.TableOrView, referenceToCheck, fullObjectName);
+        return new TableOrViewReference(currentDatabaseName, tableSchemaName, tableName, TableSourceType.TableOrView, referenceToCheckFor, fullObjectName);
     }
 
     private bool IsSearchedTable(NamedTableReference table1, NamedTableReference table2)
