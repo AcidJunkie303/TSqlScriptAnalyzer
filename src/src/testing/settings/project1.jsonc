@@ -155,7 +155,10 @@
             "ViewName": {
                 "Pattern": "\\AV_[A-Z][A-Za-z0-1]+",
                 "Description": "View names must start with a capital letter followed by characters or numbers only"
-            }
+            },
+            "IgnoredObjectNamePatterns": [
+                "MyDb.MySchema.*"
+            ]
         },
         "AJ5038": // Name quoting. Possible values: Undefined, Required, DoubleQuotesRequired, SquareBracketsRequired or NotAllowed
         {
