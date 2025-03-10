@@ -170,6 +170,11 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
     {
         foreach (var identifier in identifierGetter(statement))
         {
+            if (identifier.Value.IsTempTableName())
+            {
+                continue;
+            }
+
             var shouldBeWrittenAs = GetPolicyCompliantIdentifier(identifier, nameQuotingPolicy);
             if (shouldBeWrittenAs.IsNullOrWhiteSpace())
             {

@@ -377,11 +377,20 @@ public sealed class NameQuotingAnalyzerTests(ITestOutputHelper testOutputHelper)
     [Fact]
     public void WhenTempTable_ThenIgnore()
     {
-        var settings = Aj5038Settings.Default with { NameQuotingPolicyForTableReferences = NameQuotingPolicy.Required };
+        var settings = Aj5038Settings.Default with
+        {
+            NameQuotingPolicyForTableReferences = NameQuotingPolicy.Required,
+            NameQuotingPolicyDuringObjectCreation = NameQuotingPolicy.Required
+        };
 
         const string code = """
                             USE MyDb
                             GO
+
+                            CREATE TABLE #MyTable
+                            (
+                                Id            INT NOT NULL
+                            )
 
                             SELECT * FROM #MyTable
                             """;
