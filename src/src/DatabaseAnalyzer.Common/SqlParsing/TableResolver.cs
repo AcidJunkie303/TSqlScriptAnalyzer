@@ -1,4 +1,6 @@
+using System.Collections.Frozen;
 using DatabaseAnalyzer.Common.Extensions;
+using DatabaseAnalyzer.Common.Services;
 using DatabaseAnalyzer.Contracts;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
@@ -6,6 +8,7 @@ namespace DatabaseAnalyzer.Common.SqlParsing;
 
 public sealed class TableResolver
 {
+    private readonly Dictionary<TSqlBatch, FrozenSet<string>> _cteNamesPerBatch;
     private readonly string _defaultSchemaName;
     private readonly IIssueReporter _issueReporter;
     private readonly IParentFragmentProvider _parentFragmentProvider;
@@ -25,11 +28,26 @@ public sealed class TableResolver
         _relativeScriptFilePath = relativeScriptFilePath;
         _parentFragmentProvider = parentFragmentProvider;
         _defaultSchemaName = defaultSchemaName;
+
+        _cteNamesPerBatch = _script.Batches.ToDictionary(a => a, CteExtractor.ExtractCteNames);
     }
 
     public TableOrViewReference? Resolve(NamedTableReference reference)
     {
         ArgumentNullException.ThrowIfNull(reference);
+
+        var batch = (TSqlBatch?) reference
+            .GetParents(_parentFragmentProvider)
+            .FirstOrDefault(a => a is TSqlBatch);
+
+        if (batch is null)
+        {
+            return null;
+        }
+
+#pragma warning disable S106
+        Console.WriteLine(_cteNamesPerBatch);
+#pragma warning restore S106
 
         TSqlFragment? fragment = reference;
         while (true)
@@ -48,6 +66,7 @@ public sealed class TableResolver
                 QuerySpecification querySpecification   => Check(querySpecification, reference),
                 UpdateSpecification updateSpecification => Check(updateSpecification, reference),
                 MergeSpecification mergeSpecification   => Check(mergeSpecification, reference),
+                SelectStatement selectStatement         => Check(selectStatement, reference),
                 _                                       => null
             };
 
@@ -106,6 +125,16 @@ public sealed class TableResolver
 
     private TableOrViewReference? Check(FromClause fromClause, NamedTableReference referenceToCheckFor)
     {
+        var selectStatement = (SelectStatement?) fromClause.GetParents(_parentFragmentProvider).FirstOrDefault(a => a is SelectStatement);
+        if (selectStatement is not null)
+        {
+            var table = Check(selectStatement, referenceToCheckFor);
+            if (table is not null)
+            {
+                return table;
+            }
+        }
+
         foreach (var reference in fromClause.TableReferences ?? [])
         {
             if (reference is QualifiedJoin qualifiedJoin)
@@ -176,6 +205,29 @@ public sealed class TableResolver
         // qualifiedJoin.FirstTableReference can also be joins -> check previous joins too
         return CheckTableReference(qualifiedJoin.FirstTableReference as NamedTableReference, referenceToCheckFor)
                ?? CheckTableReference(qualifiedJoin.SecondTableReference as NamedTableReference, referenceToCheckFor);
+    }
+
+    private TableOrViewReference? Check(SelectStatement selectStatement, NamedTableReference referenceToCheckFor)
+    {
+        if (selectStatement.WithCtesAndXmlNamespaces?.CommonTableExpressions is null)
+        {
+            return null;
+        }
+
+        foreach (var cte in selectStatement.WithCtesAndXmlNamespaces.CommonTableExpressions)
+        {
+            if (referenceToCheckFor.SchemaObject.BaseIdentifier.Value.EqualsOrdinalIgnoreCase(cte.ExpressionName.Value))
+            {
+                var currentDatabaseName = _script.TryFindCurrentDatabaseNameAtFragment(referenceToCheckFor) ?? DatabaseNames.Unknown;
+                var tableName = cte.ExpressionName.Value;
+                var tableSchemaName = _defaultSchemaName;
+                var fullObjectName = referenceToCheckFor.TryGetFirstClassObjectName(_defaultSchemaName, _script, _parentFragmentProvider) ?? _relativeScriptFilePath;
+
+                return new TableOrViewReference(currentDatabaseName, tableSchemaName, tableName, TableSourceType.Cte, referenceToCheckFor, fullObjectName);
+            }
+        }
+
+        return null;
     }
 
     private TableOrViewReference? CheckTableReference(NamedTableReference? namedTableReference, NamedTableReference referenceToCheckFor)
