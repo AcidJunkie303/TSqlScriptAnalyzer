@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
@@ -43,7 +44,7 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
     {
         foreach (var parameter in parameters)
         {
-            Analyze(context, script, parameter, "parameter", settings.ParameterName, ParameterNameGetter, FragmentToReportGetter, ParameterNameToReportGetter);
+            Analyze(context, script, parameter, "parameter", settings, settings.ParameterName, ParameterNameGetter, FragmentToReportGetter, ParameterNameToReportGetter);
         }
 
         static string ParameterNameGetter(ProcedureParameter a) => a.VariableName.Value.Trim('@');
@@ -55,7 +56,7 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
     {
         foreach (var function in functions)
         {
-            Analyze(context, script, function, "function", settings.FunctionName, FunctionNameGetter, FragmentToReportGetter, ParameterNameToReportGetter);
+            Analyze(context, script, function, "function", settings, settings.FunctionName, FunctionNameGetter, FragmentToReportGetter, ParameterNameToReportGetter);
         }
 
         static string FunctionNameGetter(FunctionStatementBody a) => a.Name.BaseIdentifier.Value;
@@ -67,7 +68,7 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
     {
         foreach (var procedure in procedures)
         {
-            Analyze(context, script, procedure, "procedure", settings.ProcedureName, ProcedureNameGetter, FragmentToReportGetter, ProcedureNameToReportGetter);
+            Analyze(context, script, procedure, "procedure", settings, settings.ProcedureName, ProcedureNameGetter, FragmentToReportGetter, ProcedureNameToReportGetter);
         }
 
         static string ProcedureNameGetter(ProcedureStatementBody a) => a.ProcedureReference.Name.BaseIdentifier.Value;
@@ -79,7 +80,7 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
     {
         foreach (var trigger in tiggers)
         {
-            Analyze(context, script, trigger, "trigger", settings.TriggerName, TriggerNameGetter, FragmentToReportGetter, TriggerNameToReportGetter);
+            Analyze(context, script, trigger, "trigger", settings, settings.TriggerName, TriggerNameGetter, FragmentToReportGetter, TriggerNameToReportGetter);
         }
 
         static string? TriggerNameGetter(TriggerStatementBody a) => a.Name.BaseIdentifier.Value;
@@ -98,7 +99,7 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
                     continue;
                 }
 
-                Analyze(context, script, declaration, "variable", settings.VariableName, VariableNameGetter, FragmentToReportGetter, VariableNameToReportGetter);
+                Analyze(context, script, declaration, "variable", settings, settings.VariableName, VariableNameGetter, FragmentToReportGetter, VariableNameToReportGetter);
             }
         }
 
@@ -111,7 +112,7 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
     {
         foreach (var view in views)
         {
-            Analyze(context, script, view, "view", settings.ViewName, ViewNameGetter, FragmentToReportGetter, ViewNameToReportGetter);
+            Analyze(context, script, view, "view", settings, settings.ViewName, ViewNameGetter, FragmentToReportGetter, ViewNameToReportGetter);
         }
 
         static string? ViewNameGetter(ViewStatementBody a) => a.SchemaObjectName.BaseIdentifier.Value;
@@ -125,16 +126,16 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
         {
             if (table.IsTempTable())
             {
-                Analyze(context, script, table, "temp-table", settings.TempTableName, TableNameGetter, TableFragmentToReportGetter, TableNameToReportGetter);
+                Analyze(context, script, table, "temp-table", settings, settings.TempTableName, TableNameGetter, TableFragmentToReportGetter, TableNameToReportGetter);
             }
             else
             {
-                Analyze(context, script, table, "table", settings.TableName, TableNameGetter, TableFragmentToReportGetter, TableNameToReportGetter);
+                Analyze(context, script, table, "table", settings, settings.TableName, TableNameGetter, TableFragmentToReportGetter, TableNameToReportGetter);
             }
 
             foreach (var column in table.Definition.ColumnDefinitions)
             {
-                Analyze(context, script, column, "column", settings.ColumnName, ColumnNameGetter, ColumnFragmentToReportGetter, ColumnNameToReportGetter);
+                Analyze(context, script, column, "column", settings, settings.ColumnName, ColumnNameGetter, ColumnFragmentToReportGetter, ColumnNameToReportGetter);
             }
         }
 
@@ -147,19 +148,19 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
         static string? ColumnNameToReportGetter(ColumnDefinition a) => a.ColumnIdentifier.Value;
     }
 
-#pragma warning disable S107 // too many parameters
+    [SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters")]
     private static void Analyze<T>
     (
         IAnalysisContext context,
         IScriptModel script,
         T statement,
         string objectTypeName,
+        Aj5030Settings settings,
         Aj5030Settings.PatternEntry patternEntry,
         Func<T, string?> nameGetter,
         Func<T, TSqlFragment> fragmentToReportGetter,
         Func<T, string?> nameToReportGetter
     )
-#pragma warning restore S107
         where T : TSqlFragment
     {
         var name = nameGetter(statement);
@@ -170,14 +171,30 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
 
         var nameToReport = nameToReportGetter(statement) ?? name;
 
-        Report(context, script, fragmentToReportGetter(statement), objectTypeName, nameToReport, patternEntry.Description);
+        Report(context, script, fragmentToReportGetter(statement), settings, objectTypeName, nameToReport, patternEntry.Description);
     }
 
-    private static void Report(IAnalysisContext context, IScriptModel script, TSqlFragment fragment, string objectTypeName, string objectName, string ruleDescription)
+    private static void Report(IAnalysisContext context, IScriptModel script, TSqlFragment fragment, Aj5030Settings settings, string objectTypeName, string objectName, string ruleDescription)
     {
         var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(fragment) ?? DatabaseNames.Unknown;
         var fullObjectName = fragment.TryGetFirstClassObjectName(context, script);
+
+        if (IsIgnored(settings, fullObjectName ?? objectTypeName))
+        {
+            return;
+        }
+
         context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, fragment.GetCodeRegion(), objectTypeName, objectName, ruleDescription);
+    }
+
+    private static bool IsIgnored(Aj5030Settings settings, string fullObjectName)
+    {
+        if (settings.IgnoredObjectNamePatterns.Count == 0)
+        {
+            return false;
+        }
+
+        return settings.IgnoredObjectNamePatterns.Any(pattern => pattern.IsMatch(fullObjectName));
     }
 
     private static class DiagnosticDefinitions

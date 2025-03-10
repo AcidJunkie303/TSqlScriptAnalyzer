@@ -19,7 +19,8 @@ public sealed class NamingAnalyzerTests(ITestOutputHelper testOutputHelper)
         TempTableName = new Aj5030SettingsRaw.PatternEntryRaw { Pattern = "\\A##?Table", Description = "GGG" },
         TriggerName = new Aj5030SettingsRaw.PatternEntryRaw { Pattern = "\\ATRG_", Description = "HHH" },
         VariableName = new Aj5030SettingsRaw.PatternEntryRaw { Pattern = "\\AVariable", Description = "III" },
-        ViewName = new Aj5030SettingsRaw.PatternEntryRaw { Pattern = "\\AView", Description = "JJJ" }
+        ViewName = new Aj5030SettingsRaw.PatternEntryRaw { Pattern = "\\AView", Description = "JJJ" },
+        IgnoredObjectNamePatterns = ["OtherDb.*"]
     }.ToSettings();
 
     [Theory]
@@ -191,6 +192,22 @@ public sealed class NamingAnalyzerTests(ITestOutputHelper testOutputHelper)
                         Column303        NVARCHAR(128) NOT NULL
                     )
                     """;
+        Verify(Settings, code);
+    }
+
+    [Fact]
+    public void WhenObjectIgnored_ThenOk()
+    {
+        const string code = """
+                            USE OtHerDb
+                            GO
+
+                            CrEaTe tAbLe TaBlE1
+                            (
+                                CoLuMn1        NVARCHAR(128) NOT NULL
+                            )
+                            """;
+
         Verify(Settings, code);
     }
 }

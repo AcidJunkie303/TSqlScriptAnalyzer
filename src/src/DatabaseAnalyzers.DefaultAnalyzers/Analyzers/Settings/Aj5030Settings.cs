@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
 using DatabaseAnalyzer.Common.Extensions;
@@ -21,18 +22,24 @@ public sealed class Aj5030SettingsRaw : IRawSettings<Aj5030Settings>
     public PatternEntryRaw? TriggerName { get; set; }
     public PatternEntryRaw? VariableName { get; set; }
     public PatternEntryRaw? ViewName { get; set; }
+    public IReadOnlyCollection<string?>? IgnoredObjectNamePatterns { get; set; }
 
     public Aj5030Settings ToSettings() => new
     (
-        ToPatternEntry(ColumnName),
-        ToPatternEntry(FunctionName),
-        ToPatternEntry(ParameterName),
-        ToPatternEntry(ProcedureName),
-        ToPatternEntry(TableName),
-        ToPatternEntry(TempTableName),
-        ToPatternEntry(TriggerName),
-        ToPatternEntry(VariableName),
-        ToPatternEntry(ViewName)
+        ColumnName: ToPatternEntry(ColumnName),
+        FunctionName: ToPatternEntry(FunctionName),
+        ParameterName: ToPatternEntry(ParameterName),
+        ProcedureName: ToPatternEntry(ProcedureName),
+        TableName: ToPatternEntry(TableName),
+        TempTableName: ToPatternEntry(TempTableName),
+        TriggerName: ToPatternEntry(TriggerName),
+        VariableName: ToPatternEntry(VariableName),
+        ViewName: ToPatternEntry(ViewName),
+        IgnoredObjectNamePatterns: IgnoredObjectNamePatterns
+                                       ?.WhereNotNullOrWhiteSpaceOnly()
+                                       .Select(a => a.ToRegexWithSimpleWildcards(caseSensitive: false, compileRegex: true))
+                                       .ToImmutableList()
+                                   ?? []
     );
 
     private static Regex ToRegex(string pattern) => new(pattern, RegexOptions.Compiled, TimeSpan.FromMilliseconds(100));
@@ -67,8 +74,10 @@ public sealed record Aj5030Settings(
     [property: Description("The naming policy for variables.")]
     Aj5030Settings.PatternEntry VariableName,
     [property: Description("The naming policy for views.")]
-    Aj5030Settings.PatternEntry ViewName
-) : ISettings<Aj5030Settings>
+    Aj5030Settings.PatternEntry ViewName,
+    [property: Description("The object names to exclude from this rule. Wildcards like `*` and `?` are supported.")]
+    IReadOnlyList<Regex> IgnoredObjectNamePatterns)
+    : ISettings<Aj5030Settings>
 {
     public static Aj5030Settings Default { get; } = new
     (
@@ -80,7 +89,8 @@ public sealed record Aj5030Settings(
         new PatternEntry(Aj5030SettingsRaw.AlwaysMatchRegex, string.Empty),
         new PatternEntry(Aj5030SettingsRaw.AlwaysMatchRegex, string.Empty),
         new PatternEntry(Aj5030SettingsRaw.AlwaysMatchRegex, string.Empty),
-        new PatternEntry(Aj5030SettingsRaw.AlwaysMatchRegex, string.Empty)
+        new PatternEntry(Aj5030SettingsRaw.AlwaysMatchRegex, string.Empty),
+        []
     );
 
     public static string DiagnosticId => "AJ5030";
