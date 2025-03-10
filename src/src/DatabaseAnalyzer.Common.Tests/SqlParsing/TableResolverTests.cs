@@ -43,4 +43,40 @@ public sealed class TableResolverTests : ResolverTestBase
         table.SchemaName.Should().Be("dbo");
         table.ObjectName.Should().Be("Table3");
     }
+
+    [Fact]
+    public void WhenSelectWithCte()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            ;WITH CTE AS
+                            (
+                                SELECT  *
+                                FROM    Table1
+                                WHERE   Value1 = 'Hello'
+                            )
+                            SELECT  *
+                            FROM    ▶️CTE c◀️
+                            WHERE   c.Value1 = 'World';
+                            """;
+
+        // arrange
+        var (script, tableReference) = CreateScript<NamedTableReference>(code);
+        var issueReporter = new FakeIssueReporter();
+        var sut = new TableResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
+
+        // act
+        var table = sut.Resolve(tableReference);
+
+        // assert
+        table.Should().NotBeNull();
+        table!.DatabaseName.Should().Be("MyDb");
+        table.SchemaName.Should().Be("dbo");
+        table.ObjectName.Should().Be("CTE");
+        table.SourceType.Should().Be(TableSourceType.Cte);
+
+        // TDOO: the column class should have an additional property called 'SourceType' which in this case would indicate that it is a CTE and not a table
+    }
 }
