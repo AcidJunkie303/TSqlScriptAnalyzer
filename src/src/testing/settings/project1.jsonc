@@ -226,6 +226,12 @@
                 "Id"
             ]
         },
+        "AJ5055": {
+            "ExcludedDatabaseNames": [
+                "master",
+                "?_RAW*"
+            ]
+        },
         "AJ5056": // Keyword casing
         {
             // Possible values: 'Disabled', 'UpperCase', 'LowerCase', 'CamelCase' or 'PascalCase'. Default is 'UpperCase'
