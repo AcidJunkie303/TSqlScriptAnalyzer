@@ -45,7 +45,7 @@ public sealed class DropStatementAnalyzer : IScriptAnalyzer
             "AJ5058",
             IssueType.Warning,
             "Drop statement in non-allowed file",
-            "The drop statement `{0}` is not allowed in this file. It is only allowed in the following file name pattern(s): `{1}`",
+            "The drop statement `{0}` is not allowed in this file. It is only allowed in files with the following name pattern(s): `{1}`",
             ["Drop Statement Type", "Allowed file name patterns"],
             UrlPatterns.DefaultDiagnosticHelp
         );
