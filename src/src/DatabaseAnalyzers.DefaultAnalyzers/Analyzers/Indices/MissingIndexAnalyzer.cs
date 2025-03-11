@@ -146,7 +146,7 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
             "AJ5015",
             IssueType.MissingIndex,
             "Missing Index",
-            "The column `{0}.{1}.{2}.{3}` defined in script `{4}` at `{5}` is not indexed but used as column filtering predicate.",
+            "The column `{0}.{1}.{2}.{3}` is not indexed but used as column filtering predicate in script `{4}` at `{5}`",
             ["Database name", "Schema name", "Table name", "Column name", "Relative script file path of the table column declaration", "Code region of the table column declaration"],
             UrlPatterns.DefaultDiagnosticHelp
         );
