@@ -282,7 +282,7 @@ public sealed class IndexNamingAnalyzer : IScriptAnalyzer
             "AJ5052",
             IssueType.Warning,
             "Index Naming",
-            "The index `{0}` should be named as `{1}`. Index flags: `{2}`.",
+            "The index `{0}` should be named as `{1}`. Properties=`{2}`",
             ["Index Name", "Expected index name", "Index Properties"],
             UrlPatterns.DefaultDiagnosticHelp
         );
