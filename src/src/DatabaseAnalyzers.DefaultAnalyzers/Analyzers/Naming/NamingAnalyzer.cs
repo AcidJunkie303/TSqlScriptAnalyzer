@@ -204,7 +204,7 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
             "AJ5030",
             IssueType.Warning,
             "Object name violates naming convention",
-            "The {0} name `{1}` does not comply with the configured naming rules: {2}.",
+            "The {0} name `{1}` does not comply with the configured naming rule: `{2}`.",
             ["Object type name", "Name", "Reason"],
             UrlPatterns.DefaultDiagnosticHelp
         );
