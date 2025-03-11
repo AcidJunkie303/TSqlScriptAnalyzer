@@ -188,7 +188,7 @@
         "AJ5048": // Long/Short Keyword notation enforcement
         {
             // Possible values: Long, Short, None
-            "KeywordNotationType": "Long"
+            "KeywordNotationType": "None"
         },
         "AJ5049": // Object invocation without specified schema name
         {
