@@ -1,6 +1,4 @@
-using System.Collections.Frozen;
 using DatabaseAnalyzer.Common.Extensions;
-using DatabaseAnalyzer.Common.Services;
 using DatabaseAnalyzer.Contracts;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
@@ -8,7 +6,6 @@ namespace DatabaseAnalyzer.Common.SqlParsing;
 
 public sealed class TableResolver
 {
-    private readonly Dictionary<TSqlBatch, FrozenSet<string>> _cteNamesPerBatch;
     private readonly string _defaultSchemaName;
     private readonly IIssueReporter _issueReporter;
     private readonly IParentFragmentProvider _parentFragmentProvider;
@@ -28,8 +25,6 @@ public sealed class TableResolver
         _relativeScriptFilePath = relativeScriptFilePath;
         _parentFragmentProvider = parentFragmentProvider;
         _defaultSchemaName = defaultSchemaName;
-
-        _cteNamesPerBatch = _script.Batches.ToDictionary(a => a, CteExtractor.ExtractCteNames);
     }
 
     public TableOrViewReference? Resolve(NamedTableReference reference)
@@ -44,10 +39,6 @@ public sealed class TableResolver
         {
             return null;
         }
-
-#pragma warning disable S106
-        Console.WriteLine(_cteNamesPerBatch);
-#pragma warning restore S106
 
         TSqlFragment? fragment = reference;
         while (true)
