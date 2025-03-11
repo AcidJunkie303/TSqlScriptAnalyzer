@@ -104,9 +104,9 @@ public sealed class ExcessiveStringConcatenationAnalyzer : IScriptAnalyzer
         (
             "AJ5001",
             IssueType.Warning,
-            "Excessive string concatenations",
-            "More than `{0}` allowed string concatenations. Consider using `FORMATMESSAGE()`.",
-            ["Maximum allowed string concatenations"],
+            "Excessive consecutive string concatenations",
+            "More than `{0}` allowed consecutive string concatenations. Consider using `FORMATMESSAGE()`.",
+            ["Maximum allowed consecutive string concatenations"],
             UrlPatterns.DefaultDiagnosticHelp
         );
     }
