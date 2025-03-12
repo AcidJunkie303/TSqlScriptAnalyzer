@@ -147,7 +147,9 @@
                         foreach (var diagnosticId in Model.DisabledDiagnostics.Order(StringComparer.OrdinalIgnoreCase))
                         {
                             var diagnosticDefinition = Model.DiagnosticDefinitionsById.GetValueOrDefault(diagnosticId);
-                            @await Html.PartialAsync("DiagnosticLink.cshtml", new DiagnosticLinkModel(diagnosticId, diagnosticDefinition))
+                            <div style="margin-left: 5px; display: inline-block">
+                                @await Html.PartialAsync("DiagnosticLink.cshtml", new DiagnosticLinkModel(diagnosticId, diagnosticDefinition))
+                            </div>
                         }
                     }
                 </td>
@@ -159,9 +161,9 @@
     <div>
         <h2>Top 8 Issues</h2>
         @{
-            var top5IssueTypes = GetTopIssueTypes(8, Model);
+            var topIssues = GetTopIssueTypes(8, Model);
         }
-        @if (top5IssueTypes.Count == 0)
+        @if (topIssues.Count == 0)
         {
             <i>None</i>
         }
@@ -169,11 +171,14 @@
         {
             <table class="data-table">
                 <tbody>
-                @foreach (var (diagnosticDefinition, count) in top5IssueTypes)
+                @foreach (var (diagnosticDefinition, count) in topIssues)
                 {
                     <tr>
                         <td>
                             @await Html.PartialAsync("DiagnosticLink.cshtml", new DiagnosticLinkModel(diagnosticDefinition.DiagnosticId, diagnosticDefinition))
+                        </td>
+                        <td>
+                            @diagnosticDefinition.Title
                         </td>
                         <td>
                             @count
@@ -184,12 +189,8 @@
                 </tbody>
             </table>
         }
-
-
     </div>
 </div>
-
-
 
 <h2>Issues</h2>
 @if (Model.Issues.Count == 0)
