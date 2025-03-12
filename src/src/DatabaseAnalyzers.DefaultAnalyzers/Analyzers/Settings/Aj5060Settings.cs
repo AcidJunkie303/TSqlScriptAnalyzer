@@ -22,7 +22,7 @@ internal sealed class Aj5060SettingsRaw : IRawSettings<Aj5060Settings>
 }
 
 internal sealed record Aj5060Settings(
-    [property: Description("Reserved words / keywords to report for table, view, procedure and function names. The can be defined in one or more string where each word is separated by a semicolon.")]
+    [property: Description("Reserved words / keywords to report for table, view, procedure and function names. They can be defined in one or more strings (array) where each word is separated by a semicolon.")]
     FrozenSet<string> ReservedIdentifierNames
 ) : ISettings<Aj5060Settings>
 {
