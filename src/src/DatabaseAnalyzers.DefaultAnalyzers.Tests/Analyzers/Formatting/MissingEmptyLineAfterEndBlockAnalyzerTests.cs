@@ -225,4 +225,22 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzerTests(ITestOutputHelper
 
         Verify(code);
     }
+
+    [Fact]
+    public void WhenGoStatementFollowsAfterEnd_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            if (1=1)
+                            BEGIN
+                                PRINT 303
+                            END
+                            GO
+
+                            """;
+
+        Verify(code);
+    }
 }

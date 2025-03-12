@@ -70,7 +70,7 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzer : IScriptAnalyzer
 
     private static void AnalyzeEndToken(IAnalysisContext context, IScriptModel script, TSqlParserToken endToken, int tokenIndex)
     {
-        if (IsNextTokenOfAnyType(TSqlTokenType.Else, TSqlTokenType.RightParenthesis, TSqlTokenType.EndOfFile))
+        if (IsNextTokenOfAnyType(TSqlTokenType.Else, TSqlTokenType.RightParenthesis, TSqlTokenType.Go, TSqlTokenType.EndOfFile))
         {
             return;
         }
