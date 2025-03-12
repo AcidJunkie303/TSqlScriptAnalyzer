@@ -13,8 +13,6 @@
     },
     "Diagnostics": {
         "DisabledDiagnostics": [
-            "AJ5003",
-            "XY1234"
         ],
         "AJ5001": // Excessive string concatenation
         {
