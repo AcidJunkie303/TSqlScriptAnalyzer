@@ -1,4 +1,3 @@
-using System.Collections.Frozen;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
@@ -8,40 +7,69 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Naming;
 
 public sealed class ShortLongKeywordAnalyzer : IScriptAnalyzer
 {
-    private static readonly FrozenDictionary<(TSqlTokenType, Aj5048KeywordNotationType), string> EnforcedNotationByTokenTypeAndNotationType = new[]
-    {
-        KeyValuePair.Create((TSqlTokenType.Proc, Aj5048KeywordNotationType.Long), "Procedure"),
-        KeyValuePair.Create((TSqlTokenType.Procedure, Aj5048KeywordNotationType.Short), "Proc"),
-        KeyValuePair.Create((TSqlTokenType.Exec, Aj5048KeywordNotationType.Long), "Execute"),
-        KeyValuePair.Create((TSqlTokenType.Execute, Aj5048KeywordNotationType.Short), "Exec"),
-        KeyValuePair.Create((TSqlTokenType.Tran, Aj5048KeywordNotationType.Long), "Transaction"),
-        KeyValuePair.Create((TSqlTokenType.Transaction, Aj5048KeywordNotationType.Short), "Tran")
-    }.ToFrozenDictionary();
-
     public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
     public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
     {
         var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5048Settings>();
-        if (settings.KeywordNotationType == Aj5048KeywordNotationType.None)
+
+        if (!settings.IsEnabled)
         {
             return;
         }
 
+        var violatingNotationsByTokenType = BuildLookupDictionary(settings);
+
         foreach (var token in script.ParsedScript.ScriptTokenStream)
         {
-            AnalyzeToken(context, script, token, settings);
+            AnalyzeToken(context, script, token, violatingNotationsByTokenType);
         }
     }
 
-    private static void AnalyzeToken(IAnalysisContext context, IScriptModel script, TSqlParserToken token, Aj5048Settings settings)
+    private static ViolatingNotationsByTokenType BuildLookupDictionary(Aj5048Settings settings)
+    {
+        var result = new ViolatingNotationsByTokenType();
+        if (settings.Execute == Aj5048KeywordNotationType.Short)
+        {
+            result.Add(TSqlTokenType.Execute, (settings.Execute, "Exec"));
+        }
+
+        if (settings.Execute == Aj5048KeywordNotationType.Long)
+        {
+            result.Add(TSqlTokenType.Exec, (settings.Execute, "Execute"));
+        }
+
+        if (settings.Procedure == Aj5048KeywordNotationType.Short)
+        {
+            result.Add(TSqlTokenType.Procedure, (settings.Procedure, "Proc"));
+        }
+
+        if (settings.Procedure == Aj5048KeywordNotationType.Long)
+        {
+            result.Add(TSqlTokenType.Proc, (settings.Procedure, "Procedure"));
+        }
+
+        if (settings.Transaction == Aj5048KeywordNotationType.Short)
+        {
+            result.Add(TSqlTokenType.Transaction, (settings.Transaction, "Tran"));
+        }
+
+        if (settings.Transaction == Aj5048KeywordNotationType.Long)
+        {
+            result.Add(TSqlTokenType.Tran, (settings.Transaction, "Transaction"));
+        }
+
+        return result;
+    }
+
+    private static void AnalyzeToken(IAnalysisContext context, IScriptModel script, TSqlParserToken token, ViolatingNotationsByTokenType violatingNotationsByTokenType)
     {
         if (token.Text.IsNullOrWhiteSpace())
         {
             return;
         }
 
-        if (!EnforcedNotationByTokenTypeAndNotationType.TryGetValue((token.TokenType, settings.KeywordNotationType), out var notation))
+        if (!violatingNotationsByTokenType.TryGetValue(token.TokenType, out var notation))
         {
             return;
         }
@@ -56,7 +84,14 @@ public sealed class ShortLongKeywordAnalyzer : IScriptAnalyzer
             script.RelativeScriptFilePath,
             fullObjectName,
             token.GetCodeRegion(),
-            token.Text, settings.KeywordNotationType.ToString(), notation);
+            token.Text, notation.NotationType.ToString(), notation.ShouldBeWrittenAs);
+    }
+
+    private sealed class ViolatingNotationsByTokenType : Dictionary<TSqlTokenType, (Aj5048KeywordNotationType NotationType, string ShouldBeWrittenAs)>
+    {
+        public ViolatingNotationsByTokenType() : base(3) // we'll have max 3 items in this dictionary
+        {
+        }
     }
 
     private static class DiagnosticDefinitions
