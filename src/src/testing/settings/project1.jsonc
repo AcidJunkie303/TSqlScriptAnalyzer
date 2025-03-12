@@ -189,8 +189,12 @@
         },
         "AJ5048": // Long/Short Keyword notation enforcement
         {
-            // Possible values: Long, Short, None
-            "KeywordNotationType": "None"
+            // The keyword notation type for `Execute | Exec`. Supported are: `None`, `Long` or `Short`. Default is `Short`.
+            "Execute": "Short",
+            // The keyword notation type for `Procedure | Proc`. Supported are: `None`, `Long` or `Short`. Default is `Long`.
+            "Procedure": "Long",
+            // The keyword notation type for `Transaction | Tran`. Supported are: `None`, `Long` or `Short`. Default is `Long`.
+            "Transaction": "Long"
         },
         "AJ5049": // Object invocation without specified schema name
         {

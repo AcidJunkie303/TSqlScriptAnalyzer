@@ -11,21 +11,6 @@ public sealed class ShortLongKeywordAnalyzerTests(ITestOutputHelper testOutputHe
     : ScriptAnalyzerTestsBase<ShortLongKeywordAnalyzer>(testOutputHelper)
 {
     [Theory]
-    [InlineData((int) Aj5048KeywordNotationType.None, "/* 01 */ TRAN")]
-    [InlineData((int) Aj5048KeywordNotationType.Long, "/* 02 */ ▶️AJ5048💛script_0.sql💛💛TRAN💛Long💛Transaction✅TRAN◀️")]
-    [InlineData((int) Aj5048KeywordNotationType.Short, "/* 03 */ TRAN")]
-    [InlineData((int) Aj5048KeywordNotationType.None, "/* 04 */ TRANSACTION")]
-    [InlineData((int) Aj5048KeywordNotationType.Long, "/* 05 */ TRANSACTION")]
-    [InlineData((int) Aj5048KeywordNotationType.Short, "/* 06 */ ▶️AJ5048💛script_0.sql💛💛TRANSACTION💛Short💛Tran✅TRANSACTION◀️")]
-    public void TransactionTheory(int notationType, string keyword)
-    {
-        var settings = new Aj5048Settings((Aj5048KeywordNotationType) notationType);
-        var code = $"BEGIN {keyword}";
-
-        Verify(settings, code);
-    }
-
-    [Theory]
     [InlineData((int) Aj5048KeywordNotationType.None, "/* 01 */ EXEC")]
     [InlineData((int) Aj5048KeywordNotationType.Long, "/* 02 */ ▶️AJ5048💛script_0.sql💛💛Exec💛Long💛Execute✅Exec◀️")]
     [InlineData((int) Aj5048KeywordNotationType.Short, "/* 03 */ EXEC")]
@@ -34,7 +19,13 @@ public sealed class ShortLongKeywordAnalyzerTests(ITestOutputHelper testOutputHe
     [InlineData((int) Aj5048KeywordNotationType.Short, "/* 06 */ ▶️AJ5048💛script_0.sql💛💛EXECUTE💛Short💛Exec✅EXECUTE◀️")]
     public void ExecuteTheory(int notationType, string keyword)
     {
-        var settings = new Aj5048Settings((Aj5048KeywordNotationType) notationType);
+        var settings = new Aj5048Settings
+        (
+            Execute: (Aj5048KeywordNotationType) notationType,
+            Procedure: Aj5048KeywordNotationType.None,
+            Transaction: Aj5048KeywordNotationType.None
+        );
+
         var code = $"{keyword} ('SELECT 1')";
 
         Verify(settings, code);
@@ -49,7 +40,12 @@ public sealed class ShortLongKeywordAnalyzerTests(ITestOutputHelper testOutputHe
     [InlineData((int) Aj5048KeywordNotationType.Short, "/* 16 */ ▶️AJ5048💛script_0.sql💛MyDb.dbo.P1💛PROCEDURE💛Short💛Proc✅PROCEDURE◀️")]
     public void ProcedureTheory(int notationType, string keyword)
     {
-        var settings = new Aj5048Settings((Aj5048KeywordNotationType) notationType);
+        var settings = new Aj5048Settings
+        (
+            Execute: Aj5048KeywordNotationType.None,
+            Procedure: (Aj5048KeywordNotationType) notationType,
+            Transaction: Aj5048KeywordNotationType.None
+        );
 
         var code = $"""
                     USE MyDb
@@ -57,6 +53,26 @@ public sealed class ShortLongKeywordAnalyzerTests(ITestOutputHelper testOutputHe
 
                     CREATE {keyword} P1 AS BEGIN SELECT 1 END
                     """;
+
+        Verify(settings, code);
+    }
+
+    [Theory]
+    [InlineData((int) Aj5048KeywordNotationType.None, "/* 01 */ TRAN")]
+    [InlineData((int) Aj5048KeywordNotationType.Long, "/* 02 */ ▶️AJ5048💛script_0.sql💛💛TRAN💛Long💛Transaction✅TRAN◀️")]
+    [InlineData((int) Aj5048KeywordNotationType.Short, "/* 03 */ TRAN")]
+    [InlineData((int) Aj5048KeywordNotationType.None, "/* 04 */ TRANSACTION")]
+    [InlineData((int) Aj5048KeywordNotationType.Long, "/* 05 */ TRANSACTION")]
+    [InlineData((int) Aj5048KeywordNotationType.Short, "/* 06 */ ▶️AJ5048💛script_0.sql💛💛TRANSACTION💛Short💛Tran✅TRANSACTION◀️")]
+    public void TransactionTheory(int notationType, string keyword)
+    {
+        var settings = new Aj5048Settings
+        (
+            Execute: Aj5048KeywordNotationType.None,
+            Procedure: Aj5048KeywordNotationType.None,
+            Transaction: (Aj5048KeywordNotationType) notationType
+        );
+        var code = $"BEGIN {keyword}";
 
         Verify(settings, code);
     }
