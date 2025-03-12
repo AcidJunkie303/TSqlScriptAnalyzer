@@ -22,153 +22,192 @@
 </head>
 <body>
 
-<h1>Database Analysis Result</h1>
+<div class="statistics-container">
 
-<div class="info-box">
-    Generated at (UTC): @DateTime.UtcNow.ToString("u")<br/>
-    Generated at (Local Time): @DateTime.Now.ToString("u")<br/>
-</div>
+    <div>
+        <h2>Database Analysis Result</h2>
+        <table class="data-table">
+            <tbody>
+            <tr>
+                <td>Generated at (UTC)</td>
+                <td>@DateTime.UtcNow.ToString("u")</td>
+            </tr>
+            <tr>
+                <td>Generated at (Local Time)</td>
+                <td>@DateTime.Now.ToString("u")</td>
+            </tr>
+            <tr>
+                <td>Scripts</td>
+                <td>@Model.Statistics.TotalScripts</td>
+            </tr>
+            <tr>
+                <td>Scripts Parse Duration</td>
+                <td>
+                    @if (Model.Statistics.ScriptsParseDuration.TotalSeconds < 1)
+                    {
+                        @("< 1s")
+                    }
+                    else
+                    {
+                        @($"{Model.Statistics.ScriptsParseDuration.TotalSeconds} s")
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td>Scripts Analyze Duration</td>
+                <td>
+                    @if (Model.Statistics.AnalysisDuration.TotalSeconds < 1)
+                    {
+                        @("< 1s")
+                    }
+                    else
+                    {
+                        @($"{Model.Statistics.AnalysisDuration.TotalSeconds} s")
+                    }
+                </td>
+            </tr>
+            </tbody>
+        </table>
 
-<h1>Summary</h1>
-<div class="overview">
-    <table class="data-table">
-        <tbody>
-        <tr>
-            <td>Total Issues</td>
-            <td>
+    </div>
+
+    <div>
+        <h2>Summary</h2>
+        <table class="data-table">
+            <tbody>
+            <tr>
+                <td>Total Issues</td>
+                <td>
                 <span class="@GetCssClassForIssueCount(Model.Statistics.TotalIssueCount)">
                     @Model.Statistics.TotalIssueCount
                 </span>
-            </td>
-        </tr>
-        <tr>
-            <td>Total Information Messages</td>
-            <td>
+                </td>
+            </tr>
+            <tr>
+                <td>Total Information Messages</td>
+                <td>
                 <span class="@GetCssClassForIssueCount(Model.Statistics.TotalInformationIssueCount)">
                     @Model.Statistics.TotalInformationIssueCount
                 </span>
-            </td>
-        </tr>
-        <tr>
-            <td>Total Formatting Issues</td>
-            <td>
+                </td>
+            </tr>
+            <tr>
+                <td>Total Formatting Issues</td>
+                <td>
                 <span class="@GetCssClassForIssueCount(Model.Statistics.TotalFormattingIssueCount)">
                     @Model.Statistics.TotalFormattingIssueCount
                 </span>
-            </td>
-        </tr>
-        <tr>
-            <td>Total Warnings</td>
-            <td>
+                </td>
+            </tr>
+            <tr>
+                <td>Total Warnings</td>
+                <td>
                 <span
                     class="@GetCssClassForIssueCount(Model.Statistics.TotalWarningCount)">@Model.Statistics.TotalWarningCount
                 </span>
-            </td>
-        </tr>
-        <tr>
-            <td>Total Errors</td>
-            <td>
+                </td>
+            </tr>
+            <tr>
+                <td>Total Errors</td>
+                <td>
                 <span
                     class="@GetCssClassForIssueCount(Model.Statistics.TotalErrorCount)">@Model.Statistics.TotalErrorCount
                 </span>
-            </td>
-        </tr>
-        <tr>
-            <td>Total Missing Indices</td>
-            <td>
+                </td>
+            </tr>
+            <tr>
+                <td>Total Missing Indices</td>
+                <td>
                 <span
                     class="@GetCssClassForIssueCount(Model.Statistics.TotalMissingIndexIssueCount)">@Model.Statistics.TotalMissingIndexIssueCount
                 </span>
-            </td>
-        </tr>
-        <tr>
-            <td>Suppressed Issues</td>
-            <td>
+                </td>
+            </tr>
+            <tr>
+                <td>Suppressed Issues</td>
+                <td>
                 <span class="@GetCssClassForIssueCount(Model.Statistics.TotalSuppressedIssueCount)">
                     @Model.Statistics.TotalSuppressedIssueCount
                 </span>
-            </td>
-        </tr>
-        <tr>
-            <td>Disabled Diagnostics</td>
-            <td>
+                </td>
+            </tr>
+            <tr>
+                <td>Disabled Diagnostics</td>
+                <td>
                 <span class="@GetCssClassForIssueCount(Model.DisabledDiagnostics.Count)">
                     @Model.DisabledDiagnostics.Count
                 </span>
 
-                @if (Model.DisabledDiagnostics.Count > 0)
-                {
-                    <span> → </span>
-                    foreach (var diagnosticId in Model.DisabledDiagnostics.Order(StringComparer.OrdinalIgnoreCase))
+                    @if (Model.DisabledDiagnostics.Count > 0)
                     {
-                        var url = Model.DiagnosticDefinitionsById.GetValueOrDefault(diagnosticId);
-                        if (url is null)
+                        <span> → </span>
+                        foreach (var diagnosticId in Model.DisabledDiagnostics.Order(StringComparer.OrdinalIgnoreCase))
                         {
-                            <span style="margin-left: 5px" title="No help link available">@diagnosticId</span>
-                        }
-                        else
-                        {
-                            <a href="https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/@(diagnosticId).md"
-                               style="margin-left: 5px"
-                               target="_blank">@diagnosticId</a>
+                            var url = Model.DiagnosticDefinitionsById.GetValueOrDefault(diagnosticId);
+                            if (url is null)
+                            {
+                                <span style="margin-left: 5px" title="No help link available">@diagnosticId</span>
+                            }
+                            else
+                            {
+                                <a href="https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/@(diagnosticId).md"
+                                   style="margin-left: 5px"
+                                   target="_blank">@diagnosticId</a>
+                            }
                         }
                     }
-                }
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-
-<h1>Top 5 Issues</h1>
-<div class="overview">
-    @{
-        var top5IssueTypes = GetTop5IssueTypes(Model);
-    }
-    @if (top5IssueTypes.Count == 0)
-    {
-        <i>None</i>
-    }
-    else
-    {
-        <table class="data-table">
-            <thead>
-            <tr>
-                <th>Issue Id</th>
-                <th>Count</th>
+                </td>
             </tr>
-            </thead>
-            <tbody>
-            @foreach (var (diagnosticId, count) in top5IssueTypes)
-            {
-                var url = Model.DiagnosticDefinitionsById.GetValueOrDefault(diagnosticId);
-                <tr>
-                    <td>
-                        @if (url is null)
-                        {
-                            <span style="margin-left: 5px" title="No help link available">@diagnosticId</span>
-                        }
-                        else
-                        {
-                            <a href="https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/@(diagnosticId).md"
-                               style="margin-left: 5px"
-                               target="_blank">@diagnosticId</a>
-                        }
-                    </td>
-                    <td>
-                        @count
-                    </td>
-                </tr>
-            }
-
             </tbody>
         </table>
-    }
+    </div>
+
+    <div>
+        <h2>Top 8 Issues</h2>
+        @{
+            var top5IssueTypes = GetTopIssueTypes(8, Model);
+        }
+        @if (top5IssueTypes.Count == 0)
+        {
+            <i>None</i>
+        }
+        else
+        {
+            <table class="data-table">
+                <tbody>
+                @foreach (var (diagnosticId, count) in top5IssueTypes)
+                {
+                    var url = Model.DiagnosticDefinitionsById.GetValueOrDefault(diagnosticId);
+                    <tr>
+                        <td>
+                            @if (url is null)
+                            {
+                                <span style="margin-left: 5px" title="No help link available">@diagnosticId</span>
+                            }
+                            else
+                            {
+                                <a href="https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/@(diagnosticId).md"
+                                   style="margin-left: 5px"
+                                   target="_blank">@diagnosticId</a>
+                            }
+                        </td>
+                        <td>
+                            @count
+                        </td>
+                    </tr>
+                }
+
+                </tbody>
+            </table>
+        }
 
 
+    </div>
 </div>
 
-<h1>Issues</h1>
+
+
+<h2>Issues</h2>
 @if (Model.Issues.Count == 0)
 {
     <i>None</i>
@@ -212,7 +251,7 @@ else
     </table>
 }
 
-<h1>Suppressed Issues</h1>
+<h2>Suppressed Issues</h2>
 @if (Model.SuppressedIssues.Count == 0)
 {
     <i>None</i>
@@ -260,13 +299,13 @@ else
 
 @functions
 {
-    static IReadOnlyCollection<(string DiagnosticId, int Count)> GetTop5IssueTypes(AnalysisResult analysisResult)
+    static IReadOnlyCollection<(string DiagnosticId, int Count)> GetTopIssueTypes(int topCount, AnalysisResult analysisResult)
         => analysisResult.Issues
             .GroupBy(a => a.DiagnosticDefinition.DiagnosticId, StringComparer.OrdinalIgnoreCase)
             .Select(a => (DiagnosticId: a.Key, Count: a.Count()))
             .OrderByDescending(a => a.Count)
-            .ThenBy(a=>a.DiagnosticId, StringComparer.OrdinalIgnoreCase)
-            .Take(5)
+            .ThenBy(a => a.DiagnosticId, StringComparer.OrdinalIgnoreCase)
+            .Take(topCount)
             .ToList();
 
     static readonly Regex CodeBlockFinder = new("`(?<content>[^`]*)`", RegexOptions.Compiled | RegexOptions.NonBacktracking, TimeSpan.FromMilliseconds(100));

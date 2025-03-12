@@ -1,5 +1,6 @@
 using System.Collections.Frozen;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.Models;
@@ -67,7 +68,10 @@ internal sealed class Analyzer : IAnalyzer
 
         var issueReporter = new IssueReporter();
 
+        var stopwatch = new Stopwatch();
         var scripts = ParseScripts().ToList();
+        var scriptParseDuration = stopwatch.Elapsed;
+
         ReportErroneousScripts(scripts, issueReporter);
 
         var scriptByDatabaseName = scripts
@@ -83,9 +87,11 @@ internal sealed class Analyzer : IAnalyzer
             issueReporter
         );
 
+        stopwatch.Restart();
         PerformAnalysis(analysisContext);
+        var analysisDuration = stopwatch.Elapsed;
 
-        return CalculateAnalysisResult(analysisContext, scripts);
+        return CalculateAnalysisResult(analysisContext, scripts, ref scriptParseDuration, ref analysisDuration);
     }
 
     private void PerformAnalysis(AnalysisContext analysisContext)
@@ -153,7 +159,7 @@ internal sealed class Analyzer : IAnalyzer
         }
     }
 
-    private AnalysisResult CalculateAnalysisResult(AnalysisContext analysisContext, IReadOnlyList<IScriptModel> scripts)
+    private AnalysisResult CalculateAnalysisResult(AnalysisContext analysisContext, IReadOnlyList<IScriptModel> scripts, ref readonly TimeSpan scriptParseDuration, ref readonly TimeSpan analysisDuration)
     {
         using var _ = _progressCallback.OnProgressWithAutoEndActionNotification("Calculating results");
         var issues = analysisContext.IssueReporter.Issues
@@ -179,7 +185,10 @@ internal sealed class Analyzer : IAnalyzer
             TotalIssueCount: issues.Count,
             TotalMissingIndexIssueCount: issues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.MissingIndex),
             TotalSuppressedIssueCount: suppressedIssues.Count,
-            TotalWarningCount: issues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Warning)
+            TotalWarningCount: issues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Warning),
+            TotalScripts: analysisContext.Scripts.Count,
+            ScriptsParseDuration: scriptParseDuration,
+            AnalysisDuration: analysisDuration
         );
 
         return new AnalysisResult(
