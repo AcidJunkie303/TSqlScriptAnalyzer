@@ -104,6 +104,12 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
     private static ScriptModel ParseScript(string relativeScriptFilePath, string scriptContents, string databaseName)
     {
         var script = scriptContents.TryParseSqlScript(out var errors);
+        if (errors.Count > 0)
+        {
+            var message = $"The script `{relativeScriptFilePath}` has the following error(s):\n" + errors.StringJoin("\n");
+            throw new InvalidOperationException(message);
+        }
+
         var diagnosticSuppressions = new DiagnosticSuppressionExtractor().ExtractSuppressions(script);
         var parentFragmentProvider = script.CreateParentFragmentProvider();
 
