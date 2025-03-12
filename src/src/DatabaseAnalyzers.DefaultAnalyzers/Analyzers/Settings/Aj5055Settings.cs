@@ -15,7 +15,7 @@ internal sealed class Aj5055SettingsRaw : IRawSettings<Aj5055Settings>
         ExcludedDatabaseNames
             ?.WhereNotNullOrWhiteSpaceOnly()
             .ToFrozenSet(StringComparer.OrdinalIgnoreCase)
-        ?? []
+        ?? FrozenSet<string>.Empty
     );
 }
 
@@ -24,7 +24,7 @@ internal sealed record Aj5055Settings(
     FrozenSet<string> ExcludedDatabaseNames
 ) : ISettings<Aj5055Settings>
 {
-    public static Aj5055Settings Default { get; } = new([]);
+    public static Aj5055Settings Default { get; } = new(FrozenSet<string>.Empty);
 
     public static string DiagnosticId => "AJ5055";
 }

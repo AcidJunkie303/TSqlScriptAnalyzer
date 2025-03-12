@@ -1,3 +1,8 @@
+// TODO: remove when on .NET 9.0 only
+#if NET8_0
+using System.Collections.Frozen;
+#endif
+
 using DatabaseAnalyzer.Testing;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
@@ -89,8 +94,12 @@ public sealed class StatementsMustBeginOnNewLineAnalyzerTests(ITestOutputHelper 
                             )
                             SELECT * FROM MyCTE
                             """;
-
+// TODO: remove when on .NET 9.0 only
+#if NET8_0
+        var settings = new Aj5023Settings(new[]{TSqlTokenType.Semicolon}.ToFrozenSet());
+#else
         var settings = new Aj5023Settings([TSqlTokenType.Semicolon]);
+#endif
         Verify(settings, code);
     }
 }

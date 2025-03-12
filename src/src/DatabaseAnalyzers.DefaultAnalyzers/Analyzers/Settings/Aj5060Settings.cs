@@ -26,7 +26,7 @@ internal sealed record Aj5060Settings(
     FrozenSet<string> ReservedIdentifierNames
 ) : ISettings<Aj5060Settings>
 {
-    public static Aj5060Settings Default { get; } = new([]);
+    public static Aj5060Settings Default { get; } = new(FrozenSet<string>.Empty);
 
     public static string DiagnosticId => "AJ5060";
 }
