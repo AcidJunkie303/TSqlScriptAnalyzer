@@ -6,14 +6,15 @@
         "DatabaseScriptsRootPathByDatabaseName": {
             "database-1": "..\\..\\..\\..\\testing\\scripts\\database-1",
             "database-2": "..\\..\\..\\..\\testing\\scripts\\database-2",
-            "database-3": "..\\..\\..\\..\\testing\\scripts\\database-3",
-            "database-4": "..\\..\\..\\..\\testing\\scripts\\database-4"
+            "database-3": "..\\..\\..\\..\\testing\\scripts\\database-3"
+            //"database-4": "..\\..\\..\\..\\testing\\scripts\\database-4"
             //"database-5": "..\\..\\..\\..\\testing\\scripts\\database-5"
         }
     },
     "Diagnostics": {
         "DisabledDiagnostics": [
-            "AJ5003"
+            "AJ5003",
+            "XY1234"
         ],
         "AJ5001": // Excessive string concatenation
         {
