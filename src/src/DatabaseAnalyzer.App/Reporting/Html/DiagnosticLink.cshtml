@@ -1,0 +1,12 @@
+@inherits Microsoft.AspNetCore.Mvc.Razor.RazorPage<DatabaseAnalyzer.App.Reporting.Html.Models.DiagnosticLinkModel>
+@if (Model.DiagnosticDefinition?.HelpUrl is null)
+{
+    <span style="margin-left: 5px" title="No help link available">@Model.DiagnosticId</span>
+}
+else
+{
+    <a href="@Model.DiagnosticDefinition.HelpUrl"
+       title="@Model.DiagnosticDefinition.Title"
+       style="margin-left: 5px"
+       target="_blank">@Model.DiagnosticId</a>
+}
