@@ -37,8 +37,8 @@ public sealed class MissingTableOrViewAnalyzer : IGlobalAnalyzer
 
     private static void AnalyzeTableReference(IAnalysisContext context, IScriptModel script, NamedTableReference tableReference, IReadOnlyDictionary<string, DatabaseInformation> databasesByName, Aj5044Settings settings)
     {
-        var tableResolver = new TableResolver(context.IssueReporter, script.ParsedScript, script.RelativeScriptFilePath, script.ParentFragmentProvider, context.DefaultSchemaName);
-        var resolvedTable = tableResolver.Resolve(tableReference);
+        var tableResolver = new TableResolver(context.IssueReporter, script.ParsedScript, tableReference, script.RelativeScriptFilePath, script.ParentFragmentProvider, context.DefaultSchemaName);
+        var resolvedTable = tableResolver.Resolve();
         if (resolvedTable is null)
         {
             return;

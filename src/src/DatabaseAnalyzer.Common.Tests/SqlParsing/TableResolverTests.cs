@@ -6,8 +6,6 @@ using Xunit.Abstractions;
 
 namespace DatabaseAnalyzer.Common.Tests.SqlParsing;
 
-// TODO: CTEs
-
 public sealed class TableResolverTests : ResolverTestBase
 {
     public TableResolverTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
@@ -32,10 +30,10 @@ public sealed class TableResolverTests : ResolverTestBase
         // arrange
         var (script, tableReference) = CreateScript<NamedTableReference>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new TableResolver(issueReporter, script.ParsedScript, tableReference, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
-        var table = sut.Resolve(tableReference);
+        var table = sut.Resolve();
 
         // assert
         table.Should().NotBeNull();
@@ -65,10 +63,10 @@ public sealed class TableResolverTests : ResolverTestBase
         // arrange
         var (script, tableReference) = CreateScript<NamedTableReference>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableResolver(issueReporter, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new TableResolver(issueReporter, script.ParsedScript, tableReference, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
-        var table = sut.Resolve(tableReference);
+        var table = sut.Resolve();
 
         // assert
         table.Should().NotBeNull();

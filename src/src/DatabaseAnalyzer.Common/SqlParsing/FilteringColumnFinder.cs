@@ -29,15 +29,15 @@ public sealed class FilteringColumnFinder
 
     public IEnumerable<ColumnReference> Find(TSqlFragment searchRoot)
     {
-        var columnResolver = new TableColumnResolver(_issueReporter, _script, _relativeScriptFilePath, _parentFragmentProvider, _defaultSchemaName);
         foreach (var columnReference in searchRoot.GetChildren<ColumnReferenceExpression>(recursive: true))
         {
+            var columnResolver = new TableColumnResolver(_issueReporter, _script, columnReference, _relativeScriptFilePath, _parentFragmentProvider, _defaultSchemaName);
             if (!IsUsedInComparison(columnReference))
             {
                 continue;
             }
 
-            var column = columnResolver.Resolve(columnReference);
+            var column = columnResolver.Resolve();
             var fullObjectName = columnReference.TryGetFirstClassObjectName(_defaultSchemaName, _script, _parentFragmentProvider) ?? _relativeScriptFilePath;
 
             yield return new ColumnReference(column.DatabaseName, column.SchemaName, column.TableName, column.ColumnName, TableSourceType.NotDetermined, columnReference, fullObjectName);

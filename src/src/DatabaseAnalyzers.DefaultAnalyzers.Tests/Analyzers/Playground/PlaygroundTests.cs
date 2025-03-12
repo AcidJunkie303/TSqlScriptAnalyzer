@@ -54,9 +54,9 @@ public sealed class PlaygroundTests(ITestOutputHelper testOutputHelper)
 
         public override void Visit(ColumnReferenceExpression node)
         {
-            var resolver = new TableColumnResolver(new FakeIssueReporter(), _script, "dummy.sql", "dbo");
+            var resolver = new TableColumnResolver(new FakeIssueReporter(), _script, node, "dummy.sql", "dbo");
 
-            var aaa = resolver.Resolve(node);
+            var aaa = resolver.Resolve();
             Console.Write(aaa);
             base.Visit(node);
         }
