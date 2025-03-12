@@ -68,7 +68,7 @@ internal sealed class Analyzer : IAnalyzer
 
         var issueReporter = new IssueReporter();
 
-        var stopwatch = new Stopwatch();
+        var stopwatch = Stopwatch.StartNew();
         var scripts = ParseScripts().ToList();
         var scriptParseDuration = stopwatch.Elapsed;
 
@@ -87,15 +87,14 @@ internal sealed class Analyzer : IAnalyzer
             issueReporter
         );
 
-        stopwatch.Restart();
-        PerformAnalysis(analysisContext);
-        var analysisDuration = stopwatch.Elapsed;
+        var analysisDuration = PerformAnalysis(analysisContext);
 
         return CalculateAnalysisResult(analysisContext, scripts, ref scriptParseDuration, ref analysisDuration);
     }
 
-    private void PerformAnalysis(AnalysisContext analysisContext)
+    private TimeSpan PerformAnalysis(AnalysisContext analysisContext)
     {
+        var stopwatch = Stopwatch.StartNew();
         var parallelOptions = new ParallelOptions
         {
 #if DEBUG
@@ -114,6 +113,8 @@ internal sealed class Analyzer : IAnalyzer
             var task2 = Task.Run(() => AnalyzeWithScriptAnalyzers(_scriptAnalyzers, parallelOptions, analysisContext), parallelOptions.CancellationToken);
             Task.WaitAll(task1, task2);
         }
+
+        return stopwatch.Elapsed;
 
         static void AnalyzeWithScriptAnalyzers(IReadOnlyList<IScriptAnalyzer> analyzers, ParallelOptions parallelOptions, AnalysisContext analysisContext)
         {

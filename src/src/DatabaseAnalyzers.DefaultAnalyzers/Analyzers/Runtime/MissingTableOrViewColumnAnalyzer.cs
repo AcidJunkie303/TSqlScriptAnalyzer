@@ -29,8 +29,8 @@ public sealed class MissingTableOrViewColumnAnalyzer : IGlobalAnalyzer
 
     private static void AnalyzeTableReference(IAnalysisContext context, IScriptModel script, ColumnReferenceExpression columnReference, IReadOnlyDictionary<string, DatabaseInformation> databasesByName, Aj5044Settings settings)
     {
-        var columnResolver = new TableColumnResolver(context.IssueReporter, script.ParsedScript, script.RelativeScriptFilePath, script.ParentFragmentProvider, context.DefaultSchemaName);
-        var resolvedColumn = columnResolver.Resolve(columnReference);
+        var columnResolver = new TableColumnResolver(context.IssueReporter, script.ParsedScript, columnReference, script.RelativeScriptFilePath, script.ParentFragmentProvider, context.DefaultSchemaName);
+        var resolvedColumn = columnResolver.Resolve();
         if (resolvedColumn is null)
         {
             return;

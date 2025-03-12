@@ -46,26 +46,26 @@
             <tr>
                 <td>Scripts Parse Duration</td>
                 <td>
-                    @if (Model.Statistics.ScriptsParseDuration.TotalSeconds < 1)
+                    @if (Model.Statistics.ScriptsParseDuration.TotalSeconds < 0.1)
                     {
-                        @("< 1s")
+                        @("< 0.1s")
                     }
                     else
                     {
-                        @($"{Model.Statistics.ScriptsParseDuration.TotalSeconds} s")
+                        @($"{Model.Statistics.ScriptsParseDuration.TotalSeconds:F1} s")
                     }
                 </td>
             </tr>
             <tr>
                 <td>Scripts Analyze Duration</td>
                 <td>
-                    @if (Model.Statistics.AnalysisDuration.TotalSeconds < 1)
+                    @if (Model.Statistics.AnalysisDuration.TotalSeconds < 0.1)
                     {
-                        @("< 1s")
+                        @("< 0.1s")
                     }
                     else
                     {
-                        @($"{Model.Statistics.AnalysisDuration.TotalSeconds} s")
+                        @($"{Model.Statistics.AnalysisDuration.TotalSeconds:F1} s")
                     }
                 </td>
             </tr>
