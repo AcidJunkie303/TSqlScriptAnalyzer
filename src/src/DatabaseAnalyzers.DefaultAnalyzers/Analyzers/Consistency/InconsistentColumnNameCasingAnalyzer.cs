@@ -14,7 +14,7 @@ public sealed class InconsistentColumnNameCasingAnalyzer : IGlobalAnalyzer
         var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5055Settings>();
 
         var columnsAndScriptsByColumnName = new DatabaseObjectExtractor(context.IssueReporter)
-            .Extract(context.Scripts, context.DefaultSchemaName)
+            .Extract(context.ErrorFreeScripts, context.DefaultSchemaName)
             .SelectMany(static a => a.Value.SchemasByName)
             .SelectMany(static a => a.Value.TablesByName.Values.Select(x => (Script: x.ScriptModel, Table: x)))
             .Where(a => !settings.ExcludedDatabaseNames.Contains(a.Table.DatabaseName))

@@ -16,9 +16,9 @@ public sealed class MissingFunctionAnalyzer : IGlobalAnalyzer
     {
         var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5044Settings>();
         var databasesByName = new DatabaseObjectExtractor(context.IssueReporter)
-            .Extract(context.Scripts, context.DefaultSchemaName);
+            .Extract(context.ErrorFreeScripts, context.DefaultSchemaName);
 
-        foreach (var script in context.Scripts)
+        foreach (var script in context.ErrorFreeScripts)
         {
             foreach (var call in script.ParsedScript.GetChildren<FunctionCall>(recursive: true))
             {

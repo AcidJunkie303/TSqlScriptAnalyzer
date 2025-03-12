@@ -16,7 +16,7 @@ public sealed class MissingTableOrViewAnalyzer : IGlobalAnalyzer
     {
         var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5044Settings>();
         var databasesByName = new DatabaseObjectExtractor(context.IssueReporter)
-            .Extract(context.Scripts, context.DefaultSchemaName);
+            .Extract(context.ErrorFreeScripts, context.DefaultSchemaName);
 
         foreach (var script in context.Scripts)
         {

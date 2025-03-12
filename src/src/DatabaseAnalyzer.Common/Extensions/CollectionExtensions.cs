@@ -137,6 +137,11 @@ public static class CollectionExtensions
             .Select(a => a.First());
     }
 
+    public static IEnumerable<T> Deduplicate<T>(this IEnumerable<T> items, IEqualityComparer<T> comparer)
+        => items
+            .GroupBy(a => a, comparer)
+            .Select(a => a.First());
+
     public static int DistinctCount<T>(this IEnumerable<T> items)
         => items.Distinct().Count();
 

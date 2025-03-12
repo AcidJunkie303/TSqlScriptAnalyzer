@@ -14,7 +14,7 @@ public sealed class MissingClusteredIndexAnalyzer : IGlobalAnalyzer
     {
         var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5027Settings>();
         var allTables = new DatabaseObjectExtractor(context.IssueReporter)
-            .Extract(context.Scripts, context.DefaultSchemaName)
+            .Extract(context.ErrorFreeScripts, context.DefaultSchemaName)
             .SelectMany(static a => a.Value.SchemasByName)
             .SelectMany(static a => a.Value.TablesByName.Values);
 

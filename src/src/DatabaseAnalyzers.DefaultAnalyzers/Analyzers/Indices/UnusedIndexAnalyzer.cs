@@ -25,7 +25,7 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
             .AsIReadOnlyDictionary();
 
         var databasesByName = new DatabaseObjectExtractor(context.IssueReporter)
-            .Extract(context.Scripts, context.DefaultSchemaName);
+            .Extract(context.ErrorFreeScripts, context.DefaultSchemaName);
 
         var allIndices = databasesByName.Values
             .SelectMany(db => db.SchemasByName.Values)
@@ -55,7 +55,7 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
 
     private static IEnumerable<ColumnReference> GetFilteringColumns(IAnalysisContext context)
     {
-        foreach (var script in context.Scripts)
+        foreach (var script in context.ErrorFreeScripts)
         {
             IEnumerable<StatementList?> statementLists =
             [
