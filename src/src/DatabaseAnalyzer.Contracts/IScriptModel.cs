@@ -11,4 +11,5 @@ public interface IScriptModel
     IParentFragmentProvider ParentFragmentProvider { get; }
     IReadOnlyList<ScriptError> Errors { get; }
     IReadOnlyList<DiagnosticSuppression> DiagnosticSuppressions { get; }
+    bool HasErrors => Errors.Count > 0;
 }

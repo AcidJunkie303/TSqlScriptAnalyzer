@@ -15,7 +15,7 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
     public void Analyze(IAnalysisContext context)
     {
         var databasesByName = new DatabaseObjectExtractor(context.IssueReporter)
-            .Extract(context.Scripts, context.DefaultSchemaName);
+            .Extract(context.ErrorFreeScripts, context.DefaultSchemaName);
 
         AnalyzeModules(context, databasesByName);
         AnalyzeForeignKeys(context, databasesByName);
@@ -67,7 +67,7 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
     {
         var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5015Settings>();
 
-        foreach (var script in context.Scripts)
+        foreach (var script in context.ErrorFreeScripts)
         {
             IEnumerable<StatementList?> statementLists =
             [

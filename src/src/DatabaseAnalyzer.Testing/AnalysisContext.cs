@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using DatabaseAnalyzer.Contracts;
 
 namespace DatabaseAnalyzer.Testing;
@@ -8,4 +9,8 @@ internal sealed record AnalysisContext(
     IReadOnlyDictionary<string, IReadOnlyList<IScriptModel>> ScriptsByDatabaseName,
     IDiagnosticSettingsProvider DiagnosticSettingsProvider,
     IIssueReporter IssueReporter
-) : IAnalysisContext;
+)
+    : IAnalysisContext
+{
+    public IReadOnlyList<IScriptModel> ErrorFreeScripts { get; } = Scripts.Where(a => !a.HasErrors).ToImmutableArray();
+}

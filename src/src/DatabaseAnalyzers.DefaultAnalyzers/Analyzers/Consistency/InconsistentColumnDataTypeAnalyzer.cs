@@ -13,7 +13,7 @@ public sealed class InconsistentColumnDataTypeAnalyzer : IGlobalAnalyzer
     {
         var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5054Settings>();
         var columnsAndScriptsByColumnName = new DatabaseObjectExtractor(context.IssueReporter)
-            .Extract(context.Scripts, context.DefaultSchemaName)
+            .Extract(context.ErrorFreeScripts, context.DefaultSchemaName)
             .SelectMany(static a => a.Value.SchemasByName)
             .SelectMany(static a => a.Value.TablesByName.Values.Select(x => (Script: x.ScriptModel, Table: x)))
             .SelectMany(static a => a.Table.Columns.Select(x => (a.Script, a.Table, Column: x, DataType: x.ColumnDefinition.DataType.ToDataTypeString())))

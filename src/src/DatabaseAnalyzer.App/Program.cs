@@ -102,6 +102,8 @@ internal static class Program
 
     private static async Task<int> AnalyzeAsync(AnalyzeOptions options)
     {
+        AdjustMinThreadPoolThreads();
+
         try
         {
             var (configuration, settings) = ApplicationSettingsProvider.GetSettings(options.ProjectFilePath);
@@ -151,6 +153,16 @@ internal static class Program
             Console.WriteLine("Exiting with exit code 1");
             return 1;
         }
+    }
+
+    private static void AdjustMinThreadPoolThreads()
+    {
+        ThreadPool.GetMinThreads(out var workerThreads, out var completionPortThreads);
+
+        workerThreads = Math.Max(workerThreads, Environment.ProcessorCount * 2);
+        completionPortThreads = Math.Max(completionPortThreads, Environment.ProcessorCount);
+
+        ThreadPool.SetMinThreads(workerThreads, completionPortThreads);
     }
 
     private sealed record AnalyzeOptions(

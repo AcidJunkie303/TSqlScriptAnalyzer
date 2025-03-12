@@ -7,6 +7,8 @@
             "database-1": "..\\..\\..\\..\\testing\\scripts\\database-1",
             "database-2": "..\\..\\..\\..\\testing\\scripts\\database-2",
             "database-3": "..\\..\\..\\..\\testing\\scripts\\database-3"
+            //"database-4": "..\\..\\..\\..\\testing\\scripts\\database-4"
+            //"database-5": "..\\..\\..\\..\\testing\\scripts\\database-5"
         }
     },
     "Diagnostics": {
