@@ -8,5 +8,8 @@ public sealed record AnalysisResultStatistics(
     int TotalIssueCount,
     int TotalMissingIndexIssueCount,
     int TotalSuppressedIssueCount,
-    int TotalWarningCount
+    int TotalWarningCount,
+    int TotalScripts,
+    TimeSpan ScriptsParseDuration,
+    TimeSpan AnalysisDuration
 );
