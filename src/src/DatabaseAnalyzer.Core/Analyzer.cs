@@ -68,12 +68,11 @@ internal sealed class Analyzer : IAnalyzer
     {
         _logger.LogTrace("Starting analysis");
 
-        var issueReporter = new IssueReporter();
-
         var stopwatch = Stopwatch.StartNew();
         var scripts = ParseScripts();
         var scriptParseDuration = stopwatch.Elapsed;
 
+        var issueReporter = new IssueReporter();
         scripts = ReportAndRemoveErroneousScripts(scripts, issueReporter);
 
         var scriptByDatabaseName = scripts
@@ -252,6 +251,7 @@ internal sealed class Analyzer : IAnalyzer
         var sourceScripts = GetScriptFilePaths();
         var basicScripts = LoadScriptFiles(sourceScripts);
 
+        using var _ = _progressCallback.OnProgressWithAutoEndActionNotification("Parsing SQL script files");
 #if DEBUG
         return basicScripts.ConvertAll(ParseScript);
 #else
