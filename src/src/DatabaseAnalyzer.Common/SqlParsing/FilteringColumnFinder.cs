@@ -38,6 +38,10 @@ public sealed class FilteringColumnFinder
             }
 
             var column = columnResolver.Resolve();
+            if (column is null)
+            {
+                continue;
+            }
             var fullObjectName = columnReference.TryGetFirstClassObjectName(_defaultSchemaName, _script, _parentFragmentProvider) ?? _relativeScriptFilePath;
 
             yield return new ColumnReference(column.DatabaseName, column.SchemaName, column.TableName, column.ColumnName, TableSourceType.NotDetermined, columnReference, fullObjectName);

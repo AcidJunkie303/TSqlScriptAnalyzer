@@ -33,7 +33,13 @@ public sealed class TableColumnResolver
 
     public ColumnReference? Resolve()
     {
+        if (_referenceToResolve.MultiPartIdentifier?.Identifiers is null)
+        {
+            return null;
+        }
+
         TSqlFragment? fragment = _referenceToResolve;
+
         while (true)
         {
             fragment = fragment.GetParent(_parentFragmentProvider);
@@ -44,13 +50,13 @@ public sealed class TableColumnResolver
 
             var column = fragment switch
             {
-                QualifiedJoin qualifiedJoin             => Check(qualifiedJoin),
+                QualifiedJoin qualifiedJoin => Check(qualifiedJoin),
                 DeleteSpecification deleteSpecification => Check(deleteSpecification),
-                FromClause fromClause                   => Check(fromClause),
-                QuerySpecification querySpecification   => Check(querySpecification),
+                FromClause fromClause => Check(fromClause),
+                QuerySpecification querySpecification => Check(querySpecification),
                 UpdateSpecification updateSpecification => Check(updateSpecification),
-                MergeSpecification mergeSpecification   => Check(mergeSpecification),
-                _                                       => null
+                MergeSpecification mergeSpecification => Check(mergeSpecification),
+                _ => null
             };
 
             if (column is not null)
@@ -230,12 +236,15 @@ public sealed class TableColumnResolver
             or DeleteStatement
             or UpdateStatement
             or InsertStatement
-            or MergeStatement;
+            or MergeStatement
+            or TSqlBatch
+            or TSqlScript;
 
     private void ReportMissingAlias(ColumnReferenceExpression columnReference)
     {
         var currentDatabaseName = _script.TryFindCurrentDatabaseNameAtFragment(columnReference);
         var fullObjectName = columnReference.TryGetFirstClassObjectName(_defaultSchemaName, _script, _parentFragmentProvider);
+
         _issueReporter.Report(WellKnownDiagnosticDefinitions.MissingAlias, currentDatabaseName ?? DatabaseNames.Unknown, _relativeScriptFilePath, fullObjectName, columnReference.GetCodeRegion(), columnReference.GetSql());
     }
 

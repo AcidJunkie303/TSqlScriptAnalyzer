@@ -69,7 +69,7 @@ internal sealed class Analyzer : IAnalyzer
         var issueReporter = new IssueReporter();
 
         var stopwatch = Stopwatch.StartNew();
-        var scripts = ParseScripts().ToList();
+        var scripts = ParseScripts();
         var scriptParseDuration = stopwatch.Elapsed;
 
         ReportErroneousScripts(scripts, issueReporter);
@@ -104,19 +104,21 @@ internal sealed class Analyzer : IAnalyzer
 #endif
         };
 
-        AnalyzeWithScriptAnalyzers(_scriptAnalyzers, parallelOptions, analysisContext);
-        AnalyzeWithGlobalAnalyzers(_globalAnalyzers, parallelOptions, analysisContext);
-
         using (_progressCallback.OnProgressWithAutoEndActionNotification("Running analyzers"))
         {
+#if DEBUG
+            AnalyzeWithGlobalAnalyzers(_globalAnalyzers, parallelOptions, analysisContext);
+            AnalyzeWithScriptAnalyzers(_scriptAnalyzers, parallelOptions, analysisContext);
+#else
             var task1 = Task.Run(() => AnalyzeWithGlobalAnalyzers(_globalAnalyzers, parallelOptions, analysisContext), parallelOptions.CancellationToken);
             var task2 = Task.Run(() => AnalyzeWithScriptAnalyzers(_scriptAnalyzers, parallelOptions, analysisContext), parallelOptions.CancellationToken);
             Task.WaitAll(task1, task2);
+#endif
         }
 
         return stopwatch.Elapsed;
 
-        static void AnalyzeWithScriptAnalyzers(IReadOnlyList<IScriptAnalyzer> analyzers, ParallelOptions parallelOptions, AnalysisContext analysisContext)
+        void AnalyzeWithScriptAnalyzers(IReadOnlyList<IScriptAnalyzer> analyzers, ParallelOptions parallelOptions, AnalysisContext analysisContext)
         {
             var errorFreeScripts = analysisContext.Scripts.Where(a => a.Errors.Count == 0);
             var scriptsAndAnalyzers =
@@ -137,11 +139,12 @@ internal sealed class Analyzer : IAnalyzer
                 {
                     var analyzerName = analyzer.GetType().FullName ?? "<unknown>";
                     analysisContext.IssueReporter.Report(WellKnownDiagnosticDefinitions.UnhandledAnalyzerException, script.DatabaseName, script.RelativeScriptFilePath, null, CodeRegion.Unknown, analyzerName, ex.Message);
+                    _logger.LogError(ex, "The {Analyzer} threw an unhandled exception", analyzerName);
                 }
             });
         }
 
-        static void AnalyzeWithGlobalAnalyzers(IReadOnlyList<IGlobalAnalyzer> analyzers, ParallelOptions parallelOptions, AnalysisContext analysisContext)
+        void AnalyzeWithGlobalAnalyzers(IReadOnlyList<IGlobalAnalyzer> analyzers, ParallelOptions parallelOptions, AnalysisContext analysisContext)
         {
             Parallel.ForEach(analyzers, parallelOptions, analyzer =>
             {
@@ -154,7 +157,11 @@ internal sealed class Analyzer : IAnalyzer
 #pragma warning restore CA1031
                 {
                     var analyzerName = analyzer.GetType().FullName ?? "<unknown>";
-                    analysisContext.IssueReporter.Report(WellKnownDiagnosticDefinitions.UnhandledAnalyzerException, string.Empty, string.Empty, null, CodeRegion.Unknown, analyzerName, ex.Message);
+
+                    // We need to have a script file path, otherwise the aggregation between issue and script file for Global Analyzers won't work
+                    var relativeScriptFilePath = analysisContext.Scripts.Count == 0 ? "Unknown" : analysisContext.Scripts[0].RelativeScriptFilePath;
+                    analysisContext.IssueReporter.Report(WellKnownDiagnosticDefinitions.UnhandledAnalyzerException, "<Unknown>", relativeScriptFilePath, null, CodeRegion.Unknown, analyzerName, ex.Message);
+                    _logger.LogError(ex, "The {Analyzer} threw an unhandled exception", analyzerName);
                 }
             });
         }
@@ -163,7 +170,9 @@ internal sealed class Analyzer : IAnalyzer
     private AnalysisResult CalculateAnalysisResult(AnalysisContext analysisContext, IReadOnlyList<IScriptModel> scripts, ref readonly TimeSpan scriptParseDuration, ref readonly TimeSpan analysisDuration)
     {
         using var _ = _progressCallback.OnProgressWithAutoEndActionNotification("Calculating results");
+
         var issues = analysisContext.IssueReporter.Issues
+            .Where(a => !_applicationSettings.Diagnostics.DisabledDiagnostics.Contains(a.DiagnosticDefinition.DiagnosticId))
             .Deduplicate(IssueEqualityComparers.ByPathAndDatabaseNameAndObjectNameAndCodeRegionAndMessage)
             .ToList();
 
@@ -233,18 +242,22 @@ internal sealed class Analyzer : IAnalyzer
                 comparer: StringComparer.OrdinalIgnoreCase);
     }
 
-    private ParallelQuery<IScriptModel> ParseScripts()
+    private List<IScriptModel> ParseScripts()
     {
         var sourceScripts = GetScriptFilePaths();
         var basicScripts = LoadScriptFiles(sourceScripts);
 
+#if DEBUG
+        return basicScripts.ConvertAll(ParseScript);
+#else
         return basicScripts
             .AsParallel()
             .WithExecutionMode(ParallelExecutionMode.ForceParallelism)
-#if DEBUG
             .WithDegreeOfParallelism(1)
+            .Select(ParseScript)
+            .ToList();
 #endif
-            .Select(ParseScript);
+
     }
 
     private IScriptModel ParseScript(BasicScriptInformation script)

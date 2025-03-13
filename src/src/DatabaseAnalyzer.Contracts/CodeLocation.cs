@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 namespace DatabaseAnalyzer.Contracts;
 
 [StructLayout(LayoutKind.Auto)]
-public record struct CodeLocation(int Line, int Column) : IComparable<CodeLocation>, IComparable
+public record struct CodeLocation(int Line, int Column) : IComparable<CodeLocation>, IComparable, IEquatable<CodeLocation>
 {
     public static CodeLocation Create(int line, int column) => new(line, column);
 
@@ -26,4 +26,8 @@ public record struct CodeLocation(int Line, int Column) : IComparable<CodeLocati
     public static bool operator >=(CodeLocation left, CodeLocation right) => left.CompareTo(right) >= 0;
 
     public override readonly string ToString() => $"({Line},{Column})";
+
+    public override int GetHashCode() => HashCode.Combine(Line, Column);
+
+    public bool Equals(CodeLocation other) => Line == other.Line && Column == other.Column;
 }

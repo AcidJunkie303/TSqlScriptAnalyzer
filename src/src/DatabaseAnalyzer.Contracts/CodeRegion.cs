@@ -6,7 +6,7 @@ namespace DatabaseAnalyzer.Contracts;
 public record struct CodeRegion(
     CodeLocation Begin,
     CodeLocation End
-) : IComparable<CodeRegion>, IComparable
+) : IComparable<CodeRegion>, IComparable, IEquatable<CodeRegion>
 {
     public static CodeRegion Unknown { get; } = Create(1, 1, 1, 1);
 
@@ -43,4 +43,9 @@ public record struct CodeRegion(
     public static bool operator >=(CodeRegion left, CodeRegion right) => left.CompareTo(right) >= 0;
 
     public override readonly string ToString() => $"{Begin} - {End}";
+
+    public override int GetHashCode() => HashCode.Combine(Begin, End);
+
+    public bool Equals(CodeRegion other)
+        => Begin.Equals(other.Begin) && End.Equals(other.End);
 }

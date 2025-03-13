@@ -38,8 +38,13 @@ public static class DataTypeReferenceExtensions
 
         return builder.ToString();
 
-        static void AppendDataType(StringBuilder builder, DataTypeReference sqlDataTypeReference)
+        static void AppendDataType(StringBuilder builder, DataTypeReference? sqlDataTypeReference)
         {
+            if (sqlDataTypeReference?.Name?.Identifiers is null)
+            {
+                return;
+            }
+
             foreach (var part in sqlDataTypeReference.Name.Identifiers)
             {
                 if (builder.Length > 0)
