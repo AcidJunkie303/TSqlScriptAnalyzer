@@ -2,18 +2,18 @@ using System.Text.RegularExpressions;
 using Ardalis.GuardClauses;
 using DatabaseAnalyzer.Common.Extensions;
 
-namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
+namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
-public sealed class MissingIndexSuppressionSettingsRaw
+public sealed class Aj5015SettingsSettingsEntryRaw
 {
     public string? FullColumnNamePattern { get; set; }
     public string? SuppressionReason { get; set; }
 
-    public MissingIndexSuppressionSettings ToSettings() => new
+    public Aj5015SettingsSettingsEntry ToSettings() => new
     (
         Guard.Against.NullOrWhiteSpace(FullColumnNamePattern).ToRegexWithSimpleWildcards(caseSensitive: false, compileRegex: true),
         Guard.Against.NullOrWhiteSpace(SuppressionReason)
     );
 }
 
-public sealed record MissingIndexSuppressionSettings(Regex FullColumnNamePattern, string SuppressionReason);
+public sealed record Aj5015SettingsSettingsEntry(Regex FullColumnNamePattern, string SuppressionReason);

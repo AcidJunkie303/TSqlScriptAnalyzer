@@ -23,9 +23,9 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
         // TODO: Schema name references. Kinda hard...
     }
 
-    private static void AnalyzeDataTypeReferences(IAnalysisContext context, IScriptModel script, NameQuotingPolicy policy, string configurationKeyName)
+    private static void AnalyzeDataTypeReferences(IAnalysisContext context, IScriptModel script, Aj5038SettingsNameQuotingPolicy policy, string configurationKeyName)
     {
-        if (policy == NameQuotingPolicy.Undefined)
+        if (policy == Aj5038SettingsNameQuotingPolicy.Undefined)
         {
             return;
         }
@@ -40,9 +40,9 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
             configurationKeyName);
     }
 
-    private static void AnalyzeTableReferences(IAnalysisContext context, IScriptModel script, NameQuotingPolicy policy, string configurationKeyName)
+    private static void AnalyzeTableReferences(IAnalysisContext context, IScriptModel script, Aj5038SettingsNameQuotingPolicy policy, string configurationKeyName)
     {
-        if (policy == NameQuotingPolicy.Undefined)
+        if (policy == Aj5038SettingsNameQuotingPolicy.Undefined)
         {
             return;
         }
@@ -69,9 +69,9 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
             configurationKeyName);
     }
 
-    private static void AnalyzeColumnDefinitions(IAnalysisContext context, IScriptModel script, NameQuotingPolicy policy, string configurationKeyName)
+    private static void AnalyzeColumnDefinitions(IAnalysisContext context, IScriptModel script, Aj5038SettingsNameQuotingPolicy policy, string configurationKeyName)
     {
-        if (policy == NameQuotingPolicy.Undefined)
+        if (policy == Aj5038SettingsNameQuotingPolicy.Undefined)
         {
             return;
         }
@@ -86,9 +86,9 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
             configurationKeyName);
     }
 
-    private static void AnalyzeColumnReferences(IAnalysisContext context, IScriptModel script, NameQuotingPolicy policy, string configurationKeyName)
+    private static void AnalyzeColumnReferences(IAnalysisContext context, IScriptModel script, Aj5038SettingsNameQuotingPolicy policy, string configurationKeyName)
     {
-        if (policy == NameQuotingPolicy.Undefined)
+        if (policy == Aj5038SettingsNameQuotingPolicy.Undefined)
         {
             return;
         }
@@ -103,9 +103,9 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
             configurationKeyName);
     }
 
-    private static void AnalyzeObjectCreations(IAnalysisContext context, IScriptModel script, NameQuotingPolicy policy, string configurationKeyName)
+    private static void AnalyzeObjectCreations(IAnalysisContext context, IScriptModel script, Aj5038SettingsNameQuotingPolicy policy, string configurationKeyName)
     {
-        if (policy == NameQuotingPolicy.Undefined)
+        if (policy == Aj5038SettingsNameQuotingPolicy.Undefined)
         {
             return;
         }
@@ -156,16 +156,16 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
             configurationKeyName);
     }
 
-    private static void Analyze<T>(IAnalysisContext context, IScriptModel script, IEnumerable<T> statements, Func<T, IEnumerable<Identifier>> identifierGetter, string typeName, NameQuotingPolicy nameQuotingPolicy, string configurationKeyName)
+    private static void Analyze<T>(IAnalysisContext context, IScriptModel script, IEnumerable<T> statements, Func<T, IEnumerable<Identifier>> identifierGetter, string typeName, Aj5038SettingsNameQuotingPolicy aj5038SettingsNameQuotingPolicy, string configurationKeyName)
         where T : TSqlFragment
     {
         foreach (var statement in statements)
         {
-            Analyze(context, script, statement, identifierGetter, typeName, nameQuotingPolicy, configurationKeyName);
+            Analyze(context, script, statement, identifierGetter, typeName, aj5038SettingsNameQuotingPolicy, configurationKeyName);
         }
     }
 
-    private static void Analyze<T>(IAnalysisContext context, IScriptModel script, T statement, Func<T, IEnumerable<Identifier>> identifierGetter, string typeName, NameQuotingPolicy nameQuotingPolicy, string configurationKeyName)
+    private static void Analyze<T>(IAnalysisContext context, IScriptModel script, T statement, Func<T, IEnumerable<Identifier>> identifierGetter, string typeName, Aj5038SettingsNameQuotingPolicy aj5038SettingsNameQuotingPolicy, string configurationKeyName)
         where T : TSqlFragment
     {
         foreach (var identifier in identifierGetter(statement))
@@ -175,7 +175,7 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
                 continue;
             }
 
-            var shouldBeWrittenAs = GetPolicyCompliantIdentifier(identifier, nameQuotingPolicy);
+            var shouldBeWrittenAs = GetPolicyCompliantIdentifier(identifier, aj5038SettingsNameQuotingPolicy);
             if (shouldBeWrittenAs.IsNullOrWhiteSpace())
             {
                 continue;
@@ -192,7 +192,7 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
         }
     }
 
-    private static string? GetPolicyCompliantIdentifier(Identifier identifier, NameQuotingPolicy quotingPolicy)
+    private static string? GetPolicyCompliantIdentifier(Identifier identifier, Aj5038SettingsNameQuotingPolicy quotingPolicy)
     {
         if (identifier.Value.IsNullOrWhiteSpace())
         {
@@ -201,12 +201,12 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
 
         return quotingPolicy switch
         {
-            NameQuotingPolicy.Undefined              => null,
-            NameQuotingPolicy.Required               => identifier.QuoteType is QuoteType.DoubleQuote or QuoteType.SquareBracket ? null : $"[{identifier.Value}]",
-            NameQuotingPolicy.DoubleQuotesRequired   => identifier.QuoteType == QuoteType.DoubleQuote ? null : $"\"{identifier.Value}\"",
-            NameQuotingPolicy.SquareBracketsRequired => identifier.QuoteType == QuoteType.SquareBracket ? null : $"[{identifier.Value}]",
-            NameQuotingPolicy.NotAllowed             => identifier.QuoteType == QuoteType.NotQuoted ? null : identifier.Value,
-            _                                        => throw new ArgumentOutOfRangeException(nameof(quotingPolicy), quotingPolicy, $"{nameof(NameQuotingPolicy)}.{quotingPolicy} is not handled")
+            Aj5038SettingsNameQuotingPolicy.Undefined              => null,
+            Aj5038SettingsNameQuotingPolicy.Required               => identifier.QuoteType is QuoteType.DoubleQuote or QuoteType.SquareBracket ? null : $"[{identifier.Value}]",
+            Aj5038SettingsNameQuotingPolicy.DoubleQuotesRequired   => identifier.QuoteType == QuoteType.DoubleQuote ? null : $"\"{identifier.Value}\"",
+            Aj5038SettingsNameQuotingPolicy.SquareBracketsRequired => identifier.QuoteType == QuoteType.SquareBracket ? null : $"[{identifier.Value}]",
+            Aj5038SettingsNameQuotingPolicy.NotAllowed             => identifier.QuoteType == QuoteType.NotQuoted ? null : identifier.Value,
+            _                                                      => throw new ArgumentOutOfRangeException(nameof(quotingPolicy), quotingPolicy, $"{nameof(Aj5038SettingsNameQuotingPolicy)}.{quotingPolicy} is not handled")
         };
     }
 

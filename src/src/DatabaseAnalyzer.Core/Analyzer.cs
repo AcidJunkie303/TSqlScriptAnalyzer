@@ -87,7 +87,8 @@ internal sealed class Analyzer : IAnalyzer
             scriptByDatabaseName,
             _diagnosticSettingsProvider,
             issueReporter,
-            _loggerFactory
+            _loggerFactory,
+            _applicationSettings.Diagnostics.DisabledDiagnostics
         );
 
         var analysisDuration = PerformAnalysis(scripts, analysisContextFactory);

@@ -106,7 +106,7 @@ public sealed class MissingIndexAnalyzerTests(ITestOutputHelper testOutputHelper
 
         var settings = new Aj5015SettingsRaw
         {
-            MissingIndexSuppressions = [new MissingIndexSuppressionSettingsRaw { FullColumnNamePattern = "MyDb.dbo.Employee.Email", SuppressionReason = "test-reason" }]
+            MissingIndexSuppressions = [new Aj5015SettingsSettingsEntryRaw { FullColumnNamePattern = "MyDb.dbo.Employee.Email", SuppressionReason = "test-reason" }]
         }.ToSettings();
 
         var tester = GetDefaultTesterBuilder(ObjectsForMissingIndexOnFilteringColumnTests, procedures)
@@ -231,7 +231,7 @@ public sealed class MissingIndexAnalyzerTests(ITestOutputHelper testOutputHelper
 
         var settings = new Aj5017SettingsRaw
         {
-            MissingIndexOnForeignKeyColumnSuppressions = [new MissingIndexSuppressionSettingsRaw { FullColumnNamePattern = "MyDb.dbo.Employee.DepartmentId", SuppressionReason = "test-reason" }]
+            MissingIndexOnForeignKeyColumnSuppressions = [new Aj5015SettingsSettingsEntryRaw { FullColumnNamePattern = "MyDb.dbo.Employee.DepartmentId", SuppressionReason = "test-reason" }]
         }.ToSettings();
 
         var tester = GetDefaultTesterBuilder(code)

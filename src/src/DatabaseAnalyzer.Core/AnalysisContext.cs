@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Collections.Immutable;
 using DatabaseAnalyzer.Contracts;
 using Microsoft.Extensions.Logging;
@@ -10,8 +11,8 @@ internal sealed record AnalysisContext(
     IReadOnlyDictionary<string, IReadOnlyList<IScriptModel>> ScriptsByDatabaseName,
     IDiagnosticSettingsProvider DiagnosticSettingsProvider,
     IIssueReporter IssueReporter,
-    ILogger Logger
-)
+    ILogger Logger,
+    FrozenSet<string> DisabledDiagnosticIds)
     : IAnalysisContext
 {
     public IReadOnlyList<IScriptModel> ErrorFreeScripts { get; } = Scripts.Where(a => !a.HasErrors).ToImmutableArray();
