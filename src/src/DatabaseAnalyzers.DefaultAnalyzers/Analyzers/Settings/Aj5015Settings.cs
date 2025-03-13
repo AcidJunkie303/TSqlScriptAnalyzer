@@ -1,7 +1,6 @@
 using System.Collections.Immutable;
 using System.ComponentModel;
 using DatabaseAnalyzer.Contracts;
-using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
@@ -9,7 +8,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 internal sealed class Aj5015SettingsRaw : IRawSettings<Aj5015Settings>
 {
     // ReSharper disable UnusedAutoPropertyAccessor.Global -> used during deserialization
-    public IReadOnlyList<MissingIndexSuppressionSettingsRaw>? MissingIndexSuppressions { get; set; }
+    public IReadOnlyList<Aj5015SettingsSettingsEntryRaw>? MissingIndexSuppressions { get; set; }
 
     public Aj5015Settings ToSettings()
         => MissingIndexSuppressions is null
@@ -19,14 +18,14 @@ internal sealed class Aj5015SettingsRaw : IRawSettings<Aj5015Settings>
 
 internal sealed record Aj5015Settings(
     [property: Description("List of of suppressed missing index warnings. For 'FullColumnNamePattern', Wildcards like `*` and `?` are supported.")]
-    IReadOnlyList<MissingIndexSuppressionSettings> MissingIndexSuppressions
+    IReadOnlyList<Aj5015SettingsSettingsEntry> MissingIndexSuppressions
 ) : ISettings<Aj5015Settings>
 {
     public static Aj5015Settings Default { get; } = new Aj5015SettingsRaw
     {
         MissingIndexSuppressions =
         [
-            new MissingIndexSuppressionSettingsRaw { FullColumnNamePattern = "*.sys.*", SuppressionReason = "Built-in schema" }
+            new Aj5015SettingsSettingsEntryRaw { FullColumnNamePattern = "*.sys.*", SuppressionReason = "Built-in schema" }
         ]
     }.ToSettings();
 

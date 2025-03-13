@@ -8,6 +8,7 @@ internal sealed class AnalysisContextFactory
 {
     private readonly string _defaultSchema;
     private readonly IDiagnosticSettingsProvider _diagnosticSettingsProvider;
+    private readonly FrozenSet<string> _disabledDiagnosticIds;
     private readonly IIssueReporter _issueReporter;
     private readonly ILoggerFactory _loggerFactory;
     private readonly FrozenDictionary<string, IReadOnlyList<IScriptModel>> _scriptByDatabaseName;
@@ -20,8 +21,8 @@ internal sealed class AnalysisContextFactory
         FrozenDictionary<string, IReadOnlyList<IScriptModel>> scriptByDatabaseName,
         IDiagnosticSettingsProvider diagnosticSettingsProvider,
         IIssueReporter issueReporter,
-        ILoggerFactory loggerFactory
-    )
+        ILoggerFactory loggerFactory,
+        FrozenSet<string> disabledDiagnosticIds)
     {
         _defaultSchema = defaultSchema;
         _scripts = scripts;
@@ -29,6 +30,7 @@ internal sealed class AnalysisContextFactory
         _diagnosticSettingsProvider = diagnosticSettingsProvider;
         _issueReporter = issueReporter;
         _loggerFactory = loggerFactory;
+        _disabledDiagnosticIds = disabledDiagnosticIds;
     }
 
     public AnalysisContext Create(IScriptAnalyzer scriptAnalyzer, IScriptModel script)
@@ -48,7 +50,8 @@ internal sealed class AnalysisContextFactory
             _scriptByDatabaseName,
             _diagnosticSettingsProvider,
             _issueReporter,
-            logger
+            logger,
+            _disabledDiagnosticIds
         );
     }
 
@@ -63,7 +66,8 @@ internal sealed class AnalysisContextFactory
             _scriptByDatabaseName,
             _diagnosticSettingsProvider,
             _issueReporter,
-            logger
+            logger,
+            _disabledDiagnosticIds
         );
     }
 }

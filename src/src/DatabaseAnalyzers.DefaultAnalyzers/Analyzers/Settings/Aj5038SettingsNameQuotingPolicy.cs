@@ -1,6 +1,6 @@
-namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Naming;
+namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
-public enum NameQuotingPolicy
+public enum Aj5038SettingsNameQuotingPolicy
 {
     /// <summary>
     ///     Names can be quoted but it's not mandatory.

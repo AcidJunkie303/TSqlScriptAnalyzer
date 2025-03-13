@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.Models;
@@ -90,7 +91,8 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
             allScriptsByDatabaseName,
             diagnosticSettingsProvider,
             new IssueReporter(),
-            NullLogger.Instance);
+            NullLogger.Instance,
+            FrozenSet<string>.Empty);
 
         return new GlobalAnalyzerTester(
             analysisContext,

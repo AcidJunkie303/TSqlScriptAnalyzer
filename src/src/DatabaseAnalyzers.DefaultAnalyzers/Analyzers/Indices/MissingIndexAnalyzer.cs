@@ -17,8 +17,15 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
         var databasesByName = new DatabaseObjectExtractor(context.IssueReporter)
             .Extract(context.ErrorFreeScripts, context.DefaultSchemaName);
 
-        AnalyzeModules(context, databasesByName);
-        AnalyzeForeignKeys(context, databasesByName);
+        if (!context.DisabledDiagnosticIds.Contains(DiagnosticDefinitions.FilteringColumnNotIndexed.DiagnosticId))
+        {
+            AnalyzeModules(context, databasesByName);
+        }
+
+        if (!context.DisabledDiagnosticIds.Contains(DiagnosticDefinitions.ForeignKeyColumnNotIndexed.DiagnosticId))
+        {
+            AnalyzeForeignKeys(context, databasesByName);
+        }
     }
 
     private static void AnalyzeForeignKeys(IAnalysisContext context, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
