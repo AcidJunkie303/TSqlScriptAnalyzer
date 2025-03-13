@@ -142,7 +142,7 @@ internal sealed class Analyzer : IAnalyzer
                 {
                     var analyzerName = analyzer.GetType().FullName ?? "<unknown>";
                     analysisContext.IssueReporter.Report(WellKnownDiagnosticDefinitions.UnhandledAnalyzerException, script.DatabaseName, script.RelativeScriptFilePath, null, CodeRegion.Unknown, analyzerName, ex.Message);
-                    _logger.LogError(ex, "The {Analyzer} threw an unhandled exception", analyzerName);
+                    _logger.LogError(ex, "Analyzer threw an unhandled exception");
                 }
             });
         }
@@ -165,7 +165,7 @@ internal sealed class Analyzer : IAnalyzer
                     // We need to have a script file path, otherwise the aggregation between issue and script file for Global Analyzers won't work
                     var relativeScriptFilePath = analysisContext.Scripts.Count == 0 ? "Unknown" : analysisContext.Scripts[0].RelativeScriptFilePath;
                     analysisContext.IssueReporter.Report(WellKnownDiagnosticDefinitions.UnhandledAnalyzerException, "<Unknown>", relativeScriptFilePath, null, CodeRegion.Unknown, analyzerName, ex.Message);
-                    _logger.LogError(ex, "The {Analyzer} threw an unhandled exception", analyzerName);
+                    _logger.LogError(ex, "Analyzer threw an unhandled exception");
                 }
             });
         }
