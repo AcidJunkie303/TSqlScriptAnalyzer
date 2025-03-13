@@ -18,6 +18,11 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzer : IScriptAnalyzer
                 continue;
             }
 
+            if (IsWithinDmlStatement(script, token))
+            {
+                continue;
+            }
+
             // in case the next non-comment and non-whitespace token is another END token, we skip it
             var nextEndTokenIndex = FindNextTokenIndexWithCommentSkip(script.ParsedScript.ScriptTokenStream, i, IsEnd);
             if (nextEndTokenIndex >= 0)
@@ -138,6 +143,19 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzer : IScriptAnalyzer
 
     private static bool IsEnd(TSqlParserToken? token)
         => token is not null && token.TokenType == TSqlTokenType.End;
+
+    private static bool IsWithinDmlStatement(IScriptModel script, TSqlParserToken token)
+    {
+        var fragment = script.ParsedScript.TryGetSqlFragmentAtPosition(token);
+        if (fragment is null)
+        {
+            return false;
+        }
+
+        return fragment
+            .GetParents(script.ParentFragmentProvider)
+            .Any(a => a is SelectStatement or UpdateStatement or InsertStatement or DeleteStatement or MergeStatement);
+    }
 
     private static class DiagnosticDefinitions
     {
