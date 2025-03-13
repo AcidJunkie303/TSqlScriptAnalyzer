@@ -282,7 +282,7 @@ public sealed class IndexNamingAnalyzer : IScriptAnalyzer
             "AJ5052",
             IssueType.Warning,
             "Index Naming",
-            "The index `PK_Asset` should be named as `PK_dbo_Asset`. Index properties are `PrimaryKey, Clustered`.",
+            "The index `{0}` should be named as `{1}`. Index properties are `{2}`.",
             ["Index Name", "Expected index name", "Index Properties"],
             UrlPatterns.DefaultDiagnosticHelp
         );

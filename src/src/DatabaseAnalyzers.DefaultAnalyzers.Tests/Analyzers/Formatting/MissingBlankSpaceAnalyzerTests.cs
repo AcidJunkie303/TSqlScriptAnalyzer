@@ -20,6 +20,19 @@ public sealed class MissingBlankSpaceAnalyzerTests(ITestOutputHelper testOutputH
     }
 
     [Fact]
+    public void WhenNewLineAfterComma_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            SELECT  1,
+                            2
+                            """;
+        Verify(code);
+    }
+
+    [Fact]
     public void WhenNoBlankSpaceAfterComma_ThenDiagnose()
     {
         const string code = """
