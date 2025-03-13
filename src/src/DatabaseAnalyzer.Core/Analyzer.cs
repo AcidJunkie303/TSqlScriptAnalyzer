@@ -118,7 +118,7 @@ internal sealed class Analyzer : IAnalyzer
 
         return stopwatch.Elapsed;
 
-        static void AnalyzeWithScriptAnalyzers(IReadOnlyList<IScriptAnalyzer> analyzers, ParallelOptions parallelOptions, AnalysisContext analysisContext)
+        void AnalyzeWithScriptAnalyzers(IReadOnlyList<IScriptAnalyzer> analyzers, ParallelOptions parallelOptions, AnalysisContext analysisContext)
         {
             var errorFreeScripts = analysisContext.Scripts.Where(a => a.Errors.Count == 0);
             var scriptsAndAnalyzers =
@@ -139,11 +139,12 @@ internal sealed class Analyzer : IAnalyzer
                 {
                     var analyzerName = analyzer.GetType().FullName ?? "<unknown>";
                     analysisContext.IssueReporter.Report(WellKnownDiagnosticDefinitions.UnhandledAnalyzerException, script.DatabaseName, script.RelativeScriptFilePath, null, CodeRegion.Unknown, analyzerName, ex.Message);
+                    _logger.LogError(ex, "The {Analyzer} threw an unhandled exception", analyzerName);
                 }
             });
         }
 
-        static void AnalyzeWithGlobalAnalyzers(IReadOnlyList<IGlobalAnalyzer> analyzers, ParallelOptions parallelOptions, AnalysisContext analysisContext)
+        void AnalyzeWithGlobalAnalyzers(IReadOnlyList<IGlobalAnalyzer> analyzers, ParallelOptions parallelOptions, AnalysisContext analysisContext)
         {
             Parallel.ForEach(analyzers, parallelOptions, analyzer =>
             {
@@ -160,6 +161,7 @@ internal sealed class Analyzer : IAnalyzer
                     // We need to have a script file path, otherwise the aggregation between issue and script file for Global Analyzers won't work
                     var relativeScriptFilePath = analysisContext.Scripts.Count == 0 ? "Unknown" : analysisContext.Scripts[0].RelativeScriptFilePath;
                     analysisContext.IssueReporter.Report(WellKnownDiagnosticDefinitions.UnhandledAnalyzerException, "<Unknown>", relativeScriptFilePath, null, CodeRegion.Unknown, analyzerName, ex.Message);
+                    _logger.LogError(ex, "The {Analyzer} threw an unhandled exception", analyzerName);
                 }
             });
         }
