@@ -38,7 +38,7 @@ public sealed class DiagnosticDefinition : IDiagnosticDefinition
                && IssueType == other.IssueType
                && string.Equals(DiagnosticId, other.DiagnosticId, StringComparison.Ordinal)
                && string.Equals(MessageTemplate, other.MessageTemplate, StringComparison.Ordinal)
-               && InsertionStringDescriptions.SequenceEqual(other.InsertionStringDescriptions, StringComparer.Ordinal);
+               && InsertionStringDescriptions.SequenceEqual(other.InsertionStringDescriptions, StringComparer.OrdinalIgnoreCase);
     }
 
     public override bool Equals(object? obj)
