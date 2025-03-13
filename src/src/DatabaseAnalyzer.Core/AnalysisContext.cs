@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using DatabaseAnalyzer.Contracts;
+using Microsoft.Extensions.Logging;
 
 namespace DatabaseAnalyzer.Core;
 
@@ -8,7 +9,8 @@ internal sealed record AnalysisContext(
     IReadOnlyList<IScriptModel> Scripts,
     IReadOnlyDictionary<string, IReadOnlyList<IScriptModel>> ScriptsByDatabaseName,
     IDiagnosticSettingsProvider DiagnosticSettingsProvider,
-    IIssueReporter IssueReporter
+    IIssueReporter IssueReporter,
+    ILogger Logger
 )
     : IAnalysisContext
 {

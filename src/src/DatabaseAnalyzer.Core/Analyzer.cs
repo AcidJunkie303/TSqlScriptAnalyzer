@@ -25,6 +25,7 @@ internal sealed class Analyzer : IAnalyzer
     private readonly IDiagnosticSuppressionExtractor _diagnosticSuppressionExtractor;
     private readonly IReadOnlyList<IGlobalAnalyzer> _globalAnalyzers;
     private readonly ILogger<Analyzer> _logger;
+    private readonly ILoggerFactory _loggerFactory;
     private readonly IProgressCallback _progressCallback;
     private readonly IReadOnlyList<IScriptAnalyzer> _scriptAnalyzers;
     private readonly IScriptLoader _scriptLoader;
@@ -41,7 +42,7 @@ internal sealed class Analyzer : IAnalyzer
         IEnumerable<IGlobalAnalyzer> globalAnalyzers,
         IDiagnosticSuppressionExtractor diagnosticSuppressionExtractor,
         IReadOnlyDictionary<string, IDiagnosticDefinition> diagnosticDefinitionsById,
-        ILogger<Analyzer> logger)
+        ILogger<Analyzer> logger, ILoggerFactory loggerFactory)
     {
         _progressCallback = progressCallback;
         _scriptSourceProvider = scriptSourceProvider;
@@ -57,6 +58,7 @@ internal sealed class Analyzer : IAnalyzer
         _diagnosticSuppressionExtractor = diagnosticSuppressionExtractor;
         _diagnosticDefinitionsById = diagnosticDefinitionsById;
         _logger = logger;
+        _loggerFactory = loggerFactory;
 
         static bool AreAllDiagnosticsForAnalyzerDisabled(IObjectAnalyzer analyzer, DiagnosticsSettings diagnosticsSettings)
             => analyzer.SupportedDiagnostics.All(a => diagnosticsSettings.DisabledDiagnostics.Contains(a.DiagnosticId));
@@ -72,27 +74,28 @@ internal sealed class Analyzer : IAnalyzer
         var scripts = ParseScripts();
         var scriptParseDuration = stopwatch.Elapsed;
 
-        ReportErroneousScripts(scripts, issueReporter);
+        scripts = ReportAndRemoveErroneousScripts(scripts, issueReporter);
 
         var scriptByDatabaseName = scripts
             .GroupBy(a => a.DatabaseName, StringComparer.OrdinalIgnoreCase)
             .ToFrozenDictionary(a => a.Key, a => (IReadOnlyList<IScriptModel>) a.ToImmutableArray(), StringComparer.OrdinalIgnoreCase);
 
-        var analysisContext = new AnalysisContext
+        var analysisContextFactory = new AnalysisContextFactory
         (
             _applicationSettings.DefaultSchemaName,
             scripts,
             scriptByDatabaseName,
             _diagnosticSettingsProvider,
-            issueReporter
+            issueReporter,
+            _loggerFactory
         );
 
-        var analysisDuration = PerformAnalysis(analysisContext);
+        var analysisDuration = PerformAnalysis(scripts, analysisContextFactory);
 
-        return CalculateAnalysisResult(analysisContext, scripts, ref scriptParseDuration, ref analysisDuration);
+        return CalculateAnalysisResult(issueReporter.Issues, scripts, ref scriptParseDuration, ref analysisDuration);
     }
 
-    private TimeSpan PerformAnalysis(AnalysisContext analysisContext)
+    private TimeSpan PerformAnalysis(IReadOnlyList<IScriptModel> scripts, AnalysisContextFactory analysisContextFactory)
     {
         var stopwatch = Stopwatch.StartNew();
         var parallelOptions = new ParallelOptions
@@ -107,8 +110,8 @@ internal sealed class Analyzer : IAnalyzer
         using (_progressCallback.OnProgressWithAutoEndActionNotification("Running analyzers"))
         {
 #if DEBUG
-            AnalyzeWithGlobalAnalyzers(_globalAnalyzers, parallelOptions, analysisContext);
-            AnalyzeWithScriptAnalyzers(_scriptAnalyzers, parallelOptions, analysisContext);
+            AnalyzeWithGlobalAnalyzers(_globalAnalyzers);
+            AnalyzeWithScriptAnalyzers(_scriptAnalyzers);
 #else
             var task1 = Task.Run(() => AnalyzeWithGlobalAnalyzers(_globalAnalyzers, parallelOptions, analysisContext), parallelOptions.CancellationToken);
             var task2 = Task.Run(() => AnalyzeWithScriptAnalyzers(_scriptAnalyzers, parallelOptions, analysisContext), parallelOptions.CancellationToken);
@@ -118,17 +121,17 @@ internal sealed class Analyzer : IAnalyzer
 
         return stopwatch.Elapsed;
 
-        void AnalyzeWithScriptAnalyzers(IReadOnlyList<IScriptAnalyzer> analyzers, ParallelOptions parallelOptions, AnalysisContext analysisContext)
+        void AnalyzeWithScriptAnalyzers(IReadOnlyList<IScriptAnalyzer> analyzers)
         {
-            var errorFreeScripts = analysisContext.Scripts.Where(a => a.Errors.Count == 0);
             var scriptsAndAnalyzers =
-                from script in errorFreeScripts
+                from script in scripts
                 from analyzer in analyzers
                 select (Script: script, Analyzer: analyzer);
 
             Parallel.ForEach(scriptsAndAnalyzers, parallelOptions, scriptAndAnalyzer =>
             {
                 var (script, analyzer) = scriptAndAnalyzer;
+                var analysisContext = analysisContextFactory.Create(analyzer, script);
                 try
                 {
                     analyzer.AnalyzeScript(analysisContext, script);
@@ -139,15 +142,16 @@ internal sealed class Analyzer : IAnalyzer
                 {
                     var analyzerName = analyzer.GetType().FullName ?? "<unknown>";
                     analysisContext.IssueReporter.Report(WellKnownDiagnosticDefinitions.UnhandledAnalyzerException, script.DatabaseName, script.RelativeScriptFilePath, null, CodeRegion.Unknown, analyzerName, ex.Message);
-                    _logger.LogError(ex, "The {Analyzer} threw an unhandled exception", analyzerName);
+                    _logger.LogError(ex, "Analyzer threw an unhandled exception");
                 }
             });
         }
 
-        void AnalyzeWithGlobalAnalyzers(IReadOnlyList<IGlobalAnalyzer> analyzers, ParallelOptions parallelOptions, AnalysisContext analysisContext)
+        void AnalyzeWithGlobalAnalyzers(IReadOnlyList<IGlobalAnalyzer> analyzers)
         {
             Parallel.ForEach(analyzers, parallelOptions, analyzer =>
             {
+                var analysisContext = analysisContextFactory.Create(analyzer);
                 try
                 {
                     analyzer.Analyze(analysisContext);
@@ -161,23 +165,23 @@ internal sealed class Analyzer : IAnalyzer
                     // We need to have a script file path, otherwise the aggregation between issue and script file for Global Analyzers won't work
                     var relativeScriptFilePath = analysisContext.Scripts.Count == 0 ? "Unknown" : analysisContext.Scripts[0].RelativeScriptFilePath;
                     analysisContext.IssueReporter.Report(WellKnownDiagnosticDefinitions.UnhandledAnalyzerException, "<Unknown>", relativeScriptFilePath, null, CodeRegion.Unknown, analyzerName, ex.Message);
-                    _logger.LogError(ex, "The {Analyzer} threw an unhandled exception", analyzerName);
+                    _logger.LogError(ex, "Analyzer threw an unhandled exception");
                 }
             });
         }
     }
 
-    private AnalysisResult CalculateAnalysisResult(AnalysisContext analysisContext, IReadOnlyList<IScriptModel> scripts, ref readonly TimeSpan scriptParseDuration, ref readonly TimeSpan analysisDuration)
+    private AnalysisResult CalculateAnalysisResult(IReadOnlyList<IIssue> issues, List<IScriptModel> scripts, ref readonly TimeSpan scriptParseDuration, ref readonly TimeSpan analysisDuration)
     {
         using var _ = _progressCallback.OnProgressWithAutoEndActionNotification("Calculating results");
 
-        var issues = analysisContext.IssueReporter.Issues
+        var deduplicatedIssues = issues
             .Where(a => !_applicationSettings.Diagnostics.DisabledDiagnostics.Contains(a.DiagnosticDefinition.DiagnosticId))
             .Deduplicate(IssueEqualityComparers.ByPathAndDatabaseNameAndObjectNameAndCodeRegionAndMessage)
             .ToList();
 
-        var (unsuppressedIssues, suppressedIssues) = SplitIssuesToSuppressedAndUnsuppressed(scripts, issues);
-        var issuesByObjectName = issues
+        var (unsuppressedIssues, suppressedIssues) = SplitIssuesToSuppressedAndUnsuppressed(scripts, deduplicatedIssues);
+        var issuesByObjectName = deduplicatedIssues
             .GroupBy(a => a.FullObjectNameOrFileName, StringComparer.OrdinalIgnoreCase)
             .ToFrozenDictionary(
                 a => a.Key,
@@ -189,14 +193,14 @@ internal sealed class Analyzer : IAnalyzer
 
         var statistics = new AnalysisResultStatistics(
             TotalDisabledDiagnosticCount: _applicationSettings.Diagnostics.DisabledDiagnostics.Count,
-            TotalErrorCount: issues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Error),
-            TotalFormattingIssueCount: issues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Formatting),
-            TotalInformationIssueCount: issues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Information),
-            TotalIssueCount: issues.Count,
-            TotalMissingIndexIssueCount: issues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.MissingIndex),
+            TotalErrorCount: deduplicatedIssues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Error),
+            TotalFormattingIssueCount: deduplicatedIssues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Formatting),
+            TotalInformationIssueCount: deduplicatedIssues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Information),
+            TotalIssueCount: deduplicatedIssues.Count,
+            TotalMissingIndexIssueCount: deduplicatedIssues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.MissingIndex),
             TotalSuppressedIssueCount: suppressedIssues.Count,
-            TotalWarningCount: issues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Warning),
-            TotalScripts: analysisContext.Scripts.Count,
+            TotalWarningCount: deduplicatedIssues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Warning),
+            TotalScripts: scripts.Count,
             ScriptsParseDuration: scriptParseDuration,
             AnalysisDuration: analysisDuration
         );
@@ -257,7 +261,6 @@ internal sealed class Analyzer : IAnalyzer
             .Select(ParseScript)
             .ToList();
 #endif
-
     }
 
     private IScriptModel ParseScript(BasicScriptInformation script)
@@ -303,11 +306,17 @@ internal sealed class Analyzer : IAnalyzer
         return _scriptSourceProvider.GetScriptFilePaths();
     }
 
-    private static void ReportErroneousScripts(IEnumerable<IScriptModel> scripts, IssueReporter issueReporter)
+    private static List<IScriptModel> ReportAndRemoveErroneousScripts(List<IScriptModel> scripts, IssueReporter issueReporter)
     {
+        var result = new List<IScriptModel>(scripts.Count);
+
         foreach (var script in scripts)
         {
-            if (script.Errors.Count > 0)
+            if (script.Errors.Count == 0)
+            {
+                result.Add(script);
+            }
+            else
             {
                 foreach (var error in script.Errors)
                 {
@@ -315,5 +324,7 @@ internal sealed class Analyzer : IAnalyzer
                 }
             }
         }
+
+        return result;
     }
 }

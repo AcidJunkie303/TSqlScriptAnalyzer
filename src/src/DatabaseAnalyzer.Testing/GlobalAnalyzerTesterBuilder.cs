@@ -3,6 +3,7 @@ using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.Models;
 using DatabaseAnalyzer.Common.Services;
 using DatabaseAnalyzer.Contracts;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace DatabaseAnalyzer.Testing;
 
@@ -88,7 +89,8 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
             allScripts,
             allScriptsByDatabaseName,
             diagnosticSettingsProvider,
-            new IssueReporter());
+            new IssueReporter(),
+            NullLogger.Instance);
 
         return new GlobalAnalyzerTester(
             analysisContext,
