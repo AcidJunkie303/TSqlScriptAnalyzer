@@ -167,7 +167,7 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
                         table.FullNameParts.StringJoin('.'),
                         table.CreationStatement.GetCodeRegion(),
                         table.FullName,
-                        tables.Select(x => x.RelativeScriptFilePath).Distinct(StringComparer.OrdinalIgnoreCase).StringJoin("    ;    ")
+                        matchingTables.Select(x => x.RelativeScriptFilePath).Distinct(StringComparer.OrdinalIgnoreCase).StringJoin("\n")
                     );
                 }
 
