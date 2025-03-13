@@ -1,0 +1,3 @@
+C:
+cd C:\projects\TSqlScriptAnalyzer\src\src\DatabaseAnalyzer.App\bin\Debug\net9.0
+.\DatabaseAnalyzer.App.exe analyze --file ..\..\..\..\testing\settings\project1.jsonc  -crt text -j __report.json -h __report.html -t __report.txt -s __report-summary.json -m verbose -l .\__log.jsonl

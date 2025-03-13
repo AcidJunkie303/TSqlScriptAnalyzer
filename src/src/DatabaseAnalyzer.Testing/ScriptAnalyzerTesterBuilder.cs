@@ -3,6 +3,7 @@ using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.Models;
 using DatabaseAnalyzer.Common.Services;
 using DatabaseAnalyzer.Contracts;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit.Abstractions;
 
 namespace DatabaseAnalyzer.Testing;
@@ -90,7 +91,8 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
             allScripts,
             allScriptsByDatabaseName,
             diagnosticSettingsProvider,
-            new IssueReporter());
+            new IssueReporter(),
+            NullLogger.Instance);
 
         return new ScriptAnalyzerTester(
             analysisContext,

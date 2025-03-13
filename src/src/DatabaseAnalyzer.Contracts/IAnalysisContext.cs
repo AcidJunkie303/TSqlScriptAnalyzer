@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+
 namespace DatabaseAnalyzer.Contracts;
 
 public interface IAnalysisContext
@@ -8,4 +10,5 @@ public interface IAnalysisContext
     IReadOnlyDictionary<string, IReadOnlyList<IScriptModel>> ScriptsByDatabaseName { get; }
     IDiagnosticSettingsProvider DiagnosticSettingsProvider { get; }
     IIssueReporter IssueReporter { get; }
+    ILogger Logger { get; }
 }
