@@ -3,31 +3,49 @@ using System.Runtime.InteropServices;
 namespace DatabaseAnalyzer.Contracts;
 
 [StructLayout(LayoutKind.Auto)]
-public record struct CodeLocation(int Line, int Column) : IComparable<CodeLocation>, IComparable, IEquatable<CodeLocation>
+public record struct CodeRegion(
+    CodeLocation Begin,
+    CodeLocation End
+) : IComparable<CodeRegion>, IComparable, IEquatable<CodeRegion>
 {
-    public static CodeLocation Create(int line, int column) => new(line, column);
+    public static CodeRegion Unknown { get; } = Create(1, 1, 1, 1);
 
-    public readonly int CompareTo(object? obj)
-        => obj is CodeLocation other
-            ? CompareTo(other)
-            : throw new ArgumentException($"Is not a {nameof(CodeLocation)} object", nameof(obj));
+    public static CodeRegion Create(CodeLocation beginLocation, CodeLocation endLocation)
+        => new(beginLocation, endLocation);
 
-    public readonly int CompareTo(CodeLocation other)
+    public static CodeRegion Create(int beginLineNumber, int beginColumnNumber, int endLineNumber, int endColumnNumber)
+        => new(new CodeLocation(beginLineNumber, beginColumnNumber), new CodeLocation(endLineNumber, endColumnNumber));
+
+    public static CodeRegion CreateSpan(CodeRegion begin, CodeRegion end) => Create(begin.Begin, end.End);
+
+    public readonly bool IsAround(int lineNumber, int columnNumber)
+        => lineNumber >= Begin.Line
+           && columnNumber >= Begin.Column
+           && lineNumber <= End.Line
+           && columnNumber <= End.Column;
+
+    public readonly int CompareTo(CodeRegion other)
     {
-        var result = Line.CompareTo(other.Line);
+        var result = Begin.CompareTo(other.Begin);
         return result == 0
-            ? Column.CompareTo(other.Column)
+            ? End.CompareTo(other.End)
             : result;
     }
 
-    public static bool operator <(CodeLocation left, CodeLocation right) => left.CompareTo(right) < 0;
-    public static bool operator >(CodeLocation left, CodeLocation right) => left.CompareTo(right) > 0;
-    public static bool operator <=(CodeLocation left, CodeLocation right) => left.CompareTo(right) <= 0;
-    public static bool operator >=(CodeLocation left, CodeLocation right) => left.CompareTo(right) >= 0;
+    public readonly int CompareTo(object? obj)
+        => obj is CodeRegion other
+            ? CompareTo(other)
+            : throw new ArgumentException("obj is not a CodeRegion", nameof(obj));
 
-    public override readonly string ToString() => $"({Line},{Column})";
+    public static bool operator <(CodeRegion left, CodeRegion right) => left.CompareTo(right) < 0;
+    public static bool operator >(CodeRegion left, CodeRegion right) => left.CompareTo(right) > 0;
+    public static bool operator <=(CodeRegion left, CodeRegion right) => left.CompareTo(right) <= 0;
+    public static bool operator >=(CodeRegion left, CodeRegion right) => left.CompareTo(right) >= 0;
 
-    public override int GetHashCode() => HashCode.Combine(Line, Column);
+    public override readonly string ToString() => $"{Begin} - {End}";
 
-    public bool Equals(CodeLocation other) => Line == other.Line && Column == other.Column;
+    public override int GetHashCode() => HashCode.Combine(Begin, End);
+
+    public bool Equals(CodeRegion other)
+        => Begin.Equals(other.Begin) && End.Equals(other.End);
 }
