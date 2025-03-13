@@ -1,5 +1,6 @@
 using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
+using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.Services;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Core.Configuration;
@@ -75,6 +76,7 @@ public static class AnalyzerFactory
     {
         var diagnosticDefinitionsById = pluginAssemblies
             .SelectMany(a => a.DiagnosticDefinitions)
+            .Deduplicate(a => a.DiagnosticId, StringComparer.OrdinalIgnoreCase)
             .ToDictionary(a => a.DiagnosticId, a => a, StringComparer.OrdinalIgnoreCase);
 
         services.AddSingleton<IReadOnlyDictionary<string, IDiagnosticDefinition>>(diagnosticDefinitionsById);
