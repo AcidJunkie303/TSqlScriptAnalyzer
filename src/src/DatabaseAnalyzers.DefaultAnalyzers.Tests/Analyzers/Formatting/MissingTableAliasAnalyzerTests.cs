@@ -64,4 +64,34 @@ public sealed class MissingTableAliasAnalyzerTests(ITestOutputHelper testOutputH
                             """;
         Verify(code);
     }
+
+    [Fact]
+    public void WithDateAddInColumn_WithJoin_WhenAliasesAreUsed_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            SELECT      t1.Name,
+                                        DateAdd(DAY, 303, t1.CreatedAt)
+                            FROM        Table1  t1
+                            INNER JOIN  Table2  t2 ON t1.Id = t2.id
+                            """;
+        Verify(code);
+    }
+
+    [Fact]
+    public void WithDateAddInWhereWithJoin_WhenAliasesAreUsed_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            SELECT      t1.Name
+                            FROM        Table1  t1
+                            INNER JOIN  Table2  t2 ON t1.Id = t2.id
+                            WHERE       t1.Id > DatePart(DAY, GETDATE())
+                            """;
+        Verify(code);
+    }
 }
