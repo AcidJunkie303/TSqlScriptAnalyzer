@@ -42,8 +42,7 @@ public static class MultiPartIdentifierExtensions
         {
             0 => throw new ArgumentException("The provided multi-part identifier for a column is empty", nameof(identifier)),
             1 => (null, identifier.Identifiers[0].Value),
-            2 => (identifier.Identifiers[0].Value, identifier.Identifiers[1].Value),
-            _ => throw new ArgumentException($"The provided multi-part identifier for a column has more than 2 parts: {identifier.Identifiers.Select(static a => a.Value).StringJoin('.')}", nameof(identifier))
+            _ => (identifier.Identifiers[0].Value, identifier.Identifiers[1].Value),
         };
     }
 }
