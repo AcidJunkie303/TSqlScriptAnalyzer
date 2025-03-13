@@ -33,7 +33,13 @@ public sealed class TableColumnResolver
 
     public ColumnReference? Resolve()
     {
+        if (_referenceToResolve.MultiPartIdentifier?.Identifiers is null)
+        {
+            return null;
+        }
+
         TSqlFragment? fragment = _referenceToResolve;
+
         while (true)
         {
             fragment = fragment.GetParent(_parentFragmentProvider);
