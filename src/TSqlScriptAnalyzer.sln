@@ -1,28 +1,28 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground", "src\Playground\Playground.csproj", "{B96DA9C7-0219-4A93-9B08-234AD9591323}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground", "Playground\Playground.csproj", "{B96DA9C7-0219-4A93-9B08-234AD9591323}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseAnalyzer.App", "src\DatabaseAnalyzer.App\DatabaseAnalyzer.App.csproj", "{01C02719-00FE-4BD0-8F66-9B04D2895C4A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseAnalyzer.App", "DatabaseAnalyzer.App\DatabaseAnalyzer.App.csproj", "{01C02719-00FE-4BD0-8F66-9B04D2895C4A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseAnalyzer.Common", "src\DatabaseAnalyzer.Common\DatabaseAnalyzer.Common.csproj", "{12A1E930-CCA4-46DB-AF4B-0B9FBA1E101D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseAnalyzer.Common", "DatabaseAnalyzer.Common\DatabaseAnalyzer.Common.csproj", "{12A1E930-CCA4-46DB-AF4B-0B9FBA1E101D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseAnalyzer.Common.Tests", "src\DatabaseAnalyzer.Common.Tests\DatabaseAnalyzer.Common.Tests.csproj", "{8F298FDE-CE48-4AFF-AF5A-ECFC491BBFB8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseAnalyzer.Common.Tests", "DatabaseAnalyzer.Common.Tests\DatabaseAnalyzer.Common.Tests.csproj", "{8F298FDE-CE48-4AFF-AF5A-ECFC491BBFB8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseAnalyzer.Contracts", "src\DatabaseAnalyzer.Contracts\DatabaseAnalyzer.Contracts.csproj", "{36573E56-CE3A-46BA-80E0-D8C9014F6107}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseAnalyzer.Contracts", "DatabaseAnalyzer.Contracts\DatabaseAnalyzer.Contracts.csproj", "{36573E56-CE3A-46BA-80E0-D8C9014F6107}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseAnalyzer.Core", "src\DatabaseAnalyzer.Core\DatabaseAnalyzer.Core.csproj", "{0E0D3982-2EAF-4769-82F6-7A2DF824283D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseAnalyzer.Core", "DatabaseAnalyzer.Core\DatabaseAnalyzer.Core.csproj", "{0E0D3982-2EAF-4769-82F6-7A2DF824283D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseAnalyzer.Core.Tests", "src\DatabaseAnalyzer.Core.Tests\DatabaseAnalyzer.Core.Tests.csproj", "{59CE1383-0477-477E-9247-353E4CABCCFD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseAnalyzer.Core.Tests", "DatabaseAnalyzer.Core.Tests\DatabaseAnalyzer.Core.Tests.csproj", "{59CE1383-0477-477E-9247-353E4CABCCFD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseAnalyzer.Testing", "src\DatabaseAnalyzer.Testing\DatabaseAnalyzer.Testing.csproj", "{A421AA14-157B-4F5D-B644-936D88A041ED}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseAnalyzer.Testing", "DatabaseAnalyzer.Testing\DatabaseAnalyzer.Testing.csproj", "{A421AA14-157B-4F5D-B644-936D88A041ED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseAnalyzer.Testing.Tests", "src\DatabaseAnalyzer.Testing.Tests\DatabaseAnalyzer.Testing.Tests.csproj", "{D316DA38-C5C5-4F25-9085-C9903E62E5C9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseAnalyzer.Testing.Tests", "DatabaseAnalyzer.Testing.Tests\DatabaseAnalyzer.Testing.Tests.csproj", "{D316DA38-C5C5-4F25-9085-C9903E62E5C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseAnalyzers.DefaultAnalyzers", "src\DatabaseAnalyzers.DefaultAnalyzers\DatabaseAnalyzers.DefaultAnalyzers.csproj", "{52FC297D-1693-477A-91DA-DF79C231B8EB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseAnalyzers.DefaultAnalyzers", "DatabaseAnalyzers.DefaultAnalyzers\DatabaseAnalyzers.DefaultAnalyzers.csproj", "{52FC297D-1693-477A-91DA-DF79C231B8EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseAnalyzers.DefaultAnalyzers.InfrastructureTasks", "src\DatabaseAnalyzers.DefaultAnalyzers.InfrastructureTasks\DatabaseAnalyzers.DefaultAnalyzers.InfrastructureTasks.csproj", "{FD2C3D84-C750-4EEF-BABB-E8880F370352}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseAnalyzers.DefaultAnalyzers.InfrastructureTasks", "DatabaseAnalyzers.DefaultAnalyzers.InfrastructureTasks\DatabaseAnalyzers.DefaultAnalyzers.InfrastructureTasks.csproj", "{FD2C3D84-C750-4EEF-BABB-E8880F370352}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseAnalyzers.DefaultAnalyzers.Tests", "src\DatabaseAnalyzers.DefaultAnalyzers.Tests\DatabaseAnalyzers.DefaultAnalyzers.Tests.csproj", "{73DB9D79-FDDE-4047-A441-04AF458AFBE8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseAnalyzers.DefaultAnalyzers.Tests", "DatabaseAnalyzers.DefaultAnalyzers.Tests\DatabaseAnalyzers.DefaultAnalyzers.Tests.csproj", "{73DB9D79-FDDE-4047-A441-04AF458AFBE8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infra Tasks", "Infra Tasks", "{616A0B57-F352-4CD7-B4F6-40EA720E82F0}"
 EndProject
@@ -36,7 +36,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution 
 		..\README.md = ..\README.md
 		..\STATUS.md = ..\STATUS.md
 		..\UnitTestingAnalyzers.md = ..\UnitTestingAnalyzers.md
-		src\testing\settings\project1.jsonc = src\testing\settings\project1.jsonc
+		testing\settings\project1.jsonc = testing\settings\project1.jsonc
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{756EE255-D7F4-4CFE-8FAA-92A5C17E823B}"
