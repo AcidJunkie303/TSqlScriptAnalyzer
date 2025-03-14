@@ -8,7 +8,7 @@ public sealed class GenerateDiagnosticOverview
     [Fact]
     public async Task CreateAsync()
     {
-        const string targetFilePath = @"..\..\..\..\..\..\docs\diagnostics.md";
+        const string targetFilePath = @"..\..\..\..\..\docs\diagnostics.md";
         const string templateFilePath = @"docs\source\_DiagnosticsTemplate.md";
 
         var template = await File.ReadAllTextAsync(templateFilePath);

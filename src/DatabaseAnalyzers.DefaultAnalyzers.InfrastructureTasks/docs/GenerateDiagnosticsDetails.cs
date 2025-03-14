@@ -59,7 +59,7 @@ public sealed class GenerateDiagnosticsDetails
             .Replace("{IssueType}", definition.IssueType.ToString(), StringComparison.Ordinal)
             .Replace("{InsertionStrings}", GetInsertionStringRows(definition), StringComparison.Ordinal);
 
-        var path = $@"..\..\..\..\..\..\docs\diagnostics\{definition.DiagnosticId.ToUpperInvariant()}.md";
+        var path = $@"..\..\..\..\..\docs\diagnostics\{definition.DiagnosticId.ToUpperInvariant()}.md";
         await File.WriteAllTextAsync(path, contents);
     }
 
