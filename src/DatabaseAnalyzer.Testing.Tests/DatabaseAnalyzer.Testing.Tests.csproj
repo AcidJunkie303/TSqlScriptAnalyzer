@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <IsTestProject>true</IsTestProject>
+        <NoWarn>CA1707;IDE0058</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\DatabaseAnalyzer.Testing\DatabaseAnalyzer.Testing.csproj"/>
+    </ItemGroup>
+
+</Project>
