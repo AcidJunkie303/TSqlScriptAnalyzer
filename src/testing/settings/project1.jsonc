@@ -304,6 +304,18 @@
                 "YEAR"
             ]
         }
+    },
+    "Services": {
+        "AstService": {
+            "EnumerationParameterIndicesByFunctionName": {
+                "DATEPART": [
+                    0
+                ],
+                "DATEADD": [
+                    0
+                ]
+            }
+        }
     }
 }
 
