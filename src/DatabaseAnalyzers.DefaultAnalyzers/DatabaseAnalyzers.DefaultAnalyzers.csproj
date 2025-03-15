@@ -15,6 +15,56 @@
         </Reference>
     </ItemGroup>
 
+    <ItemGroup>
+        <Compile Remove="Analyzers\Comparison\**"/>
+        <Compile Remove="Analyzers\Consistency\**"/>
+        <Compile Remove="Analyzers\Formatting\**"/>
+        <Compile Remove="Analyzers\Indices\**"/>
+        <Compile Remove="Analyzers\Maintainability\**"/>
+        <Compile Remove="Analyzers\Naming\**"/>
+        <Compile Remove="Analyzers\NonStandard\**"/>
+        <Compile Remove="Analyzers\ObjectCreation\**"/>
+        <Compile Remove="Analyzers\Runtime\**"/>
+        <Compile Remove="Analyzers\Security\**"/>
+        <Compile Remove="Analyzers\Strings\**"/>
+        <Compile Remove="Analyzers\UnreferencedObject\**"/>
+        <Compile Remove="Analyzers\UseDatabaseStatements\**"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Remove="Analyzers\Comparison\**"/>
+        <EmbeddedResource Remove="Analyzers\Consistency\**"/>
+        <EmbeddedResource Remove="Analyzers\Formatting\**"/>
+        <EmbeddedResource Remove="Analyzers\Indices\**"/>
+        <EmbeddedResource Remove="Analyzers\Maintainability\**"/>
+        <EmbeddedResource Remove="Analyzers\Naming\**"/>
+        <EmbeddedResource Remove="Analyzers\NonStandard\**"/>
+        <EmbeddedResource Remove="Analyzers\ObjectCreation\**"/>
+        <EmbeddedResource Remove="Analyzers\Runtime\**"/>
+        <EmbeddedResource Remove="Analyzers\Security\**"/>
+        <EmbeddedResource Remove="Analyzers\Settings\**"/>
+        <EmbeddedResource Remove="Analyzers\Strings\**"/>
+        <EmbeddedResource Remove="Analyzers\UnreferencedObject\**"/>
+        <EmbeddedResource Remove="Analyzers\UseDatabaseStatements\**"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="Analyzers\Comparison\**"/>
+        <None Remove="Analyzers\Consistency\**"/>
+        <None Remove="Analyzers\Formatting\**"/>
+        <None Remove="Analyzers\Indices\**"/>
+        <None Remove="Analyzers\Maintainability\**"/>
+        <None Remove="Analyzers\Naming\**"/>
+        <None Remove="Analyzers\NonStandard\**"/>
+        <None Remove="Analyzers\ObjectCreation\**"/>
+        <None Remove="Analyzers\Runtime\**"/>
+        <None Remove="Analyzers\Security\**"/>
+        <None Remove="Analyzers\Settings\**"/>
+        <None Remove="Analyzers\Strings\**"/>
+        <None Remove="Analyzers\UnreferencedObject\**"/>
+        <None Remove="Analyzers\UseDatabaseStatements\**"/>
+    </ItemGroup>
+
     <Target Name="PreBuild" BeforeTargets="Build">
         <Exec Command="IF NOT EXIST $(SolutionDir)DatabaseAnalyzer.App\bin\$(Configuration)\$(TargetFramework)\Plugins\DefaultAnalyzers md $(SolutionDir)DatabaseAnalyzer.App\bin\$(Configuration)\$(TargetFramework)\Plugins\DefaultAnalyzers"/>
         <Exec Command="copy /y $(SolutionDir)DatabaseAnalyzers.DefaultAnalyzers\bin\$(Configuration)\$(TargetFramework)\DatabaseAnalyzers.DefaultAnalyzers.dll $(SolutionDir)DatabaseAnalyzer.App\bin\$(Configuration)\$(TargetFramework)\Plugins\DefaultAnalyzers"/>

@@ -9,6 +9,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 #pragma warning disable MA0048 // File name must match type name -> some classes belong to this settings only
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
+[SettingsSource(SettingsSourceKind.Diagnostics, "AJ5004")]
 internal sealed class Aj5004SettingsRaw : IRawSettings<Aj5004Settings>
 {
     public IReadOnlyCollection<TopicAndPatternRaw?>? TopicsAndPatterns { get; set; }

@@ -6,6 +6,7 @@ using DatabaseAnalyzer.Contracts;
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
+[SettingsSource(SettingsSourceKind.Diagnostics, "AJ5055")]
 internal sealed class Aj5055SettingsRaw : IRawSettings<Aj5055Settings>
 {
     public IReadOnlyCollection<string?>? ExcludedDatabaseNames { get; set; }

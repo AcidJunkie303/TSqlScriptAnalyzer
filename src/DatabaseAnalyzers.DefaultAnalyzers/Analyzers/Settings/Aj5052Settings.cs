@@ -7,6 +7,7 @@ using DatabaseAnalyzers.DefaultAnalyzers.Model;
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
+[SettingsSource(SettingsSourceKind.Diagnostics, "AJ5052")]
 internal sealed class Aj5052SettingsRaw : IRawSettings<Aj5052Settings>
 {
     public const string IndexPropertiesList = "PrimaryKey, Clustered, NonClustered, Unique, ColumnStore, Hash, Filtered, FullText, Spatial, Xml, Bitmap, Covering, WithIncludedColumns, ComputedColumns";

@@ -2,5 +2,5 @@ namespace DatabaseAnalyzer.Contracts;
 
 public interface IObjectAnalyzer
 {
-    IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; }
+    static virtual IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [];
 }

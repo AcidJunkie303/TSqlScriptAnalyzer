@@ -21,4 +21,63 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.3"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <Compile Remove="Analyzers\Indices\**"/>
+        <Compile Remove="Analyzers\Comparison\**"/>
+        <Compile Remove="Analyzers\Runtime\**"/>
+        <Compile Remove="Analyzers\Consistency\**"/>
+        <Compile Remove="Analyzers\NonStandard\**"/>
+        <Compile Remove="Analyzers\Formatting\**"/>
+        <Compile Remove="Analyzers\UseDatabaseStatements\**"/>
+        <Compile Remove="Analyzers\UnreferencedObject\**"/>
+        <Compile Remove="Analyzers\Security\**"/>
+        <Compile Remove="Analyzers\Playground\**"/>
+        <Compile Remove="Analyzers\ObjectCreation\**"/>
+        <Compile Remove="Analyzers\Maintainability\**"/>
+        <Compile Remove="Analyzers\Naming\**"/>
+        <Compile Remove="Analyzers\Strings\**"/>
+        <Compile Remove="Analyzers\Banned\BannedFunctionAnalyzerTests.cs"/>
+        <Compile Remove="Analyzers\Banned\RaiseErrorAnalyzerTests.cs"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Remove="Analyzers\Indices\**"/>
+        <EmbeddedResource Remove="Analyzers\Comparison\**"/>
+        <EmbeddedResource Remove="Analyzers\Runtime\**"/>
+        <EmbeddedResource Remove="Analyzers\Consistency\**"/>
+        <EmbeddedResource Remove="Analyzers\NonStandard\**"/>
+        <EmbeddedResource Remove="Analyzers\Formatting\**"/>
+        <EmbeddedResource Remove="Analyzers\UseDatabaseStatements\**"/>
+        <EmbeddedResource Remove="Analyzers\UnreferencedObject\**"/>
+        <EmbeddedResource Remove="Analyzers\Security\**"/>
+        <EmbeddedResource Remove="Analyzers\Playground\**"/>
+        <EmbeddedResource Remove="Analyzers\ObjectCreation\**"/>
+        <EmbeddedResource Remove="Analyzers\Maintainability\**"/>
+        <EmbeddedResource Remove="Analyzers\Naming\**"/>
+        <EmbeddedResource Remove="Analyzers\Strings\**"/>
+        <EmbeddedResource Remove="Analyzers\Banned\**"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="Analyzers\Indices\**"/>
+        <None Remove="Analyzers\Comparison\**"/>
+        <None Remove="Analyzers\Runtime\**"/>
+        <None Remove="Analyzers\Consistency\**"/>
+        <None Remove="Analyzers\NonStandard\**"/>
+        <None Remove="Analyzers\Formatting\**"/>
+        <None Remove="Analyzers\UseDatabaseStatements\**"/>
+        <None Remove="Analyzers\UnreferencedObject\**"/>
+        <None Remove="Analyzers\Security\**"/>
+        <None Remove="Analyzers\Playground\**"/>
+        <None Remove="Analyzers\ObjectCreation\**"/>
+        <None Remove="Analyzers\Maintainability\**"/>
+        <None Remove="Analyzers\Naming\**"/>
+        <None Remove="Analyzers\Strings\**"/>
+        <None Remove="Analyzers\Banned\**"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Analyzers\"/>
+    </ItemGroup>
+
 </Project>

@@ -9,26 +9,25 @@ namespace DatabaseAnalyzer.Testing;
 [SuppressMessage("maintainability", "CA1515:Consider making public types internal", Justification = "False positive. It is used in the DatabaseAnalyzers.DefaultAnalyzers.Tests project")]
 public sealed class ScriptAnalyzerTester
 {
-    private readonly IAnalysisContext _analysisContext;
+    private readonly IScriptAnalysisContext _analysisContext;
     private readonly IScriptAnalyzer _analyzer;
     private readonly ITestOutputHelper? _testOutputHelper;
 
+    public IScriptModel MainScript { get; }
+    public IReadOnlyList<IIssue> ExpectedIssues { get; }
+
     public ScriptAnalyzerTester(
-        IAnalysisContext analysisContext,
+        IScriptAnalysisContext analysisContext,
         IScriptAnalyzer analyzer,
-        IScriptModel mainScript,
         IReadOnlyList<IIssue> expectedIssues,
         ITestOutputHelper? testOutputHelper)
     {
         _analysisContext = analysisContext;
         _analyzer = analyzer;
         _testOutputHelper = testOutputHelper;
-        MainScript = mainScript;
+        MainScript = analysisContext.Scripts[0];
         ExpectedIssues = expectedIssues;
     }
-
-    public IScriptModel MainScript { get; }
-    public IReadOnlyList<IIssue> ExpectedIssues { get; }
 
     public void Test()
     {
@@ -38,7 +37,7 @@ public sealed class ScriptAnalyzerTester
             throw new InvalidOperationException($"Error in script: {firstScriptError}");
         }
 
-        _analyzer.AnalyzeScript(_analysisContext, MainScript);
+        _analyzer.AnalyzeScript();
 
         var reportedIssues = _analysisContext.IssueReporter.Issues;
         WriteIssues(reportedIssues);

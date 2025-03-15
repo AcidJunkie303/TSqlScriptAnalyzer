@@ -7,6 +7,7 @@ using DatabaseAnalyzer.Contracts;
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
+[SettingsSource(SettingsSourceKind.Diagnostics, "AJ5006")]
 internal sealed class Aj5006SettingsRaw : IRawSettings<Aj5006Settings>
 {
     // ReSharper disable UnusedAutoPropertyAccessor.Global -> used during deserialization
@@ -31,7 +32,7 @@ internal sealed class Aj5006SettingsRaw : IRawSettings<Aj5006Settings>
             .ToImmutableArray();
 }
 
-internal sealed record Aj5006Settings(
+public sealed record Aj5006Settings(
     [property: Description("Banned data types for columns. Wildcards like `*` and `?` are supported.")]
     IReadOnlyCollection<Regex> BannedColumnDataTypes,
     [property: Description("Banned data types function parameters. Wildcards like `*` and `?` are supported.")]

@@ -21,7 +21,7 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
     where TAnalyzer : class, IGlobalAnalyzer, new()
 {
     private readonly Dictionary<string, (string Contents, string DatabaseName)> _scriptContentsByFilePath = new(StringComparer.OrdinalIgnoreCase);
-    private readonly Dictionary<string, object?> _settingsByDiagnosticId = new(StringComparer.OrdinalIgnoreCase);
+    private readonly List<object> _settings = [];
     private string _defaultSchemaName = "dbo";
 
     public GlobalAnalyzerTesterBuilder<TAnalyzer> WithScriptFile(string contents, string databaseName)
@@ -31,10 +31,9 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
         return this;
     }
 
-    public GlobalAnalyzerTesterBuilder<TAnalyzer> WithSettings<TSettings>(TSettings settings)
-        where TSettings : class, ISettings<TSettings>
+    public GlobalAnalyzerTesterBuilder<TAnalyzer> WithSettings(object settings)
     {
-        _settingsByDiagnosticId.Add(TSettings.DiagnosticId, settings);
+        _settings.Add(settings);
         return this;
     }
 
@@ -52,8 +51,7 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
         }
 
         var analyzer = new TAnalyzer();
-        var diagnosticSettingsProvider = new FakeDiagnosticSettingsProvider(_settingsByDiagnosticId);
-        var diagnosticDefinitionRegistry = new DiagnosticDefinitionRegistry(analyzer.SupportedDiagnostics);
+        var diagnosticDefinitionRegistry = new DiagnosticDefinitionRegistry(TAnalyzer.SupportedDiagnostics);
         var testCodeProcessor = new TestCodeProcessor(diagnosticDefinitionRegistry);
 
         var processedScripts = _scriptContentsByFilePath
@@ -89,7 +87,6 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
             _defaultSchemaName,
             allScripts,
             allScriptsByDatabaseName,
-            diagnosticSettingsProvider,
             new IssueReporter(),
             NullLogger.Instance,
             FrozenSet<string>.Empty);

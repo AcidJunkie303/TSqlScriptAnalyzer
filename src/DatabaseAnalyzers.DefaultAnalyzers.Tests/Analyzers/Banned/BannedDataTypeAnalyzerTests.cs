@@ -10,7 +10,10 @@ public sealed class BannedDataTypeAnalyzerTests(ITestOutputHelper testOutputHelp
 {
     private static readonly Aj5006Settings Settings = new Aj5006SettingsRaw
     {
-        BannedColumnDataTypes = ["float"], BannedFunctionParameterDataTypes = ["varchar*"], BannedProcedureParameterDataTypes = ["uniqueidentifier"], BannedScriptVariableDataTypes = ["bigint"]
+        BannedColumnDataTypes = ["float"],
+        BannedFunctionParameterDataTypes = ["varchar*"],
+        BannedProcedureParameterDataTypes = ["uniqueidentifier"],
+        BannedScriptVariableDataTypes = ["bigint"]
     }.ToSettings();
 
     [Fact]
