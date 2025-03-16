@@ -57,6 +57,11 @@ BEGIN
     SELECT      *
     FROM        Table1
     WHERE       GETUTCDATE() < DATEADD(DAY, 1, CreatedAt) 
+
+    SELECT
+        Tbl.Col.value('Id[1]', 'INT')                     AS Id,
+        Tbl.Col.value('PosDate[1]', 'DATETIME2')          AS PosDate
+    FROM    @MyXml.nodes('//Limit') Tbl(Col)
     
 END
 

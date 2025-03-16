@@ -86,4 +86,21 @@ public sealed class MissingFunctionAnalyzerTests(ITestOutputHelper testOutputHel
 
         Verify(Settings, SharedCodeForProcedures, code);
     }
+
+    [Fact]
+    public void WithXml_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            SELECT
+                                    Tbl.Col.value('Id[1]', 'INT')                     AS Id,
+                                    Tbl.Col.value('PosDate[1]', 'DATETIME2')          AS PosDate
+                            FROM    @MyXml.nodes('//Limit') Tbl(Col)
+
+                            """;
+
+        Verify(Settings, SharedCodeForProcedures, code);
+    }
 }
