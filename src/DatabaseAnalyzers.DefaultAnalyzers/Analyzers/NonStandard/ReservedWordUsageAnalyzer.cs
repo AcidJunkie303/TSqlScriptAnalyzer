@@ -7,38 +7,47 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.NonStandard;
 
 public sealed class ReservedWordUsageAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
+    private readonly Aj5060Settings _settings;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public ReservedWordUsageAnalyzer(IScriptAnalysisContext context, Aj5060Settings settings)
     {
-        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5060Settings>();
+        _context = context;
+        _script = context.Script;
+        _settings = settings;
+    }
 
-        foreach (var fragment in script.ParsedScript.GetChildren(recursive: true))
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        foreach (var fragment in _script.ParsedScript.GetChildren(recursive: true))
         {
             if (fragment is CreateTableStatement createTableStatement)
             {
-                Analyze(context, script, settings, "table", createTableStatement.SchemaObjectName?.BaseIdentifier, a => a.Value);
+                Analyze("table", createTableStatement.SchemaObjectName?.BaseIdentifier, a => a.Value);
             }
             else if (fragment is ViewStatementBody createViewStatement)
             {
-                Analyze(context, script, settings, "view", createViewStatement.SchemaObjectName?.BaseIdentifier, a => a.Value);
+                Analyze("view", createViewStatement.SchemaObjectName?.BaseIdentifier, a => a.Value);
             }
             else if (fragment is CreateProcedureStatement createProcedureStatement)
             {
-                Analyze(context, script, settings, "procedure", createProcedureStatement.ProcedureReference?.Name.BaseIdentifier, a => a.Value);
+                Analyze("procedure", createProcedureStatement.ProcedureReference?.Name.BaseIdentifier, a => a.Value);
             }
             else if (fragment is ColumnDefinition columnDefinition)
             {
-                Analyze(context, script, settings, "column", columnDefinition.ColumnIdentifier, a => a.Value);
+                Analyze("column", columnDefinition.ColumnIdentifier, a => a.Value);
             }
             else if (fragment is FunctionStatementBody createFunctionStatement)
             {
-                Analyze(context, script, settings, "function", createFunctionStatement.Name.BaseIdentifier, a => a.Value);
+                Analyze("function", createFunctionStatement.Name.BaseIdentifier, a => a.Value);
             }
         }
     }
 
-    private static void Analyze<T>(IAnalysisContext context, IScriptModel script, Aj5060Settings settings, string objectTypeName, T? objectIdentifierFragment, Func<T, string?> nameGetter)
+    private void Analyze<T>(string objectTypeName, T? objectIdentifierFragment, Func<T, string?> nameGetter)
         where T : TSqlFragment
     {
         if (objectIdentifierFragment is null)
@@ -52,14 +61,14 @@ public sealed class ReservedWordUsageAnalyzer : IScriptAnalyzer
             return;
         }
 
-        if (!settings.ReservedIdentifierNames.Contains(name))
+        if (!_settings.ReservedIdentifierNames.Contains(name))
         {
             return;
         }
 
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(objectIdentifierFragment) ?? DatabaseNames.Unknown;
-        var fullObjectName = objectIdentifierFragment.TryGetFirstClassObjectName(context, script);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, objectIdentifierFragment.GetCodeRegion(),
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(objectIdentifierFragment) ?? DatabaseNames.Unknown;
+        var fullObjectName = objectIdentifierFragment.TryGetFirstClassObjectName(_context, _script);
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, objectIdentifierFragment.GetCodeRegion(),
             objectTypeName, name);
     }
 

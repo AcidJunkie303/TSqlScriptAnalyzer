@@ -2,7 +2,7 @@ using DatabaseAnalyzer.Core.Models;
 
 namespace DatabaseAnalyzer.Core.Services;
 
-internal interface IScriptLoader
+public interface IScriptLoader
 {
     BasicScriptInformation LoadScript(SourceScript script);
 }

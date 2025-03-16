@@ -6,6 +6,7 @@ using DatabaseAnalyzer.Contracts;
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
+[SettingsSource(SettingsSourceKind.Diagnostics, "AJ5054")]
 internal sealed class Aj5054SettingsRaw : IRawSettings<Aj5054Settings>
 {
     // ReSharper disable UnusedAutoPropertyAccessor.Global -> used during deserialization
@@ -25,7 +26,7 @@ internal sealed class Aj5054SettingsRaw : IRawSettings<Aj5054Settings>
            ?? FrozenSet<string>.Empty;
 }
 
-internal sealed record Aj5054Settings(
+public sealed record Aj5054Settings(
     [property: Description("Database names to ignore.")]
     FrozenSet<string> DatabasesToExclude,
     [property: Description("Column names to ignore.")]

@@ -6,26 +6,35 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Security;
 
 public sealed class DynamicSqlAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public DynamicSqlAnalyzer(IScriptAnalysisContext context)
     {
-        foreach (var statement in script.ParsedScript.GetChildren<ExecuteStatement>(recursive: true))
+        _context = context;
+        _script = context.Script;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        foreach (var statement in _script.ParsedScript.GetChildren<ExecuteStatement>(recursive: true))
         {
-            Analyze(context, script, statement);
+            Analyze(statement);
         }
     }
 
-    private static void Analyze(IAnalysisContext context, IScriptModel script, ExecuteStatement statement)
+    private void Analyze(ExecuteStatement statement)
     {
         if (!IsDynamicSql())
         {
             return;
         }
 
-        var fullObjectName = statement.TryGetFirstClassObjectName(context, script);
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(statement) ?? DatabaseNames.Unknown;
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, statement.GetCodeRegion());
+        var fullObjectName = statement.TryGetFirstClassObjectName(_context, _script);
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(statement) ?? DatabaseNames.Unknown;
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, statement.GetCodeRegion());
 
         bool IsDynamicSql()
         {

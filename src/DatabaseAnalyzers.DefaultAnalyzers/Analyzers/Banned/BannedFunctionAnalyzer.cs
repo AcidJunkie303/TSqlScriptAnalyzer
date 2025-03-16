@@ -7,53 +7,53 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Banned;
 
 public sealed class BannedFunctionAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
+    private readonly Aj5040Settings _settings;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public BannedFunctionAnalyzer(IScriptAnalysisContext context, Aj5040Settings settings)
     {
-        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5040Settings>();
+        _context = context;
+        _script = context.Script;
+        _settings = settings;
+    }
 
-        var schemaObjectFunctions = script.ParsedScript.GetChildren<SchemaObjectFunctionTableReference>(recursive: true);
-        var globalFunctions = script.ParsedScript.GetChildren<GlobalFunctionTableReference>(recursive: true);
-        var scalarFunctions = script.ParsedScript
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        var schemaObjectFunctions = _script.ParsedScript.GetChildren<SchemaObjectFunctionTableReference>(recursive: true);
+        var globalFunctions = _script.ParsedScript.GetChildren<GlobalFunctionTableReference>(recursive: true);
+        var scalarFunctions = _script.ParsedScript
             .GetChildren<SelectScalarExpression>(recursive: true)
             .Where(static a => a.Expression is FunctionCall);
 
         AnalyzeFunctionInvocation(
-            context,
-            script,
-            settings,
             globalFunctions,
             static x => x.Name.Value,
             static x => x.Name.GetCodeRegion());
 
         AnalyzeFunctionInvocation(
-            context,
-            script,
-            settings,
             scalarFunctions,
             static x => ((FunctionCall) x.Expression).FunctionName.Value,
             static x => ((FunctionCall) x.Expression).FunctionName.GetCodeRegion());
 
         AnalyzeFunctionInvocation(
-            context,
-            script,
-            settings,
             schemaObjectFunctions,
             static x => x.SchemaObject.Identifiers.Select(static a => a.Value).StringJoin('.'),
             static x => x.SchemaObject.GetCodeRegion());
     }
 
-    private static void AnalyzeFunctionInvocation<T>(IAnalysisContext context, IScriptModel script, Aj5040Settings settings, IEnumerable<T> functions, Func<T, string> functionNameGetter, Func<T, CodeRegion> nameLocationGetter)
+    private void AnalyzeFunctionInvocation<T>(IEnumerable<T> functions, Func<T, string> functionNameGetter, Func<T, CodeRegion> nameLocationGetter)
         where T : TSqlFragment
     {
         foreach (var function in functions)
         {
-            AnalyzeFunctionInvocation(context, script, settings, function, functionNameGetter, nameLocationGetter);
+            AnalyzeFunctionInvocation(function, functionNameGetter, nameLocationGetter);
         }
     }
 
-    private static void AnalyzeFunctionInvocation<T>(IAnalysisContext context, IScriptModel script, Aj5040Settings settings, T function, Func<T, string> functionNameGetter, Func<T, CodeRegion> nameLocationGetter)
+    private void AnalyzeFunctionInvocation<T>(T function, Func<T, string> functionNameGetter, Func<T, CodeRegion> nameLocationGetter)
         where T : TSqlFragment
     {
         var functionName = functionNameGetter(function);
@@ -62,14 +62,14 @@ public sealed class BannedFunctionAnalyzer : IScriptAnalyzer
             return;
         }
 
-        if (!settings.BanReasonByFunctionName.TryGetValue(functionName, out var reason))
+        if (!_settings.BanReasonByFunctionName.TryGetValue(functionName, out var reason))
         {
             return;
         }
 
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(function) ?? DatabaseNames.Unknown;
-        var fullObjectName = function.TryGetFirstClassObjectName(context, script);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, nameLocationGetter(function), functionName, reason);
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(function) ?? DatabaseNames.Unknown;
+        var fullObjectName = function.TryGetFirstClassObjectName(_context, _script);
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, nameLocationGetter(function), functionName, reason);
     }
 
     private static class DiagnosticDefinitions

@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
@@ -8,46 +7,47 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.UseDatabaseStatements;
 
 public sealed class WrongUseDatabaseNameAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
+    private readonly Aj5003Settings _settings;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public WrongUseDatabaseNameAnalyzer(IScriptAnalysisContext context, Aj5003Settings settings)
     {
-        var batch = script.ParsedScript.Batches.FirstOrDefault();
+        _context = context;
+        _settings = settings;
+        _script = context.Script;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        var batch = _script.ParsedScript.Batches.FirstOrDefault();
         if (batch is null)
         {
             return;
         }
 
-        if (IsScriptFileExcluded(context, script.RelativeScriptFilePath))
+        if (IsScriptFileExcluded(_script.RelativeScriptFilePath))
         {
             return;
         }
 
-        var expectedDatabaseName = script.DatabaseName;
-        foreach (var useStatement in script.ParsedScript.Batches.SelectMany(static a => a.GetChildren<UseStatement>(recursive: true)))
+        var expectedDatabaseName = _script.DatabaseName;
+        foreach (var useStatement in _script.ParsedScript.Batches.SelectMany(static a => a.GetChildren<UseStatement>(recursive: true)))
         {
             if (expectedDatabaseName.EqualsOrdinalIgnoreCase(useStatement.DatabaseName.Value))
             {
                 continue;
             }
 
-            var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(useStatement) ?? DatabaseNames.Unknown;
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName: null, useStatement.GetCodeRegion(), useStatement.DatabaseName.Value, script.DatabaseName);
+            var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(useStatement) ?? DatabaseNames.Unknown;
+            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName: null, useStatement.GetCodeRegion(), useStatement.DatabaseName.Value, _script.DatabaseName);
         }
     }
 
-    private static bool IsScriptFileExcluded(IAnalysisContext context, string fullScriptFileName)
-    {
-        var exclusionPatterns = GetExcludedFileNamePatterns(context);
-        return exclusionPatterns.Any(a => a.IsMatch(fullScriptFileName));
-    }
-
-    private static IReadOnlyCollection<Regex> GetExcludedFileNamePatterns(IAnalysisContext context)
-    {
-        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5003Settings>();
-
-        return settings.ExcludedFilePathPatterns;
-    }
+    private bool IsScriptFileExcluded(string fullScriptFileName)
+        => _settings.ExcludedFilePathPatterns.Any(a => a.IsMatch(fullScriptFileName));
 
     private static class DiagnosticDefinitions
     {

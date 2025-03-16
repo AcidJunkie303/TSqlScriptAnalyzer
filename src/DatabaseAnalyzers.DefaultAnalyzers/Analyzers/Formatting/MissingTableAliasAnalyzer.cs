@@ -6,20 +6,29 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 
 public sealed class MissingTableAliasAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public MissingTableAliasAnalyzer(IScriptAnalysisContext context)
     {
-        foreach (var columnReference in script.ParsedScript.GetChildren<ColumnReferenceExpression>(recursive: true))
+        _context = context;
+        _script = context.Script;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        foreach (var columnReference in _script.ParsedScript.GetChildren<ColumnReferenceExpression>(recursive: true))
         {
-            Analyze(context, script, columnReference);
+            Analyze(columnReference);
         }
     }
 
-    private static void Analyze(IAnalysisContext context, IScriptModel script, ColumnReferenceExpression columnReference)
+    private void Analyze(ColumnReferenceExpression columnReference)
     {
         var querySpecification = columnReference
-            .GetParents(script.ParentFragmentProvider)
+            .GetParents(_script.ParentFragmentProvider)
             .OfType<QuerySpecification>()
             .FirstOrDefault();
 
@@ -33,7 +42,7 @@ public sealed class MissingTableAliasAnalyzer : IScriptAnalyzer
             return;
         }
 
-        if (IsFirstArgumentOfDateAddOrDatePart(script, columnReference))
+        if (IsFirstArgumentOfDateAddOrDatePart(columnReference))
         {
             return;
         }
@@ -45,14 +54,14 @@ public sealed class MissingTableAliasAnalyzer : IScriptAnalyzer
             return;
         }
 
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(columnReference) ?? DatabaseNames.Unknown;
-        var fullObjectName = columnReference.TryGetFirstClassObjectName(context, script);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, columnReference.GetCodeRegion(), columnReference.GetSql());
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(columnReference) ?? DatabaseNames.Unknown;
+        var fullObjectName = columnReference.TryGetFirstClassObjectName(_context, _script);
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, columnReference.GetCodeRegion(), columnReference.GetSql());
     }
 
-    private static bool IsFirstArgumentOfDateAddOrDatePart(IScriptModel script, ColumnReferenceExpression columnReference)
+    private bool IsFirstArgumentOfDateAddOrDatePart(ColumnReferenceExpression columnReference)
     {
-        if (columnReference.GetParent(script.ParentFragmentProvider) is not FunctionCall functionCall)
+        if (columnReference.GetParent(_script.ParentFragmentProvider) is not FunctionCall functionCall)
         {
             return false;
         }

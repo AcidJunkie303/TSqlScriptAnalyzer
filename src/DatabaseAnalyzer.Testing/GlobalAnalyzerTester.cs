@@ -10,6 +10,9 @@ public sealed class GlobalAnalyzerTester
     private readonly IAnalysisContext _analysisContext;
     private readonly IGlobalAnalyzer _analyzer;
 
+    public IReadOnlyList<IScriptModel> Scripts { get; }
+    public IReadOnlyList<IIssue> ExpectedIssues { get; }
+
     public GlobalAnalyzerTester(
         IAnalysisContext analysisContext,
         IGlobalAnalyzer analyzer,
@@ -22,9 +25,6 @@ public sealed class GlobalAnalyzerTester
         ExpectedIssues = expectedIssues;
     }
 
-    public IReadOnlyList<IScriptModel> Scripts { get; }
-    public IReadOnlyList<IIssue> ExpectedIssues { get; }
-
     public void Test()
     {
         var firstScriptError = _analysisContext.Scripts.SelectMany(static script => script.Errors).FirstOrDefault();
@@ -33,7 +33,7 @@ public sealed class GlobalAnalyzerTester
             throw new InvalidOperationException($"Error in script: {firstScriptError}");
         }
 
-        _analyzer.Analyze(_analysisContext);
+        _analyzer.Analyze();
 
         var reportedIssues = _analysisContext.IssueReporter.Issues;
 

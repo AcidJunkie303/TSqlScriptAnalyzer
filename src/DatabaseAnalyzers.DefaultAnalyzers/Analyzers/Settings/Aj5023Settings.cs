@@ -7,6 +7,7 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
+[SettingsSource(SettingsSourceKind.Diagnostics, "AJ5023")]
 internal sealed class Aj5023SettingsRaw : IRawSettings<Aj5023Settings>
 {
     public IReadOnlyCollection<string?>? StatementTypesToIgnore { get; set; }
@@ -24,7 +25,7 @@ internal sealed class Aj5023SettingsRaw : IRawSettings<Aj5023Settings>
     );
 }
 
-internal sealed record Aj5023Settings(
+public sealed record Aj5023Settings(
     [property: Description("Statement type names to ignore.")]
     FrozenSet<TSqlTokenType> StatementTypesToIgnore
 ) : ISettings<Aj5023Settings>

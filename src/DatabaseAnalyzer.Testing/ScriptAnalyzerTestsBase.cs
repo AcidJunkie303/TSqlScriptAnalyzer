@@ -6,14 +6,14 @@ namespace DatabaseAnalyzer.Testing;
 
 [SuppressMessage("maintainability", "CA1515:Consider making public types internal", Justification = "False positive. It is used in the DatabaseAnalyzers.DefaultAnalyzers.Tests project")]
 public abstract class ScriptAnalyzerTestsBase<TAnalyzer>
-    where TAnalyzer : class, IScriptAnalyzer, new()
+    where TAnalyzer : class, IScriptAnalyzer
 {
+    protected ITestOutputHelper TestOutputHelper { get; }
+
     protected ScriptAnalyzerTestsBase(ITestOutputHelper testOutputHelper)
     {
         TestOutputHelper = testOutputHelper;
     }
-
-    protected ITestOutputHelper TestOutputHelper { get; }
 
     protected static ScriptAnalyzerTesterBuilder<TAnalyzer> GetDefaultTesterBuilder(string sql)
         => ScriptAnalyzerTesterBuilder

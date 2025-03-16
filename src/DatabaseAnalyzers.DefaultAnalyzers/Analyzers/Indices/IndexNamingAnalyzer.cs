@@ -8,28 +8,38 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
 
 public sealed class IndexNamingAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
+    private readonly Aj5052Settings _settings;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public IndexNamingAnalyzer(IScriptAnalysisContext context, Aj5052Settings settings)
     {
-        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5052Settings>();
-        var createIndexStatements = script.ParsedScript
+        _context = context;
+        _script = context.Script;
+        _settings = settings;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        var createIndexStatements = _script.ParsedScript
             .GetChildren(recursive: true)
             .Where(IsCreateIndexStatement);
 
         foreach (var statement in createIndexStatements)
         {
-            AnalyzeCreateIndexStatement(context, script, settings, statement);
+            AnalyzeCreateIndexStatement(statement);
         }
 
-        foreach (var statement in script.ParsedScript.GetChildren<CreateTableStatement>(recursive: true))
+        foreach (var statement in _script.ParsedScript.GetChildren<CreateTableStatement>(recursive: true))
         {
-            AnalyzeCreateTableStatement(context, script, settings, statement);
+            AnalyzeCreateTableStatement(statement);
         }
 
-        foreach (var statement in script.ParsedScript.GetChildren<AlterTableAddTableElementStatement>(recursive: true))
+        foreach (var statement in _script.ParsedScript.GetChildren<AlterTableAddTableElementStatement>(recursive: true))
         {
-            AnalyzeAlterTableStatement(context, script, settings, statement);
+            AnalyzeAlterTableStatement(statement);
         }
     }
 
@@ -42,7 +52,7 @@ public sealed class IndexNamingAnalyzer : IScriptAnalyzer
             or CreateColumnStoreIndexStatement
             or CreateFullTextIndexStatement;
 
-    private static void AnalyzeCreateTableStatement(IAnalysisContext context, IScriptModel script, Aj5052Settings settings, CreateTableStatement statement)
+    private void AnalyzeCreateTableStatement(CreateTableStatement statement)
     {
         if (statement.IsTempTable())
         {
@@ -58,12 +68,12 @@ public sealed class IndexNamingAnalyzer : IScriptAnalyzer
             return;
         }
 
-        var tableSchemaName = statement.SchemaObjectName?.SchemaIdentifier?.Value ?? context.DefaultSchemaName;
+        var tableSchemaName = statement.SchemaObjectName?.SchemaIdentifier?.Value ?? _context.DefaultSchemaName;
         var tableName = statement.SchemaObjectName?.BaseIdentifier.Value ?? Constants.UnknownObjectName;
-        AnalyzeUniqueConstraintDefinition(context, script, settings, primaryKeyDefinition, tableSchemaName, tableName);
+        AnalyzeUniqueConstraintDefinition(primaryKeyDefinition, tableSchemaName, tableName);
     }
 
-    private static void AnalyzeAlterTableStatement(IAnalysisContext context, IScriptModel script, Aj5052Settings settings, AlterTableAddTableElementStatement statement)
+    private void AnalyzeAlterTableStatement(AlterTableAddTableElementStatement statement)
     {
         var primaryKeyDefinition = statement.Definition.TableConstraints
             .OfType<UniqueConstraintDefinition>()
@@ -74,13 +84,13 @@ public sealed class IndexNamingAnalyzer : IScriptAnalyzer
             return;
         }
 
-        var tableSchemaName = statement.SchemaObjectName?.SchemaIdentifier?.Value ?? context.DefaultSchemaName;
+        var tableSchemaName = statement.SchemaObjectName?.SchemaIdentifier?.Value ?? _context.DefaultSchemaName;
         var tableName = statement.SchemaObjectName?.BaseIdentifier.Value ?? Constants.UnknownObjectName;
 
-        AnalyzeUniqueConstraintDefinition(context, script, settings, primaryKeyDefinition, tableSchemaName, tableName);
+        AnalyzeUniqueConstraintDefinition(primaryKeyDefinition, tableSchemaName, tableName);
     }
 
-    private static void AnalyzeUniqueConstraintDefinition(IAnalysisContext context, IScriptModel script, Aj5052Settings settings, UniqueConstraintDefinition primaryKeyDefinition, string tableSchemaName, string tableName)
+    private void AnalyzeUniqueConstraintDefinition(UniqueConstraintDefinition primaryKeyDefinition, string tableSchemaName, string tableName)
     {
         if (!primaryKeyDefinition.IsPrimaryKey)
         {
@@ -94,7 +104,7 @@ public sealed class IndexNamingAnalyzer : IScriptAnalyzer
             _     => IndexProperties.PrimaryKey
         };
 
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(primaryKeyDefinition) ?? Constants.UnknownObjectName;
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(primaryKeyDefinition) ?? Constants.UnknownObjectName;
         var indexData = new IndexData
         (
             indexProperties,
@@ -106,37 +116,37 @@ public sealed class IndexNamingAnalyzer : IScriptAnalyzer
             primaryKeyDefinition.Columns.Select(a => a.Column.MultiPartIdentifier.Identifiers.Select(x => x.Value).StringJoin(".").NullIfEmptyOrWhiteSpace() ?? Constants.UnknownObjectName).ToList()
         );
 
-        var expectedIndexName = CreateIndexName(settings, indexData);
+        var expectedIndexName = CreateIndexName(indexData);
         if (indexData.Name.Equals(expectedIndexName, StringComparison.OrdinalIgnoreCase))
         {
             return;
         }
 
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, indexData.DatabaseName, script.RelativeScriptFilePath, indexData.FullObjectName, indexData.Identifier.GetCodeRegion(),
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default, indexData.DatabaseName, _script.RelativeScriptFilePath, indexData.FullObjectName, indexData.Identifier.GetCodeRegion(),
             indexData.Name, expectedIndexName, indexData.IndexProperties);
     }
 
-    private static void AnalyzeCreateIndexStatement(IAnalysisContext context, IScriptModel script, Aj5052Settings settings, TSqlFragment fragment)
+    private void AnalyzeCreateIndexStatement(TSqlFragment fragment)
     {
-        var indexData = GetIndexProperties(script, context.DefaultSchemaName, fragment);
+        var indexData = GetIndexProperties(_context.DefaultSchemaName, fragment);
         if (indexData is null)
         {
             return;
         }
 
-        var expectedIndexName = CreateIndexName(settings, indexData);
+        var expectedIndexName = CreateIndexName(indexData);
         if (indexData.Name.Equals(expectedIndexName, StringComparison.OrdinalIgnoreCase))
         {
             return;
         }
 
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, indexData.DatabaseName, script.RelativeScriptFilePath, indexData.FullObjectName, indexData.Identifier.GetCodeRegion(),
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default, indexData.DatabaseName, _script.RelativeScriptFilePath, indexData.FullObjectName, indexData.Identifier.GetCodeRegion(),
             indexData.Name, expectedIndexName, indexData.IndexProperties);
     }
 
-    private static string CreateIndexName(Aj5052Settings settings, IndexData indexData)
+    private string CreateIndexName(IndexData indexData)
     {
-        var pattern = GetPatternForIndexProperties(settings, indexData.IndexProperties);
+        var pattern = GetPatternForIndexProperties(indexData.IndexProperties);
         return PopulatePattern(pattern, indexData);
     }
 
@@ -156,9 +166,9 @@ public sealed class IndexNamingAnalyzer : IScriptAnalyzer
         return result;
     }
 
-    private static string GetPatternForIndexProperties(Aj5052Settings settings, IndexProperties indexProperties)
+    private string GetPatternForIndexProperties(IndexProperties indexProperties)
     {
-        foreach (var (properties, pattern) in settings.NamingPatterns)
+        foreach (var (properties, pattern) in _settings.NamingPatterns)
         {
             if (indexProperties.HasFlag(properties))
             {
@@ -166,18 +176,18 @@ public sealed class IndexNamingAnalyzer : IScriptAnalyzer
             }
         }
 
-        return settings.DefaultPattern;
+        return _settings.DefaultPattern;
     }
 
-    private static IndexData? GetIndexProperties(IScriptModel script, string defaultSchemaName, TSqlFragment fragment)
+    private IndexData? GetIndexProperties(string defaultSchemaName, TSqlFragment fragment)
         => fragment switch
         {
-            CreateIndexStatement createIndexStatement                         => GetIndexProperties(script, defaultSchemaName, createIndexStatement),
-            CreateSpatialIndexStatement createSpatialIndexStatement           => GetIndexProperties(script, defaultSchemaName, createSpatialIndexStatement),
-            CreateXmlIndexStatement createXmlIndexStatement                   => GetIndexProperties(script, defaultSchemaName, createXmlIndexStatement),
-            CreateSelectiveXmlIndexStatement createSelectiveXmlIndexStatement => GetIndexProperties(script, defaultSchemaName, createSelectiveXmlIndexStatement),
-            CreateColumnStoreIndexStatement createColumnStoreIndexStatement   => GetIndexProperties(script, defaultSchemaName, createColumnStoreIndexStatement),
-            CreateFullTextIndexStatement createFullTextIndexStatement         => GetIndexProperties(script, defaultSchemaName, createFullTextIndexStatement),
+            CreateIndexStatement createIndexStatement                         => GetIndexProperties(_script, defaultSchemaName, createIndexStatement),
+            CreateSpatialIndexStatement createSpatialIndexStatement           => GetIndexProperties(_script, defaultSchemaName, createSpatialIndexStatement),
+            CreateXmlIndexStatement createXmlIndexStatement                   => GetIndexProperties(_script, defaultSchemaName, createXmlIndexStatement),
+            CreateSelectiveXmlIndexStatement createSelectiveXmlIndexStatement => GetIndexProperties(_script, defaultSchemaName, createSelectiveXmlIndexStatement),
+            CreateColumnStoreIndexStatement createColumnStoreIndexStatement   => GetIndexProperties(_script, defaultSchemaName, createColumnStoreIndexStatement),
+            CreateFullTextIndexStatement createFullTextIndexStatement         => GetIndexProperties(_script, defaultSchemaName, createFullTextIndexStatement),
             _                                                                 => null
         };
 

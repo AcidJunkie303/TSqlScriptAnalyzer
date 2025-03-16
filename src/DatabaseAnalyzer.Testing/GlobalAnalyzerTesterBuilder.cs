@@ -4,6 +4,9 @@ using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.Models;
 using DatabaseAnalyzer.Common.Services;
 using DatabaseAnalyzer.Contracts;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace DatabaseAnalyzer.Testing;
@@ -12,16 +15,16 @@ namespace DatabaseAnalyzer.Testing;
 public static class GlobalAnalyzerTesterBuilder
 {
     public static GlobalAnalyzerTesterBuilder<TAnalyzer> Create<TAnalyzer>()
-        where TAnalyzer : class, IGlobalAnalyzer, new()
+        where TAnalyzer : class, IGlobalAnalyzer
         => new();
 }
 
 [SuppressMessage("maintainability", "CA1515:Consider making public types internal", Justification = "False positive. It is used in the DatabaseAnalyzers.DefaultAnalyzers.Tests project")]
 public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
-    where TAnalyzer : class, IGlobalAnalyzer, new()
+    where TAnalyzer : class, IGlobalAnalyzer
 {
     private readonly Dictionary<string, (string Contents, string DatabaseName)> _scriptContentsByFilePath = new(StringComparer.OrdinalIgnoreCase);
-    private readonly Dictionary<string, object?> _settingsByDiagnosticId = new(StringComparer.OrdinalIgnoreCase);
+    private readonly List<object> _settings = [];
     private string _defaultSchemaName = "dbo";
 
     public GlobalAnalyzerTesterBuilder<TAnalyzer> WithScriptFile(string contents, string databaseName)
@@ -31,10 +34,9 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
         return this;
     }
 
-    public GlobalAnalyzerTesterBuilder<TAnalyzer> WithSettings<TSettings>(TSettings settings)
-        where TSettings : class, ISettings<TSettings>
+    public GlobalAnalyzerTesterBuilder<TAnalyzer> WithSettings(object settings)
     {
-        _settingsByDiagnosticId.Add(TSettings.DiagnosticId, settings);
+        _settings.Add(settings);
         return this;
     }
 
@@ -51,9 +53,8 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
             throw new InvalidOperationException($"{nameof(WithScriptFile)}() has not been called");
         }
 
-        var analyzer = new TAnalyzer();
-        var diagnosticSettingsProvider = new FakeDiagnosticSettingsProvider(_settingsByDiagnosticId);
-        var diagnosticDefinitionRegistry = new DiagnosticDefinitionRegistry(analyzer.SupportedDiagnostics);
+        var supportedDiagnostics = SupportedDiagnosticRetriever.GetSupportedDiagnostics(typeof(TAnalyzer));
+        var diagnosticDefinitionRegistry = new DiagnosticDefinitionRegistry(supportedDiagnostics);
         var testCodeProcessor = new TestCodeProcessor(diagnosticDefinitionRegistry);
 
         var processedScripts = _scriptContentsByFilePath
@@ -89,10 +90,12 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
             _defaultSchemaName,
             allScripts,
             allScriptsByDatabaseName,
-            diagnosticSettingsProvider,
             new IssueReporter(),
             NullLogger.Instance,
             FrozenSet<string>.Empty);
+
+        var host = CreateHost(analysisContext);
+        var analyzer = host.Services.GetRequiredService<IGlobalAnalyzer>();
 
         return new GlobalAnalyzerTester(
             analysisContext,
@@ -101,6 +104,22 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
             expectedIssues
         );
     }
+
+    private IHost CreateHost(IAnalysisContext analysisContext)
+        => Host
+            .CreateDefaultBuilder()
+            .ConfigureServices((_, services) =>
+            {
+                foreach (var settings in _settings)
+                {
+                    services.AddSingleton(settings.GetType(), settings);
+                }
+
+                services.AddSingleton<IGlobalAnalyzer>(sp => ActivatorUtilities.CreateInstance<TAnalyzer>(sp, analysisContext));
+                services.AddSingleton(typeof(ILogger<>), typeof(NullLogger<>));
+                services.AddSingleton<ILoggerFactory>(NullLoggerFactory.Instance);
+            })
+            .Build();
 
     private static ScriptModel ParseScript(string relativeScriptFilePath, string scriptContents, string databaseName)
     {

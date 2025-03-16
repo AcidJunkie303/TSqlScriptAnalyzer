@@ -7,11 +7,20 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 
 public sealed class MissingBlankSpaceAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public MissingBlankSpaceAnalyzer(IScriptAnalysisContext context)
     {
-        var tokens = script.ParsedScript.ScriptTokenStream;
+        _context = context;
+        _script = context.Script;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        var tokens = _script.ParsedScript.ScriptTokenStream;
 
         // we skip the first and last since it doesn't make sense to check them, and it also makes the checking easier (out of bounds checking)
         for (var i = 1; i < tokens.Count - 1; i++)
@@ -38,12 +47,12 @@ public sealed class MissingBlankSpaceAnalyzer : IScriptAnalyzer
 
         void Report(TSqlParserToken token, string beforeOrAfter)
         {
-            var fullObjectName = script.ParsedScript
+            var fullObjectName = _script.ParsedScript
                 .TryGetSqlFragmentAtPosition(token)
-                ?.TryGetFirstClassObjectName(context, script);
+                ?.TryGetFirstClassObjectName(_context, _script);
 
-            var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtToken(token) ?? DatabaseNames.Unknown;
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, token.GetCodeRegion(), beforeOrAfter, token.Text);
+            var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtToken(token) ?? DatabaseNames.Unknown;
+            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, token.GetCodeRegion(), beforeOrAfter, token.Text);
         }
     }
 

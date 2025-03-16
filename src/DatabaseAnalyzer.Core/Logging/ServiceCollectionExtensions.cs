@@ -9,7 +9,7 @@ namespace DatabaseAnalyzer.Core.Logging;
 
 internal static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddLogging(this IServiceCollection services, string? logFilePath, LogEventLevel minimumLogLevel)
+    public static ILoggerFactory AddLogging(this IServiceCollection services, string? logFilePath, LogEventLevel minimumLogLevel)
     {
         logFilePath ??= GetDefaultLogFilePath();
         var logFileDirectoryPath = Path.GetDirectoryName(logFilePath);
@@ -28,7 +28,9 @@ internal static class ServiceCollectionExtensions
 #pragma warning restore CA2000
 
         services.AddTransient(typeof(ILogger<>), typeof(Logger<>));
-        return services.AddSingleton(loggerFactory);
+        services.AddSingleton(loggerFactory);
+
+        return loggerFactory;
     }
 
     [SuppressMessage("Major Code Smell", "S6354:Use a testable date/time provider")]

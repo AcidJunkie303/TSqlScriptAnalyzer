@@ -55,3 +55,7 @@ AS
 BEGIN
     PRINT @Param1
 END
+
+GO
+
+SELECT GETDATE()

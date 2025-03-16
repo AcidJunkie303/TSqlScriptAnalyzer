@@ -6,7 +6,7 @@ namespace DatabaseAnalyzer.Testing;
 
 [SuppressMessage("maintainability", "CA1515:Consider making public types internal", Justification = "False positive. It is used in the DatabaseAnalyzers.DefaultAnalyzers.Tests project")]
 public abstract class GlobalAnalyzerTestsBase<TAnalyzer>
-    where TAnalyzer : class, IGlobalAnalyzer, new()
+    where TAnalyzer : class, IGlobalAnalyzer
 {
     protected GlobalAnalyzerTestsBase(ITestOutputHelper testOutputHelper)
     {

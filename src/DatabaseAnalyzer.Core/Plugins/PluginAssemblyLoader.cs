@@ -1,8 +1,8 @@
 using System.Collections.Immutable;
 using System.Reflection;
+using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Core.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace DatabaseAnalyzer.Core.Plugins;
 
@@ -10,46 +10,67 @@ internal static class PluginAssemblyLoader
 {
     private static readonly string PluginsDirectoryPath = GetPluginsDirectoryPath();
 
-    public static IReadOnlyList<PluginAssembly> LoadPlugins(IServiceCollection services)
+    public static IReadOnlyList<PluginAssembly> LoadPlugins()
     {
         var pluginAssemblies = new List<PluginAssembly>();
 
-        foreach (var assemblyPath in GetPluginAssemblyPaths())
+        try
         {
-            var pluginAssembly = LoadAssemblyFromPath(services, assemblyPath);
-            if (pluginAssembly is null)
+            foreach (var assemblyPath in GetPluginAssemblyPaths())
             {
-                continue;
+#pragma warning disable CA2000 // Dispose objects before losing scope -> done
+                var pluginAssembly = LoadAssemblyFromPath(assemblyPath);
+#pragma warning restore CA2000
+                if (pluginAssembly is null)
+                {
+                    continue;
+                }
+
+                pluginAssemblies.Add(pluginAssembly);
+            }
+        }
+        catch
+        {
+            foreach (var pluginAssembly in pluginAssemblies)
+            {
+                pluginAssembly.Dispose();
             }
 
-            pluginAssemblies.Add(pluginAssembly);
+            throw;
         }
 
         return pluginAssemblies;
     }
 
-    private static PluginAssembly? LoadAssemblyFromPath(IServiceCollection services, string assemblyPath)
+    private static PluginAssembly? LoadAssemblyFromPath(string assemblyPath)
     {
 #pragma warning disable CA2000 // Dispose objects before losing scope -> registered in the DI container which takes care of it
         var assemblyLoadContext = new PluginLoadContext(assemblyPath);
 #pragma warning restore CA2000
-        services.AddSingleton(assemblyLoadContext);
 
         try
         {
             var assembly = assemblyLoadContext.LoadFromAssemblyPath(assemblyPath);
             var scriptAnalyzerTypes = GetPluginsOfType<IScriptAnalyzer>(assembly).ToImmutableArray();
             var globalAnalyzerTypes = GetPluginsOfType<IGlobalAnalyzer>(assembly).ToImmutableArray();
-            var diagnosticSettingsProviderTypes = GetPluginsOfType<IDiagnosticSettingsProvider>(assembly).ToImmutableArray();
-            var settingsPairTypes = GetSettingsPairTypes(assembly).ToImmutableArray();
+            var serviceTypes = GetPluginsOfType<IService>(assembly).ToImmutableArray();
+            var settingsPairTypes = GetSettingsMetadata(assembly).ToImmutableArray();
             var diagnosticDefinitions = GetDefinitionsFromAssembly(assembly).ToImmutableArray();
 
-            if (scriptAnalyzerTypes.Length == 0 && globalAnalyzerTypes.Length == 0 && diagnosticSettingsProviderTypes.Length == 0 && diagnosticDefinitions.Length == 0)
+            if (scriptAnalyzerTypes.Length == 0 && globalAnalyzerTypes.Length == 0 && diagnosticDefinitions.Length == 0)
             {
                 return null;
             }
 
-            return new PluginAssembly(assemblyLoadContext, scriptAnalyzerTypes, globalAnalyzerTypes, diagnosticSettingsProviderTypes, settingsPairTypes, diagnosticDefinitions);
+            return new PluginAssembly
+            (
+                AssemblyLoadContext: assemblyLoadContext,
+                ScriptAnalyzerTypes: scriptAnalyzerTypes,
+                GlobalAnalyzerTypes: globalAnalyzerTypes,
+                ServiceTypes: serviceTypes,
+                CustomSettings: settingsPairTypes,
+                DiagnosticDefinitions: diagnosticDefinitions
+            );
         }
         catch
         {
@@ -66,8 +87,8 @@ internal static class PluginAssemblyLoader
                 return a is
                 {
                     IsAbstract: false,
-                    IsClass: true,
-                    IsPublic: true
+                    IsClass   : true,
+                    IsPublic  : true
                 } && a.GetInterfaces().Any(static x => x == typeof(TPlugin));
             });
 
@@ -84,39 +105,50 @@ internal static class PluginAssemblyLoader
         return Path.Combine(currentDirectory, "plugins");
     }
 
-    private static List<SettingsPairTypes> GetSettingsPairTypes(Assembly assembly)
+    private static List<SettingMetadata> GetSettingsMetadata(Assembly assembly)
     {
-        var rawSettingsTypes = assembly
-            .GetTypes()
-            .Where(a => !a.IsAbstract)
-            .Where(a => a.GetInterfaces().Any(b => b.IsGenericType && b.GetGenericTypeDefinition() == typeof(IRawSettings<>)))
-            .Select(a =>
-            (
-                RawSettignsType: a,
-                SettingsType: a
-                    .GetInterfaces()
-                    .Single(b => b.IsGenericType && b.GetGenericTypeDefinition() == typeof(IRawSettings<>))
-                    .GetGenericArguments()[0]
-            ))
-            .ToList();
-
-        var settingsTypes = assembly
+        var finalSettingsTypes = assembly
             .GetTypes()
             .Where(a => !a.IsAbstract)
             .Where(a => a.GetInterfaces().Any(b => b.IsGenericType && b.GetGenericTypeDefinition() == typeof(ISettings<>)))
             .ToHashSet();
 
-        var result = new List<SettingsPairTypes>();
-
-        foreach (var (rawSettingsType, settingsType) in rawSettingsTypes)
-        {
-            if (settingsTypes.Contains(settingsType)) // to make sure it's not abstract etc.
+        return assembly
+            .GetTypes()
+            .Where(a => !a.IsAbstract)
+            .Where(a => a.GetInterfaces().Any(b => b.IsGenericType && b.GetGenericTypeDefinition() == typeof(IRawSettings<>)))
+            .Select(rawSettingsType =>
             {
-                result.Add(new SettingsPairTypes(rawSettingsType, settingsType));
-            }
-        }
+                var attribute = rawSettingsType.GetCustomAttribute<SettingsSourceAttribute>();
+                if (attribute?.Name.IsNullOrWhiteSpace() != false)
+                {
+                    return null;
+                }
 
-        return result;
+                var finalSettingsType = rawSettingsType
+                    .GetInterfaces()
+                    .SingleOrDefault(b => b.IsGenericType && b.GetGenericTypeDefinition() == typeof(IRawSettings<>))
+                    ?.GetGenericArguments()[0];
+
+                if (finalSettingsType is null)
+                {
+                    return null;
+                }
+
+                if (!finalSettingsTypes.Contains(finalSettingsType))
+                {
+                    return null;
+                }
+
+                return new SettingMetadata(
+                    rawSettingsType,
+                    finalSettingsType,
+                    attribute.Kind,
+                    attribute.Name
+                );
+            })
+            .WhereNotNull()
+            .ToList();
     }
 
     private static IEnumerable<IDiagnosticDefinition> GetDefinitionsFromAssembly(Assembly assembly)

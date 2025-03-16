@@ -6,11 +6,20 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 
 public sealed class DoubleEmptyLinesAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public DoubleEmptyLinesAnalyzer(IScriptAnalysisContext context)
     {
-        foreach (var block in GetConsecutiveBlankSpaceTokens(script.ParsedScript.ScriptTokenStream))
+        _context = context;
+        _script = context.Script;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        foreach (var block in GetConsecutiveBlankSpaceTokens(_script.ParsedScript.ScriptTokenStream))
         {
             var newLineCharCount = block.Sum(static a => a.Text.Count(static x => x == '\n'));
             if (newLineCharCount <= 2)
@@ -35,12 +44,12 @@ public sealed class DoubleEmptyLinesAnalyzer : IScriptAnalyzer
             }
 
             var codeRegion = CodeRegion.Create(firstToken.Line, firstToken.Column, endLine, endColumn);
-            var fullObjectName = script.ParsedScript
+            var fullObjectName = _script.ParsedScript
                 .TryGetSqlFragmentAtPosition(block[0])
-                ?.TryGetFirstClassObjectName(context, script);
+                ?.TryGetFirstClassObjectName(_context, _script);
 
-            var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtLocation(block[0].Line, block[0].Column) ?? DatabaseNames.Unknown;
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, codeRegion);
+            var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtLocation(block[0].Line, block[0].Column) ?? DatabaseNames.Unknown;
+            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion);
         }
     }
 

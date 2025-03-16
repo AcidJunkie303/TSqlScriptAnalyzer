@@ -6,26 +6,35 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 
 public sealed class RedundantPairOfParenthesesAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public RedundantPairOfParenthesesAnalyzer(IScriptAnalysisContext context)
     {
-        foreach (var columnReference in script.ParsedScript.GetChildren<BooleanParenthesisExpression>(recursive: true))
+        _context = context;
+        _script = context.Script;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        foreach (var columnReference in _script.ParsedScript.GetChildren<BooleanParenthesisExpression>(recursive: true))
         {
-            Analyze(context, script, columnReference);
+            Analyze(columnReference);
         }
     }
 
-    private static void Analyze(IAnalysisContext context, IScriptModel script, BooleanParenthesisExpression expression)
+    private void Analyze(BooleanParenthesisExpression expression)
     {
         if (expression.Expression is not BooleanParenthesisExpression)
         {
             return;
         }
 
-        var fullObjectName = expression.TryGetFirstClassObjectName(context, script);
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(expression) ?? DatabaseNames.Unknown;
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, expression.GetCodeRegion(), expression.GetSql());
+        var fullObjectName = expression.TryGetFirstClassObjectName(_context, _script);
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(expression) ?? DatabaseNames.Unknown;
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, expression.GetCodeRegion(), expression.GetSql());
     }
 
     private static class DiagnosticDefinitions

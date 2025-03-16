@@ -7,48 +7,57 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Naming;
 
 public sealed class IdentifierCasingAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics =>
-        [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
+    private readonly Aj5057Settings _settings;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public IdentifierCasingAnalyzer(IScriptAnalysisContext context, Aj5057Settings settings)
     {
-        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5057Settings>();
-        if (settings.CasingByIdentifier.Count == 0)
+        _context = context;
+        _script = context.Script;
+        _settings = settings;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        if (_settings.CasingByIdentifier.Count == 0)
         {
             return;
         }
 
-        foreach (var token in script.ParsedScript.ScriptTokenStream)
+        foreach (var token in _script.ParsedScript.ScriptTokenStream)
         {
             if (token.TokenType == TSqlTokenType.Identifier)
             {
-                AnalyzeIdentifier(context, script, token, settings);
+                AnalyzeIdentifier(token);
                 return;
             }
         }
     }
 
-    private static void AnalyzeIdentifier(IAnalysisContext context, IScriptModel script, TSqlParserToken token, Aj5057Settings settings)
+    private void AnalyzeIdentifier(TSqlParserToken token)
     {
         if (token.Text.IsNullOrWhiteSpace())
         {
             return;
         }
 
-        var shouldBeWrittenAs = settings.CasingByIdentifier.GetValueOrDefault(token.Text);
+        var shouldBeWrittenAs = _settings.CasingByIdentifier.GetValueOrDefault(token.Text);
         if (shouldBeWrittenAs is null || token.Text.EqualsOrdinal(shouldBeWrittenAs))
         {
             return;
         }
 
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtToken(token) ?? DatabaseNames.Unknown;
-        var fullObjectName = script.ParsedScript
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtToken(token) ?? DatabaseNames.Unknown;
+        var fullObjectName = _script.ParsedScript
             .TryGetSqlFragmentAtPosition(token)
-            ?.TryGetFirstClassObjectName(context, script);
+            ?.TryGetFirstClassObjectName(_context, _script);
 
-        context.IssueReporter.Report(DiagnosticDefinitions.Default,
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default,
             databaseName,
-            script.RelativeScriptFilePath,
+            _script.RelativeScriptFilePath,
             fullObjectName,
             token.GetCodeRegion(),
             token.Text, shouldBeWrittenAs);

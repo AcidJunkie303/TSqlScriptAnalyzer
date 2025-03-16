@@ -7,7 +7,6 @@ namespace DatabaseAnalyzer.Core;
 internal sealed class AnalysisContextFactory
 {
     private readonly string _defaultSchema;
-    private readonly IDiagnosticSettingsProvider _diagnosticSettingsProvider;
     private readonly FrozenSet<string> _disabledDiagnosticIds;
     private readonly IIssueReporter _issueReporter;
     private readonly ILoggerFactory _loggerFactory;
@@ -19,7 +18,6 @@ internal sealed class AnalysisContextFactory
         string defaultSchema,
         IReadOnlyList<IScriptModel> scripts,
         FrozenDictionary<string, IReadOnlyList<IScriptModel>> scriptByDatabaseName,
-        IDiagnosticSettingsProvider diagnosticSettingsProvider,
         IIssueReporter issueReporter,
         ILoggerFactory loggerFactory,
         FrozenSet<string> disabledDiagnosticIds)
@@ -27,44 +25,42 @@ internal sealed class AnalysisContextFactory
         _defaultSchema = defaultSchema;
         _scripts = scripts;
         _scriptByDatabaseName = scriptByDatabaseName;
-        _diagnosticSettingsProvider = diagnosticSettingsProvider;
         _issueReporter = issueReporter;
         _loggerFactory = loggerFactory;
         _disabledDiagnosticIds = disabledDiagnosticIds;
     }
 
-    public AnalysisContext Create(IScriptAnalyzer scriptAnalyzer, IScriptModel script)
+    public IScriptAnalysisContext CreateForScriptAnalyzer(IScriptModel script, Type analyzerType)
     {
-        var logger = _loggerFactory.CreateLogger(scriptAnalyzer.GetType());
         var scopeData = new Dictionary<string, object>(StringComparer.Ordinal)
         {
             { "ScriptPath", script.RelativeScriptFilePath }
         };
 
+        var logger = _loggerFactory.CreateLogger(analyzerType);
         logger.BeginScope(scopeData);
 
-        return new AnalysisContext
+        return new ScriptAnalysisContext
         (
             _defaultSchema,
             _scripts,
+            script,
             _scriptByDatabaseName,
-            _diagnosticSettingsProvider,
             _issueReporter,
             logger,
             _disabledDiagnosticIds
         );
     }
 
-    public AnalysisContext Create(IGlobalAnalyzer globalAnalyzer)
+    public IAnalysisContext CreateForGlobalAnalyzer(Type analyzerType)
     {
-        var logger = _loggerFactory.CreateLogger(globalAnalyzer.GetType());
+        var logger = _loggerFactory.CreateLogger(analyzerType);
 
         return new AnalysisContext
         (
             _defaultSchema,
             _scripts,
             _scriptByDatabaseName,
-            _diagnosticSettingsProvider,
             _issueReporter,
             logger,
             _disabledDiagnosticIds

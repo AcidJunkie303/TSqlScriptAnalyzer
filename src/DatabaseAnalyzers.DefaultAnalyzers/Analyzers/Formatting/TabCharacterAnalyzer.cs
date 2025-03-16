@@ -5,11 +5,20 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 
 public sealed class TabCharacterAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public TabCharacterAnalyzer(IScriptAnalysisContext context)
     {
-        var sqlCode = script.ParsedScript.GetSql();
+        _context = context;
+        _script = context.Script;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        var sqlCode = _script.ParsedScript.GetSql();
         for (var i = 0; i < sqlCode.Length; i++)
         {
             var c = sqlCode[i];
@@ -22,11 +31,11 @@ public sealed class TabCharacterAnalyzer : IScriptAnalyzer
 
             var codeRegion = CodeRegion.Create(lineNumber, columnNumber, lineNumber, columnNumber + 1);
 
-            var fullObjectName = script.ParsedScript
+            var fullObjectName = _script.ParsedScript
                 .TryGetSqlFragmentAtPosition(i)
-                ?.TryGetFirstClassObjectName(context, script);
-            var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtLocation(codeRegion.Begin) ?? DatabaseNames.Unknown;
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, codeRegion);
+                ?.TryGetFirstClassObjectName(_context, _script);
+            var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtLocation(codeRegion.Begin) ?? DatabaseNames.Unknown;
+            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion);
         }
     }
 

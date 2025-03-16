@@ -6,25 +6,34 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 
 public sealed class ConsecutiveGoStatementsAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public ConsecutiveGoStatementsAnalyzer(IScriptAnalysisContext context)
     {
-        for (var i = 0; i < script.ParsedScript.ScriptTokenStream.Count; i++)
+        _context = context;
+        _script = context.Script;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        for (var i = 0; i < _script.ParsedScript.ScriptTokenStream.Count; i++)
         {
-            var token = script.ParsedScript.ScriptTokenStream[i];
+            var token = _script.ParsedScript.ScriptTokenStream[i];
             if (token.TokenType != TSqlTokenType.Go)
             {
                 continue;
             }
 
-            AnalyzeToken(context, script, token, i);
+            AnalyzeToken(token, i);
         }
     }
 
-    private static void AnalyzeToken(IAnalysisContext context, IScriptModel script, TSqlParserToken goStatementToken, int tokenIndex)
+    private void AnalyzeToken(TSqlParserToken goStatementToken, int tokenIndex)
     {
-        var tokensAfter = script.ParsedScript.ScriptTokenStream
+        var tokensAfter = _script.ParsedScript.ScriptTokenStream
             .Skip(tokenIndex + 1)
             .TakeWhile(IsGoOrWhiteSpaceOrCommentToken)
             .SkipLast(1)
@@ -42,12 +51,12 @@ public sealed class ConsecutiveGoStatementsAnalyzer : IScriptAnalyzer
         }
 
         var codeRegion = CodeRegion.Create(goStatementToken.GetCodeLocation(), lastGoToken.GetCodeRegion().End);
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtLocation(goStatementToken.Line, goStatementToken.Column) ?? DatabaseNames.Unknown;
-        var fullObjectName = script.ParsedScript
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtLocation(goStatementToken.Line, goStatementToken.Column) ?? DatabaseNames.Unknown;
+        var fullObjectName = _script.ParsedScript
             .TryGetSqlFragmentAtPosition(goStatementToken)
-            ?.TryGetFirstClassObjectName(context, script);
+            ?.TryGetFirstClassObjectName(_context, _script);
 
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, codeRegion);
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion);
     }
 
     private static bool IsGoOrWhiteSpaceOrCommentToken(TSqlParserToken token)

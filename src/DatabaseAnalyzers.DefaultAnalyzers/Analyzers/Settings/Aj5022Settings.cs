@@ -4,6 +4,7 @@ using DatabaseAnalyzer.Contracts;
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
+[SettingsSource(SettingsSourceKind.Diagnostics, "AJ5022")]
 internal sealed class Aj5022SettingsRaw : IRawSettings<Aj5022Settings>
 {
     public bool IfRequiresBeginEndBlock { get; set; }
@@ -16,7 +17,7 @@ internal sealed class Aj5022SettingsRaw : IRawSettings<Aj5022Settings>
     );
 }
 
-internal sealed record Aj5022Settings(
+public sealed record Aj5022Settings(
     [property: Description("Indicates whether IF statements require BEGIN/END blocks. Default is true.")]
     bool IfRequiresBeginEndBlock,
     [property: Description("Indicates whether WHILE statements require BEGIN/END blocks. Default is true.")]

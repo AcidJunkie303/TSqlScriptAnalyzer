@@ -6,47 +6,56 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 
 public sealed class MissingEmptyLineAfterEndBlockAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public MissingEmptyLineAfterEndBlockAnalyzer(IScriptAnalysisContext context)
     {
-        for (var i = 0; i < script.ParsedScript.ScriptTokenStream.Count; i++)
+        _context = context;
+        _script = context.Script;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        for (var i = 0; i < _script.ParsedScript.ScriptTokenStream.Count; i++)
         {
-            var token = script.ParsedScript.ScriptTokenStream[i];
+            var token = _script.ParsedScript.ScriptTokenStream[i];
             if (token.TokenType != TSqlTokenType.End)
             {
                 continue;
             }
 
-            if (IsWithinDmlStatement(script, token))
+            if (IsWithinDmlStatement(token))
             {
                 continue;
             }
 
             // in case the next non-comment and non-whitespace token is another END token, we skip it
-            var nextEndTokenIndex = FindNextTokenIndexWithCommentSkip(script.ParsedScript.ScriptTokenStream, i, IsEnd);
+            var nextEndTokenIndex = FindNextTokenIndexWithCommentSkip(_script.ParsedScript.ScriptTokenStream, i, IsEnd);
             if (nextEndTokenIndex >= 0)
             {
                 continue;
             }
 
             // in case the next non-comment and non-whitespace token is a try (of 'END TRY') we skip it because we don't want to enforce an extra line after END TRY
-            var tryTokenIndex = FindNextTokenIndexWithCommentSkip(script.ParsedScript.ScriptTokenStream, i, IsTry);
+            var tryTokenIndex = FindNextTokenIndexWithCommentSkip(_script.ParsedScript.ScriptTokenStream, i, IsTry);
             if (tryTokenIndex >= 0)
             {
                 continue;
             }
 
             // in case the next non-comment and non-whitespace token is catch, we use this instead of the END (END CATCH)
-            var catchTokenIndex = FindNextTokenIndexWithCommentSkip(script.ParsedScript.ScriptTokenStream, i, IsCatch);
+            var catchTokenIndex = FindNextTokenIndexWithCommentSkip(_script.ParsedScript.ScriptTokenStream, i, IsCatch);
             if (catchTokenIndex < 0)
             {
-                AnalyzeEndToken(context, script, token, i);
+                AnalyzeEndToken(token, i);
             }
             else
             {
-                var alternativeToken = script.ParsedScript.ScriptTokenStream[catchTokenIndex];
-                AnalyzeEndToken(context, script, alternativeToken, catchTokenIndex);
+                var alternativeToken = _script.ParsedScript.ScriptTokenStream[catchTokenIndex];
+                AnalyzeEndToken(alternativeToken, catchTokenIndex);
             }
         }
     }
@@ -73,14 +82,14 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzer : IScriptAnalyzer
             : -1;
     }
 
-    private static void AnalyzeEndToken(IAnalysisContext context, IScriptModel script, TSqlParserToken endToken, int tokenIndex)
+    private void AnalyzeEndToken(TSqlParserToken endToken, int tokenIndex)
     {
         if (IsNextTokenOfAnyType(TSqlTokenType.Else, TSqlTokenType.RightParenthesis, TSqlTokenType.Go, TSqlTokenType.EndOfFile))
         {
             return;
         }
 
-        var nextEndTokenIndex = FindNextTokenIndexWithCommentSkip(script.ParsedScript.ScriptTokenStream, tokenIndex, IsEnd);
+        var nextEndTokenIndex = FindNextTokenIndexWithCommentSkip(_script.ParsedScript.ScriptTokenStream, tokenIndex, IsEnd);
         if (nextEndTokenIndex >= 0)
         {
             return;
@@ -92,25 +101,25 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzer : IScriptAnalyzer
             return;
         }
 
-        var statement = script.ParsedScript.TryGetSqlFragmentAtPosition(endToken);
+        var statement = _script.ParsedScript.TryGetSqlFragmentAtPosition(endToken);
         if (IsIgnoredStatement(statement))
         {
             return;
         }
 
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtLocation(endToken.Line, endToken.Column) ?? DatabaseNames.Unknown;
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtLocation(endToken.Line, endToken.Column) ?? DatabaseNames.Unknown;
         var codeRegion = endToken.GetCodeRegion();
-        var fullObjectName = script.ParsedScript
+        var fullObjectName = _script.ParsedScript
             .TryGetSqlFragmentAtPosition(endToken)
-            ?.TryGetFirstClassObjectName(context, script);
+            ?.TryGetFirstClassObjectName(_context, _script);
 
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, codeRegion);
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion);
 
         bool IsMissingEmptyLineAfter() => GetNewLineCountAfterToken() < 2;
 
         bool IsNextTokenOfAnyType(params TSqlTokenType[] types)
         {
-            var tokenAfterSkipTokens = script.ParsedScript.ScriptTokenStream
+            var tokenAfterSkipTokens = _script.ParsedScript.ScriptTokenStream
                 .Skip(tokenIndex + 1)
                 .SkipWhile(IsSkipToken)
                 .FirstOrDefault();
@@ -124,7 +133,7 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzer : IScriptAnalyzer
         }
 
         int GetNewLineCountAfterToken()
-            => script.ParsedScript.ScriptTokenStream
+            => _script.ParsedScript.ScriptTokenStream
                 .Skip(tokenIndex + 1)
                 .TakeWhile(IsSkipToken)
                 .Sum(a => a.Text.Count(c => c == '\n'));
@@ -144,16 +153,16 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzer : IScriptAnalyzer
     private static bool IsEnd(TSqlParserToken? token)
         => token is not null && token.TokenType == TSqlTokenType.End;
 
-    private static bool IsWithinDmlStatement(IScriptModel script, TSqlParserToken token)
+    private bool IsWithinDmlStatement(TSqlParserToken token)
     {
-        var fragment = script.ParsedScript.TryGetSqlFragmentAtPosition(token);
+        var fragment = _script.ParsedScript.TryGetSqlFragmentAtPosition(token);
         if (fragment is null)
         {
             return false;
         }
 
         return fragment
-            .GetParents(script.ParentFragmentProvider)
+            .GetParents(_script.ParentFragmentProvider)
             .Any(a => a is SelectStatement or UpdateStatement or InsertStatement or DeleteStatement or MergeStatement);
     }
 

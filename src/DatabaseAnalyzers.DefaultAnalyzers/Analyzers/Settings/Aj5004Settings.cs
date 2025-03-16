@@ -9,6 +9,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 #pragma warning disable MA0048 // File name must match type name -> some classes belong to this settings only
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
+[SettingsSource(SettingsSourceKind.Diagnostics, "AJ5004")]
 internal sealed class Aj5004SettingsRaw : IRawSettings<Aj5004Settings>
 {
     public IReadOnlyCollection<TopicAndPatternRaw?>? TopicsAndPatterns { get; set; }
@@ -31,7 +32,7 @@ internal sealed class TopicAndPatternRaw
     public string? Pattern { get; set; }
 }
 
-internal sealed record Aj5004Settings(
+public sealed record Aj5004Settings(
     [property: Description("An array of objects containing `Topic` and `Pattern` properties.")]
     IReadOnlyCollection<TopicAndPattern> TopicsAndPatterns
 ) : ISettings<Aj5004Settings>
@@ -40,6 +41,6 @@ internal sealed record Aj5004Settings(
     public static string DiagnosticId => "AJ5004";
 }
 
-internal sealed record TopicAndPattern(string Topic, Regex Pattern);
+public sealed record TopicAndPattern(string Topic, Regex Pattern);
 
 #pragma warning restore MA0048
