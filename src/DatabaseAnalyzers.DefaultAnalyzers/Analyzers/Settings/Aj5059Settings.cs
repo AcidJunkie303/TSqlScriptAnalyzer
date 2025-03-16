@@ -8,7 +8,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
 [SettingsSource(SettingsSourceKind.Diagnostics, "AJ5059")]
-internal sealed class Aj5059SettingsRaw : IRawSettings<Aj5059Settings>
+internal sealed class Aj5059SettingsRaw : IRawDiagnosticSettings<Aj5059Settings>
 {
     public IReadOnlyCollection<string?>? IgnoredProcedureNamePatterns { get; set; }
 
@@ -25,7 +25,7 @@ internal sealed class Aj5059SettingsRaw : IRawSettings<Aj5059Settings>
 public sealed record Aj5059Settings(
     [property: Description("Procedure names to ignore. Wildcards like `*` and `?` are supported.")]
     IReadOnlyList<Regex> IgnoredProcedureNamePatterns
-) : ISettings<Aj5059Settings>
+) : IDiagnosticSettings<Aj5059Settings>
 {
     public static Aj5059Settings Default { get; } = new([]);
 

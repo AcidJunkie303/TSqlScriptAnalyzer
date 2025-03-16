@@ -24,6 +24,7 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
     where TAnalyzer : class, IGlobalAnalyzer
 {
     private readonly Dictionary<string, (string Contents, string DatabaseName)> _scriptContentsByFilePath = new(StringComparer.OrdinalIgnoreCase);
+    private readonly List<(Type InterfaceType, object Implementation)> _services = [];
     private readonly List<object> _settings = [];
     private string _defaultSchemaName = "dbo";
 
@@ -43,6 +44,12 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
     public GlobalAnalyzerTesterBuilder<TAnalyzer> WithDefaultSchema(string schemaName)
     {
         _defaultSchemaName = schemaName;
+        return this;
+    }
+
+    public GlobalAnalyzerTesterBuilder<TAnalyzer> WithService<TService>(object implementation)
+    {
+        _services.Add((typeof(TService), implementation));
         return this;
     }
 
@@ -118,6 +125,11 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
                 services.AddSingleton<IGlobalAnalyzer>(sp => ActivatorUtilities.CreateInstance<TAnalyzer>(sp, analysisContext));
                 services.AddSingleton(typeof(ILogger<>), typeof(NullLogger<>));
                 services.AddSingleton<ILoggerFactory>(NullLoggerFactory.Instance);
+
+                foreach (var service in _services)
+                {
+                    services.AddSingleton(service.InterfaceType, service.Implementation);
+                }
             })
             .Build();
 

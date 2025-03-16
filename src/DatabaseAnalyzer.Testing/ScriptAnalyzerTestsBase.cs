@@ -57,7 +57,7 @@ public abstract class ScriptAnalyzerTestsBase<TAnalyzer>
     }
 
     protected void Verify<TSettings>(TSettings settings, params string[] scripts)
-        where TSettings : class, ISettings<TSettings>
+        where TSettings : class, IDiagnosticSettings<TSettings>
     {
         if (scripts.Length == 0)
         {
@@ -79,6 +79,6 @@ public abstract class ScriptAnalyzerTestsBase<TAnalyzer>
     }
 
     protected void VerifyWithDefaultSettings<TSettings>(params string[] scripts)
-        where TSettings : class, ISettings<TSettings>
+        where TSettings : class, IDiagnosticSettings<TSettings>
         => Verify(TSettings.Default, scripts);
 }

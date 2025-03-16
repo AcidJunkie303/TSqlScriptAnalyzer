@@ -13,9 +13,6 @@ using Microsoft.Extensions.Logging;
 
 namespace DatabaseAnalyzer.Core;
 
-// TODO: remove
-#pragma warning disable S125, IDE0051, RCS1213, S1144, IDE0052, S4487
-
 [SuppressMessage("Major Code Smell", "S1200:Classes should not be coupled to too many other classes")]
 [SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters")]
 internal sealed class Analyzer : IAnalyzer
@@ -34,7 +31,6 @@ internal sealed class Analyzer : IAnalyzer
     private readonly IReadOnlyList<IGlobalAnalyzer> _globalAnalyzers;
     private readonly IIssueReporter _issueReporter;
     private readonly ILogger<Analyzer> _logger;
-    private readonly ILoggerFactory _loggerFactory;
     private readonly IProgressCallback _progressCallback;
     private readonly IReadOnlyList<ScriptAnalyzerAndContext> _scriptAnalyzersAndContexts;
     private readonly IReadOnlyList<IScriptModel> _scripts;
@@ -46,7 +42,6 @@ internal sealed class Analyzer : IAnalyzer
         IEnumerable<ScriptAnalyzerAndContext> scriptAnalyzersAndContexts,
         IEnumerable<IGlobalAnalyzer> globalAnalyzers,
         ILogger<Analyzer> logger,
-        ILoggerFactory loggerFactory,
         IIssueReporter issueReporter,
         IReadOnlyList<IScriptModel> scripts,
         IDiagnosticDefinitionProvider diagnosticDefinitionProvider)
@@ -56,7 +51,6 @@ internal sealed class Analyzer : IAnalyzer
         _scriptAnalyzersAndContexts = scriptAnalyzersAndContexts.ToList();
         _globalAnalyzers = globalAnalyzers.ToList();
         _logger = logger;
-        _loggerFactory = loggerFactory;
         _issueReporter = issueReporter;
         _scripts = scripts;
         _diagnosticDefinitionProvider = diagnosticDefinitionProvider;
@@ -64,15 +58,12 @@ internal sealed class Analyzer : IAnalyzer
 
     public AnalysisResult Analyze()
     {
+        ReportErroneousScripts();
+
         _logger.LogTrace("Starting analysis");
 
         var stopwatch = Stopwatch.StartNew();
         var scriptParseDuration = stopwatch.Elapsed;
-
-        //var scriptByDatabaseName = _scripts
-        //    .GroupBy(a => a.DatabaseName, StringComparer.OrdinalIgnoreCase)
-        //    .ToFrozenDictionary(a => a.Key, a => (IReadOnlyList<IScriptModel>) a.ToImmutableArray(), StringComparer.OrdinalIgnoreCase);
-
         var analysisDuration = PerformAnalysis();
 
         return CalculateAnalysisResult(_issueReporter.Issues, ref scriptParseDuration, ref analysisDuration);
@@ -214,6 +205,14 @@ internal sealed class Analyzer : IAnalyzer
                 comparer: StringComparer.OrdinalIgnoreCase);
     }
 
-    //private static bool AreAllDiagnosticsForAnalyzerDisabled(IObjectAnalyzer analyzer, DiagnosticsSettings diagnosticsSettings)
-    //    => analyzer.SupportedDiagnostics.All(a => diagnosticsSettings.DisabledDiagnostics.Contains(a.DiagnosticId));
+    private void ReportErroneousScripts()
+    {
+        foreach (var script in _scripts.Where(a => a.HasErrors))
+        {
+            foreach (var error in script.Errors)
+            {
+                _issueReporter.Report(WellKnownDiagnosticDefinitions.ScriptContainsErrors, script.DatabaseName, script.RelativeScriptFilePath, null, error.CodeRegion, error.Message);
+            }
+        }
+    }
 }

@@ -5,7 +5,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
 [SettingsSource(SettingsSourceKind.Diagnostics, "AJ5022")]
-internal sealed class Aj5022SettingsRaw : IRawSettings<Aj5022Settings>
+internal sealed class Aj5022SettingsRaw : IRawDiagnosticSettings<Aj5022Settings>
 {
     public bool IfRequiresBeginEndBlock { get; set; }
     public bool WhileRequiresBeginEndBlock { get; set; }
@@ -22,7 +22,7 @@ public sealed record Aj5022Settings(
     bool IfRequiresBeginEndBlock,
     [property: Description("Indicates whether WHILE statements require BEGIN/END blocks. Default is true.")]
     bool WhileRequiresBeginEndBlock
-) : ISettings<Aj5022Settings>
+) : IDiagnosticSettings<Aj5022Settings>
 {
     public static Aj5022Settings Default { get; } = new(IfRequiresBeginEndBlock: true, WhileRequiresBeginEndBlock: true);
     public static string DiagnosticId => "AJ5022";

@@ -8,7 +8,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
 [SettingsSource(SettingsSourceKind.Diagnostics, "AJ5027")]
-internal sealed class Aj5027SettingsRaw : IRawSettings<Aj5027Settings>
+internal sealed class Aj5027SettingsRaw : IRawDiagnosticSettings<Aj5027Settings>
 {
     // ReSharper disable UnusedAutoPropertyAccessor.Global -> used during deserialization
     public IReadOnlyList<string>? FullTableNamesToIgnore { get; set; }
@@ -26,7 +26,7 @@ internal sealed class Aj5027SettingsRaw : IRawSettings<Aj5027Settings>
 public sealed record Aj5027Settings(
     [property: Description("Full table names (`database`.`schema`.`table`) to ignore. Wildcards like `*` and `?` are supported.")]
     IReadOnlyList<Regex> FullTableNamesToIgnore
-) : ISettings<Aj5027Settings>
+) : IDiagnosticSettings<Aj5027Settings>
 {
     public static Aj5027Settings Default { get; } = new([]);
     public static string DiagnosticId => "AJ5027";

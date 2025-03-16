@@ -14,7 +14,7 @@ internal static class SettingsInformationProvider
                 .GetTypes()
                 .Where(b => b.IsClass)
                 .Where(b => !b.IsAbstract)
-                .Where(b => b.IsAssignableTo(typeof(ISettings<>).MakeGenericType(b)))
+                .Where(b => b.IsAssignableTo(typeof(IDiagnosticSettings<>).MakeGenericType(b)))
                 .Select(b => (Id: GetDiagnosticId(b), PropertyDescriber: GetPropertyDescribers(b)))
             )
             .Where(a => a.Id is not null)

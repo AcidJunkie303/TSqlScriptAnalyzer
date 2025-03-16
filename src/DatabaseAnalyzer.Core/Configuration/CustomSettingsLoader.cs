@@ -4,9 +4,6 @@ using Microsoft.Extensions.Configuration;
 
 namespace DatabaseAnalyzer.Core.Configuration;
 
-// TODO: remove
-#pragma warning disable S125
-
 public static class CustomSettingsLoader
 {
     private static readonly FrozenDictionary<SettingsSourceKind, string> SectionPathsBySourceKind = new[]
@@ -16,12 +13,15 @@ public static class CustomSettingsLoader
         }
         .ToFrozenDictionary(a => a.SourceKind, a => a.Name);
 
+    public static object Load(SettingMetadata settingsMetadata, IConfiguration configuration)
+        => LoadCore(settingsMetadata, configuration);
+
     public static IReadOnlyList<object> Load(IEnumerable<SettingMetadata> settingsMetadata, IConfiguration configuration)
         => settingsMetadata
-            .Select(a => Load(a, configuration))
+            .Select(a => LoadCore(a, configuration))
             .ToList();
 
-    private static object Load(SettingMetadata metadata, IConfiguration configuration)
+    private static object LoadCore(SettingMetadata metadata, IConfiguration configuration)
     {
         var section = GetSection(configuration, metadata.SourceKind);
         dynamic rawSettings = section.GetSection(metadata.Name).Get(metadata.RawSettingsType) ?? Activator.CreateInstance(metadata.RawSettingsType)!;

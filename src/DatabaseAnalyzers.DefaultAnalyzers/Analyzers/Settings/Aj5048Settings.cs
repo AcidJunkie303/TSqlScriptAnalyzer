@@ -5,7 +5,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
 [SettingsSource(SettingsSourceKind.Diagnostics, "AJ5048")]
-internal sealed class Aj5048SettingsRaw : IRawSettings<Aj5048Settings>
+internal sealed class Aj5048SettingsRaw : IRawDiagnosticSettings<Aj5048Settings>
 {
     // ReSharper disable UnusedAutoPropertyAccessor.Global -> used during deserialization
     public Aj5048KeywordNotationType? Execute { get; set; }
@@ -27,7 +27,7 @@ public sealed record Aj5048Settings(
     Aj5048KeywordNotationType Procedure,
     [property: Description("The keyword notation type for `Transaction | Tran`. Supported are: `None`, `Long` or `Short`. Default is `Long`.")]
     Aj5048KeywordNotationType Transaction
-) : ISettings<Aj5048Settings>
+) : IDiagnosticSettings<Aj5048Settings>
 {
     public bool IsEnabled { get; } = Execute != Aj5048KeywordNotationType.None
                                      || Procedure != Aj5048KeywordNotationType.None

@@ -10,7 +10,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
 [SettingsSource(SettingsSourceKind.Diagnostics, "AJ5004")]
-internal sealed class Aj5004SettingsRaw : IRawSettings<Aj5004Settings>
+internal sealed class Aj5004SettingsRaw : IRawDiagnosticSettings<Aj5004Settings>
 {
     public IReadOnlyCollection<TopicAndPatternRaw?>? TopicsAndPatterns { get; set; }
 
@@ -35,7 +35,7 @@ internal sealed class TopicAndPatternRaw
 public sealed record Aj5004Settings(
     [property: Description("An array of objects containing `Topic` and `Pattern` properties.")]
     IReadOnlyCollection<TopicAndPattern> TopicsAndPatterns
-) : ISettings<Aj5004Settings>
+) : IDiagnosticSettings<Aj5004Settings>
 {
     public static Aj5004Settings Default { get; } = new([]);
     public static string DiagnosticId => "AJ5004";

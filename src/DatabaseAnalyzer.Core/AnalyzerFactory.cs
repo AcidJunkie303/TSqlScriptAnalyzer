@@ -4,12 +4,15 @@ using System.Diagnostics.CodeAnalysis;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.Services;
 using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Contracts.Services;
 using DatabaseAnalyzer.Core.Configuration;
 using DatabaseAnalyzer.Core.Extensions;
 using DatabaseAnalyzer.Core.Logging;
 using DatabaseAnalyzer.Core.Models;
 using DatabaseAnalyzer.Core.Plugins;
 using DatabaseAnalyzer.Core.Services;
+using DatabaseAnalyzer.Services;
+using DatabaseAnalyzer.Services.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -35,7 +38,7 @@ public sealed class AnalyzerFactory : IDisposable
     {
         _configuration = configuration;
         _settings = settings;
-        _scripts = ReportAndRemoveErroneousScripts(scripts, _issueReporter);
+        _scripts = scripts;
         _progressCallback = progressCallback ?? new NullProgressWriter();
         _logFilePath = logFilePath;
         _minimumLogLevel = minimumLogLevel;
@@ -70,6 +73,11 @@ public sealed class AnalyzerFactory : IDisposable
     private IHostBuilder CreateHostBuilder()
         => Host
             .CreateDefaultBuilder()
+            .UseDefaultServiceProvider((_, options) =>
+            {
+                options.ValidateScopes = true;
+                options.ValidateOnBuild = true;
+            })
             .ConfigureServices((_, services) =>
             {
                 services.AddSingleton(_configuration);
@@ -86,12 +94,12 @@ public sealed class AnalyzerFactory : IDisposable
                 services.AddSingleton<IAnalyzer, Analyzer>();
                 services.AddSingleton<IScriptSourceProvider, ScriptSourceProvider>();
                 services.AddSingleton<IDiagnosticSuppressionExtractor, DiagnosticSuppressionExtractor>();
+                services.AddSingleton<IAstService, AstService>();
 
                 var pluginAssemblies = PluginAssemblyLoader.LoadPlugins();
                 RegisterAnalyzers(services, pluginAssemblies, loggerFactory);
-                RegisterServices(services, pluginAssemblies);
                 RegisterSettings(services, pluginAssemblies);
-
+                RegisterInternalSettings(services, _configuration);
                 RegisterDiagnosticDefinitions(services, pluginAssemblies);
             });
 
@@ -111,7 +119,7 @@ public sealed class AnalyzerFactory : IDisposable
         {
             foreach (var analyzerType in pluginAssembly.ScriptAnalyzerTypes)
             {
-                foreach (var script in _scripts)
+                foreach (var script in _scripts.Where(a => !a.HasErrors))
                 {
                     services.AddSingleton(typeof(ScriptAnalyzerAndContext), sp =>
                     {
@@ -133,39 +141,6 @@ public sealed class AnalyzerFactory : IDisposable
         }
     }
 
-    private static List<IScriptModel> ReportAndRemoveErroneousScripts(IReadOnlyList<IScriptModel> scripts, IIssueReporter issueReporter)
-    {
-        var result = new List<IScriptModel>(scripts.Count);
-
-        foreach (var script in scripts)
-        {
-            if (script.Errors.Count == 0)
-            {
-                result.Add(script);
-            }
-            else
-            {
-                foreach (var error in script.Errors)
-                {
-                    issueReporter.Report(WellKnownDiagnosticDefinitions.ScriptContainsErrors, script.DatabaseName, script.RelativeScriptFilePath, null, error.CodeRegion, error.Message);
-                }
-            }
-        }
-
-        return result;
-    }
-
-    private static void RegisterServices(IServiceCollection services, IReadOnlyList<PluginAssembly> pluginAssemblies)
-    {
-        foreach (var pluginAssembly in pluginAssemblies)
-        {
-            foreach (var type in pluginAssembly.ServiceTypes)
-            {
-                services.AddSingleton(typeof(IService), type);
-            }
-        }
-    }
-
     private void RegisterSettings(IServiceCollection services, IReadOnlyList<PluginAssembly> pluginAssemblies)
     {
         foreach (var pluginAssembly in pluginAssemblies)
@@ -175,6 +150,13 @@ public sealed class AnalyzerFactory : IDisposable
                 services.AddSingleton(settings.GetType(), settings);
             }
         }
+    }
+
+    private static void RegisterInternalSettings(IServiceCollection services, IConfiguration configuration)
+    {
+        var section = configuration.GetSection("Services:AstService");
+
+        services.AddSingleton(section.Get<AstServiceSettingsRaw>()?.ToSettings() ?? AstServiceSettings.Default);
     }
 
     private static void RegisterDiagnosticDefinitions(IServiceCollection services, IReadOnlyList<PluginAssembly> pluginAssemblies)

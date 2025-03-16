@@ -53,9 +53,10 @@ CREATE PROCEDURE [P2222]
     @Param1 VARCHAR(MAX)
 AS
 BEGIN
-    PRINT @Param1
+    
+    SELECT      *
+    FROM        Table1
+    WHERE       GETUTCDATE() < DATEADD(DAY, 1, CreatedAt) 
+    
 END
 
-GO
-
-SELECT GETDATE()

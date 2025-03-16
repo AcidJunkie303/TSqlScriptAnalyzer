@@ -6,7 +6,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
 [SettingsSource(SettingsSourceKind.Diagnostics, "AJ5017")]
-internal sealed class Aj5017SettingsRaw : IRawSettings<Aj5017Settings>
+internal sealed class Aj5017SettingsRaw : IRawDiagnosticSettings<Aj5017Settings>
 {
     // ReSharper disable UnusedAutoPropertyAccessor.Global -> used during deserialization
     public IReadOnlyList<Aj5015SettingsSettingsEntryRaw>? MissingIndexOnForeignKeyColumnSuppressions { get; set; }
@@ -20,7 +20,7 @@ internal sealed class Aj5017SettingsRaw : IRawSettings<Aj5017Settings>
 public sealed record Aj5017Settings(
     [property: Description("List of of suppressed missing index warnings. For 'FullColumnNamePattern', Wildcards like `*` and `?` are supported.")]
     IReadOnlyList<Aj5015SettingsSettingsEntry> MissingIndexOnForeignKeyColumnSuppressions
-) : ISettings<Aj5017Settings>
+) : IDiagnosticSettings<Aj5017Settings>
 {
     public static Aj5017Settings Default { get; } = new Aj5017SettingsRaw
     {

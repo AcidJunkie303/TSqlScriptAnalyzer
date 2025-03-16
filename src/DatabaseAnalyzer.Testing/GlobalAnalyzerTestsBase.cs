@@ -8,12 +8,12 @@ namespace DatabaseAnalyzer.Testing;
 public abstract class GlobalAnalyzerTestsBase<TAnalyzer>
     where TAnalyzer : class, IGlobalAnalyzer
 {
+    protected ITestOutputHelper TestOutputHelper { get; }
+
     protected GlobalAnalyzerTestsBase(ITestOutputHelper testOutputHelper)
     {
         TestOutputHelper = testOutputHelper;
     }
-
-    protected ITestOutputHelper TestOutputHelper { get; }
 
     protected static GlobalAnalyzerTesterBuilder<TAnalyzer> GetDefaultTesterBuilder(params string[] scriptsContents)
     {
@@ -60,7 +60,7 @@ public abstract class GlobalAnalyzerTestsBase<TAnalyzer>
     }
 
     protected void Verify<TSettings>(TSettings settings, params string[] scripts)
-        where TSettings : class, ISettings<TSettings>
+        where TSettings : class, IDiagnosticSettings<TSettings>
     {
         if (scripts.Length == 0)
         {
@@ -75,6 +75,6 @@ public abstract class GlobalAnalyzerTestsBase<TAnalyzer>
     }
 
     protected void VerifyWithDefaultSettings<TSettings>(params string[] scripts)
-        where TSettings : class, ISettings<TSettings>
+        where TSettings : class, IDiagnosticSettings<TSettings>
         => Verify(TSettings.Default, scripts);
 }
