@@ -1,3 +1,6 @@
+using DatabaseAnalyzer.Contracts.Services;
+using DatabaseAnalyzer.Services;
+using DatabaseAnalyzer.Services.Settings;
 using DatabaseAnalyzer.Testing;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
@@ -45,6 +48,8 @@ public sealed class MissingIndexAnalyzerTests(ITestOutputHelper testOutputHelper
         );
         """;
 
+    private static readonly IAstService AstService = new AstService(AstServiceSettings.Default);
+
     [Fact]
     public void WhenFilteringOnIndexedColumn_ThenOk()
     {
@@ -63,6 +68,7 @@ public sealed class MissingIndexAnalyzerTests(ITestOutputHelper testOutputHelper
         var tester = GetDefaultTesterBuilder(ObjectsForMissingIndexOnFilteringColumnTests, procedures)
             .WithSettings(Aj5015Settings.Default)
             .WithSettings(Aj5017Settings.Default)
+            .WithService<IAstService>(AstService)
             .Build();
         Verify(tester);
     }
@@ -85,6 +91,7 @@ public sealed class MissingIndexAnalyzerTests(ITestOutputHelper testOutputHelper
         var tester = GetDefaultTesterBuilder(ObjectsForMissingIndexOnFilteringColumnTests, procedures)
             .WithSettings(Aj5015Settings.Default)
             .WithSettings(Aj5017Settings.Default)
+            .WithService<IAstService>(AstService)
             .Build();
         Verify(tester);
     }
@@ -112,6 +119,7 @@ public sealed class MissingIndexAnalyzerTests(ITestOutputHelper testOutputHelper
         var tester = GetDefaultTesterBuilder(ObjectsForMissingIndexOnFilteringColumnTests, procedures)
             .WithSettings(settings)
             .WithSettings(Aj5017Settings.Default)
+            .WithService<IAstService>(AstService)
             .Build();
         Verify(tester);
     }
@@ -156,6 +164,7 @@ public sealed class MissingIndexAnalyzerTests(ITestOutputHelper testOutputHelper
         var tester = GetDefaultTesterBuilder(code)
             .WithSettings(Aj5015Settings.Default)
             .WithSettings(Aj5017Settings.Default)
+            .WithService<IAstService>(AstService)
             .Build();
         Verify(tester);
     }
@@ -194,6 +203,7 @@ public sealed class MissingIndexAnalyzerTests(ITestOutputHelper testOutputHelper
         var tester = GetDefaultTesterBuilder(code)
             .WithSettings(Aj5015Settings.Default)
             .WithSettings(Aj5017Settings.Default)
+            .WithService<IAstService>(AstService)
             .Build();
         Verify(tester);
     }
@@ -237,6 +247,7 @@ public sealed class MissingIndexAnalyzerTests(ITestOutputHelper testOutputHelper
         var tester = GetDefaultTesterBuilder(code)
             .WithSettings(Aj5015Settings.Default)
             .WithSettings(settings)
+            .WithService<IAstService>(AstService)
             .Build();
         Verify(tester);
     }
@@ -262,6 +273,7 @@ public sealed class MissingIndexAnalyzerTests(ITestOutputHelper testOutputHelper
         var tester = GetDefaultTesterBuilder(code)
             .WithSettings(Aj5015Settings.Default)
             .WithSettings(Aj5017Settings.Default)
+            .WithService<IAstService>(AstService)
             .Build();
         Verify(tester);
     }
@@ -287,6 +299,7 @@ public sealed class MissingIndexAnalyzerTests(ITestOutputHelper testOutputHelper
         var tester = GetDefaultTesterBuilder(code)
             .WithSettings(Aj5015Settings.Default)
             .WithSettings(Aj5017Settings.Default)
+            .WithService<IAstService>(AstService)
             .Build();
         Verify(tester);
     }

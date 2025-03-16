@@ -6,7 +6,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
 [SettingsSource(SettingsSourceKind.Diagnostics, "AJ5001")]
-internal sealed class Aj5001SettingsRaw : IRawSettings<Aj5001Settings>
+internal sealed class Aj5001SettingsRaw : IRawDiagnosticSettings<Aj5001Settings>
 {
     public int MaxAllowedConcatenations { get; set; } = Aj5001Settings.Default.MaxAllowedConcatenations;
 
@@ -19,7 +19,7 @@ internal sealed class Aj5001SettingsRaw : IRawSettings<Aj5001Settings>
 public sealed record Aj5001Settings(
     [property: Description("Defines how many concatenations are tolerated. A value of 0 means no limit.")]
     int MaxAllowedConcatenations
-) : ISettings<Aj5001Settings>
+) : IDiagnosticSettings<Aj5001Settings>
 {
     public static Aj5001Settings Default { get; } = new(2);
     public static string DiagnosticId => "AJ5001";

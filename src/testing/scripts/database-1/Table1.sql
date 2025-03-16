@@ -7,7 +7,8 @@ CREATE TABLE Table1
     Column2 NVARCHAR(100) NOT NULL,
     Column3 NVARCHAR(100) NOT NULL,
     Column4 VARCHAR(100) NOT NULL,
-    Column5 VARCHAR(100) NOT NULL
+    Column5 VARCHAR(100) NOT NULL,
+    CreatedAt DATETIME NOT NULL
 );
 
 -- Create a combined index on Column2 and Column3

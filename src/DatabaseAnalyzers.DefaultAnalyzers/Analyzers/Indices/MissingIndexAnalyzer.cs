@@ -3,6 +3,7 @@ using DatabaseAnalyzer.Common.SqlParsing;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Contracts.Services;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
@@ -10,15 +11,17 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
 
 public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
 {
+    private readonly IAstService _astService;
     private readonly IAnalysisContext _context;
     private readonly Aj5017Settings _missingForeignKeyIndexSettings;
     private readonly Aj5015Settings _missingIndexSettings;
 
-    public MissingIndexAnalyzer(IAnalysisContext context, Aj5015Settings missingIndexSettings, Aj5017Settings missingForeignKeyIndexSettings)
+    public MissingIndexAnalyzer(IAnalysisContext context, Aj5015Settings missingIndexSettings, Aj5017Settings missingForeignKeyIndexSettings, IAstService astService)
     {
         _context = context;
         _missingIndexSettings = missingIndexSettings;
         _missingForeignKeyIndexSettings = missingForeignKeyIndexSettings;
+        _astService = astService;
     }
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.FilteringColumnNotIndexed, DiagnosticDefinitions.ForeignKeyColumnNotIndexed];
@@ -128,6 +131,11 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
             }
 
             if (_missingIndexSettings.MissingIndexSuppressions.Any(a => a.FullColumnNamePattern.IsMatch(filteringColumn.FullName)))
+            {
+                return;
+            }
+
+            if (_astService.IsChildOfFunctionEnumParameter(filteringColumn.Fragment, script.ParentFragmentProvider))
             {
                 return;
             }

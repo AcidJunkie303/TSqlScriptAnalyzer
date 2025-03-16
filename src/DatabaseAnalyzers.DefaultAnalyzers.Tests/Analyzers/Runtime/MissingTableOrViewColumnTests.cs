@@ -1,3 +1,6 @@
+using DatabaseAnalyzer.Contracts.Services;
+using DatabaseAnalyzer.Services;
+using DatabaseAnalyzer.Services.Settings;
 using DatabaseAnalyzer.Testing;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
@@ -31,6 +34,8 @@ public sealed class MissingTableOrViewColumnTests(ITestOutputHelper testOutputHe
         IgnoredObjectNamePatterns = ["*.ignored.*"]
     }.ToSettings();
 
+    private static readonly IAstService AstService = new AstService(AstServiceSettings.Default);
+
     [Fact]
     public void WhenSimpleSelect_WhenTableColumnExists_ThenOk()
     {
@@ -41,7 +46,11 @@ public sealed class MissingTableOrViewColumnTests(ITestOutputHelper testOutputHe
                             SELECT Id FROM [dbo].[Table1]
                             """;
 
-        Verify(Settings, SharedCode, code);
+        var tester = GetDefaultTesterBuilder(SharedCode, code)
+            .WithSettings(Settings)
+            .WithService<IAstService>(AstService)
+            .Build();
+        Verify(tester);
     }
 
     [Fact]
@@ -55,6 +64,10 @@ public sealed class MissingTableOrViewColumnTests(ITestOutputHelper testOutputHe
                             FROM    [dbo].[Table1]
                             """;
 
-        Verify(Settings, SharedCode, code);
+        var tester = GetDefaultTesterBuilder(SharedCode, code)
+            .WithSettings(Settings)
+            .WithService<IAstService>(AstService)
+            .Build();
+        Verify(tester);
     }
 }

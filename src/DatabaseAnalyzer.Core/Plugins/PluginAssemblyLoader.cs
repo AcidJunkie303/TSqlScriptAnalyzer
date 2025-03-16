@@ -42,32 +42,36 @@ internal static class PluginAssemblyLoader
         return pluginAssemblies;
     }
 
-    private static PluginAssembly? LoadAssemblyFromPath(string assemblyPath)
+    private static PluginAssembly? LoadAssemblyFromPath(string assemblyFilePath)
     {
 #pragma warning disable CA2000 // Dispose objects before losing scope -> registered in the DI container which takes care of it
-        var assemblyLoadContext = new PluginLoadContext(assemblyPath);
+        var assemblyLoadContext = new PluginLoadContext(assemblyFilePath);
 #pragma warning restore CA2000
 
         try
         {
-            var assembly = assemblyLoadContext.LoadFromAssemblyPath(assemblyPath);
+            var assembly = assemblyLoadContext.LoadFromAssemblyPath(assemblyFilePath);
             var scriptAnalyzerTypes = GetPluginsOfType<IScriptAnalyzer>(assembly).ToImmutableArray();
             var globalAnalyzerTypes = GetPluginsOfType<IGlobalAnalyzer>(assembly).ToImmutableArray();
-            var serviceTypes = GetPluginsOfType<IService>(assembly).ToImmutableArray();
+            var serviceDeclarationTypes = GetInterfacesOfType<IService>(assembly).ToImmutableArray();
             var settingsPairTypes = GetSettingsMetadata(assembly).ToImmutableArray();
             var diagnosticDefinitions = GetDefinitionsFromAssembly(assembly).ToImmutableArray();
 
-            if (scriptAnalyzerTypes.Length == 0 && globalAnalyzerTypes.Length == 0 && diagnosticDefinitions.Length == 0)
+            if (scriptAnalyzerTypes.Length == 0
+                && globalAnalyzerTypes.Length == 0
+                && serviceDeclarationTypes.Length == 0
+                && settingsPairTypes.Length == 0
+                && diagnosticDefinitions.Length == 0)
             {
                 return null;
             }
 
             return new PluginAssembly
             (
+                AssemblyFilePath: assemblyFilePath,
                 AssemblyLoadContext: assemblyLoadContext,
                 ScriptAnalyzerTypes: scriptAnalyzerTypes,
                 GlobalAnalyzerTypes: globalAnalyzerTypes,
-                ServiceTypes: serviceTypes,
                 CustomSettings: settingsPairTypes,
                 DiagnosticDefinitions: diagnosticDefinitions
             );
@@ -90,6 +94,18 @@ internal static class PluginAssemblyLoader
                     IsClass   : true,
                     IsPublic  : true
                 } && a.GetInterfaces().Any(static x => x == typeof(TPlugin));
+            });
+
+    private static IEnumerable<Type> GetInterfacesOfType<TService>(Assembly assembly)
+        => assembly
+            .GetTypes()
+            .Where(static a =>
+            {
+                return a is
+                {
+                    IsInterface: true,
+                    IsPublic   : true
+                } && a.GetInterfaces().Any(static x => x == typeof(TService));
             });
 
     private static string[] GetPluginAssemblyPaths()

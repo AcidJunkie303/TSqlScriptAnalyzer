@@ -8,7 +8,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
 [SettingsSource(SettingsSourceKind.Diagnostics, "AJ5052")]
-internal sealed class Aj5052SettingsRaw : IRawSettings<Aj5052Settings>
+internal sealed class Aj5052SettingsRaw : IRawDiagnosticSettings<Aj5052Settings>
 {
     public const string IndexPropertiesList = "PrimaryKey, Clustered, NonClustered, Unique, ColumnStore, Hash, Filtered, FullText, Spatial, Xml, Bitmap, Covering, WithIncludedColumns, ComputedColumns";
 
@@ -39,7 +39,7 @@ public sealed record Aj5052Settings(
     IReadOnlyList<Aj5052SettingsEntry> NamingPatterns,
     [property: Description($"In case there was no match, this pattern will be used. The following placeholders are supported: {Aj5052Settings.Placeholders.PlaceholdersList}")]
     string DefaultPattern
-) : ISettings<Aj5052Settings>
+) : IDiagnosticSettings<Aj5052Settings>
 {
     public static Aj5052Settings Default { get; } = new
     (

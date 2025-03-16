@@ -145,7 +145,7 @@ We also want to make it configurable. The settings contain the information wheth
 All we need to do is to create the following two classes:
 
 ```csharp
-internal sealed class Aj5022SettingsRaw : IRawSettings<Aj5022Settings>
+internal sealed class Aj5022SettingsRaw : IRawDiagnosticSettings<Aj5022Settings>
 {
     public bool IfRequiresBeginEndBlock { get; set; }
     public bool WhileRequiresBeginEndBlock { get; set; }

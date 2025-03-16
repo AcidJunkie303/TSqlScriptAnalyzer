@@ -8,7 +8,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
 [SettingsSource(SettingsSourceKind.Diagnostics, "AJ5006")]
-internal sealed class Aj5006SettingsRaw : IRawSettings<Aj5006Settings>
+internal sealed class Aj5006SettingsRaw : IRawDiagnosticSettings<Aj5006Settings>
 {
     // ReSharper disable UnusedAutoPropertyAccessor.Global -> used during deserialization
     public IReadOnlyCollection<string?>? BannedColumnDataTypes { get; set; }
@@ -41,7 +41,7 @@ public sealed record Aj5006Settings(
     IReadOnlyCollection<Regex> BannedProcedureParameterDataTypes,
     [property: Description("Banned data types for variables. Wildcards like `*` and `?` are supported.")]
     IReadOnlyCollection<Regex> BannedScriptVariableDataTypes
-) : ISettings<Aj5006Settings>
+) : IDiagnosticSettings<Aj5006Settings>
 {
     public static Aj5006Settings Default { get; } = new([], [], [], []);
     public static string DiagnosticId => "AJ5006";

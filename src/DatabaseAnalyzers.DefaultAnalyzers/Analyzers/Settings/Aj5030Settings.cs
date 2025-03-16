@@ -9,7 +9,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
 [SettingsSource(SettingsSourceKind.Diagnostics, "AJ5030")]
-public sealed class Aj5030SettingsRaw : IRawSettings<Aj5030Settings>
+public sealed class Aj5030SettingsRaw : IRawDiagnosticSettings<Aj5030Settings>
 {
     internal static Regex AlwaysMatchRegex { get; } = new(string.Empty, RegexOptions.Compiled, TimeSpan.FromMilliseconds(100)); // ReSharper disable UnusedAutoPropertyAccessor.Global -> used during deserialization
 
@@ -78,7 +78,7 @@ public sealed record Aj5030Settings(
     Aj5030Settings.PatternEntry ViewName,
     [property: Description("The object names to exclude from this rule. Wildcards like `*` and `?` are supported.")]
     IReadOnlyList<Regex> IgnoredObjectNamePatterns)
-    : ISettings<Aj5030Settings>
+    : IDiagnosticSettings<Aj5030Settings>
 {
     public static Aj5030Settings Default { get; } = new
     (

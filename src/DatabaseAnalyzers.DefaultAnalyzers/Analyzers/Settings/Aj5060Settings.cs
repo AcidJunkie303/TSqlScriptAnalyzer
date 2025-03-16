@@ -7,7 +7,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
 [SettingsSource(SettingsSourceKind.Diagnostics, "AJ5060")]
-internal sealed class Aj5060SettingsRaw : IRawSettings<Aj5060Settings>
+internal sealed class Aj5060SettingsRaw : IRawDiagnosticSettings<Aj5060Settings>
 {
     public IReadOnlyCollection<string?>? ReservedIdentifierNames { get; set; }
 
@@ -25,7 +25,7 @@ internal sealed class Aj5060SettingsRaw : IRawSettings<Aj5060Settings>
 public sealed record Aj5060Settings(
     [property: Description("Reserved words / keywords to report for table, view, column, procedure and function names. They can be defined in one or more strings (array) where each word is separated by a semicolon.")]
     FrozenSet<string> ReservedIdentifierNames
-) : ISettings<Aj5060Settings>
+) : IDiagnosticSettings<Aj5060Settings>
 {
     public static Aj5060Settings Default { get; } = new(FrozenSet<string>.Empty);
 

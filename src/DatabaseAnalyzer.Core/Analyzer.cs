@@ -58,6 +58,8 @@ internal sealed class Analyzer : IAnalyzer
 
     public AnalysisResult Analyze()
     {
+        ReportErroneousScripts();
+
         _logger.LogTrace("Starting analysis");
 
         var stopwatch = Stopwatch.StartNew();
@@ -201,5 +203,16 @@ internal sealed class Analyzer : IAnalyzer
                 innerKeySelector: static a => a.Key,
                 resultSelector: static (a, b) => (a, b.ToList()),
                 comparer: StringComparer.OrdinalIgnoreCase);
+    }
+
+    private void ReportErroneousScripts()
+    {
+        foreach (var script in _scripts.Where(a => a.HasErrors))
+        {
+            foreach (var error in script.Errors)
+            {
+                _issueReporter.Report(WellKnownDiagnosticDefinitions.ScriptContainsErrors, script.DatabaseName, script.RelativeScriptFilePath, null, error.CodeRegion, error.Message);
+            }
+        }
     }
 }

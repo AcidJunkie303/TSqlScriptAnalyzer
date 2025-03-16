@@ -318,7 +318,7 @@
     },
     "Services": {
         "AstService": {
-            "EnumerationParameterIndicesByFunctionName": {
+            "EnumerationValueParameterIndicesByFunctionName": {
                 "DATEPART": [
                     0
                 ],

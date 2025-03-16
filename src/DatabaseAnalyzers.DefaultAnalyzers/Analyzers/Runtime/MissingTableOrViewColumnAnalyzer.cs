@@ -3,6 +3,7 @@ using DatabaseAnalyzer.Common.SqlParsing;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Contracts.Services;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
@@ -10,13 +11,15 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime;
 
 public sealed class MissingTableOrViewColumnAnalyzer : IGlobalAnalyzer
 {
+    private readonly IAstService _astService;
     private readonly IAnalysisContext _context;
     private readonly Aj5044Settings _settings;
 
-    public MissingTableOrViewColumnAnalyzer(IAnalysisContext context, Aj5044Settings settings)
+    public MissingTableOrViewColumnAnalyzer(IAnalysisContext context, Aj5044Settings settings, IAstService astService)
     {
         _context = context;
         _settings = settings;
+        _astService = astService;
     }
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [SharedDiagnosticDefinitions.MissingObject];
@@ -55,6 +58,11 @@ public sealed class MissingTableOrViewColumnAnalyzer : IGlobalAnalyzer
         }
 
         if (IsIgnored(resolvedColumn))
+        {
+            return;
+        }
+
+        if (_astService.IsChildOfFunctionEnumParameter(resolvedColumn.Fragment, script.ParentFragmentProvider))
         {
             return;
         }
