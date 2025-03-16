@@ -6,19 +6,28 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime;
 
 public sealed class SetOptionSeparatedByGoAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public SetOptionSeparatedByGoAnalyzer(IScriptAnalysisContext context)
     {
-        foreach (var group in GetBatchGroupsWhichCanbeCombined(script.ParsedScript))
+        _context = context;
+        _script = context.Script;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        foreach (var group in GetBatchGroupsWhichCanbeCombined(_script.ParsedScript))
         {
             var firstBatchCodeRegion = group[0].GetCodeRegion();
             var lastBatchCodeRegion = group[^1].GetCodeRegion();
 
             var codeRegion = CodeRegion.CreateSpan(firstBatchCodeRegion, lastBatchCodeRegion);
-            var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(group[0]) ?? DatabaseNames.Unknown;
-            var fullObjectName = group[0].TryGetFirstClassObjectName(context, script);
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, codeRegion);
+            var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(group[0]) ?? DatabaseNames.Unknown;
+            var fullObjectName = group[0].TryGetFirstClassObjectName(_context, _script);
+            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion);
         }
     }
 

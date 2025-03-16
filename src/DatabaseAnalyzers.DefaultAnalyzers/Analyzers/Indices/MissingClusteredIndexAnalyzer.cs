@@ -8,19 +8,27 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
 
 public sealed class MissingClusteredIndexAnalyzer : IGlobalAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly Aj5027Settings _settings;
 
-    public void Analyze(IAnalysisContext context)
+    public MissingClusteredIndexAnalyzer(IAnalysisContext context, Aj5027Settings settings)
     {
-        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5027Settings>();
-        var allTables = new DatabaseObjectExtractor(context.IssueReporter)
-            .Extract(context.ErrorFreeScripts, context.DefaultSchemaName)
+        _context = context;
+        _settings = settings;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void Analyze()
+    {
+        var allTables = new DatabaseObjectExtractor(_context.IssueReporter)
+            .Extract(_context.ErrorFreeScripts, _context.DefaultSchemaName)
             .SelectMany(static a => a.Value.SchemasByName)
             .SelectMany(static a => a.Value.TablesByName.Values);
 
         foreach (var table in allTables)
         {
-            Analyze(context, settings, table);
+            Analyze(_context, _settings, table);
         }
     }
 

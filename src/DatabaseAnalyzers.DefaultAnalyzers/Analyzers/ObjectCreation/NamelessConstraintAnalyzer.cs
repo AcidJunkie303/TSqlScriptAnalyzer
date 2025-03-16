@@ -6,51 +6,60 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.ObjectCreation;
 
 public sealed class NamelessConstraintAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public NamelessConstraintAnalyzer(IScriptAnalysisContext context)
     {
-        foreach (var statement in script.ParsedScript.GetChildren<CreateTableStatement>(recursive: true))
+        _context = context;
+        _script = context.Script;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        foreach (var statement in _script.ParsedScript.GetChildren<CreateTableStatement>(recursive: true))
         {
-            AnalyzeTableCreation(context, script, statement);
+            AnalyzeTableCreation(statement);
         }
 
-        foreach (var statement in script.ParsedScript.GetChildren<AlterTableAddTableElementStatement>(recursive: true))
+        foreach (var statement in _script.ParsedScript.GetChildren<AlterTableAddTableElementStatement>(recursive: true))
         {
-            AnalyzeTableAlteration(context, script, statement);
+            AnalyzeTableAlteration(statement);
         }
     }
 
-    private static void AnalyzeTableAlteration(IAnalysisContext context, IScriptModel script, AlterTableAddTableElementStatement statement)
+    private void AnalyzeTableAlteration(AlterTableAddTableElementStatement statement)
     {
         foreach (var columnDefinition in (statement.Definition?.ColumnDefinitions).EmptyIfNull())
         {
-            AnalyzeColumn(context, script, columnDefinition);
+            AnalyzeColumn(columnDefinition);
         }
     }
 
-    private static void AnalyzeTableCreation(IAnalysisContext context, IScriptModel script, CreateTableStatement statement)
+    private void AnalyzeTableCreation(CreateTableStatement statement)
     {
         foreach (var columnDefinition in statement.Definition.ColumnDefinitions)
         {
-            AnalyzeColumn(context, script, columnDefinition);
+            AnalyzeColumn(columnDefinition);
         }
     }
 
-    private static void AnalyzeColumn(IAnalysisContext context, IScriptModel script, ColumnDefinition column)
+    private void AnalyzeColumn(ColumnDefinition column)
     {
         foreach (var constraint in column.Constraints.EmptyIfNull())
         {
-            AnalyzeConstraint(context, script, constraint);
+            AnalyzeConstraint(constraint);
         }
 
         if (column.DefaultConstraint is not null)
         {
-            AnalyzeConstraint(context, script, column.DefaultConstraint);
+            AnalyzeConstraint(column.DefaultConstraint);
         }
     }
 
-    private static void AnalyzeConstraint(IAnalysisContext context, IScriptModel script, ConstraintDefinition constraint)
+    private void AnalyzeConstraint(ConstraintDefinition constraint)
     {
         // only the following constraint types can have a name
         if (constraint is not (DefaultConstraintDefinition or UniqueConstraintDefinition or CheckConstraintDefinition))
@@ -63,9 +72,9 @@ public sealed class NamelessConstraintAnalyzer : IScriptAnalyzer
             return;
         }
 
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(constraint) ?? DatabaseNames.Unknown;
-        var fullObjectName = constraint.TryGetFirstClassObjectName(context, script);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, constraint.GetCodeRegion());
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(constraint) ?? DatabaseNames.Unknown;
+        var fullObjectName = constraint.TryGetFirstClassObjectName(_context, _script);
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, constraint.GetCodeRegion());
     }
 
     private static class DiagnosticDefinitions

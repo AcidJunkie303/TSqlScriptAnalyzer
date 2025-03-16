@@ -20,7 +20,7 @@ internal sealed class Aj5048SettingsRaw : IRawSettings<Aj5048Settings>
     );
 }
 
-internal sealed record Aj5048Settings(
+public sealed record Aj5048Settings(
     [property: Description("The keyword notation type for `Execute | Exec`. Supported are: `None`, `Long` or `Short`. Default is `Short`.")]
     Aj5048KeywordNotationType Execute,
     [property: Description("The keyword notation type for `Procedure | Proc`. Supported are: `None`, `Long` or `Short`. Default is `Long`.")]

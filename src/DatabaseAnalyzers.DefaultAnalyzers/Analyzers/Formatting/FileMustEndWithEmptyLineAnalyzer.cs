@@ -5,24 +5,33 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 
 public sealed class FileMustEndWithEmptyLineAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public FileMustEndWithEmptyLineAnalyzer(IScriptAnalysisContext context)
     {
-        if (script.ParsedScript.ScriptTokenStream.Count < 2)
+        _context = context;
+        _script = context.Script;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        if (_script.ParsedScript.ScriptTokenStream.Count < 2)
         {
             return;
         }
 
-        var lastToken = script.ParsedScript.ScriptTokenStream[^2]; // last tokens is EOF
+        var lastToken = _script.ParsedScript.ScriptTokenStream[^2]; // last tokens is EOF
         if (lastToken.Text?[^1].Equals('\n') == true)
         {
             return;
         }
 
         var codeRegion = CodeRegion.Create(lastToken.GetCodeLocation(), lastToken.GetCodeRegion().End);
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtLocation(lastToken.Line, lastToken.Column) ?? DatabaseNames.Unknown;
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName: null, codeRegion);
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtLocation(lastToken.Line, lastToken.Column) ?? DatabaseNames.Unknown;
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName: null, codeRegion);
     }
 
     private static class DiagnosticDefinitions

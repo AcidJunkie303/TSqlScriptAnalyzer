@@ -20,7 +20,7 @@ internal sealed class Aj5057SettingsRaw : IRawSettings<Aj5057Settings>
     );
 }
 
-internal sealed record Aj5057Settings(
+public sealed record Aj5057Settings(
     [property: Description("Casing by identifier name.")]
     IReadOnlyDictionary<string, string> CasingByIdentifier
 ) : ISettings<Aj5057Settings>

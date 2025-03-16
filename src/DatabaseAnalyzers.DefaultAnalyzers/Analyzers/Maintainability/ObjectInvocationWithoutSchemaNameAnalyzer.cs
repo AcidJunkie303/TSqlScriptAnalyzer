@@ -7,27 +7,36 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Maintainability;
 
 public sealed class ObjectInvocationWithoutSchemaNameAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
+    private readonly Aj5049Settings _settings;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public ObjectInvocationWithoutSchemaNameAnalyzer(IScriptAnalysisContext context, Aj5049Settings settings)
     {
-        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5049Settings>();
+        _context = context;
+        _script = context.Script;
+        _settings = settings;
+    }
 
-        var procedureCalls = script.ParsedScript.GetChildren<ExecutableProcedureReference>(recursive: true);
-        var tableValuedFunctionCalls = script.ParsedScript.GetChildren<SchemaObjectFunctionTableReference>(recursive: true);
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        var procedureCalls = _script.ParsedScript.GetChildren<ExecutableProcedureReference>(recursive: true);
+        var tableValuedFunctionCalls = _script.ParsedScript.GetChildren<SchemaObjectFunctionTableReference>(recursive: true);
 
         foreach (var procedureCall in procedureCalls)
         {
-            AnalyzeProcedureCall(context, script, settings, procedureCall);
+            AnalyzeProcedureCall(procedureCall);
         }
 
         foreach (var tableValuedFunctionCall in tableValuedFunctionCalls)
         {
-            AnalyzeTableValuedFunctionCall(context, script, settings, tableValuedFunctionCall);
+            AnalyzeTableValuedFunctionCall(tableValuedFunctionCall);
         }
     }
 
-    private static void AnalyzeProcedureCall(IAnalysisContext context, IScriptModel script, Aj5049Settings settings, ExecutableProcedureReference procedureCall)
+    private void AnalyzeProcedureCall(ExecutableProcedureReference procedureCall)
     {
         var procedureReference = procedureCall.ProcedureReference?.ProcedureReference;
         if (procedureReference is null)
@@ -53,15 +62,15 @@ public sealed class ObjectInvocationWithoutSchemaNameAnalyzer : IScriptAnalyzer
             return;
         }
 
-        if (IsObjectNameIgnored(settings, pureProcedureName))
+        if (IsObjectNameIgnored(pureProcedureName))
         {
             return;
         }
 
-        Report(context, script, procedureReference, "procedure", pureProcedureName);
+        Report(procedureReference, "procedure", pureProcedureName);
     }
 
-    private static void AnalyzeTableValuedFunctionCall(IAnalysisContext context, IScriptModel script, Aj5049Settings settings, SchemaObjectFunctionTableReference functionReference)
+    private void AnalyzeTableValuedFunctionCall(SchemaObjectFunctionTableReference functionReference)
     {
         var pureFunctionName = functionReference.SchemaObject.BaseIdentifier?.Value;
         if (pureFunctionName.IsNullOrWhiteSpace())
@@ -75,24 +84,24 @@ public sealed class ObjectInvocationWithoutSchemaNameAnalyzer : IScriptAnalyzer
             return;
         }
 
-        if (IsObjectNameIgnored(settings, pureFunctionName))
+        if (IsObjectNameIgnored(pureFunctionName))
         {
             return;
         }
 
-        Report(context, script, functionReference, "table valued function", pureFunctionName);
+        Report(functionReference, "table valued function", pureFunctionName);
     }
 
-    private static bool IsObjectNameIgnored(Aj5049Settings settings, string objectName)
-        => settings
+    private bool IsObjectNameIgnored(string objectName)
+        => _settings
             .IgnoredObjectNamePatterns
             .Any(a => a.IsMatch(objectName));
 
-    private static void Report(IAnalysisContext context, IScriptModel script, TSqlFragment invocation, string objectTypeName, string objectName)
+    private void Report(TSqlFragment invocation, string objectTypeName, string objectName)
     {
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(invocation) ?? DatabaseNames.Unknown;
-        var fullObjectName = invocation.TryGetFirstClassObjectName(context, script);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, invocation.GetCodeRegion(), objectTypeName, objectName);
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(invocation) ?? DatabaseNames.Unknown;
+        var fullObjectName = invocation.TryGetFirstClassObjectName(_context, _script);
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, invocation.GetCodeRegion(), objectTypeName, objectName);
     }
 
     private static class DiagnosticDefinitions

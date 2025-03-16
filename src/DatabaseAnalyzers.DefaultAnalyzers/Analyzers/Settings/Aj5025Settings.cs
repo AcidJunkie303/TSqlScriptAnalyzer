@@ -15,7 +15,7 @@ internal sealed class Aj5025SettingsRaw : IRawSettings<Aj5025Settings>
     );
 }
 
-internal sealed record Aj5025Settings(
+public sealed record Aj5025Settings(
     [property: Description("The statement pattern which must preceed table creation statements. The following insertion strings are supported: `{TableSchemaName}` and `{TableName}`.")]
     string? ExistenceCheckPatternForTableCreation
 ) : ISettings<Aj5025Settings>

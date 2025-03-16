@@ -8,23 +8,31 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
 
 public sealed class MissingPrimaryKeyAnalyzer : IGlobalAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly Aj5026Settings _settings;
 
-    public void Analyze(IAnalysisContext context)
+    public MissingPrimaryKeyAnalyzer(IAnalysisContext context, Aj5026Settings settings)
     {
-        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5026Settings>();
-        var allTables = new DatabaseObjectExtractor(context.IssueReporter)
-            .Extract(context.ErrorFreeScripts, context.DefaultSchemaName)
+        _context = context;
+        _settings = settings;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void Analyze()
+    {
+        var allTables = new DatabaseObjectExtractor(_context.IssueReporter)
+            .Extract(_context.ErrorFreeScripts, _context.DefaultSchemaName)
             .SelectMany(static a => a.Value.SchemasByName)
             .SelectMany(static a => a.Value.TablesByName.Values);
 
         foreach (var table in allTables)
         {
-            Analyze(context, settings, table);
+            Analyze(table);
         }
     }
 
-    private static void Analyze(IAnalysisContext context, Aj5026Settings settings, TableInformation table)
+    private void Analyze(TableInformation table)
     {
         if (table.ObjectName.IsTempTableName())
         {
@@ -36,17 +44,17 @@ public sealed class MissingPrimaryKeyAnalyzer : IGlobalAnalyzer
             return;
         }
 
-        if (IsTableIgnored(settings, table))
+        if (IsTableIgnored(table))
         {
             return;
         }
 
         var databaseName = table.ScriptModel.ParsedScript.TryFindCurrentDatabaseNameAtFragment(table.CreationStatement) ?? DatabaseNames.Unknown;
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, table.ScriptModel.RelativeScriptFilePath, table.FullName, table.CreationStatement.GetCodeRegion(), table.FullName);
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, table.ScriptModel.RelativeScriptFilePath, table.FullName, table.CreationStatement.GetCodeRegion(), table.FullName);
     }
 
-    private static bool IsTableIgnored(Aj5026Settings settings, TableInformation table)
-        => settings.FullTableNamesToIgnore.Any(a => a.IsMatch(table.FullName));
+    private bool IsTableIgnored(TableInformation table)
+        => _settings.FullTableNamesToIgnore.Any(a => a.IsMatch(table.FullName));
 
     private static class DiagnosticDefinitions
     {

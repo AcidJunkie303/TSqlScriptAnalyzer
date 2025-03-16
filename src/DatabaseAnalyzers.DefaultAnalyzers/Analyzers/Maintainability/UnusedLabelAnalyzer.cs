@@ -6,17 +6,26 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Maintainability;
 
 public sealed class UnusedLabelAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public UnusedLabelAnalyzer(IScriptAnalysisContext context)
     {
-        foreach (var batch in script.ParsedScript.Batches)
+        _context = context;
+        _script = context.Script;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        foreach (var batch in _script.ParsedScript.Batches)
         {
-            AnalyzeBatch(context, script, batch);
+            AnalyzeBatch(batch);
         }
     }
 
-    private static void AnalyzeBatch(IAnalysisContext context, IScriptModel script, TSqlBatch batch)
+    private void AnalyzeBatch(TSqlBatch batch)
     {
         var referencedLabelNames = batch
             .GetChildren<GoToStatement>(recursive: true)
@@ -31,9 +40,9 @@ public sealed class UnusedLabelAnalyzer : IScriptAnalyzer
                 continue;
             }
 
-            var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(label) ?? DatabaseNames.Unknown;
-            var fullObjectName = label.TryGetFirstClassObjectName(context, script);
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, label.GetCodeRegion(), labelName);
+            var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(label) ?? DatabaseNames.Unknown;
+            var fullObjectName = label.TryGetFirstClassObjectName(_context, _script);
+            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, label.GetCodeRegion(), labelName);
         }
     }
 

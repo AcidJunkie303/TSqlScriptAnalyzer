@@ -13,17 +13,26 @@ public sealed class SetOptionWhichShouldNotBeTurnedOffAnalyzer : IScriptAnalyzer
         KeyValuePair.Create(SetOptions.ArithAbort, "ARITHABORT")
     }.ToImmutableArray();
 
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public SetOptionWhichShouldNotBeTurnedOffAnalyzer(IScriptAnalysisContext context)
     {
-        foreach (var predicateStatement in script.ParsedScript.GetChildren<PredicateSetStatement>(recursive: true))
+        _context = context;
+        _script = context.Script;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        foreach (var predicateStatement in _script.ParsedScript.GetChildren<PredicateSetStatement>(recursive: true))
         {
-            Analyze(context, script, predicateStatement);
+            Analyze(predicateStatement);
         }
     }
 
-    private static void Analyze(IAnalysisContext context, IScriptModel script, PredicateSetStatement predicateStatement)
+    private void Analyze(PredicateSetStatement predicateStatement)
     {
         if (predicateStatement.IsOn)
         {
@@ -36,9 +45,9 @@ public sealed class SetOptionWhichShouldNotBeTurnedOffAnalyzer : IScriptAnalyzer
             return;
         }
 
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(predicateStatement) ?? DatabaseNames.Unknown;
-        var fullObjectName = predicateStatement.TryGetFirstClassObjectName(context, script);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, predicateStatement.GetCodeRegion(), sqlRepresentationOfOptionsWhichShouldNotBeTurnedOff);
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(predicateStatement) ?? DatabaseNames.Unknown;
+        var fullObjectName = predicateStatement.TryGetFirstClassObjectName(_context, _script);
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, predicateStatement.GetCodeRegion(), sqlRepresentationOfOptionsWhichShouldNotBeTurnedOff);
     }
 
     private static IEnumerable<string> GetSqlRepresentationOfOptionsWhichShouldNotBeTurnedOff(SetOptions setOptions)

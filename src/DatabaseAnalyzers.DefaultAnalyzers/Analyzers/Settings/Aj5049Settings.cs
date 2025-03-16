@@ -23,7 +23,7 @@ internal sealed class Aj5049SettingsRaw : IRawSettings<Aj5049Settings>
     );
 }
 
-internal sealed record Aj5049Settings(
+public sealed record Aj5049Settings(
     [property: Description("Object names to exclude. Wildcards like `*` and `?` are supported.")]
     IReadOnlyList<Regex> IgnoredObjectNamePatterns
 ) : ISettings<Aj5049Settings>

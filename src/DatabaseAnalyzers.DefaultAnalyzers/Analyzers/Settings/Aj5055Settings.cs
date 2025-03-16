@@ -20,7 +20,7 @@ internal sealed class Aj5055SettingsRaw : IRawSettings<Aj5055Settings>
     );
 }
 
-internal sealed record Aj5055Settings(
+public sealed record Aj5055Settings(
     [property: Description("Database names to exclude from this rule.")]
     FrozenSet<string> ExcludedDatabaseNames
 ) : ISettings<Aj5055Settings>

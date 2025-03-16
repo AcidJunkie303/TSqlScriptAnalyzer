@@ -25,7 +25,7 @@ internal sealed class Aj5023SettingsRaw : IRawSettings<Aj5023Settings>
     );
 }
 
-internal sealed record Aj5023Settings(
+public sealed record Aj5023Settings(
     [property: Description("Statement type names to ignore.")]
     FrozenSet<TSqlTokenType> StatementTypesToIgnore
 ) : ISettings<Aj5023Settings>

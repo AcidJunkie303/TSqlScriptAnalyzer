@@ -17,7 +17,7 @@ internal sealed class Aj5045SettingsRaw : IRawSettings<Aj5045Settings>
     );
 }
 
-internal sealed record Aj5045Settings(
+public sealed record Aj5045Settings(
     [property: Description("An empty line is required before a GO statement. Default is false.")]
     bool RequireEmptyLineBeforeGo,
     [property: Description("An empty line is required after a GO statement. Default is false.")]

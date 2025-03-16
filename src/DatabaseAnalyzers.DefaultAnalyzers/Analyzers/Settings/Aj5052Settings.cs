@@ -34,7 +34,7 @@ internal sealed class Aj5052SettingsRaw : IRawSettings<Aj5052Settings>
     }
 }
 
-internal sealed record Aj5052Settings(
+public sealed record Aj5052Settings(
     [property: Description($"Prioritized list where the key represents matching index properties and the value represents the pattern. Values for the key are: {Aj5052SettingsRaw.IndexPropertiesList}. To specify multiple index properties (key), separate them by a comma. The value supports the following placeholders: {Aj5052Settings.Placeholders.PlaceholdersList}")]
     IReadOnlyList<Aj5052SettingsEntry> NamingPatterns,
     [property: Description($"In case there was no match, this pattern will be used. The following placeholders are supported: {Aj5052Settings.Placeholders.PlaceholdersList}")]

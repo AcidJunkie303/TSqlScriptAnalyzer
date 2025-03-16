@@ -6,24 +6,33 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Maintainability;
 
 public sealed partial class DefaultObjectCreationCommentsAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public DefaultObjectCreationCommentsAnalyzer(IScriptAnalysisContext context)
     {
-        foreach (Match match in DefaultObjectCreationCommentFinder().Matches(script.Contents))
+        _context = context;
+        _script = context.Script;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        foreach (Match match in DefaultObjectCreationCommentFinder().Matches(_script.Contents))
         {
-            var (startLine, startColumn) = script.Contents.GetLineAndColumnNumber(match.Index);
-            var (endLine, endColumn) = script.Contents.GetLineAndColumnNumber(match.Index + match.Length);
+            var (startLine, startColumn) = _script.Contents.GetLineAndColumnNumber(match.Index);
+            var (endLine, endColumn) = _script.Contents.GetLineAndColumnNumber(match.Index + match.Length);
 
             var startLocation = CodeLocation.Create(startLine, startColumn);
             var endLocation = CodeLocation.Create(endLine, endColumn);
             var region = CodeRegion.Create(startLocation, endLocation);
 
-            var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtLocation(startLocation) ?? DatabaseNames.Unknown;
-            var fullObjectName = script.ParsedScript
+            var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtLocation(startLocation) ?? DatabaseNames.Unknown;
+            var fullObjectName = _script.ParsedScript
                 .TryGetSqlFragmentAtPosition(match.Index)
-                ?.TryGetFirstClassObjectName(context, script);
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, region);
+                ?.TryGetFirstClassObjectName(_context, _script);
+            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, region);
         }
     }
 

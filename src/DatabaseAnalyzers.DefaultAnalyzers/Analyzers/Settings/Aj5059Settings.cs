@@ -22,7 +22,7 @@ internal sealed class Aj5059SettingsRaw : IRawSettings<Aj5059Settings>
     );
 }
 
-internal sealed record Aj5059Settings(
+public sealed record Aj5059Settings(
     [property: Description("Procedure names to ignore. Wildcards like `*` and `?` are supported.")]
     IReadOnlyList<Regex> IgnoredProcedureNamePatterns
 ) : ISettings<Aj5059Settings>

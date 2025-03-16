@@ -7,13 +7,21 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Consistency;
 
 public sealed class InconsistentColumnDataTypeAnalyzer : IGlobalAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly Aj5054Settings _settings;
 
-    public void Analyze(IAnalysisContext context)
+    public InconsistentColumnDataTypeAnalyzer(IAnalysisContext context, Aj5054Settings settings)
     {
-        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5054Settings>();
-        var columnsAndScriptsByColumnName = new DatabaseObjectExtractor(context.IssueReporter)
-            .Extract(context.ErrorFreeScripts, context.DefaultSchemaName)
+        _context = context;
+        _settings = settings;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void Analyze()
+    {
+        var columnsAndScriptsByColumnName = new DatabaseObjectExtractor(_context.IssueReporter)
+            .Extract(_context.ErrorFreeScripts, _context.DefaultSchemaName)
             .SelectMany(static a => a.Value.SchemasByName)
             .SelectMany(static a => a.Value.TablesByName.Values.Select(x => (Script: x.ScriptModel, Table: x)))
             .SelectMany(static a => a.Table.Columns.Select(x => (a.Script, a.Table, Column: x, DataType: x.ColumnDefinition.DataType.ToDataTypeString())))
@@ -23,8 +31,8 @@ public sealed class InconsistentColumnDataTypeAnalyzer : IGlobalAnalyzer
         foreach (var columnData in columnsAndScriptsByColumnName)
         {
             var columnsAndScripts = columnData.Columns
-                .Where(a => !settings.DatabasesToExclude.Contains(a.Column.DatabaseName))
-                .Where(a => !settings.ColumnNamesToExclude.Contains(a.Column.ObjectName))
+                .Where(a => !_settings.DatabasesToExclude.Contains(a.Column.DatabaseName))
+                .Where(a => !_settings.ColumnNamesToExclude.Contains(a.Column.ObjectName))
                 .Where(a => !a.DataType.IsNullOrWhiteSpace())
                 .ToList();
 
@@ -55,8 +63,8 @@ public sealed class InconsistentColumnDataTypeAnalyzer : IGlobalAnalyzer
             var column = columnsAndScripts[0].Column;
 
             var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(column.CreationStatement) ?? DatabaseNames.Unknown;
-            var fullObjectName = column.CreationStatement.TryGetFirstClassObjectName(context, script);
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, column.CreationStatement.GetCodeRegion(),
+            var fullObjectName = column.CreationStatement.TryGetFirstClassObjectName(_context, script);
+            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, column.CreationStatement.GetCodeRegion(),
                 column.ObjectName, dataTypeNames, objectNames);
         }
     }

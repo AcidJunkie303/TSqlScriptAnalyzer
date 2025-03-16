@@ -7,17 +7,24 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Consistency;
 
 public sealed class InconsistentColumnNameCasingAnalyzer : IGlobalAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly Aj5055Settings _settings;
 
-    public void Analyze(IAnalysisContext context)
+    public InconsistentColumnNameCasingAnalyzer(IAnalysisContext context, Aj5055Settings settings)
     {
-        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5055Settings>();
+        _context = context;
+        _settings = settings;
+    }
 
-        var columnsAndScriptsByColumnName = new DatabaseObjectExtractor(context.IssueReporter)
-            .Extract(context.ErrorFreeScripts, context.DefaultSchemaName)
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void Analyze()
+    {
+        var columnsAndScriptsByColumnName = new DatabaseObjectExtractor(_context.IssueReporter)
+            .Extract(_context.ErrorFreeScripts, _context.DefaultSchemaName)
             .SelectMany(static a => a.Value.SchemasByName)
             .SelectMany(static a => a.Value.TablesByName.Values.Select(x => (Script: x.ScriptModel, Table: x)))
-            .Where(a => !settings.ExcludedDatabaseNames.Contains(a.Table.DatabaseName))
+            .Where(a => !_settings.ExcludedDatabaseNames.Contains(a.Table.DatabaseName))
             .SelectMany(static a => a.Table.Columns.Select(x => (a.Script, a.Table, Column: x)))
             .GroupBy(static a => a.Column.ObjectName, StringComparer.OrdinalIgnoreCase)
             .Select(a => (ColumnName: a.Key, ColumnsData: a.ToList()));
@@ -46,8 +53,8 @@ public sealed class InconsistentColumnNameCasingAnalyzer : IGlobalAnalyzer
             var script = columnData[0].Script;
 
             var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(column.CreationStatement) ?? DatabaseNames.Unknown;
-            var fullObjectName = column.CreationStatement.TryGetFirstClassObjectName(context, script);
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, column.CreationStatement.GetCodeRegion(),
+            var fullObjectName = column.CreationStatement.TryGetFirstClassObjectName(_context, script);
+            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, column.CreationStatement.GetCodeRegion(),
                 column.ObjectName, flatCasingVariations, objectNames);
         }
     }

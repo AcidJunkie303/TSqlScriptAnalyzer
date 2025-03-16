@@ -11,10 +11,10 @@ public sealed class BannedFunctionAnalyzer : IScriptAnalyzer
     private readonly IScriptModel _script;
     private readonly Aj5040Settings _settings;
 
-    public BannedFunctionAnalyzer(IAnalysisContext context, IScriptModel script, Aj5040Settings settings)
+    public BannedFunctionAnalyzer(IScriptAnalysisContext context, Aj5040Settings settings)
     {
         _context = context;
-        _script = script;
+        _script = context.Script;
         _settings = settings;
     }
 

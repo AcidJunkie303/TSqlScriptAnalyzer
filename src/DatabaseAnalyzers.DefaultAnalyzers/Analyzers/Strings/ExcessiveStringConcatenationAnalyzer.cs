@@ -7,21 +7,30 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Strings;
 
 public sealed class ExcessiveStringConcatenationAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
+    private readonly Aj5001Settings _settings;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public ExcessiveStringConcatenationAnalyzer(IScriptAnalysisContext context, Aj5001Settings settings)
     {
-        var maxAllowedStringConcatenations = GetMaxAllowedStringConcatenations(context);
+        _context = context;
+        _script = context.Script;
+        _settings = settings;
+    }
 
-        foreach (var expression in script.ParsedScript.GetTopLevelDescendantsOfType<BinaryExpression>(script.ParentFragmentProvider))
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        foreach (var expression in _script.ParsedScript.GetTopLevelDescendantsOfType<BinaryExpression>(_script.ParentFragmentProvider))
         {
-            Analyze(context, script, expression, maxAllowedStringConcatenations);
+            Analyze(expression);
         }
     }
 
-    private static void Analyze(IAnalysisContext context, IScriptModel script, BinaryExpression expression, int maxAllowedStringConcatenations)
+    private void Analyze(BinaryExpression expression)
     {
-        var visitor = new Visitor(script.ParentFragmentProvider);
+        var visitor = new Visitor(_script.ParentFragmentProvider);
         visitor.ExplicitVisit(expression);
 
         if (!visitor.AreStringsInvolved)
@@ -29,30 +38,27 @@ public sealed class ExcessiveStringConcatenationAnalyzer : IScriptAnalyzer
             return;
         }
 
-        if (visitor.TotalConcatenations <= maxAllowedStringConcatenations)
+        if (visitor.TotalConcatenations <= _settings.MaxAllowedConcatenations)
         {
             return;
         }
 
-        var fullObjectName = expression.TryGetFirstClassObjectName(context, script);
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(expression) ?? DatabaseNames.Unknown;
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, expression.GetCodeRegion(), maxAllowedStringConcatenations);
+        var fullObjectName = expression.TryGetFirstClassObjectName(_context, _script);
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(expression) ?? DatabaseNames.Unknown;
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, expression.GetCodeRegion(), _settings.MaxAllowedConcatenations);
     }
-
-    private static int GetMaxAllowedStringConcatenations(IAnalysisContext context)
-        => context.DiagnosticSettingsProvider.GetSettings<Aj5001Settings>().MaxAllowedConcatenations;
 
     private sealed class Visitor : TSqlFragmentVisitor
     {
         private readonly IParentFragmentProvider _parentFragmentProvider;
 
+        public int TotalConcatenations { get; private set; }
+        public bool AreStringsInvolved { get; private set; }
+
         public Visitor(IParentFragmentProvider parentFragmentProvider)
         {
             _parentFragmentProvider = parentFragmentProvider;
         }
-
-        public int TotalConcatenations { get; private set; }
-        public bool AreStringsInvolved { get; private set; }
 
         public override void Visit(BinaryExpression node)
         {

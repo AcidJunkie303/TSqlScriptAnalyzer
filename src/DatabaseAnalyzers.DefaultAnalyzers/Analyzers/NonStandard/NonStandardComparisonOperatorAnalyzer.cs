@@ -6,27 +6,36 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.NonStandard;
 
 public sealed class NonStandardComparisonOperatorAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public NonStandardComparisonOperatorAnalyzer(IScriptAnalysisContext context)
     {
-        foreach (var expression in script.ParsedScript.GetChildren<BooleanComparisonExpression>(recursive: true))
+        _context = context;
+        _script = context.Script;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        foreach (var expression in _script.ParsedScript.GetChildren<BooleanComparisonExpression>(recursive: true))
         {
-            Analyze(context, script, expression);
+            Analyze(expression);
         }
     }
 
-    private static void Analyze(IAnalysisContext context, IScriptModel script, BooleanComparisonExpression expression)
+    private void Analyze(BooleanComparisonExpression expression)
     {
         if (expression.ComparisonType != BooleanComparisonType.NotEqualToExclamation)
         {
             return;
         }
 
-        var codeRegion = GetOperatorCodeRegion(script.ParsedScript.ScriptTokenStream, expression);
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(expression) ?? DatabaseNames.Unknown;
-        var fullObjectName = expression.TryGetFirstClassObjectName(context, script);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, codeRegion, "!=", "<>");
+        var codeRegion = GetOperatorCodeRegion(_script.ParsedScript.ScriptTokenStream, expression);
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(expression) ?? DatabaseNames.Unknown;
+        var fullObjectName = expression.TryGetFirstClassObjectName(_context, _script);
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion, "!=", "<>");
     }
 
     private static CodeRegion GetOperatorCodeRegion(IList<TSqlParserToken> scriptTokens, BooleanComparisonExpression expression)

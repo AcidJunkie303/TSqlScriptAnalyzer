@@ -23,7 +23,7 @@ internal sealed class Aj5038SettingsRaw : IRawSettings<Aj5038Settings>
     );
 }
 
-internal sealed record Aj5038Settings(
+public sealed record Aj5038Settings(
     [property: Description("Defines the name quoting policy for object creations.")]
     Aj5038SettingsNameQuotingPolicy NameQuotingPolicyDuringObjectCreation,
     [property: Description("Defines the name quoting policy for column references.")]

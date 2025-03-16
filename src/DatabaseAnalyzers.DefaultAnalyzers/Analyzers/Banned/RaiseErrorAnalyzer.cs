@@ -9,10 +9,10 @@ public sealed class RaiseErrorAnalyzer : IScriptAnalyzer
     private readonly IAnalysisContext _context;
     private readonly IScriptModel _script;
 
-    public RaiseErrorAnalyzer(IAnalysisContext context, IScriptModel script)
+    public RaiseErrorAnalyzer(IScriptAnalysisContext context)
     {
         _context = context;
-        _script = script;
+        _script = context.Script;
     }
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];

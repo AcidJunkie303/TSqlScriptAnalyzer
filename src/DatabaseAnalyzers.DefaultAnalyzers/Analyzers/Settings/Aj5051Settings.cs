@@ -15,7 +15,7 @@ internal sealed class Aj5051SettingsRaw : IRawSettings<Aj5051Settings>
     );
 }
 
-internal sealed record Aj5051Settings(
+public sealed record Aj5051Settings(
     [property: Description("Indicates whether to ignore unused primary keys. Default is `false`")]
     bool IgnoreUnusedPrimaryKeyIndices
 ) : ISettings<Aj5051Settings>

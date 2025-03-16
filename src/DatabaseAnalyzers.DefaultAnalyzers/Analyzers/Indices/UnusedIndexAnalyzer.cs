@@ -12,20 +12,27 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
 
 public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly Aj5051Settings _settings;
 
-    public void Analyze(IAnalysisContext context)
+    public UnusedIndexAnalyzer(IAnalysisContext context, Aj5051Settings settings)
     {
-        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5051Settings>();
+        _context = context;
+        _settings = settings;
+    }
 
-        var filteringColumnsByName = GetFilteringColumns(context)
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void Analyze()
+    {
+        var filteringColumnsByName = GetFilteringColumns()
             .Select(col => (Key: new Key(col.DatabaseName, col.SchemaName, col.TableName, col.ColumnName), Column: col))
             .GroupBy(a => a.Key)
             .ToDictionary(a => a.Key, a => a.ToImmutableArray())
             .AsIReadOnlyDictionary();
 
-        var databasesByName = new DatabaseObjectExtractor(context.IssueReporter)
-            .Extract(context.ErrorFreeScripts, context.DefaultSchemaName);
+        var databasesByName = new DatabaseObjectExtractor(_context.IssueReporter)
+            .Extract(_context.ErrorFreeScripts, _context.DefaultSchemaName);
 
         var allIndices = databasesByName.Values
             .SelectMany(db => db.SchemasByName.Values)
@@ -36,7 +43,7 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
         {
             foreach (var column in index.ColumnNames)
             {
-                if (settings.IgnoreUnusedPrimaryKeyIndices && index.IndexType.HasFlag(TableColumnIndexTypes.PrimaryKey))
+                if (_settings.IgnoreUnusedPrimaryKeyIndices && index.IndexType.HasFlag(TableColumnIndexTypes.PrimaryKey))
                 {
                     continue;
                 }
@@ -47,15 +54,15 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
                     continue;
                 }
 
-                context.IssueReporter.Report(DiagnosticDefinitions.Default, index.DatabaseName, index.RelativeScriptFilePath, index.IndexName, index.CreationStatement.GetCodeRegion(),
+                _context.IssueReporter.Report(DiagnosticDefinitions.Default, index.DatabaseName, index.RelativeScriptFilePath, index.IndexName, index.CreationStatement.GetCodeRegion(),
                     index.DatabaseName, index.SchemaName, index.TableName, column, index.IndexName ?? Constants.UnknownObjectName);
             }
         }
     }
 
-    private static IEnumerable<ColumnReference> GetFilteringColumns(IAnalysisContext context)
+    private IEnumerable<ColumnReference> GetFilteringColumns()
     {
-        foreach (var script in context.ErrorFreeScripts)
+        foreach (var script in _context.ErrorFreeScripts)
         {
             IEnumerable<StatementList?> statementLists =
             [
@@ -70,7 +77,7 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
                     continue;
                 }
 
-                foreach (var filteringColumn in GetFilteringColumnFromStatement(context, script, statementList))
+                foreach (var filteringColumn in GetFilteringColumnFromStatement(script, statementList))
                 {
                     yield return filteringColumn;
                 }
@@ -78,9 +85,9 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
         }
     }
 
-    private static IEnumerable<ColumnReference> GetFilteringColumnFromStatement(IAnalysisContext context, IScriptModel script, TSqlFragment fragment)
+    private IEnumerable<ColumnReference> GetFilteringColumnFromStatement(IScriptModel script, TSqlFragment fragment)
     {
-        var finder = new FilteringColumnFinder(context.IssueReporter, script.ParsedScript, script.RelativeScriptFilePath, context.DefaultSchemaName, script.ParentFragmentProvider);
+        var finder = new FilteringColumnFinder(_context.IssueReporter, script.ParsedScript, script.RelativeScriptFilePath, _context.DefaultSchemaName, script.ParentFragmentProvider);
 
         foreach (var filteringColumn in finder.Find(fragment))
         {

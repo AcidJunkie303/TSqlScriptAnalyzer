@@ -116,7 +116,7 @@ public sealed class AnalyzerFactory : IDisposable
                     services.AddSingleton(typeof(ScriptAnalyzerAndContext), sp =>
                     {
                         var context = analysisContextFactory.CreateForScriptAnalyzer(script, analyzerType);
-                        var analyzer = (IScriptAnalyzer) ActivatorUtilities.CreateInstance(sp, analyzerType, context, script);
+                        var analyzer = (IScriptAnalyzer) ActivatorUtilities.CreateInstance(sp, analyzerType, context);
                         return new ScriptAnalyzerAndContext(analyzer, context);
                     });
                 }

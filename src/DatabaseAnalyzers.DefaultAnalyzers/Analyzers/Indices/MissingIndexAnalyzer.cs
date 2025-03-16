@@ -10,28 +10,37 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
 
 public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.FilteringColumnNotIndexed, DiagnosticDefinitions.ForeignKeyColumnNotIndexed];
+    private readonly IAnalysisContext _context;
+    private readonly Aj5017Settings _missingForeignKeyIndexSettings;
+    private readonly Aj5015Settings _missingIndexSettings;
 
-    public void Analyze(IAnalysisContext context)
+    public MissingIndexAnalyzer(IAnalysisContext context, Aj5015Settings missingIndexSettings, Aj5017Settings missingForeignKeyIndexSettings)
     {
-        var databasesByName = new DatabaseObjectExtractor(context.IssueReporter)
-            .Extract(context.ErrorFreeScripts, context.DefaultSchemaName);
+        _context = context;
+        _missingIndexSettings = missingIndexSettings;
+        _missingForeignKeyIndexSettings = missingForeignKeyIndexSettings;
+    }
 
-        if (!context.DisabledDiagnosticIds.Contains(DiagnosticDefinitions.FilteringColumnNotIndexed.DiagnosticId))
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.FilteringColumnNotIndexed, DiagnosticDefinitions.ForeignKeyColumnNotIndexed];
+
+    public void Analyze()
+    {
+        var databasesByName = new DatabaseObjectExtractor(_context.IssueReporter)
+            .Extract(_context.ErrorFreeScripts, _context.DefaultSchemaName);
+
+        if (!_context.DisabledDiagnosticIds.Contains(DiagnosticDefinitions.FilteringColumnNotIndexed.DiagnosticId))
         {
-            AnalyzeModules(context, databasesByName);
+            AnalyzeModules(_context, databasesByName);
         }
 
-        if (!context.DisabledDiagnosticIds.Contains(DiagnosticDefinitions.ForeignKeyColumnNotIndexed.DiagnosticId))
+        if (!_context.DisabledDiagnosticIds.Contains(DiagnosticDefinitions.ForeignKeyColumnNotIndexed.DiagnosticId))
         {
-            AnalyzeForeignKeys(context, databasesByName);
+            AnalyzeForeignKeys(_context, databasesByName);
         }
     }
 
-    private static void AnalyzeForeignKeys(IAnalysisContext context, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
+    private void AnalyzeForeignKeys(IAnalysisContext context, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
     {
-        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5017Settings>();
-
         var tables = databasesByName
             .SelectMany(db => db.Value.SchemasByName.Values)
             .SelectMany(schema => schema.TablesByName.Values);
@@ -45,7 +54,7 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
                     continue;
                 }
 
-                if (settings.MissingIndexOnForeignKeyColumnSuppressions.Any(a => a.FullColumnNamePattern.IsMatch(foreignKey.FullColumnName)))
+                if (_missingForeignKeyIndexSettings.MissingIndexOnForeignKeyColumnSuppressions.Any(a => a.FullColumnNamePattern.IsMatch(foreignKey.FullColumnName)))
                 {
                     continue;
                 }
@@ -70,10 +79,8 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
         }
     }
 
-    private static void AnalyzeModules(IAnalysisContext context, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
+    private void AnalyzeModules(IAnalysisContext context, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
     {
-        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5015Settings>();
-
         foreach (var script in context.ErrorFreeScripts)
         {
             IEnumerable<StatementList?> statementLists =
@@ -89,14 +96,14 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
                     continue;
                 }
 
-                AnalyzeStatements(context, script, settings, statementList, databasesByName);
+                AnalyzeStatements(script, statementList, databasesByName);
             }
         }
     }
 
-    private static void AnalyzeStatements(IAnalysisContext context, IScriptModel script, Aj5015Settings settings, TSqlFragment fragment, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
+    private void AnalyzeStatements(IScriptModel script, TSqlFragment fragment, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
     {
-        var finder = new FilteringColumnFinder(context.IssueReporter, script.ParsedScript, script.RelativeScriptFilePath, context.DefaultSchemaName, script.ParentFragmentProvider);
+        var finder = new FilteringColumnFinder(_context.IssueReporter, script.ParsedScript, script.RelativeScriptFilePath, _context.DefaultSchemaName, script.ParentFragmentProvider);
 
         foreach (var filteringColumn in finder.Find(fragment))
         {
@@ -120,7 +127,7 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
                 return;
             }
 
-            if (settings.MissingIndexSuppressions.Any(a => a.FullColumnNamePattern.IsMatch(filteringColumn.FullName)))
+            if (_missingIndexSettings.MissingIndexSuppressions.Any(a => a.FullColumnNamePattern.IsMatch(filteringColumn.FullName)))
             {
                 return;
             }
@@ -130,8 +137,8 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
                 ? CodeRegion.Unknown
                 : column.ColumnDefinition.GetCodeRegion();
 
-            var fullObjectName = fragment.TryGetFirstClassObjectName(context.DefaultSchemaName, script.ParsedScript, script.ParentFragmentProvider);
-            context.IssueReporter.Report(DiagnosticDefinitions.FilteringColumnNotIndexed,
+            var fullObjectName = fragment.TryGetFirstClassObjectName(_context.DefaultSchemaName, script.ParsedScript, script.ParentFragmentProvider);
+            _context.IssueReporter.Report(DiagnosticDefinitions.FilteringColumnNotIndexed,
                 filteringColumn.DatabaseName,
                 script.RelativeScriptFilePath,
                 fullObjectName,

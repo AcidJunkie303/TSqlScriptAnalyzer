@@ -6,71 +6,80 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Maintainability;
 
 public sealed class DeadCodeAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public DeadCodeAnalyzer(IScriptAnalysisContext context)
     {
-        AnalyzeStatements<BreakStatement>(context, script, "BREAK");
-        AnalyzeStatements<ContinueStatement>(context, script, "CONTINUE");
-        AnalyzeStatements<ReturnStatement>(context, script, "RETURN");
-        AnalyzeStatements<ThrowStatement>(context, script, "THROW");
-
-        AnalyzeGoToStatements(context, script);
+        _context = context;
+        _script = context.Script;
     }
 
-    private static void AnalyzeStatements<T>(IAnalysisContext context, IScriptModel script, string statementName)
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        AnalyzeStatements<BreakStatement>("BREAK");
+        AnalyzeStatements<ContinueStatement>("CONTINUE");
+        AnalyzeStatements<ReturnStatement>("RETURN");
+        AnalyzeStatements<ThrowStatement>("THROW");
+
+        AnalyzeGoToStatements();
+    }
+
+    private void AnalyzeStatements<T>(string statementName)
         where T : TSqlStatement
     {
-        foreach (var statement in script.ParsedScript.GetChildren<T>(recursive: true))
+        foreach (var statement in _script.ParsedScript.GetChildren<T>(recursive: true))
         {
-            AnalyzeStatement(context, script, statement, statementName);
+            AnalyzeStatement(statement, statementName);
         }
     }
 
-    private static void AnalyzeStatement(IAnalysisContext context, IScriptModel script, TSqlFragment branchExecutionTerminatorStatement, string statementName)
+    private void AnalyzeStatement(TSqlFragment branchExecutionTerminatorStatement, string statementName)
     {
-        if (!HasSucceedingSiblings(branchExecutionTerminatorStatement, script.ParentFragmentProvider))
+        if (!HasSucceedingSiblings(branchExecutionTerminatorStatement, _script.ParentFragmentProvider))
         {
             return;
         }
 
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(branchExecutionTerminatorStatement) ?? DatabaseNames.Unknown;
-        var fullObjectName = branchExecutionTerminatorStatement.TryGetFirstClassObjectName(context, script);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, branchExecutionTerminatorStatement.GetCodeRegion(), statementName);
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(branchExecutionTerminatorStatement) ?? DatabaseNames.Unknown;
+        var fullObjectName = branchExecutionTerminatorStatement.TryGetFirstClassObjectName(_context, _script);
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, branchExecutionTerminatorStatement.GetCodeRegion(), statementName);
 
         static bool HasSucceedingSiblings(TSqlFragment fragment, IParentFragmentProvider parentFragmentProvider)
             => fragment.GetSucceedingSiblings(parentFragmentProvider).Any();
     }
 
-    private static void AnalyzeGoToStatements(IAnalysisContext context, IScriptModel script)
+    private void AnalyzeGoToStatements()
     {
-        foreach (var statement in script.ParsedScript.GetChildren<GoToStatement>(recursive: true))
+        foreach (var statement in _script.ParsedScript.GetChildren<GoToStatement>(recursive: true))
         {
-            AnalyzeGoToStatement(context, script, statement);
+            AnalyzeGoToStatement(statement);
         }
     }
 
-    private static void AnalyzeGoToStatement(IAnalysisContext context, IScriptModel script, GoToStatement goToStatement)
+    private void AnalyzeGoToStatement(GoToStatement goToStatement)
     {
-        foreach (var batch in script.ParsedScript.Batches)
+        foreach (var batch in _script.ParsedScript.Batches)
         {
-            AnalyzeGoToStatement(context, script, batch, goToStatement);
+            AnalyzeGoToStatement(batch, goToStatement);
         }
     }
 
-    private static void AnalyzeGoToStatement(IAnalysisContext context, IScriptModel script, TSqlBatch batch, GoToStatement goToStatement)
+    private void AnalyzeGoToStatement(TSqlBatch batch, GoToStatement goToStatement)
     {
-        if (!IsCodeAfterGotoDead(script, batch, goToStatement))
+        if (!IsCodeAfterGotoDead(batch, goToStatement))
         {
             return;
         }
 
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(goToStatement) ?? DatabaseNames.Unknown;
-        var fullObjectName = goToStatement.TryGetFirstClassObjectName(context, script);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, goToStatement.GetCodeRegion(), "GOTO");
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(goToStatement) ?? DatabaseNames.Unknown;
+        var fullObjectName = goToStatement.TryGetFirstClassObjectName(_context, _script);
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, goToStatement.GetCodeRegion(), "GOTO");
     }
 
-    private static bool IsCodeAfterGotoDead(IScriptModel script, TSqlBatch batch, GoToStatement goToStatement)
+    private bool IsCodeAfterGotoDead(TSqlBatch batch, GoToStatement goToStatement)
     {
         // The code after GOTO is only dead if the siblings after the GOTO statement aren't any other labels than the target label
         var labelName = goToStatement.LabelName?.Value.TrimEnd(':') + ':'; // we make sure that it ends with a colon
@@ -88,14 +97,14 @@ public sealed class DeadCodeAnalyzer : IScriptAnalyzer
             return false;
         }
 
-        var countOfSucceedingFragments = goToStatement.GetSucceedingSiblings(script.ParentFragmentProvider).Count();
+        var countOfSucceedingFragments = goToStatement.GetSucceedingSiblings(_script.ParentFragmentProvider).Count();
         if (countOfSucceedingFragments == 0)
         {
             return false;
         }
 
         var succeedingSiblingLabels = goToStatement
-            .GetSucceedingSiblings(script.ParentFragmentProvider)
+            .GetSucceedingSiblings(_script.ParentFragmentProvider)
             .OfType<LabelStatement>()
             .ToList();
 
@@ -103,7 +112,7 @@ public sealed class DeadCodeAnalyzer : IScriptAnalyzer
         if (isTargetLabelSucceedingSibling)
         {
             var countOfStatementsBetweenGotoAndNextLabel = goToStatement
-                .GetSucceedingSiblings(script.ParentFragmentProvider)
+                .GetSucceedingSiblings(_script.ParentFragmentProvider)
                 .TakeWhile(a => a is not LabelStatement)
                 .Count();
 
