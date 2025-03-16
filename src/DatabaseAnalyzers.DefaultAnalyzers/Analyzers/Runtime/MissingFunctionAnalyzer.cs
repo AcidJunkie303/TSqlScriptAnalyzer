@@ -106,9 +106,64 @@ public sealed class MissingFunctionAnalyzer : IGlobalAnalyzer
             return;
         }
 
+        if (IsXmlQuery(script, reference))
+        {
+            return;
+        }
+
         var fullObjectName = reference.TryGetFirstClassObjectName(_context, script);
         _context.IssueReporter.Report(SharedDiagnosticDefinitions.MissingObject, databaseName, script.RelativeScriptFilePath, fullObjectName, reference.GetCodeRegion(),
             "function", fullFunctionName);
+    }
+
+    private static bool IsXmlQuery(IScriptModel script, TSqlFragment fragment)
+    {
+        if (fragment is not FunctionCall functionCall)
+        {
+            return false;
+        }
+
+        var querySpecification = script.ParentFragmentProvider.GetParents(fragment).OfType<QuerySpecification>().FirstOrDefault();
+        if (querySpecification?.FromClause is null)
+        {
+            return false;
+        }
+
+        if (functionCall.CallTarget is not MultiPartIdentifierCallTarget multiPartIdentifierCallTarget)
+        {
+            return false;
+        }
+
+        if (multiPartIdentifierCallTarget.MultiPartIdentifier.Identifiers.Count != 2)
+        {
+            return false;
+        }
+
+        var xmlFunctionAlias = multiPartIdentifierCallTarget.MultiPartIdentifier.Identifiers[0].Value;
+        var xmlFunctionColumn = multiPartIdentifierCallTarget.MultiPartIdentifier.Identifiers[1].Value;
+
+        foreach (var methodCallTableReference in querySpecification.FromClause.TableReferences.OfType<VariableMethodCallTableReference>())
+        {
+            if (methodCallTableReference.Columns.Count != 1)
+            {
+                continue;
+            }
+
+            var alias = methodCallTableReference.Alias.Value;
+            if (!xmlFunctionAlias.EqualsOrdinalIgnoreCase(alias))
+            {
+                continue;
+            }
+
+            if (!xmlFunctionColumn.EqualsOrdinalIgnoreCase(methodCallTableReference.Columns[0].Value))
+            {
+                continue;
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     private static bool DoesFunctionOrSynonymExist(IReadOnlyDictionary<string, DatabaseInformation> databasesByName, string databaseName, string schemaName, string functionName)
