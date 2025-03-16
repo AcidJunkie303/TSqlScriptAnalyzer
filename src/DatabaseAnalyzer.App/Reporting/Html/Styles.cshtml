@@ -38,15 +38,12 @@
 
     table.data-table td,
     table.data-table th {
-        border-collapse: collapse;
         margin: 0;
     }
 
     table.data-table {
-        border-collapse: collapse;
         border-spacing: 0;
         border-radius: 4px;
-        overflow: hidden; /* Ensures inner elements don't overflow the rounded corners */
     }
 
     table.data-table thead {
@@ -92,6 +89,19 @@
 
     table.data-table > thead > tr > th {
         cursor: pointer;
+    }
+
+    table.sticky-header-row {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+    }
+
+    table.sticky-header-row > thead > tr > th {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background-color: var(--table-header-bg);
     }
 
     a,
