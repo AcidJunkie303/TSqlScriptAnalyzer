@@ -88,15 +88,16 @@
         },
         "AJ5022": // Missing BEGIN/END blocks
         {
-            "IfRequiresBeginEndBlock": true,
+            "IfRequiresBeginEndBlock": false,
             "WhileRequiresBeginEndBlock": true
         },
         "AJ5023": // Statements must begin on a new line
         {
             "StatementTypesToIgnore": [
-                "goto",
-                "print",
-                "set"
+                "GOTO",
+                "PRINT",
+                "SET",
+                "EXEC"
             ]
         },
         "AJ5025": // Existence checks for creation statements
@@ -106,17 +107,15 @@
         "AJ5026": // Missing primary key
         {
             "FullTableNamesToIgnore": [
-                "MyDb*",
-                "MyDb.MySchema.*",
-                "MyDb.MySchema.My*"
+                "?_RAW*.*",
+                "master.*"
             ]
         },
         "AJ5027": // Table has no clustered index
         {
             "FullTableNamesToIgnore": [
-                "MyDb*",
-                "MyDb.MySchema.*",
-                "MyDb.MySchema.My*"
+                "?_RAW*.*",
+                "master.*"
             ]
         },
         "AJ5030": // Object and variable naming
@@ -178,7 +177,13 @@
         "AJ5044": // Missing object
         {
             "IgnoredObjectNamePatterns": [
-                "*.sys.*"
+                "*.sys.*",
+                "*.sysdatabases",
+                "*.sysdatabases.*",
+                "*#*",
+                "*.datacycle.*",
+                "*.INFORMATION_SCHEMA.*",
+                "*.sp_ExecuteSql"
             ]
         },
         "AJ5045": // Empty lines before/after GO statement
@@ -198,6 +203,11 @@
         "AJ5049": // Object invocation without specified schema name
         {
             "IgnoredObjectNamePatterns": [
+                "sp_MSforeachdb",
+                "sp_executesql",
+                "SP_CONFIGURE",
+                "sp_addsrvrolemember",
+                "xp_fileexist"
             ]
         },
         "AJ5051": // Unused index
@@ -271,7 +281,8 @@
         "AJ5059": // Procedure invocation without explicit parameter name
         {
             "IgnoredProcedureNamePatterns": [
-                "*usp_Whatever*"
+                "*.sp_MSforeachDb",
+                "*.sp_ExecuteSql"
             ]
         },
         "AJ5060": // Usage of reserved words or keywords for table, view, function and procedure names.
