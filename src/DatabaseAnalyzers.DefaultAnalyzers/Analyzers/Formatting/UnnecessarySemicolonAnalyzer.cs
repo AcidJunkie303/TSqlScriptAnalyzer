@@ -6,56 +6,65 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 
 public sealed class UnnecessarySemicolonAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public UnnecessarySemicolonAnalyzer(IScriptAnalysisContext context)
     {
-        for (var i = 0; i < script.ParsedScript.ScriptTokenStream.Count; i++)
+        _context = context;
+        _script = context.Script;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        for (var i = 0; i < _script.ParsedScript.ScriptTokenStream.Count; i++)
         {
-            var token = script.ParsedScript.ScriptTokenStream[i];
+            var token = _script.ParsedScript.ScriptTokenStream[i];
             if (token.TokenType != TSqlTokenType.Semicolon)
             {
                 continue;
             }
 
-            Analyze(context, script, token, i);
+            Analyze(token, i);
         }
     }
 
-    private static void Analyze(IAnalysisContext context, IScriptModel script, TSqlParserToken semicolonToken, int tokenIndex)
+    private void Analyze(TSqlParserToken semicolonToken, int tokenIndex)
     {
-        if (IsSemicolonRequired(script, tokenIndex))
+        if (IsSemicolonRequired(tokenIndex))
         {
             return;
         }
 
-        var fragment = script.ParsedScript.TryGetSqlFragmentAtPosition(semicolonToken.Line, semicolonToken.Column);
-        var fullObjectName = fragment?.TryGetFirstClassObjectName(context, script);
+        var fragment = _script.ParsedScript.TryGetSqlFragmentAtPosition(semicolonToken.Line, semicolonToken.Column);
+        var fullObjectName = fragment?.TryGetFirstClassObjectName(_context, _script);
         var databaseName = fragment is null
-            ? script.DatabaseName
-            : script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(fragment) ?? script.DatabaseName;
+            ? _script.DatabaseName
+            : _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(fragment) ?? _script.DatabaseName;
         var codeRegion = CodeRegion.Create(semicolonToken.Line, semicolonToken.Column, semicolonToken.Line, semicolonToken.Column + 1);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, codeRegion);
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion);
+    }
 
-        static bool IsSemicolonRequired(IScriptModel script, int semicolonTokenIndex)
+    private bool IsSemicolonRequired(int semicolonTokenIndex)
+    {
+        if (semicolonTokenIndex == 0)
         {
-            if (semicolonTokenIndex == 0)
-            {
-                return false;
-            }
-
-            if (IsSemicolonRequiredForNextStatement(script.ParsedScript.ScriptTokenStream, semicolonTokenIndex, script.ParsedScript.LastTokenIndex))
-            {
-                return true;
-            }
-
-            if (IsSemicolonRequiredForPreviousStatement(script, semicolonTokenIndex))
-            {
-                return true;
-            }
-
             return false;
         }
+
+        if (IsSemicolonRequiredForNextStatement(_script.ParsedScript.ScriptTokenStream, semicolonTokenIndex, _script.ParsedScript.LastTokenIndex))
+        {
+            return true;
+        }
+
+        if (IsSemicolonRequiredForPreviousStatement(semicolonTokenIndex))
+        {
+            return true;
+        }
+
+        return false;
     }
 
     private static bool IsSemicolonRequiredForNextStatement(IList<TSqlParserToken> tokens, int semicolonTokenIndex, int lastTokenIndex)
@@ -75,19 +84,19 @@ public sealed class UnnecessarySemicolonAnalyzer : IScriptAnalyzer
         return false;
     }
 
-    private static bool IsSemicolonRequiredForPreviousStatement(IScriptModel script, int semicolonTokenIndex)
+    private bool IsSemicolonRequiredForPreviousStatement(int semicolonTokenIndex)
     {
         // check tokens before this one for 'THROW' and 'MERGE'
         for (var i = semicolonTokenIndex - 1; i >= 0; i--)
         {
-            var token = script.ParsedScript.ScriptTokenStream[i];
+            var token = _script.ParsedScript.ScriptTokenStream[i];
             if (token.TokenType is TSqlTokenType.MultilineComment or TSqlTokenType.SingleLineComment or TSqlTokenType.WhiteSpace)
             {
                 continue;
             }
 
-            var fragment = script.ParsedScript.TryGetSqlFragmentAtPosition(token.Line, token.Column);
-            var parentStatement = fragment?.GetParents(script.ParentFragmentProvider)
+            var fragment = _script.ParsedScript.TryGetSqlFragmentAtPosition(token.Line, token.Column);
+            var parentStatement = fragment?.GetParents(_script.ParentFragmentProvider)
                 .OfType<TSqlStatement>()
                 .FirstOrDefault();
 

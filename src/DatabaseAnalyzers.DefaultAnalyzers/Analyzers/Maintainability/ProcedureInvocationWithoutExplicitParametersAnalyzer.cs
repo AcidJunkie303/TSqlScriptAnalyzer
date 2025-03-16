@@ -7,19 +7,28 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Maintainability;
 
 public sealed class ProcedureInvocationWithoutExplicitParametersAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
+    private readonly Aj5059Settings _settings;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public ProcedureInvocationWithoutExplicitParametersAnalyzer(IScriptAnalysisContext context, Aj5059Settings settings)
     {
-        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5059Settings>();
+        _context = context;
+        _script = context.Script;
+        _settings = settings;
+    }
 
-        foreach (var procedureCall in script.ParsedScript.GetChildren<ExecutableProcedureReference>(recursive: true))
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        foreach (var procedureCall in _script.ParsedScript.GetChildren<ExecutableProcedureReference>(recursive: true))
         {
-            AnalyzeProcedureCall(context, script, settings, procedureCall);
+            AnalyzeProcedureCall(procedureCall);
         }
     }
 
-    private static void AnalyzeProcedureCall(IAnalysisContext context, IScriptModel script, Aj5059Settings settings, ExecutableProcedureReference procedureCall)
+    private void AnalyzeProcedureCall(ExecutableProcedureReference procedureCall)
     {
         if (procedureCall.Parameters.Count == 0)
         {
@@ -32,7 +41,7 @@ public sealed class ProcedureInvocationWithoutExplicitParametersAnalyzer : IScri
             return;
         }
 
-        var schemaName = procedureName.SchemaIdentifier?.Value ?? context.DefaultSchemaName;
+        var schemaName = procedureName.SchemaIdentifier?.Value ?? _context.DefaultSchemaName;
         var pureProcedureName = procedureName.BaseIdentifier.Value;
         if (pureProcedureName.IsNullOrWhiteSpace())
         {
@@ -40,7 +49,7 @@ public sealed class ProcedureInvocationWithoutExplicitParametersAnalyzer : IScri
         }
 
         var twoPartProcedureName = $"{schemaName}.{pureProcedureName}";
-        if (IsObjectNameIgnored(settings, twoPartProcedureName))
+        if (IsObjectNameIgnored(_settings, twoPartProcedureName))
         {
             return;
         }
@@ -50,9 +59,9 @@ public sealed class ProcedureInvocationWithoutExplicitParametersAnalyzer : IScri
             return;
         }
 
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(procedureCall) ?? DatabaseNames.Unknown;
-        var fullObjectName = procedureCall.TryGetFirstClassObjectName(context, script);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, procedureCall.GetCodeRegion(), twoPartProcedureName);
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(procedureCall) ?? DatabaseNames.Unknown;
+        var fullObjectName = procedureCall.TryGetFirstClassObjectName(_context, _script);
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, procedureCall.GetCodeRegion(), twoPartProcedureName);
     }
 
     private static bool IsObjectNameIgnored(Aj5059Settings settings, string objectName)

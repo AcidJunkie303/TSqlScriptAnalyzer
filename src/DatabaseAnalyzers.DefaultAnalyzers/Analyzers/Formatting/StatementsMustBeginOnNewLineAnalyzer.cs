@@ -7,19 +7,28 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 
 public sealed class StatementsMustBeginOnNewLineAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
+    private readonly Aj5023Settings _settings;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public StatementsMustBeginOnNewLineAnalyzer(IScriptAnalysisContext context, Aj5023Settings settings)
     {
-        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5023Settings>();
+        _context = context;
+        _script = context.Script;
+        _settings = settings;
+    }
 
-        foreach (var statement in script.ParsedScript.GetChildren<TSqlStatement>(recursive: true))
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        foreach (var statement in _script.ParsedScript.GetChildren<TSqlStatement>(recursive: true))
         {
-            Analyze(context, script, settings, statement);
+            Analyze(statement);
         }
     }
 
-    private static void Analyze(IAnalysisContext context, IScriptModel script, Aj5023Settings settings, TSqlStatement statement)
+    private void Analyze(TSqlStatement statement)
     {
         if (statement.FirstTokenIndex == 0)
         {
@@ -27,7 +36,7 @@ public sealed class StatementsMustBeginOnNewLineAnalyzer : IScriptAnalyzer
         }
 
         var statementToken = statement.ScriptTokenStream[statement.FirstTokenIndex];
-        if (settings.StatementTypesToIgnore.Contains(statementToken.TokenType))
+        if (_settings.StatementTypesToIgnore.Contains(statementToken.TokenType))
         {
             return;
         }
@@ -51,9 +60,9 @@ public sealed class StatementsMustBeginOnNewLineAnalyzer : IScriptAnalyzer
                 continue;
             }
 
-            var fullObjectName = statement.TryGetFirstClassObjectName(context, script);
-            var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(statement) ?? DatabaseNames.Unknown;
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, statement.GetCodeRegion());
+            var fullObjectName = statement.TryGetFirstClassObjectName(_context, _script);
+            var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(statement) ?? DatabaseNames.Unknown;
+            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, statement.GetCodeRegion());
 
             return;
         }

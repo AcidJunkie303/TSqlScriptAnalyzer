@@ -7,35 +7,44 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime;
 
 public sealed class DropStatementAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
+    private readonly Aj5058Settings _settings;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public DropStatementAnalyzer(IScriptAnalysisContext context, Aj5058Settings settings)
     {
-        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5058Settings>();
+        _context = context;
+        _script = context.Script;
+        _settings = settings;
+    }
 
-        foreach (var statement in script.ParsedScript.GetChildren<TSqlStatement>(recursive: true))
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        foreach (var statement in _script.ParsedScript.GetChildren<TSqlStatement>(recursive: true))
         {
-            AnalyzeStatement(context, script, settings, statement);
+            AnalyzeStatement(statement);
         }
     }
 
-    private static void AnalyzeStatement(IAnalysisContext context, IScriptModel script, Aj5058Settings settings, TSqlStatement statement)
+    private void AnalyzeStatement(TSqlStatement statement)
     {
-        var expressionsAndPatterns = settings.AllowedInFilesByDropStatementType.GetValueOrDefault(statement.GetType());
+        var expressionsAndPatterns = _settings.AllowedInFilesByDropStatementType.GetValueOrDefault(statement.GetType());
         if (expressionsAndPatterns is null)
         {
             return;
         }
 
         var (expressions, allowedFileNamePatterns, shortStatementName) = expressionsAndPatterns;
-        if (expressions.Any(a => a.IsMatch(script.RelativeScriptFilePath)))
+        if (expressions.Any(a => a.IsMatch(_script.RelativeScriptFilePath)))
         {
             return;
         }
 
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(statement) ?? DatabaseNames.Unknown;
-        var fullObjectName = statement.TryGetFirstClassObjectName(context, script);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, statement.GetCodeRegion(), shortStatementName, allowedFileNamePatterns);
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(statement) ?? DatabaseNames.Unknown;
+        var fullObjectName = statement.TryGetFirstClassObjectName(_context, _script);
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, statement.GetCodeRegion(), shortStatementName, allowedFileNamePatterns);
     }
 
     private static class DiagnosticDefinitions

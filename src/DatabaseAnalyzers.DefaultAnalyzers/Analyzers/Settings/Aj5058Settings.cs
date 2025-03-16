@@ -7,6 +7,7 @@ using DatabaseAnalyzers.DefaultAnalyzers.Services;
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
+[SettingsSource(SettingsSourceKind.Diagnostics, "AJ5058")]
 internal sealed class Aj5058SettingsRaw : IRawSettings<Aj5058Settings>
 {
     public IReadOnlyDictionary<string, IReadOnlyCollection<string?>?>? AllowedInFilesByDropStatementType { get; set; }
@@ -49,7 +50,7 @@ internal sealed class Aj5058SettingsRaw : IRawSettings<Aj5058Settings>
     }
 }
 
-internal sealed record Aj5058Settings(
+public sealed record Aj5058Settings(
     [property:
         Description(
             "Drop statements by allowed file name patterns (wildcards like `*` and `?` are supported).<br/><br/>File name pattern values: <ul><li>`Empty Array`: No file is allowed to contain this drop statement.</li><li>`null`: This drop statement is allowed in all files.</ul><br/>Supported drop statements are:`AlterLoginAddDropCredential, AlterTableDropTableElement, DropAggregate, DropApplicationRole, DropAssembly, DropAsymmetricKey, DropAvailabilityGroup, DropBrokerPriority, DropCertificate, DropColumnEncryptionKey, DropColumnMasterKey, DropContract, DropCredential, DropCryptographicProvider, DropDatabase, DropDatabaseAuditSpecification, DropDatabaseEncryptionKey, DropDefault, DropEndpoint, DropEventNotification, DropEventSession, DropExternalDataSource, DropExternalFileFormat, DropExternalLanguage, DropExternalLibrary, DropExternalResourcePool, DropExternalStream, DropExternalStreamingJob, DropExternalTable, DropFederation, DropFullTextCatalog, DropFullTextIndex, DropFullTextStopList, DropFunction, DropIndex, DropLogin, DropMasterKey, DropMessageType, DropPartitionFunction, DropPartitionScheme, DropProcedure, DropQueue, DropRemoteServiceBinding, DropResourcePool, DropRole, DropRoute, DropRule, DropSchema, DropSearchPropertyList, DropSecurityPolicy, DropSensitivityClassification, DropSequence, DropServerAudit, DropServerAuditSpecification, DropServerRole, DropService, DropSignature, DropStatistics, DropSymmetricKey, DropSynonym, DropTable, DropTrigger, DropType, DropUser, DropView, DropWorkloadClassifier, DropWorkloadGroup, DropXmlSchemaCollection`.")]

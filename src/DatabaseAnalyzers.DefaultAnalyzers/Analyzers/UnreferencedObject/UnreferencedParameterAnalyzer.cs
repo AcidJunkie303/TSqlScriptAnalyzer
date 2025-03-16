@@ -6,27 +6,36 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.UnreferencedObject;
 
 public sealed class UnreferencedParameterAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public UnreferencedParameterAnalyzer(IScriptAnalysisContext context)
     {
-        var procedures = script.ParsedScript.GetTopLevelDescendantsOfType<ProcedureStatementBody>(script.ParentFragmentProvider);
-        var functions = script.ParsedScript.GetTopLevelDescendantsOfType<FunctionStatementBody>(script.ParentFragmentProvider);
-
-        Analyze(context, script, procedures, static a => a.Parameters, static a => a.StatementList);
-        Analyze(context, script, functions, static a => a.Parameters, static a => a.StatementList);
+        _context = context;
+        _script = context.Script;
     }
 
-    private static void Analyze<T>(IAnalysisContext context, IScriptModel script, IEnumerable<T> creationStatements, Func<T, IList<ProcedureParameter>> parametersProvider, Func<T, StatementList?> statementListProvider)
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        var procedures = _script.ParsedScript.GetTopLevelDescendantsOfType<ProcedureStatementBody>(_script.ParentFragmentProvider);
+        var functions = _script.ParsedScript.GetTopLevelDescendantsOfType<FunctionStatementBody>(_script.ParentFragmentProvider);
+
+        Analyze(procedures, static a => a.Parameters, static a => a.StatementList);
+        Analyze(functions, static a => a.Parameters, static a => a.StatementList);
+    }
+
+    private void Analyze<T>(IEnumerable<T> creationStatements, Func<T, IList<ProcedureParameter>> parametersProvider, Func<T, StatementList?> statementListProvider)
         where T : TSqlFragment
     {
         foreach (var creationStatement in creationStatements)
         {
-            Analyze(context, script, creationStatement, parametersProvider, statementListProvider);
+            Analyze(creationStatement, parametersProvider, statementListProvider);
         }
     }
 
-    private static void Analyze<T>(IAnalysisContext context, IScriptModel script, T creationStatement, Func<T, IList<ProcedureParameter>> parametersProvider, Func<T, StatementList?> statementListProvider)
+    private void Analyze<T>(T creationStatement, Func<T, IList<ProcedureParameter>> parametersProvider, Func<T, StatementList?> statementListProvider)
         where T : TSqlFragment
     {
         var statementList = statementListProvider(creationStatement);
@@ -44,9 +53,9 @@ public sealed class UnreferencedParameterAnalyzer : IScriptAnalyzer
                 continue;
             }
 
-            var fullObjectName = parameter.TryGetFirstClassObjectName(context, script);
-            var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(parameter) ?? DatabaseNames.Unknown;
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, parameter.GetCodeRegion(), parameter.VariableName.Value);
+            var fullObjectName = parameter.TryGetFirstClassObjectName(_context, _script);
+            var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(parameter) ?? DatabaseNames.Unknown;
+            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, parameter.GetCodeRegion(), parameter.VariableName.Value);
         }
     }
 

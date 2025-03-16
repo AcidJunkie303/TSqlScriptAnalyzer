@@ -7,6 +7,7 @@ using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Core;
 using DatabaseAnalyzer.Core.Configuration;
+using DatabaseAnalyzer.Core.Initialization;
 using Serilog.Events;
 
 namespace DatabaseAnalyzer.App;
@@ -106,8 +107,12 @@ internal static class Program
 
         try
         {
+            var progressCallback = new ProgressCallbackConsoleWriter();
             var (configuration, settings) = ApplicationSettingsProvider.GetSettings(options.ProjectFilePath);
-            var analyzer = AnalyzerFactory.Create(configuration, settings, new ProgressCallbackConsoleWriter(), options.LogFilePath, options.MinimumLogLevel ?? LogEventLevel.Information);
+            var scripts = new ScriptProvider(settings, progressCallback).GetScripts();
+
+            using var analyzerFactory = new AnalyzerFactory(configuration, settings, scripts, progressCallback, options.LogFilePath, options.MinimumLogLevel ?? LogEventLevel.Information);
+            var analyzer = analyzerFactory.Create();
             var analysisResult = analyzer.Analyze();
 
             foreach (var consoleReportType in options.ConsoleReportTypes)

@@ -8,7 +8,22 @@ internal sealed record PluginAssembly(
     PluginLoadContext AssemblyLoadContext,
     ImmutableArray<Type> ScriptAnalyzerTypes,
     ImmutableArray<Type> GlobalAnalyzerTypes,
-    ImmutableArray<Type> DiagnosticSettingsProviderTypes,
-    ImmutableArray<SettingsPairTypes> SettingsTypes,
+    ImmutableArray<Type> ServiceTypes,
+    ImmutableArray<SettingMetadata> CustomSettings,
     ImmutableArray<IDiagnosticDefinition> DiagnosticDefinitions
-);
+) : IDisposable
+{
+    private bool _disposed;
+
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        AssemblyLoadContext.Dispose();
+
+        _disposed = true;
+    }
+}

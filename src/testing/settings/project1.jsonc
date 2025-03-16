@@ -38,25 +38,25 @@
             "BannedColumnDataTypes": [
                 "decimal",
                 // use numeric because decimal is a synonym for numeric
-                "varchar"
+                "varchar*"
                 // use nvarchar instead
             ],
             "BannedFunctionParameterDataTypes": [
                 "decimal",
                 // use numeric because decimal is a synonym for numeric
-                "varchar"
+                "varchar*"
                 // use nvarchar instead
             ],
             "BannedProcedureParameterDataTypes": [
                 "decimal",
                 // use numeric because decimal is a synonym for numeric
-                "varchar"
+                "varchar*"
                 // use nvarchar instead
             ],
             "BannedScriptVariableDataTypes": [
                 "decimal",
                 // use numeric because decimal is a synonym for numeric
-                "varchar"
+                "varchar*"
                 // use nvarchar instead
             ]
         },

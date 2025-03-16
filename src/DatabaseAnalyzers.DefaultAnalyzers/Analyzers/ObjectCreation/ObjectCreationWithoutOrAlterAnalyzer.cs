@@ -6,23 +6,32 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.ObjectCreation;
 
 public sealed class ObjectCreationWithoutOrAlterAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public ObjectCreationWithoutOrAlterAnalyzer(IScriptAnalysisContext context)
     {
-        AnalyzeFragments(context, script, script.ParsedScript.GetChildren<CreateViewStatement>(recursive: true));
-        AnalyzeFragments(context, script, script.ParsedScript.GetChildren<CreateProcedureStatement>(recursive: true));
-        AnalyzeFragments(context, script, script.ParsedScript.GetChildren<CreateFunctionStatement>(recursive: true));
-        AnalyzeFragments(context, script, script.ParsedScript.GetChildren<CreateTriggerStatement>(recursive: true));
+        _context = context;
+        _script = context.Script;
     }
 
-    private static void AnalyzeFragments(IAnalysisContext context, IScriptModel script, IEnumerable<TSqlFragment> fragments)
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        AnalyzeFragments(_script.ParsedScript.GetChildren<CreateViewStatement>(recursive: true));
+        AnalyzeFragments(_script.ParsedScript.GetChildren<CreateProcedureStatement>(recursive: true));
+        AnalyzeFragments(_script.ParsedScript.GetChildren<CreateFunctionStatement>(recursive: true));
+        AnalyzeFragments(_script.ParsedScript.GetChildren<CreateTriggerStatement>(recursive: true));
+    }
+
+    private void AnalyzeFragments(IEnumerable<TSqlFragment> fragments)
     {
         foreach (var fragment in fragments)
         {
-            var fullObjectName = fragment.TryGetFirstClassObjectName(context, script);
-            var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(fragment) ?? DatabaseNames.Unknown;
-            Report(context.IssueReporter, databaseName, script.RelativeScriptFilePath, fullObjectName, fragment);
+            var fullObjectName = fragment.TryGetFirstClassObjectName(_context, _script);
+            var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(fragment) ?? DatabaseNames.Unknown;
+            Report(_context.IssueReporter, databaseName, _script.RelativeScriptFilePath, fullObjectName, fragment);
         }
     }
 

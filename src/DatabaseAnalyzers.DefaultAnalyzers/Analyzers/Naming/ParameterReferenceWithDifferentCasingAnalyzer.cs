@@ -6,64 +6,73 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Naming;
 
 public sealed class ParameterReferenceWithDifferentCasingAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public ParameterReferenceWithDifferentCasingAnalyzer(IScriptAnalysisContext context)
     {
-        var functions = script.ParsedScript.GetTopLevelDescendantsOfType<FunctionStatementBody>(script.ParentFragmentProvider);
-        var procedures = script.ParsedScript.GetTopLevelDescendantsOfType<ProcedureStatementBody>(script.ParentFragmentProvider);
-
-        AnalyzeFunctions(context, script, functions);
-        AnalyzeProcedures(context, script, procedures);
+        _context = context;
+        _script = context.Script;
     }
 
-    private static void AnalyzeFunctions(IAnalysisContext context, IScriptModel script, IEnumerable<FunctionStatementBody> functions)
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        var functions = _script.ParsedScript.GetTopLevelDescendantsOfType<FunctionStatementBody>(_script.ParentFragmentProvider);
+        var procedures = _script.ParsedScript.GetTopLevelDescendantsOfType<ProcedureStatementBody>(_script.ParentFragmentProvider);
+
+        AnalyzeFunctions(functions);
+        AnalyzeProcedures(procedures);
+    }
+
+    private void AnalyzeFunctions(IEnumerable<FunctionStatementBody> functions)
     {
         foreach (var function in functions)
         {
-            AnalyzeFunction(context, script, function);
+            AnalyzeFunction(function);
         }
     }
 
-    private static void AnalyzeFunction(IAnalysisContext context, IScriptModel script, FunctionStatementBody function)
+    private void AnalyzeFunction(FunctionStatementBody function)
     {
         if (function.StatementList is null)
         {
             return;
         }
 
-        AnalyzeParameters(context, script, function.Parameters, function.StatementList);
+        AnalyzeParameters(function.Parameters, function.StatementList);
     }
 
-    private static void AnalyzeProcedures(IAnalysisContext context, IScriptModel script, IEnumerable<ProcedureStatementBody> procedures)
+    private void AnalyzeProcedures(IEnumerable<ProcedureStatementBody> procedures)
     {
         foreach (var procedure in procedures)
         {
-            AnalyzeProcedure(context, script, procedure);
+            AnalyzeProcedure(procedure);
         }
     }
 
-    private static void AnalyzeProcedure(IAnalysisContext context, IScriptModel script, ProcedureStatementBody procedure)
+    private void AnalyzeProcedure(ProcedureStatementBody procedure)
     {
         if (procedure.StatementList is null)
         {
             return;
         }
 
-        AnalyzeParameters(context, script, procedure.Parameters, procedure.StatementList);
+        AnalyzeParameters(procedure.Parameters, procedure.StatementList);
     }
 
-    private static void AnalyzeParameters(IAnalysisContext context, IScriptModel script, IEnumerable<ProcedureParameter> parameters, StatementList bodyStatementsList)
+    private void AnalyzeParameters(IEnumerable<ProcedureParameter> parameters, StatementList bodyStatementsList)
     {
         foreach (var parameter in parameters)
         {
-            AnalyzeParameter(context, script, parameter, bodyStatementsList);
+            AnalyzeParameter(parameter, bodyStatementsList);
         }
     }
 
-    private static void AnalyzeParameter(IAnalysisContext context, IScriptModel script, ProcedureParameter parameter, StatementList bodyStatementsList)
+    private void AnalyzeParameter(ProcedureParameter parameter, StatementList bodyStatementsList)
     {
-        Lazy<string?> lazyFullObjectName = new(() => parameter.TryGetFirstClassObjectName(context, script));
+        Lazy<string?> lazyFullObjectName = new(() => parameter.TryGetFirstClassObjectName(_context, _script));
 
         var variableReferencesWithDifferentCasing = bodyStatementsList
             .GetChildren<VariableReference>(recursive: true)
@@ -71,8 +80,8 @@ public sealed class ParameterReferenceWithDifferentCasingAnalyzer : IScriptAnaly
 
         foreach (var reference in variableReferencesWithDifferentCasing)
         {
-            var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(reference) ?? DatabaseNames.Unknown;
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, lazyFullObjectName.Value, reference.GetCodeRegion(), reference.Name, parameter.VariableName.Value);
+            var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(reference) ?? DatabaseNames.Unknown;
+            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, lazyFullObjectName.Value, reference.GetCodeRegion(), reference.Name, parameter.VariableName.Value);
         }
     }
 

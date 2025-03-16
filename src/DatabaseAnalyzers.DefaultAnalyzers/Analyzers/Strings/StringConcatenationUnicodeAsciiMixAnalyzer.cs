@@ -6,19 +6,28 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Strings;
 
 public sealed class StringConcatenationUnicodeAsciiMixAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public StringConcatenationUnicodeAsciiMixAnalyzer(IScriptAnalysisContext context)
     {
-        foreach (var expression in script.ParsedScript.GetTopLevelDescendantsOfType<BinaryExpression>(script.ParentFragmentProvider))
+        _context = context;
+        _script = context.Script;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        foreach (var expression in _script.ParsedScript.GetTopLevelDescendantsOfType<BinaryExpression>(_script.ParentFragmentProvider))
         {
-            Analyze(context, script, expression);
+            Analyze(expression);
         }
     }
 
-    private static void Analyze(IAnalysisContext context, IScriptModel script, BinaryExpression expression)
+    private void Analyze(BinaryExpression expression)
     {
-        var visitor = new Visitor(script);
+        var visitor = new Visitor(_script);
         visitor.ExplicitVisit(expression);
 
         if (visitor.StringTypesesFound != (StringTypes.Unicode | StringTypes.Ascii))
@@ -26,21 +35,21 @@ public sealed class StringConcatenationUnicodeAsciiMixAnalyzer : IScriptAnalyzer
             return;
         }
 
-        var fullObjectName = expression.TryGetFirstClassObjectName(context, script);
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(expression) ?? DatabaseNames.Unknown;
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, expression.GetCodeRegion());
+        var fullObjectName = expression.TryGetFirstClassObjectName(_context, _script);
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(expression) ?? DatabaseNames.Unknown;
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, expression.GetCodeRegion());
     }
 
     private sealed class Visitor : TSqlFragmentVisitor
     {
         private readonly IScriptModel _script;
 
+        public StringTypes StringTypesesFound { get; private set; }
+
         public Visitor(IScriptModel script)
         {
             _script = script;
         }
-
-        public StringTypes StringTypesesFound { get; private set; }
 
         public override void Visit(BinaryExpression node)
         {

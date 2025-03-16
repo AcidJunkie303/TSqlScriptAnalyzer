@@ -7,62 +7,71 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Naming;
 
 public sealed class ShortLongKeywordAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
+    private readonly Aj5048Settings _settings;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public ShortLongKeywordAnalyzer(IScriptAnalysisContext context, Aj5048Settings settings)
     {
-        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5048Settings>();
+        _context = context;
+        _script = context.Script;
+        _settings = settings;
+    }
 
-        if (!settings.IsEnabled)
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        if (!_settings.IsEnabled)
         {
             return;
         }
 
-        var violatingNotationsByTokenType = BuildLookupDictionary(settings);
+        var violatingNotationsByTokenType = BuildLookupDictionary();
 
-        foreach (var token in script.ParsedScript.ScriptTokenStream)
+        foreach (var token in _script.ParsedScript.ScriptTokenStream)
         {
-            AnalyzeToken(context, script, token, violatingNotationsByTokenType);
+            AnalyzeToken(token, violatingNotationsByTokenType);
         }
     }
 
-    private static ViolatingNotationsByTokenType BuildLookupDictionary(Aj5048Settings settings)
+    private ViolatingNotationsByTokenType BuildLookupDictionary()
     {
         var result = new ViolatingNotationsByTokenType();
-        if (settings.Execute == Aj5048KeywordNotationType.Short)
+        if (_settings.Execute == Aj5048KeywordNotationType.Short)
         {
-            result.Add(TSqlTokenType.Execute, (settings.Execute, "Exec"));
+            result.Add(TSqlTokenType.Execute, (_settings.Execute, "Exec"));
         }
 
-        if (settings.Execute == Aj5048KeywordNotationType.Long)
+        if (_settings.Execute == Aj5048KeywordNotationType.Long)
         {
-            result.Add(TSqlTokenType.Exec, (settings.Execute, "Execute"));
+            result.Add(TSqlTokenType.Exec, (_settings.Execute, "Execute"));
         }
 
-        if (settings.Procedure == Aj5048KeywordNotationType.Short)
+        if (_settings.Procedure == Aj5048KeywordNotationType.Short)
         {
-            result.Add(TSqlTokenType.Procedure, (settings.Procedure, "Proc"));
+            result.Add(TSqlTokenType.Procedure, (_settings.Procedure, "Proc"));
         }
 
-        if (settings.Procedure == Aj5048KeywordNotationType.Long)
+        if (_settings.Procedure == Aj5048KeywordNotationType.Long)
         {
-            result.Add(TSqlTokenType.Proc, (settings.Procedure, "Procedure"));
+            result.Add(TSqlTokenType.Proc, (_settings.Procedure, "Procedure"));
         }
 
-        if (settings.Transaction == Aj5048KeywordNotationType.Short)
+        if (_settings.Transaction == Aj5048KeywordNotationType.Short)
         {
-            result.Add(TSqlTokenType.Transaction, (settings.Transaction, "Tran"));
+            result.Add(TSqlTokenType.Transaction, (_settings.Transaction, "Tran"));
         }
 
-        if (settings.Transaction == Aj5048KeywordNotationType.Long)
+        if (_settings.Transaction == Aj5048KeywordNotationType.Long)
         {
-            result.Add(TSqlTokenType.Tran, (settings.Transaction, "Transaction"));
+            result.Add(TSqlTokenType.Tran, (_settings.Transaction, "Transaction"));
         }
 
         return result;
     }
 
-    private static void AnalyzeToken(IAnalysisContext context, IScriptModel script, TSqlParserToken token, ViolatingNotationsByTokenType violatingNotationsByTokenType)
+    private void AnalyzeToken(TSqlParserToken token, ViolatingNotationsByTokenType violatingNotationsByTokenType)
     {
         if (token.Text.IsNullOrWhiteSpace())
         {
@@ -74,14 +83,14 @@ public sealed class ShortLongKeywordAnalyzer : IScriptAnalyzer
             return;
         }
 
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtToken(token) ?? DatabaseNames.Unknown;
-        var fullObjectName = script.ParsedScript
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtToken(token) ?? DatabaseNames.Unknown;
+        var fullObjectName = _script.ParsedScript
             .TryGetSqlFragmentAtPosition(token)
-            ?.TryGetFirstClassObjectName(context, script);
+            ?.TryGetFirstClassObjectName(_context, _script);
 
-        context.IssueReporter.Report(DiagnosticDefinitions.Default,
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default,
             databaseName,
-            script.RelativeScriptFilePath,
+            _script.RelativeScriptFilePath,
             fullObjectName,
             token.GetCodeRegion(),
             token.Text, notation.NotationType.ToString(), notation.ShouldBeWrittenAs);

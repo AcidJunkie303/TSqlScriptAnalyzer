@@ -7,23 +7,33 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Maintainability;
 
 public sealed class OpenItemAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
+    private readonly Aj5004Settings _settings;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public OpenItemAnalyzer(IScriptAnalysisContext context, Aj5004Settings settings)
     {
-        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5004Settings>();
-        var commentTokens = script.ParsedScript.ScriptTokenStream
+        _context = context;
+        _script = context.Script;
+        _settings = settings;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        var commentTokens = _script.ParsedScript.ScriptTokenStream
             .Where(a => a.TokenType is TSqlTokenType.SingleLineComment or TSqlTokenType.MultilineComment);
 
         foreach (var commentToken in commentTokens)
         {
-            AnalyzeToken(context, script, settings, commentToken);
+            AnalyzeToken(commentToken);
         }
     }
 
-    private static void AnalyzeToken(IAnalysisContext context, IScriptModel script, Aj5004Settings settings, TSqlParserToken commentToken)
+    private void AnalyzeToken(TSqlParserToken commentToken)
     {
-        foreach (var (topic, expression) in settings.TopicsAndPatterns)
+        foreach (var (topic, expression) in _settings.TopicsAndPatterns)
         {
             var match = expression.Match(commentToken.Text);
             if (!match.Success)
@@ -35,12 +45,12 @@ public sealed class OpenItemAnalyzer : IScriptAnalyzer
                 ? group.Value
                 : "Unable to parse message. Make sure that the regex pattern contain a named group capture called 'message'.";
 
-            var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(script.ParsedScript) ?? script.DatabaseName;
-            var fullObjectName = script.ParsedScript
+            var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(_script.ParsedScript) ?? _script.DatabaseName;
+            var fullObjectName = _script.ParsedScript
                 .TryGetSqlFragmentAtPosition(commentToken)
-                ?.TryGetFirstClassObjectName(context, script);
+                ?.TryGetFirstClassObjectName(_context, _script);
 
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, commentToken.GetCodeRegion(), topic, message);
+            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, commentToken.GetCodeRegion(), topic, message);
         }
     }
 

@@ -6,6 +6,7 @@ using DatabaseAnalyzer.Contracts;
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
+[SettingsSource(SettingsSourceKind.Diagnostics, "AJ5040")]
 internal sealed class Aj5040SettingsRaw : IRawSettings<Aj5040Settings>
 {
     // ReSharper disable UnusedAutoPropertyAccessor.Global -> used during deserialization
@@ -23,7 +24,7 @@ internal sealed class Aj5040SettingsRaw : IRawSettings<Aj5040Settings>
     );
 }
 
-internal sealed record Aj5040Settings(
+public sealed record Aj5040Settings(
     [property: Description("Banned function names. The key is the function name itself and the value is the bann-reason.")]
     IReadOnlyDictionary<string, string> BanReasonByFunctionName
 ) : ISettings<Aj5040Settings>

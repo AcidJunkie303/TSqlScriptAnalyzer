@@ -6,37 +6,46 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime;
 
 public sealed class SelectStarAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.SelectStar, DiagnosticDefinitions.SelectStarForExistenceCheck];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public SelectStarAnalyzer(IScriptAnalysisContext context)
     {
-        foreach (var expression in script.ParsedScript.GetChildren<SelectStarExpression>(recursive: true))
+        _context = context;
+        _script = context.Script;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.SelectStar, DiagnosticDefinitions.SelectStarForExistenceCheck];
+
+    public void AnalyzeScript()
+    {
+        foreach (var expression in _script.ParsedScript.GetChildren<SelectStarExpression>(recursive: true))
         {
-            Analyze(context, script, expression);
+            Analyze(expression);
         }
     }
 
-    private static void Analyze(IAnalysisContext context, IScriptModel script, SelectStarExpression expression)
+    private void Analyze(SelectStarExpression expression)
     {
         if (IsSafeSelectStar())
         {
             return;
         }
 
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(expression) ?? DatabaseNames.Unknown;
-        var fullObjectName = expression.TryGetFirstClassObjectName(context, script);
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(expression) ?? DatabaseNames.Unknown;
+        var fullObjectName = expression.TryGetFirstClassObjectName(_context, _script);
 
-        var diagnosticDefinition = IsExistenceCheck(script, expression)
+        var diagnosticDefinition = IsExistenceCheck(_script, expression)
             ? DiagnosticDefinitions.SelectStarForExistenceCheck
             : DiagnosticDefinitions.SelectStar;
 
-        context.IssueReporter.Report(diagnosticDefinition, databaseName, script.RelativeScriptFilePath, fullObjectName, expression.GetCodeRegion());
+        _context.IssueReporter.Report(diagnosticDefinition, databaseName, _script.RelativeScriptFilePath, fullObjectName, expression.GetCodeRegion());
 
         bool IsSafeSelectStar()
         {
             var fromClause =
                 expression
-                    .GetParents(script.ParentFragmentProvider)
+                    .GetParents(_script.ParentFragmentProvider)
                     .OfType<QuerySpecification>()
                     .FirstOrDefault()
                     ?.FromClause;

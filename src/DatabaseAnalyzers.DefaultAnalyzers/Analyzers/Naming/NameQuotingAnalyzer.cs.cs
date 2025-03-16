@@ -7,23 +7,32 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Naming;
 
 public sealed class NameQuotingAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
+    private readonly Aj5038Settings _settings;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public NameQuotingAnalyzer(IScriptAnalysisContext context, Aj5038Settings settings)
     {
-        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5038Settings>();
+        _context = context;
+        _script = context.Script;
+        _settings = settings;
+    }
 
-        AnalyzeObjectCreations(context, script, settings.NameQuotingPolicyDuringObjectCreation, nameof(Aj5038SettingsRaw.NameQuotingPolicyDuringObjectCreation));
-        AnalyzeColumnReferences(context, script, settings.NameQuotingPolicyForColumnReferences, nameof(Aj5038SettingsRaw.NameQuotingPolicyForColumnReferences));
-        AnalyzeColumnDefinitions(context, script, settings.NameQuotingPolicyForColumnDefinitions, nameof(Aj5038SettingsRaw.NameQuotingPolicyForColumnDefinitions));
-        AnalyzeTableReferences(context, script, settings.NameQuotingPolicyForTableReferences, nameof(Aj5038SettingsRaw.NameQuotingPolicyForTableReferences));
-        AnalyzeDataTypeReferences(context, script, settings.NameQuotingPolicyForDataTypes, nameof(Aj5038SettingsRaw.NameQuotingPolicyForDataTypes));
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        AnalyzeObjectCreations(_settings.NameQuotingPolicyDuringObjectCreation, nameof(Aj5038SettingsRaw.NameQuotingPolicyDuringObjectCreation));
+        AnalyzeColumnReferences(_settings.NameQuotingPolicyForColumnReferences, nameof(Aj5038SettingsRaw.NameQuotingPolicyForColumnReferences));
+        AnalyzeColumnDefinitions(_settings.NameQuotingPolicyForColumnDefinitions, nameof(Aj5038SettingsRaw.NameQuotingPolicyForColumnDefinitions));
+        AnalyzeTableReferences(_settings.NameQuotingPolicyForTableReferences, nameof(Aj5038SettingsRaw.NameQuotingPolicyForTableReferences));
+        AnalyzeDataTypeReferences(_settings.NameQuotingPolicyForDataTypes, nameof(Aj5038SettingsRaw.NameQuotingPolicyForDataTypes));
 
         // TODO: Identifiers in object creation (lots of types to check)
         // TODO: Schema name references. Kinda hard...
     }
 
-    private static void AnalyzeDataTypeReferences(IAnalysisContext context, IScriptModel script, Aj5038SettingsNameQuotingPolicy policy, string configurationKeyName)
+    private void AnalyzeDataTypeReferences(Aj5038SettingsNameQuotingPolicy policy, string configurationKeyName)
     {
         if (policy == Aj5038SettingsNameQuotingPolicy.Undefined)
         {
@@ -31,23 +40,21 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
         }
 
         Analyze(
-            context,
-            script,
-            script.ParsedScript.GetChildren<SqlDataTypeReference>(recursive: true),
+            _script.ParsedScript.GetChildren<SqlDataTypeReference>(recursive: true),
             static a => a.Name.Identifiers,
             "data type",
             policy,
             configurationKeyName);
     }
 
-    private static void AnalyzeTableReferences(IAnalysisContext context, IScriptModel script, Aj5038SettingsNameQuotingPolicy policy, string configurationKeyName)
+    private void AnalyzeTableReferences(Aj5038SettingsNameQuotingPolicy policy, string configurationKeyName)
     {
         if (policy == Aj5038SettingsNameQuotingPolicy.Undefined)
         {
             return;
         }
 
-        var tableReferences = script.ParsedScript
+        var tableReferences = _script.ParsedScript
             .GetChildren<NamedTableReference>(recursive: true)
             .Where(a =>
             {
@@ -60,8 +67,6 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
             });
 
         Analyze(
-            context,
-            script,
             tableReferences,
             static a => a.SchemaObject.Identifiers.TakeLast(1),
             "table reference",
@@ -69,7 +74,7 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
             configurationKeyName);
     }
 
-    private static void AnalyzeColumnDefinitions(IAnalysisContext context, IScriptModel script, Aj5038SettingsNameQuotingPolicy policy, string configurationKeyName)
+    private void AnalyzeColumnDefinitions(Aj5038SettingsNameQuotingPolicy policy, string configurationKeyName)
     {
         if (policy == Aj5038SettingsNameQuotingPolicy.Undefined)
         {
@@ -77,16 +82,14 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
         }
 
         Analyze(
-            context,
-            script,
-            script.ParsedScript.GetChildren<ColumnDefinition>(recursive: true),
+            _script.ParsedScript.GetChildren<ColumnDefinition>(recursive: true),
             static a => [a.ColumnIdentifier],
             "column definition",
             policy,
             configurationKeyName);
     }
 
-    private static void AnalyzeColumnReferences(IAnalysisContext context, IScriptModel script, Aj5038SettingsNameQuotingPolicy policy, string configurationKeyName)
+    private void AnalyzeColumnReferences(Aj5038SettingsNameQuotingPolicy policy, string configurationKeyName)
     {
         if (policy == Aj5038SettingsNameQuotingPolicy.Undefined)
         {
@@ -94,16 +97,14 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
         }
 
         Analyze(
-            context,
-            script,
-            script.ParsedScript.GetChildren<ColumnReferenceExpression>(recursive: true),
+            _script.ParsedScript.GetChildren<ColumnReferenceExpression>(recursive: true),
             static a => a.MultiPartIdentifier.Identifiers.TakeLast(1),
             "column",
             policy,
             configurationKeyName);
     }
 
-    private static void AnalyzeObjectCreations(IAnalysisContext context, IScriptModel script, Aj5038SettingsNameQuotingPolicy policy, string configurationKeyName)
+    private void AnalyzeObjectCreations(Aj5038SettingsNameQuotingPolicy policy, string configurationKeyName)
     {
         if (policy == Aj5038SettingsNameQuotingPolicy.Undefined)
         {
@@ -111,61 +112,51 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
         }
 
         Analyze(
-            context,
-            script,
-            script.ParsedScript.GetChildren<CreateTableStatement>(recursive: true),
+            _script.ParsedScript.GetChildren<CreateTableStatement>(recursive: true),
             static a => a.SchemaObjectName.Identifiers,
             "table",
             policy,
             configurationKeyName);
 
         Analyze(
-            context,
-            script,
-            script.ParsedScript.GetChildren<ViewStatementBody>(recursive: true),
+            _script.ParsedScript.GetChildren<ViewStatementBody>(recursive: true),
             static a => a.SchemaObjectName.Identifiers,
             "view",
             policy,
             configurationKeyName);
 
         Analyze(
-            context,
-            script,
-            script.ParsedScript.GetChildren<ProcedureStatementBody>(recursive: true),
+            _script.ParsedScript.GetChildren<ProcedureStatementBody>(recursive: true),
             static a => a.ProcedureReference.Name.Identifiers,
             "procedure",
             policy,
             configurationKeyName);
 
         Analyze(
-            context,
-            script,
-            script.ParsedScript.GetChildren<FunctionStatementBody>(recursive: true),
+            _script.ParsedScript.GetChildren<FunctionStatementBody>(recursive: true),
             static a => a.Name.Identifiers,
             "function",
             policy,
             configurationKeyName);
 
         Analyze(
-            context,
-            script,
-            script.ParsedScript.GetChildren<TriggerStatementBody>(recursive: true),
+            _script.ParsedScript.GetChildren<TriggerStatementBody>(recursive: true),
             static a => a.Name.Identifiers,
             "trigger",
             policy,
             configurationKeyName);
     }
 
-    private static void Analyze<T>(IAnalysisContext context, IScriptModel script, IEnumerable<T> statements, Func<T, IEnumerable<Identifier>> identifierGetter, string typeName, Aj5038SettingsNameQuotingPolicy aj5038SettingsNameQuotingPolicy, string configurationKeyName)
+    private void Analyze<T>(IEnumerable<T> statements, Func<T, IEnumerable<Identifier>> identifierGetter, string typeName, Aj5038SettingsNameQuotingPolicy aj5038SettingsNameQuotingPolicy, string configurationKeyName)
         where T : TSqlFragment
     {
         foreach (var statement in statements)
         {
-            Analyze(context, script, statement, identifierGetter, typeName, aj5038SettingsNameQuotingPolicy, configurationKeyName);
+            Analyze(statement, identifierGetter, typeName, aj5038SettingsNameQuotingPolicy, configurationKeyName);
         }
     }
 
-    private static void Analyze<T>(IAnalysisContext context, IScriptModel script, T statement, Func<T, IEnumerable<Identifier>> identifierGetter, string typeName, Aj5038SettingsNameQuotingPolicy aj5038SettingsNameQuotingPolicy, string configurationKeyName)
+    private void Analyze<T>(T statement, Func<T, IEnumerable<Identifier>> identifierGetter, string typeName, Aj5038SettingsNameQuotingPolicy aj5038SettingsNameQuotingPolicy, string configurationKeyName)
         where T : TSqlFragment
     {
         foreach (var identifier in identifierGetter(statement))
@@ -181,11 +172,11 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
                 continue;
             }
 
-            var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(statement) ?? DatabaseNames.Unknown;
-            var fullObjectName = statement.TryGetFirstClassObjectName(context, script);
-            context.IssueReporter.Report(DiagnosticDefinitions.Default,
+            var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(statement) ?? DatabaseNames.Unknown;
+            var fullObjectName = statement.TryGetFirstClassObjectName(_context, _script);
+            _context.IssueReporter.Report(DiagnosticDefinitions.Default,
                 databaseName,
-                script.RelativeScriptFilePath,
+                _script.RelativeScriptFilePath,
                 fullObjectName,
                 identifier.GetCodeRegion(),
                 typeName, identifier.GetSql(), shouldBeWrittenAs, configurationKeyName);

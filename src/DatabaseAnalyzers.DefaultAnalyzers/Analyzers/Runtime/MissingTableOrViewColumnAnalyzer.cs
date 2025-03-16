@@ -10,26 +10,34 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime;
 
 public sealed class MissingTableOrViewColumnAnalyzer : IGlobalAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [SharedDiagnosticDefinitions.MissingObject];
+    private readonly IAnalysisContext _context;
+    private readonly Aj5044Settings _settings;
 
-    public void Analyze(IAnalysisContext context)
+    public MissingTableOrViewColumnAnalyzer(IAnalysisContext context, Aj5044Settings settings)
     {
-        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5044Settings>();
-        var databasesByName = new DatabaseObjectExtractor(context.IssueReporter)
-            .Extract(context.ErrorFreeScripts, context.DefaultSchemaName);
+        _context = context;
+        _settings = settings;
+    }
 
-        foreach (var script in context.ErrorFreeScripts)
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [SharedDiagnosticDefinitions.MissingObject];
+
+    public void Analyze()
+    {
+        var databasesByName = new DatabaseObjectExtractor(_context.IssueReporter)
+            .Extract(_context.ErrorFreeScripts, _context.DefaultSchemaName);
+
+        foreach (var script in _context.ErrorFreeScripts)
         {
             foreach (var columnReference in script.ParsedScript.GetChildren<ColumnReferenceExpression>(recursive: true))
             {
-                AnalyzeTableReference(context, script, columnReference, databasesByName, settings);
+                AnalyzeTableReference(script, columnReference, databasesByName);
             }
         }
     }
 
-    private static void AnalyzeTableReference(IAnalysisContext context, IScriptModel script, ColumnReferenceExpression columnReference, IReadOnlyDictionary<string, DatabaseInformation> databasesByName, Aj5044Settings settings)
+    private void AnalyzeTableReference(IScriptModel script, ColumnReferenceExpression columnReference, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
     {
-        var columnResolver = new TableColumnResolver(context.IssueReporter, script.ParsedScript, columnReference, script.RelativeScriptFilePath, script.ParentFragmentProvider, context.DefaultSchemaName);
+        var columnResolver = new TableColumnResolver(_context.IssueReporter, script.ParsedScript, columnReference, script.RelativeScriptFilePath, script.ParentFragmentProvider, _context.DefaultSchemaName);
         var resolvedColumn = columnResolver.Resolve();
         if (resolvedColumn is null)
         {
@@ -46,14 +54,14 @@ public sealed class MissingTableOrViewColumnAnalyzer : IGlobalAnalyzer
             return;
         }
 
-        if (IsIgnored(settings, resolvedColumn))
+        if (IsIgnored(resolvedColumn))
         {
             return;
         }
 
-        var fullObjectName = columnReference.TryGetFirstClassObjectName(context, script);
+        var fullObjectName = columnReference.TryGetFirstClassObjectName(_context, script);
 
-        context.IssueReporter.Report(SharedDiagnosticDefinitions.MissingObject, resolvedColumn.DatabaseName, script.RelativeScriptFilePath, fullObjectName, columnReference.GetCodeRegion(), "column", resolvedColumn.FullName);
+        _context.IssueReporter.Report(SharedDiagnosticDefinitions.MissingObject, resolvedColumn.DatabaseName, script.RelativeScriptFilePath, fullObjectName, columnReference.GetCodeRegion(), "column", resolvedColumn.FullName);
     }
 
     private static bool DoesColumnExist(IReadOnlyDictionary<string, DatabaseInformation> databasesByName, string databaseName, string schemaName, string tableOrViewName, string columnName)
@@ -85,14 +93,14 @@ public sealed class MissingTableOrViewColumnAnalyzer : IGlobalAnalyzer
         return false;
     }
 
-    private static bool IsIgnored(Aj5044Settings settings, ColumnReference reference)
+    private bool IsIgnored(ColumnReference reference)
     {
-        if (settings.IgnoredObjectNamePatterns.Count == 0)
+        if (_settings.IgnoredObjectNamePatterns.Count == 0)
         {
             return false;
         }
 
         var fullObjectName = $"{reference.DatabaseName}.{reference.SchemaName}.{reference.TableName}.{reference.ColumnName}";
-        return settings.IgnoredObjectNamePatterns.Any(a => a.IsMatch(fullObjectName));
+        return _settings.IgnoredObjectNamePatterns.Any(a => a.IsMatch(fullObjectName));
     }
 }

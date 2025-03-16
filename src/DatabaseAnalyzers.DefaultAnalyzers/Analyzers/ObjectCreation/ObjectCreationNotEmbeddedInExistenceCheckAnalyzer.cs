@@ -8,32 +8,42 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.ObjectCreation;
 public sealed class ObjectCreationNotEmbeddedInExistenceCheckAnalyzer : IScriptAnalyzer
 {
     // IF NOT EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[dbo].[V1]'))
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
+    private readonly Aj5025Settings _settings;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public ObjectCreationNotEmbeddedInExistenceCheckAnalyzer(IScriptAnalysisContext context, Aj5025Settings settings)
     {
-        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5025Settings>();
-        foreach (var statement in script.ParsedScript.GetChildren<CreateTableStatement>(recursive: true))
+        _context = context;
+        _script = context.Script;
+        _settings = settings;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        foreach (var statement in _script.ParsedScript.GetChildren<CreateTableStatement>(recursive: true))
         {
-            AnalyzeTableCreation(context, script, settings, statement);
+            AnalyzeTableCreation(statement);
         }
     }
 
-    private static void AnalyzeTableCreation(IAnalysisContext context, IScriptModel script, Aj5025Settings settings, CreateTableStatement statement)
+    private void AnalyzeTableCreation(CreateTableStatement statement)
     {
-        if (settings.ExistenceCheckPatternForTableCreation.IsNullOrWhiteSpace())
+        if (_settings.ExistenceCheckPatternForTableCreation.IsNullOrWhiteSpace())
         {
             return;
         }
 
-        var (tableSchemaName, tableName) = GetTableNames(statement, context.DefaultSchemaName);
+        var (tableSchemaName, tableName) = GetTableNames(statement, _context.DefaultSchemaName);
         if (tableName.IsTempTableName())
         {
             return;
         }
 
-        var expectedExistenceCheckCode = CreateTableExistenceCheckCode(settings.ExistenceCheckPatternForTableCreation, tableSchemaName, tableName);
-        var parentStatement = statement.GetParent(script.ParentFragmentProvider);
+        var expectedExistenceCheckCode = CreateTableExistenceCheckCode(_settings.ExistenceCheckPatternForTableCreation, tableSchemaName, tableName);
+        var parentStatement = statement.GetParent(_script.ParentFragmentProvider);
         var parentStatementCode = GetParentStatementCode();
 
         if (parentStatementCode.EqualsOrdinal(expectedExistenceCheckCode))
@@ -41,14 +51,14 @@ public sealed class ObjectCreationNotEmbeddedInExistenceCheckAnalyzer : IScriptA
             return;
         }
 
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(statement) ?? DatabaseNames.Unknown;
-        var fullObjectName = statement.TryGetFirstClassObjectName(context, script);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, statement.GetCodeRegion(), expectedExistenceCheckCode);
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(statement) ?? DatabaseNames.Unknown;
+        var fullObjectName = statement.TryGetFirstClassObjectName(_context, _script);
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, statement.GetCodeRegion(), expectedExistenceCheckCode);
 
         string? GetParentStatementCode() =>
             parentStatement is null
                 ? null
-                : script.ParsedScript.ScriptTokenStream
+                : _script.ParsedScript.ScriptTokenStream
                     .Skip(parentStatement!.FirstTokenIndex)
                     .Take(statement.FirstTokenIndex - parentStatement.FirstTokenIndex)
                     .Select(a => a.Text)

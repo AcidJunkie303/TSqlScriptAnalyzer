@@ -6,24 +6,33 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime;
 
 public sealed class MissingNoCountInProcedureOrTriggerAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public MissingNoCountInProcedureOrTriggerAnalyzer(IScriptAnalysisContext context)
     {
-        foreach (var creationStatement in script.ParsedScript.GetChildren<ProcedureStatementBody>(recursive: true))
+        _context = context;
+        _script = context.Script;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        foreach (var creationStatement in _script.ParsedScript.GetChildren<ProcedureStatementBody>(recursive: true))
         {
             var bodyStatements = GetStatements(creationStatement.StatementList);
-            Analyze(context, script, creationStatement, bodyStatements);
+            Analyze(creationStatement, bodyStatements);
         }
 
-        foreach (var creationStatement in script.ParsedScript.GetChildren<TriggerStatementBody>(recursive: true))
+        foreach (var creationStatement in _script.ParsedScript.GetChildren<TriggerStatementBody>(recursive: true))
         {
             var bodyStatements = GetStatements(creationStatement.StatementList);
-            Analyze(context, script, creationStatement, bodyStatements);
+            Analyze(creationStatement, bodyStatements);
         }
     }
 
-    private static void Analyze(IAnalysisContext context, IScriptModel script, TSqlStatement creationStatement, IList<TSqlStatement> bodyStatements)
+    private void Analyze(TSqlStatement creationStatement, IList<TSqlStatement> bodyStatements)
     {
         if (bodyStatements.IsNullOrEmpty())
         {
@@ -41,9 +50,9 @@ public sealed class MissingNoCountInProcedureOrTriggerAnalyzer : IScriptAnalyzer
         }
 
         var firstStatement = bodyStatements[0];
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(creationStatement) ?? DatabaseNames.Unknown;
-        var fullObjectName = creationStatement.TryGetFirstClassObjectName(context, script);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, firstStatement.GetCodeRegion());
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(creationStatement) ?? DatabaseNames.Unknown;
+        var fullObjectName = creationStatement.TryGetFirstClassObjectName(_context, _script);
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, firstStatement.GetCodeRegion());
     }
 
     private static IList<TSqlStatement> GetStatements(StatementList? statementList)

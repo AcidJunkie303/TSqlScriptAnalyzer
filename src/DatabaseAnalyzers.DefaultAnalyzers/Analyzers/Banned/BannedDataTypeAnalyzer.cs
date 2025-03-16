@@ -8,12 +8,22 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Banned;
 
 public sealed class BannedDataTypeAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IScriptAnalysisContext _context;
+    private readonly IScriptModel _script;
+    private readonly Aj5006Settings _settings;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public BannedDataTypeAnalyzer(IScriptAnalysisContext context, Aj5006Settings settings)
     {
-        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5006Settings>();
-        var parsedScript = script.ParsedScript;
+        _context = context;
+        _settings = settings;
+        _script = context.Script;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        var parsedScript = _context.Script.ParsedScript;
 
         var procedureParameters = parsedScript
             .GetChildren<CreateProcedureStatement>(recursive: true)
@@ -27,45 +37,45 @@ public sealed class BannedDataTypeAnalyzer : IScriptAnalyzer
         var variableDeclarations = parsedScript
             .GetChildren<DeclareVariableElement>(recursive: true);
 
-        AnalyzeProcedureParameters(context, script, settings.BannedProcedureParameterDataTypes, procedureParameters);
-        AnalyzeFunctionParameters(context, script, settings.BannedFunctionParameterDataTypes, functionParameters);
-        AnalyzeTableColumns(context, script, settings.BannedColumnDataTypes, tableColumns);
-        AnalyzeVariableDeclarations(context, script, settings.BannedScriptVariableDataTypes, variableDeclarations);
+        AnalyzeProcedureParameters(_settings.BannedProcedureParameterDataTypes, procedureParameters);
+        AnalyzeFunctionParameters(_settings.BannedFunctionParameterDataTypes, functionParameters);
+        AnalyzeTableColumns(_settings.BannedColumnDataTypes, tableColumns);
+        AnalyzeVariableDeclarations(_settings.BannedScriptVariableDataTypes, variableDeclarations);
     }
 
-    private static void AnalyzeProcedureParameters(IAnalysisContext context, IScriptModel script, IReadOnlyCollection<Regex> bannedDataTypes, IEnumerable<ProcedureParameter> parameters)
+    private void AnalyzeProcedureParameters(IReadOnlyCollection<Regex> bannedDataTypes, IEnumerable<ProcedureParameter> parameters)
     {
         foreach (var parameter in parameters)
         {
-            AnalyzeDataType(context, script, parameter.DataType, parameter, bannedDataTypes, "procedure parameters");
+            AnalyzeDataType(parameter.DataType, parameter, bannedDataTypes, "procedure parameters");
         }
     }
 
-    private static void AnalyzeFunctionParameters(IAnalysisContext context, IScriptModel script, IReadOnlyCollection<Regex> bannedDataTypes, IEnumerable<ProcedureParameter> parameters)
+    private void AnalyzeFunctionParameters(IReadOnlyCollection<Regex> bannedDataTypes, IEnumerable<ProcedureParameter> parameters)
     {
         foreach (var parameter in parameters)
         {
-            AnalyzeDataType(context, script, parameter.DataType, parameter, bannedDataTypes, "function parameters");
+            AnalyzeDataType(parameter.DataType, parameter, bannedDataTypes, "function parameters");
         }
     }
 
-    private static void AnalyzeTableColumns(IAnalysisContext context, IScriptModel script, IReadOnlyCollection<Regex> bannedDataTypes, IEnumerable<ColumnDefinitionBase> columns)
+    private void AnalyzeTableColumns(IReadOnlyCollection<Regex> bannedDataTypes, IEnumerable<ColumnDefinitionBase> columns)
     {
         foreach (var column in columns)
         {
-            AnalyzeDataType(context, script, column.DataType, column, bannedDataTypes, "table columns");
+            AnalyzeDataType(column.DataType, column, bannedDataTypes, "table columns");
         }
     }
 
-    private static void AnalyzeVariableDeclarations(IAnalysisContext context, IScriptModel script, IReadOnlyCollection<Regex> bannedDataTypes, IEnumerable<DeclareVariableElement> declarations)
+    private void AnalyzeVariableDeclarations(IReadOnlyCollection<Regex> bannedDataTypes, IEnumerable<DeclareVariableElement> declarations)
     {
         foreach (var declaration in declarations)
         {
-            AnalyzeDataType(context, script, declaration.DataType, declaration, bannedDataTypes, "variables");
+            AnalyzeDataType(declaration.DataType, declaration, bannedDataTypes, "variables");
         }
     }
 
-    private static void AnalyzeDataType(IAnalysisContext context, IScriptModel script, DataTypeReference? dataType, TSqlFragment parameter, IReadOnlyCollection<Regex> bannedTypesExpressions, string pluralObjectType)
+    private void AnalyzeDataType(DataTypeReference? dataType, TSqlFragment parameter, IReadOnlyCollection<Regex> bannedTypesExpressions, string pluralObjectType)
     {
         if (dataType is null)
         {
@@ -79,9 +89,9 @@ public sealed class BannedDataTypeAnalyzer : IScriptAnalyzer
             return;
         }
 
-        var fullObjectName = parameter.TryGetFirstClassObjectName(context.DefaultSchemaName, script.ParsedScript, script.ParentFragmentProvider);
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(parameter) ?? DatabaseNames.Unknown;
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, parameter.GetCodeRegion(), dataTypeName, pluralObjectType);
+        var fullObjectName = parameter.TryGetFirstClassObjectName(_context.DefaultSchemaName, _script.ParsedScript, _script.ParentFragmentProvider);
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(parameter) ?? DatabaseNames.Unknown;
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, parameter.GetCodeRegion(), dataTypeName, pluralObjectType);
     }
 
     private static class DiagnosticDefinitions

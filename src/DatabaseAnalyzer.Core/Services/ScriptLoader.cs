@@ -2,7 +2,7 @@ using DatabaseAnalyzer.Core.Models;
 
 namespace DatabaseAnalyzer.Core.Services;
 
-internal sealed class ScriptLoader : IScriptLoader
+public sealed class ScriptLoader : IScriptLoader
 {
     public BasicScriptInformation LoadScript(SourceScript script)
     {

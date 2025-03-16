@@ -16,17 +16,26 @@ public sealed class WeakHashingAlgorithmAnalyzer : IScriptAnalyzer
         "SHA1"
     }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public WeakHashingAlgorithmAnalyzer(IScriptAnalysisContext context)
     {
-        foreach (var functionCall in script.ParsedScript.GetChildren<FunctionCall>(recursive: true))
+        _context = context;
+        _script = context.Script;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        foreach (var functionCall in _script.ParsedScript.GetChildren<FunctionCall>(recursive: true))
         {
-            Analyze(context, script, functionCall);
+            Analyze(functionCall);
         }
     }
 
-    private static void Analyze(IAnalysisContext context, IScriptModel script, FunctionCall functionCall)
+    private void Analyze(FunctionCall functionCall)
     {
         if (functionCall.Parameters.Count != 2)
         {
@@ -46,9 +55,9 @@ public sealed class WeakHashingAlgorithmAnalyzer : IScriptAnalyzer
             return;
         }
 
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(algorithmArgument) ?? DatabaseNames.Unknown;
-        var fullObjectName = algorithmArgument.TryGetFirstClassObjectName(context, script);
-        context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, algorithmArgument.GetCodeRegion(), hashAlgorithmName);
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(algorithmArgument) ?? DatabaseNames.Unknown;
+        var fullObjectName = algorithmArgument.TryGetFirstClassObjectName(_context, _script);
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, algorithmArgument.GetCodeRegion(), hashAlgorithmName);
     }
 
     private static class DiagnosticDefinitions

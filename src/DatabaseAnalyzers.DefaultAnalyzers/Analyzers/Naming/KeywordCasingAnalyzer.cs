@@ -8,28 +8,37 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Naming;
 
 public sealed class KeywordCasingAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics =>
-        [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
+    private readonly Aj5056Settings _settings;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public KeywordCasingAnalyzer(IScriptAnalysisContext context, Aj5056Settings settings)
     {
-        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5056Settings>();
-        if (settings.KeywordNamingPolicy == KeywordNamingPolicy.Disabled)
+        _context = context;
+        _script = context.Script;
+        _settings = settings;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        if (_settings.KeywordNamingPolicy == Aj5056SKeywordNamingPolicy.Disabled)
         {
             return;
         }
 
-        foreach (var token in script.ParsedScript.ScriptTokenStream)
+        foreach (var token in _script.ParsedScript.ScriptTokenStream)
         {
-            AnalyzeToken(context, script, token, settings);
+            AnalyzeToken(token);
         }
     }
 
-    private static void AnalyzeToken(IAnalysisContext context, IScriptModel script, TSqlParserToken token, Aj5056Settings settings) => AnalyzeKeyword(context, script, token, settings);
+    private void AnalyzeToken(TSqlParserToken token) => AnalyzeKeyword(token);
 
-    private static void AnalyzeKeyword(IAnalysisContext context, IScriptModel script, TSqlParserToken token, Aj5056Settings settings)
+    private void AnalyzeKeyword(TSqlParserToken token)
     {
-        var shouldBeWrittenAs = KeywordCasingProvider.GetTokenCasing(token.TokenType, settings.KeywordNamingPolicy);
+        var shouldBeWrittenAs = KeywordCasingProvider.GetTokenCasing(token.TokenType, _settings.KeywordNamingPolicy);
         if (shouldBeWrittenAs is null)
         {
             return;
@@ -45,17 +54,17 @@ public sealed class KeywordCasingAnalyzer : IScriptAnalyzer
             return;
         }
 
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtToken(token) ?? DatabaseNames.Unknown;
-        var fullObjectName = script.ParsedScript
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtToken(token) ?? DatabaseNames.Unknown;
+        var fullObjectName = _script.ParsedScript
             .TryGetSqlFragmentAtPosition(token)
-            ?.TryGetFirstClassObjectName(context, script);
+            ?.TryGetFirstClassObjectName(_context, _script);
 
-        context.IssueReporter.Report(DiagnosticDefinitions.Default,
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default,
             databaseName,
-            script.RelativeScriptFilePath,
+            _script.RelativeScriptFilePath,
             fullObjectName,
             token.GetCodeRegion(),
-            token.Text, shouldBeWrittenAs, settings.KeywordNamingPolicy.ToString());
+            token.Text, shouldBeWrittenAs, _settings.KeywordNamingPolicy.ToString());
     }
 
     private static class DiagnosticDefinitions

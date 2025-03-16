@@ -11,19 +11,19 @@ public sealed class KeywordCasingAnalyzerTests(ITestOutputHelper testOutputHelpe
     : ScriptAnalyzerTestsBase<KeywordCasingAnalyzer>(testOutputHelper)
 {
     [Theory]
-    [InlineData(KeywordNamingPolicy.UpperCase, "PRINT 99999999999999999999999999.99")]
-    [InlineData(KeywordNamingPolicy.UpperCase, "CHECKPOINT;")]
-    [InlineData(KeywordNamingPolicy.LowerCase, "checkpoint;")]
-    [InlineData(KeywordNamingPolicy.CamelCase, "checkPoint;")]
-    [InlineData(KeywordNamingPolicy.PascalCase, "CheckPoint;")]
-    [InlineData(KeywordNamingPolicy.UpperCase, "▶️AJ5056💛script_0.sql💛💛ChEcKpOiNt💛CHECKPOINT💛UpperCase✅ChEcKpOiNt◀️;")]
-    [InlineData(KeywordNamingPolicy.LowerCase, "▶️AJ5056💛script_0.sql💛💛ChEcKpOiNt💛checkpoint💛LowerCase✅ChEcKpOiNt◀️;")]
-    [InlineData(KeywordNamingPolicy.CamelCase, "▶️AJ5056💛script_0.sql💛💛ChEcKpOiNt💛checkPoint💛CamelCase✅ChEcKpOiNt◀️;")]
-    [InlineData(KeywordNamingPolicy.PascalCase, "▶️AJ5056💛script_0.sql💛💛ChEcKpOiNt💛CheckPoint💛PascalCase✅ChEcKpOiNt◀️;")]
-    [InlineData(KeywordNamingPolicy.UpperCase, "SET ▶️AJ5056💛script_0.sql💛💛identity_insert💛IDENTITY_INSERT💛UpperCase✅identity_insert◀️ Table1 ON")]
+    [InlineData(Aj5056SKeywordNamingPolicy.UpperCase, "PRINT 99999999999999999999999999.99")]
+    [InlineData(Aj5056SKeywordNamingPolicy.UpperCase, "CHECKPOINT;")]
+    [InlineData(Aj5056SKeywordNamingPolicy.LowerCase, "checkpoint;")]
+    [InlineData(Aj5056SKeywordNamingPolicy.CamelCase, "checkPoint;")]
+    [InlineData(Aj5056SKeywordNamingPolicy.PascalCase, "CheckPoint;")]
+    [InlineData(Aj5056SKeywordNamingPolicy.UpperCase, "▶️AJ5056💛script_0.sql💛💛ChEcKpOiNt💛CHECKPOINT💛UpperCase✅ChEcKpOiNt◀️;")]
+    [InlineData(Aj5056SKeywordNamingPolicy.LowerCase, "▶️AJ5056💛script_0.sql💛💛ChEcKpOiNt💛checkpoint💛LowerCase✅ChEcKpOiNt◀️;")]
+    [InlineData(Aj5056SKeywordNamingPolicy.CamelCase, "▶️AJ5056💛script_0.sql💛💛ChEcKpOiNt💛checkPoint💛CamelCase✅ChEcKpOiNt◀️;")]
+    [InlineData(Aj5056SKeywordNamingPolicy.PascalCase, "▶️AJ5056💛script_0.sql💛💛ChEcKpOiNt💛CheckPoint💛PascalCase✅ChEcKpOiNt◀️;")]
+    [InlineData(Aj5056SKeywordNamingPolicy.UpperCase, "SET ▶️AJ5056💛script_0.sql💛💛identity_insert💛IDENTITY_INSERT💛UpperCase✅identity_insert◀️ Table1 ON")]
     public void Theory(object policy, string code)
     {
-        var settings = new Aj5056Settings((KeywordNamingPolicy) policy);
+        var settings = new Aj5056Settings((Aj5056SKeywordNamingPolicy) policy);
 
         Verify(settings, code);
     }

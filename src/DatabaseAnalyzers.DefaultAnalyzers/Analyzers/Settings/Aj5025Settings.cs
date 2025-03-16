@@ -4,6 +4,7 @@ using DatabaseAnalyzer.Contracts;
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
+[SettingsSource(SettingsSourceKind.Diagnostics, "AJ5025")]
 internal sealed class Aj5025SettingsRaw : IRawSettings<Aj5025Settings>
 {
     public string? ExistenceCheckPatternForTableCreation { get; set; }
@@ -14,7 +15,7 @@ internal sealed class Aj5025SettingsRaw : IRawSettings<Aj5025Settings>
     );
 }
 
-internal sealed record Aj5025Settings(
+public sealed record Aj5025Settings(
     [property: Description("The statement pattern which must preceed table creation statements. The following insertion strings are supported: `{TableSchemaName}` and `{TableName}`.")]
     string? ExistenceCheckPatternForTableCreation
 ) : ISettings<Aj5025Settings>

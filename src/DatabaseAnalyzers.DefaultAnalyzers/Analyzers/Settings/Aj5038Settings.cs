@@ -4,6 +4,7 @@ using DatabaseAnalyzer.Contracts;
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 // ReSharper disable once UnusedMember.Global -> is used for setting deserialization
+[SettingsSource(SettingsSourceKind.Diagnostics, "AJ5038")]
 internal sealed class Aj5038SettingsRaw : IRawSettings<Aj5038Settings>
 {
     public Aj5038SettingsNameQuotingPolicy NameQuotingPolicyDuringObjectCreation { get; set; } = Aj5038SettingsNameQuotingPolicy.Undefined;
@@ -22,7 +23,7 @@ internal sealed class Aj5038SettingsRaw : IRawSettings<Aj5038Settings>
     );
 }
 
-internal sealed record Aj5038Settings(
+public sealed record Aj5038Settings(
     [property: Description("Defines the name quoting policy for object creations.")]
     Aj5038SettingsNameQuotingPolicy NameQuotingPolicyDuringObjectCreation,
     [property: Description("Defines the name quoting policy for column references.")]

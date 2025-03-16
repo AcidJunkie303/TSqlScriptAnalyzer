@@ -6,17 +6,26 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Naming;
 
 public sealed class VariableReferenceWithDifferentCasingAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public VariableReferenceWithDifferentCasingAnalyzer(IScriptAnalysisContext context)
     {
-        foreach (var batch in script.ParsedScript.Batches)
+        _context = context;
+        _script = context.Script;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        foreach (var batch in _script.ParsedScript.Batches)
         {
-            AnalyzeBatch(context, script, batch);
+            AnalyzeBatch(batch);
         }
     }
 
-    private static void AnalyzeBatch(IAnalysisContext context, IScriptModel script, TSqlBatch batch)
+    private void AnalyzeBatch(TSqlBatch batch)
     {
         var variableDeclarationsByName = batch
             .GetChildren<DeclareVariableStatement>(recursive: true)
@@ -40,9 +49,9 @@ public sealed class VariableReferenceWithDifferentCasingAnalyzer : IScriptAnalyz
                 continue;
             }
 
-            var fullObjectName = variableReference.TryGetFirstClassObjectName(context, script);
-            var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(variableReference) ?? DatabaseNames.Unknown;
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, variableReference.GetCodeRegion(), variableReference.Name, variableDeclaration.VariableName.Value);
+            var fullObjectName = variableReference.TryGetFirstClassObjectName(_context, _script);
+            var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(variableReference) ?? DatabaseNames.Unknown;
+            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, variableReference.GetCodeRegion(), variableReference.Name, variableDeclaration.VariableName.Value);
         }
     }
 

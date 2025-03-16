@@ -7,29 +7,39 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 
 public sealed class MissingEmptyLineAroundGoStatementAnalyzer : IScriptAnalyzer
 {
-    public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    private readonly IAnalysisContext _context;
+    private readonly IScriptModel _script;
+    private readonly Aj5045Settings _settings;
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public MissingEmptyLineAroundGoStatementAnalyzer(IScriptAnalysisContext context, Aj5045Settings settings)
     {
-        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5045Settings>();
-        if (settings is { RequireEmptyLineBeforeGo: false, RequireEmptyLineAfterGo: false })
+        _context = context;
+        _script = context.Script;
+        _settings = settings;
+    }
+
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
+    public void AnalyzeScript()
+    {
+        if (_settings is { RequireEmptyLineBeforeGo: false, RequireEmptyLineAfterGo: false })
         {
             return;
         }
 
-        for (var i = 0; i < script.ParsedScript.ScriptTokenStream.Count; i++)
+        for (var i = 0; i < _script.ParsedScript.ScriptTokenStream.Count; i++)
         {
-            var token = script.ParsedScript.ScriptTokenStream[i];
+            var token = _script.ParsedScript.ScriptTokenStream[i];
             if (token.TokenType != TSqlTokenType.Go)
             {
                 continue;
             }
 
-            AnalyzeToken(context, script, settings, token, i);
+            AnalyzeToken(token, i);
         }
     }
 
-    private static void AnalyzeToken(IAnalysisContext context, IScriptModel script, Aj5045Settings settings, TSqlParserToken goStatementToken, int tokenIndex)
+    private void AnalyzeToken(TSqlParserToken goStatementToken, int tokenIndex)
     {
         var missingBefore = IsMissingEmptyLineBefore();
         var missingAfter = IsMissingEmptyLineAfter();
@@ -39,25 +49,25 @@ public sealed class MissingEmptyLineAroundGoStatementAnalyzer : IScriptAnalyzer
             return;
         }
 
-        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtLocation(goStatementToken.Line, goStatementToken.Column) ?? DatabaseNames.Unknown;
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtLocation(goStatementToken.Line, goStatementToken.Column) ?? DatabaseNames.Unknown;
         var codeRegion = goStatementToken.GetCodeRegion();
-        var fullObjectName = script.ParsedScript
+        var fullObjectName = _script.ParsedScript
             .TryGetSqlFragmentAtPosition(goStatementToken)
-            ?.TryGetFirstClassObjectName(context, script);
+            ?.TryGetFirstClassObjectName(_context, _script);
 
         if (missingBefore)
         {
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, codeRegion, "before");
+            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion, "before");
         }
 
         if (missingAfter)
         {
-            context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, codeRegion, "after");
+            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion, "after");
         }
 
         bool IsMissingEmptyLineAfter()
         {
-            if (tokenIndex == 0 || !settings.RequireEmptyLineAfterGo)
+            if (tokenIndex == 0 || !_settings.RequireEmptyLineAfterGo)
             {
                 return false;
             }
@@ -67,7 +77,7 @@ public sealed class MissingEmptyLineAroundGoStatementAnalyzer : IScriptAnalyzer
 
         bool IsMissingEmptyLineBefore()
         {
-            if (tokenIndex == 0 || !settings.RequireEmptyLineBeforeGo)
+            if (tokenIndex == 0 || !_settings.RequireEmptyLineBeforeGo)
             {
                 return false;
             }
@@ -76,13 +86,13 @@ public sealed class MissingEmptyLineAroundGoStatementAnalyzer : IScriptAnalyzer
         }
 
         int GetNewLineCountAfterToken()
-            => script.ParsedScript.ScriptTokenStream
+            => _script.ParsedScript.ScriptTokenStream
                 .Skip(tokenIndex + 1)
                 .TakeWhile(t => t.TokenType == TSqlTokenType.WhiteSpace)
                 .Sum(a => a.Text.Count(c => c == '\n'));
 
         int GetNewLineCountBeforeToken()
-            => script.ParsedScript.ScriptTokenStream
+            => _script.ParsedScript.ScriptTokenStream
                 .Take(tokenIndex)
                 .Reverse()
                 .TakeWhile(t => t.TokenType == TSqlTokenType.WhiteSpace)
