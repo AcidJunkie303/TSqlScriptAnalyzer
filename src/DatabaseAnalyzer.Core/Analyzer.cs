@@ -9,6 +9,7 @@ using DatabaseAnalyzer.Core.Configuration;
 using DatabaseAnalyzer.Core.Extensions;
 using DatabaseAnalyzer.Core.Models;
 using DatabaseAnalyzer.Core.Services;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace DatabaseAnalyzer.Core;
@@ -22,38 +23,41 @@ internal sealed class Analyzer : IAnalyzer
 #if DEBUG
         MaxDegreeOfParallelism = 1,
 #else
-            MaxDegreeOfParallelism = Environment.ProcessorCount
+        MaxDegreeOfParallelism = Environment.ProcessorCount
 #endif
     };
 
+    private readonly AnalyzerTypes _analyzerTypes;
     private readonly ApplicationSettings _applicationSettings;
     private readonly IDiagnosticDefinitionProvider _diagnosticDefinitionProvider;
-    private readonly IReadOnlyList<IGlobalAnalyzer> _globalAnalyzers;
     private readonly IIssueReporter _issueReporter;
     private readonly ILogger<Analyzer> _logger;
     private readonly IProgressCallback _progressCallback;
-    private readonly IReadOnlyList<ScriptAnalyzerAndContext> _scriptAnalyzersAndContexts;
     private readonly IReadOnlyList<IScriptModel> _scripts;
+    private readonly IReadOnlyDictionary<string, IReadOnlyList<IScriptModel>> _scriptsByDatabaseName;
+    private readonly IServiceProvider _serviceProvider;
 
     public Analyzer
     (
         IProgressCallback progressCallback,
         ApplicationSettings applicationSettings,
-        IEnumerable<ScriptAnalyzerAndContext> scriptAnalyzersAndContexts,
-        IEnumerable<IGlobalAnalyzer> globalAnalyzers,
         ILogger<Analyzer> logger,
         IIssueReporter issueReporter,
         IReadOnlyList<IScriptModel> scripts,
-        IDiagnosticDefinitionProvider diagnosticDefinitionProvider)
+        IDiagnosticDefinitionProvider diagnosticDefinitionProvider,
+        AnalyzerTypes analyzerTypes,
+        IReadOnlyDictionary<string, IReadOnlyList<IScriptModel>> scriptsByDatabaseName,
+        IServiceProvider serviceProvider)
     {
         _progressCallback = progressCallback;
         _applicationSettings = applicationSettings;
-        _scriptAnalyzersAndContexts = scriptAnalyzersAndContexts.ToList();
-        _globalAnalyzers = globalAnalyzers.ToList();
         _logger = logger;
         _issueReporter = issueReporter;
         _scripts = scripts;
         _diagnosticDefinitionProvider = diagnosticDefinitionProvider;
+        _analyzerTypes = analyzerTypes;
+        _scriptsByDatabaseName = scriptsByDatabaseName;
+        _serviceProvider = serviceProvider;
     }
 
     public AnalysisResult Analyze()
@@ -79,9 +83,9 @@ internal sealed class Analyzer : IAnalyzer
         AnalyzeWithGlobalAnalyzers();
         AnalyzeWithScriptAnalyzers();
 #else
-            var task1 = Task.Run(() => AnalyzeWithGlobalAnalyzers(_globalAnalyzers, parallelOptions, analysisContext), parallelOptions.CancellationToken);
-            var task2 = Task.Run(() => AnalyzeWithScriptAnalyzers(_scriptAnalyzers, parallelOptions, analysisContext), parallelOptions.CancellationToken);
-            Task.WaitAll(task1, task2);
+        var task1 = Task.Run(() => AnalyzeWithGlobalAnalyzers(), ParallelOptions.CancellationToken);
+        var task2 = Task.Run(() => AnalyzeWithScriptAnalyzers(), ParallelOptions.CancellationToken);
+        Task.WaitAll(task1, task2);
 #endif
 
         return stopwatch.Elapsed;
@@ -89,17 +93,28 @@ internal sealed class Analyzer : IAnalyzer
 
     private void AnalyzeWithGlobalAnalyzers()
     {
-        Parallel.ForEach(_globalAnalyzers, ParallelOptions, analyzer =>
+        Parallel.ForEach(_analyzerTypes.GlobalAnalyzers, ParallelOptions, analyzerType =>
         {
             try
             {
+                var analysisContext = new AnalysisContext
+                (
+                    _applicationSettings.DefaultSchemaName,
+                    _scripts,
+                    _scriptsByDatabaseName,
+                    _issueReporter,
+                    _logger,
+                    _applicationSettings.Diagnostics.DisabledDiagnostics
+                );
+
+                var analyzer = (IGlobalAnalyzer) ActivatorUtilities.CreateInstance(_serviceProvider, analyzerType, analysisContext);
                 analyzer.Analyze();
             }
 #pragma warning disable CA1031 // Do not catch general exception types -> yes we do
             catch (Exception ex)
 #pragma warning restore CA1031
             {
-                var analyzerName = analyzer.GetType().FullName ?? "<unknown>";
+                var analyzerName = analyzerType.FullName ?? "<unknown>";
 
                 // We need to have a script file path, otherwise the aggregation between issue and script file for Global Analyzers won't work
                 var relativeScriptFilePath = _scripts.Count == 0 ? "Unknown" : _scripts[0].RelativeScriptFilePath;
@@ -111,23 +126,39 @@ internal sealed class Analyzer : IAnalyzer
 
     private void AnalyzeWithScriptAnalyzers()
     {
-        Parallel.ForEach(_scriptAnalyzersAndContexts, ParallelOptions, a =>
+        foreach (var script in _scripts)
         {
-            var (analyzer, context) = a;
+            Parallel.ForEach(_analyzerTypes.ScriptAnalyzers, ParallelOptions, analyzerType =>
+            {
+                try
+                {
+                    var analysisContext = new ScriptAnalysisContext
+                    (
+                        _applicationSettings.DefaultSchemaName,
+                        _scripts,
+                        script,
+                        _scriptsByDatabaseName,
+                        _issueReporter,
+                        _logger,
+                        _applicationSettings.Diagnostics.DisabledDiagnostics
+                    );
 
-            try
-            {
-                analyzer.AnalyzeScript();
-            }
+                    var analyzer = (IScriptAnalyzer) ActivatorUtilities.CreateInstance(_serviceProvider, analyzerType, analysisContext);
+                    analyzer.AnalyzeScript();
+                }
 #pragma warning disable CA1031 // Do not catch general exception types -> yes we do
-            catch (Exception ex)
+                catch (Exception ex)
 #pragma warning restore CA1031
-            {
-                var analyzerName = analyzer.GetType().FullName ?? "<unknown>";
-                _issueReporter.Report(WellKnownDiagnosticDefinitions.UnhandledAnalyzerException, context.Script.DatabaseName, context.Script.RelativeScriptFilePath, null, CodeRegion.Unknown, analyzerName, ex.Message);
-                _logger.LogError(ex, "Script analyzer threw an exception");
-            }
-        });
+                {
+                    var analyzerName = analyzerType.FullName ?? "<unknown>";
+
+                    // We need to have a script file path, otherwise the aggregation between issue and script file for Global Analyzers won't work
+                    var relativeScriptFilePath = _scripts.Count == 0 ? "Unknown" : _scripts[0].RelativeScriptFilePath;
+                    _issueReporter.Report(WellKnownDiagnosticDefinitions.UnhandledAnalyzerException, "<Unknown>", relativeScriptFilePath, null, CodeRegion.Unknown, analyzerName, ex.Message);
+                    _logger.LogError(ex, "Analyzer threw an unhandled exception");
+                }
+            });
+        }
     }
 
     private AnalysisResult CalculateAnalysisResult(IReadOnlyList<IIssue> issues, ref readonly TimeSpan scriptParseDuration, ref readonly TimeSpan analysisDuration)

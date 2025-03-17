@@ -16,7 +16,6 @@ using DatabaseAnalyzer.Services.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Serilog.Events;
 
 namespace DatabaseAnalyzer.Core;
@@ -71,74 +70,52 @@ public sealed class AnalyzerFactory : IDisposable
     }
 
     private IHostBuilder CreateHostBuilder()
-        => Host
-            .CreateDefaultBuilder()
-            .UseDefaultServiceProvider((_, options) =>
-            {
-                options.ValidateScopes = true;
-                options.ValidateOnBuild = true;
-            })
-            .ConfigureServices((_, services) =>
-            {
-                services.AddSingleton(_configuration);
-                services.AddSingleton(_settings);
-                services.AddSingleton(_settings.Diagnostics);
-                services.AddSingleton(_settings.ScriptSource);
-                services.AddSingleton(_progressCallback);
-                services.AddSingleton(_issueReporter);
-                services.AddSingleton(_scripts);
-                services.AddSingleton(_scriptByDatabaseName);
-
-                var loggerFactory = services.AddLogging(_logFilePath, _minimumLogLevel);
-
-                services.AddSingleton<IAnalyzer, Analyzer>();
-                services.AddSingleton<IScriptSourceProvider, ScriptSourceProvider>();
-                services.AddSingleton<IDiagnosticSuppressionExtractor, DiagnosticSuppressionExtractor>();
-                services.AddSingleton<IAstService, AstService>();
-
-                var pluginAssemblies = PluginAssemblyLoader.LoadPlugins();
-                RegisterAnalyzers(services, pluginAssemblies, loggerFactory);
-                RegisterSettings(services, pluginAssemblies);
-                RegisterInternalSettings(services, _configuration);
-                RegisterDiagnosticDefinitions(services, pluginAssemblies);
-            });
-
-    private void RegisterAnalyzers(IServiceCollection services, IReadOnlyList<PluginAssembly> pluginAssemblies, ILoggerFactory loggerFactory)
     {
-        var analysisContextFactory = new AnalysisContextFactory
-        (
-            _settings.DefaultSchemaName,
-            _scripts,
-            _scriptByDatabaseName,
-            _issueReporter,
-            loggerFactory,
-            _settings.Diagnostics.DisabledDiagnostics
-        );
+        return Host
+                .CreateDefaultBuilder()
+                .UseDefaultServiceProvider((_, options) =>
+                {
+                    options.ValidateScopes = true;
+                    options.ValidateOnBuild = true;
+                })
+                .ConfigureServices((_, services) =>
+                {
+                    services.AddSingleton(_configuration);
+                    services.AddSingleton(_settings);
+                    services.AddSingleton(_settings.Diagnostics);
+                    services.AddSingleton(_settings.ScriptSource);
+                    services.AddSingleton(_progressCallback);
+                    services.AddSingleton(_issueReporter);
+                    services.AddSingleton(_scripts);
+                    services.AddSingleton<IReadOnlyDictionary<string, IReadOnlyList<IScriptModel>>>(_scriptByDatabaseName);
+                    services.AddSingleton(_scripts);
+                    services.AddLogging(_logFilePath, _minimumLogLevel);
+                    services.AddSingleton<IAnalyzer, Analyzer>();
+                    services.AddSingleton<IScriptSourceProvider, ScriptSourceProvider>();
+                    services.AddSingleton<IDiagnosticSuppressionExtractor, DiagnosticSuppressionExtractor>();
+                    services.AddSingleton<IAstService, AstService>();
+
+                    var pluginAssemblies = PluginAssemblyLoader.LoadPlugins();
+                    RegisterAnalyzers(services, pluginAssemblies);
+                    RegisterSettings(services, pluginAssemblies);
+                    RegisterInternalSettings(services, _configuration);
+                    RegisterDiagnosticDefinitions(services, pluginAssemblies);
+                });
+    }
+
+    private static void RegisterAnalyzers(IServiceCollection services, IReadOnlyList<PluginAssembly> pluginAssemblies)
+    {
+        var scriptAnalyzerTypes = new List<Type>();
+        var globalAnalyzerTypes = new List<Type>();
 
         foreach (var pluginAssembly in pluginAssemblies)
         {
-            foreach (var analyzerType in pluginAssembly.ScriptAnalyzerTypes)
-            {
-                foreach (var script in _scripts.Where(a => !a.HasErrors))
-                {
-                    services.AddSingleton(typeof(ScriptAnalyzerAndContext), sp =>
-                    {
-                        var context = analysisContextFactory.CreateForScriptAnalyzer(script, analyzerType);
-                        var analyzer = (IScriptAnalyzer) ActivatorUtilities.CreateInstance(sp, analyzerType, context);
-                        return new ScriptAnalyzerAndContext(analyzer, context);
-                    });
-                }
-            }
-
-            foreach (var analyzerType in pluginAssembly.GlobalAnalyzerTypes)
-            {
-                services.AddSingleton(typeof(IGlobalAnalyzer), sp =>
-                {
-                    var context = analysisContextFactory.CreateForGlobalAnalyzer(analyzerType);
-                    return ActivatorUtilities.CreateInstance(sp, analyzerType, context);
-                });
-            }
+            scriptAnalyzerTypes.AddRange(pluginAssembly.ScriptAnalyzerTypes);
+            globalAnalyzerTypes.AddRange(pluginAssembly.GlobalAnalyzerTypes);
         }
+
+        var analyzerTypes = new AnalyzerTypes(scriptAnalyzerTypes, globalAnalyzerTypes);
+        services.AddSingleton(analyzerTypes);
     }
 
     private void RegisterSettings(IServiceCollection services, IReadOnlyList<PluginAssembly> pluginAssemblies)
