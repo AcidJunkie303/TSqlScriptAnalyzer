@@ -1,11 +1,12 @@
+using DatabaseAnalyzer.Common.Contracts;
+using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
-using DatabaseAnalyzer.Contracts.Services;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Common.SqlParsing;
 
-public sealed class TableResolver
+public sealed class TableResolverOld
 {
     private readonly IAstService _astService;
     private readonly string _defaultSchemaName;
@@ -16,13 +17,7 @@ public sealed class TableResolver
     private readonly string _relativeScriptFilePath;
     private readonly TSqlScript _script;
 
-    public TableResolver(IIssueReporter issueReporter, IAstService astService, TSqlScript script, NamedTableReference referenceToResolve, string relativeScriptFilePath, string defaultSchemaName)
-        : this(issueReporter, astService, script, referenceToResolve, relativeScriptFilePath, script.CreateParentFragmentProvider(), defaultSchemaName)
-    {
-        _relativeScriptFilePath = relativeScriptFilePath;
-    }
-
-    public TableResolver(IIssueReporter issueReporter, IAstService astService, TSqlScript script, NamedTableReference referenceToResolve, string relativeScriptFilePath, IParentFragmentProvider parentFragmentProvider, string defaultSchemaName)
+    public TableResolverOld(IIssueReporter issueReporter, IAstService astService, TSqlScript script, NamedTableReference referenceToResolve, string relativeScriptFilePath, IParentFragmentProvider parentFragmentProvider, string defaultSchemaName)
     {
         _issueReporter = issueReporter;
         _astService = astService;
@@ -34,6 +29,12 @@ public sealed class TableResolver
 
         _parentCtesByName = GetParentCtesByName(referenceToResolve, _parentFragmentProvider);
     }
+
+    public static TableResolverOld Create(IScriptAnalysisContext context, IAstService astService, NamedTableReference referenceToResolve)
+        => new(context.IssueReporter, astService, context.Script.ParsedScript, referenceToResolve, context.Script.RelativeScriptFilePath, context.Script.ParentFragmentProvider, context.DefaultSchemaName);
+
+    public static TableResolverOld Create(IGlobalAnalysisContext context, IScriptModel script, IAstService astService, NamedTableReference referenceToResolve)
+        => new(context.IssueReporter, astService, script.ParsedScript, referenceToResolve, script.RelativeScriptFilePath, script.ParentFragmentProvider, context.DefaultSchemaName);
 
     public TableOrViewReference? Resolve()
     {

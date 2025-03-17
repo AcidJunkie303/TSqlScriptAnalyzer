@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
@@ -10,10 +11,10 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime;
 
 public sealed class MissingFunctionAnalyzer : IGlobalAnalyzer
 {
-    private readonly IAnalysisContext _context;
+    private readonly IGlobalAnalysisContext _context;
     private readonly Aj5044Settings _settings;
 
-    public MissingFunctionAnalyzer(IAnalysisContext context, Aj5044Settings settings)
+    public MissingFunctionAnalyzer(IGlobalAnalysisContext context, Aj5044Settings settings)
     {
         _context = context;
         _settings = settings;

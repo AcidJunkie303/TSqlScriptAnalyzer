@@ -1,9 +1,10 @@
+using DatabaseAnalyzer.Common.Contracts;
+using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.SqlParsing;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 using DatabaseAnalyzer.Contracts;
-using DatabaseAnalyzer.Contracts.Services;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
@@ -12,11 +13,11 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
 public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
 {
     private readonly IAstService _astService;
-    private readonly IAnalysisContext _context;
+    private readonly IGlobalAnalysisContext _context;
     private readonly Aj5017Settings _missingForeignKeyIndexSettings;
     private readonly Aj5015Settings _missingIndexSettings;
 
-    public MissingIndexAnalyzer(IAnalysisContext context, Aj5015Settings missingIndexSettings, Aj5017Settings missingForeignKeyIndexSettings, IAstService astService)
+    public MissingIndexAnalyzer(IGlobalAnalysisContext context, Aj5015Settings missingIndexSettings, Aj5017Settings missingForeignKeyIndexSettings, IAstService astService)
     {
         _context = context;
         _missingIndexSettings = missingIndexSettings;
@@ -42,7 +43,7 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
         }
     }
 
-    private void AnalyzeForeignKeys(IAnalysisContext context, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
+    private void AnalyzeForeignKeys(IGlobalAnalysisContext context, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
     {
         var tables = databasesByName
             .SelectMany(db => db.Value.SchemasByName.Values)
@@ -82,7 +83,7 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
         }
     }
 
-    private void AnalyzeModules(IAnalysisContext context, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
+    private void AnalyzeModules(IGlobalAnalysisContext context, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
     {
         foreach (var script in context.ErrorFreeScripts)
         {

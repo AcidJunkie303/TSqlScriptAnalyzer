@@ -1,9 +1,9 @@
+using DatabaseAnalyzer.Common.Contracts.Services;
+using DatabaseAnalyzer.Common.Settings;
 using DatabaseAnalyzer.Contracts;
-using DatabaseAnalyzer.Contracts.Services;
-using DatabaseAnalyzer.Services.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
-namespace DatabaseAnalyzer.Services;
+namespace DatabaseAnalyzer.Common.Services;
 
 public sealed class AstService : IAstService
 {

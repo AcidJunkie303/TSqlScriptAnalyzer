@@ -1,10 +1,10 @@
+using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.Models;
+using DatabaseAnalyzer.Common.Services;
+using DatabaseAnalyzer.Common.Settings;
 using DatabaseAnalyzer.Common.SqlParsing;
 using DatabaseAnalyzer.Contracts;
-using DatabaseAnalyzer.Contracts.Services;
-using DatabaseAnalyzer.Services;
-using DatabaseAnalyzer.Services.Settings;
 using DatabaseAnalyzer.Testing;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.ObjectCreation;
 using Microsoft.SqlServer.TransactSql.ScriptDom;

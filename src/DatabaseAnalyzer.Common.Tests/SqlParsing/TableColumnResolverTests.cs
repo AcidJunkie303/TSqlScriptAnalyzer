@@ -1,8 +1,8 @@
+using DatabaseAnalyzer.Common.Contracts.Services;
+using DatabaseAnalyzer.Common.Services;
+using DatabaseAnalyzer.Common.Settings;
 using DatabaseAnalyzer.Common.SqlParsing;
 using DatabaseAnalyzer.Common.Tests.Fakes;
-using DatabaseAnalyzer.Contracts.Services;
-using DatabaseAnalyzer.Services;
-using DatabaseAnalyzer.Services.Settings;
 using FluentAssertions;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 using Xunit.Abstractions;

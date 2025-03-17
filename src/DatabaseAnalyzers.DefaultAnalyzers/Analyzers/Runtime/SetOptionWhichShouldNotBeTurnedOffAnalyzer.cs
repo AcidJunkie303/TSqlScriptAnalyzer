@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
@@ -13,7 +14,7 @@ public sealed class SetOptionWhichShouldNotBeTurnedOffAnalyzer : IScriptAnalyzer
         KeyValuePair.Create(SetOptions.ArithAbort, "ARITHABORT")
     }.ToImmutableArray();
 
-    private readonly IAnalysisContext _context;
+    private readonly IScriptAnalysisContext _context;
     private readonly IScriptModel _script;
 
     public SetOptionWhichShouldNotBeTurnedOffAnalyzer(IScriptAnalysisContext context)

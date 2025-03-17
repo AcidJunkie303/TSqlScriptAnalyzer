@@ -1,6 +1,6 @@
-using DatabaseAnalyzer.Contracts.Services;
-using DatabaseAnalyzer.Services;
-using DatabaseAnalyzer.Services.Settings;
+using DatabaseAnalyzer.Common.Contracts.Services;
+using DatabaseAnalyzer.Common.Services;
+using DatabaseAnalyzer.Common.Settings;
 using DatabaseAnalyzer.Testing;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;

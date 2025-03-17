@@ -1,5 +1,6 @@
 using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
+using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.Models;
 using DatabaseAnalyzer.Common.Services;
@@ -93,7 +94,7 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
                 IReadOnlyList<IScriptModel> (a) => a.ToList(),
                 StringComparer.OrdinalIgnoreCase);
 
-        var analysisContext = new AnalysisContext(
+        var analysisContext = new GlobalAnalysisContext(
             _defaultSchemaName,
             allScripts,
             allScriptsByDatabaseName,
@@ -112,7 +113,7 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
         );
     }
 
-    private IHost CreateHost(IAnalysisContext analysisContext)
+    private IHost CreateHost(IGlobalAnalysisContext analysisContext)
         => Host
             .CreateDefaultBuilder()
             .ConfigureServices((_, services) =>

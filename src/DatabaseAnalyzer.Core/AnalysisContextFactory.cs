@@ -1,4 +1,5 @@
 using System.Collections.Frozen;
+using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Contracts;
 using Microsoft.Extensions.Logging;
 
@@ -52,11 +53,11 @@ internal sealed class AnalysisContextFactory
         );
     }
 
-    public IAnalysisContext CreateForGlobalAnalyzer(Type analyzerType)
+    public IGlobalAnalysisContext CreateForGlobalAnalyzer(Type analyzerType)
     {
         var logger = _loggerFactory.CreateLogger(analyzerType);
 
-        return new AnalysisContext
+        return new GlobalAnalysisContext
         (
             _defaultSchema,
             _scripts,

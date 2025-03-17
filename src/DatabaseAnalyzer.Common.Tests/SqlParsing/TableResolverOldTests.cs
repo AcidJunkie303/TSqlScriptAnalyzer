@@ -1,19 +1,19 @@
+using DatabaseAnalyzer.Common.Contracts.Services;
+using DatabaseAnalyzer.Common.Services;
+using DatabaseAnalyzer.Common.Settings;
 using DatabaseAnalyzer.Common.SqlParsing;
 using DatabaseAnalyzer.Common.Tests.Fakes;
-using DatabaseAnalyzer.Contracts.Services;
-using DatabaseAnalyzer.Services;
-using DatabaseAnalyzer.Services.Settings;
 using FluentAssertions;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 using Xunit.Abstractions;
 
 namespace DatabaseAnalyzer.Common.Tests.SqlParsing;
 
-public sealed class TableResolverTests : ResolverTestBase
+public sealed class TableResolverOldTests : ResolverTestBase
 {
     private static readonly IAstService AstService = new AstService(AstServiceSettings.Default);
 
-    public TableResolverTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+    public TableResolverOldTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
     {
     }
 
@@ -35,7 +35,7 @@ public sealed class TableResolverTests : ResolverTestBase
         // arrange
         var (script, tableReference) = CreateScript<NamedTableReference>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableResolver(issueReporter, AstService, script.ParsedScript, tableReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new TableResolverOld(issueReporter, AstService, script.ParsedScript, tableReference, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
         var table = sut.Resolve();
@@ -68,7 +68,7 @@ public sealed class TableResolverTests : ResolverTestBase
         // arrange
         var (script, tableReference) = CreateScript<NamedTableReference>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableResolver(issueReporter, AstService, script.ParsedScript, tableReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new TableResolverOld(issueReporter, AstService, script.ParsedScript, tableReference, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
         var table = sut.Resolve();

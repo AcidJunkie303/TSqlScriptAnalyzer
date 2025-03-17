@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
+using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.SqlParsing;
 using DatabaseAnalyzer.Contracts;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
@@ -24,7 +25,6 @@ public static class SqlFragmentExtensions
 
         return CodeRegion.Create(firstTokenRegion.Begin, lastTokenRegion.End);
     }
-
     public static IReadOnlyList<TSqlFragment> GetChildren(this TSqlFragment fragment)
         => SqlFragmentChildrenProvider.GetChildren<TSqlFragment>(fragment, recursive: false, continueBranchRecursionPredicate: null);
 

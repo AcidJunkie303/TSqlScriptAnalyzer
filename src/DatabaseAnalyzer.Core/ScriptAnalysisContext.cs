@@ -1,5 +1,7 @@
 using System.Collections.Frozen;
 using System.Collections.Immutable;
+using DatabaseAnalyzer.Common.Contracts;
+using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Contracts;
 using Microsoft.Extensions.Logging;
 
@@ -16,4 +18,7 @@ internal sealed record ScriptAnalysisContext(
     : IScriptAnalysisContext
 {
     public IReadOnlyList<IScriptModel> ErrorFreeScripts { get; } = Scripts.Where(a => !a.HasErrors).ToImmutableArray();
+
+    // TODO:
+    public IScriptAnalysisContextServices Services => null!;
 }

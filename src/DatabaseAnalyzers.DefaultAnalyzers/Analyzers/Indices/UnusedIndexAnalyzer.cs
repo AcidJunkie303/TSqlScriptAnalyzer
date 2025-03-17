@@ -1,11 +1,12 @@
 using System.Collections.Immutable;
+using DatabaseAnalyzer.Common.Contracts;
+using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.SqlParsing;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 using DatabaseAnalyzer.Common.Various;
 using DatabaseAnalyzer.Contracts;
-using DatabaseAnalyzer.Contracts.Services;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
@@ -14,10 +15,10 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
 public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
 {
     private readonly IAstService _astService;
-    private readonly IAnalysisContext _context;
+    private readonly IGlobalAnalysisContext _context;
     private readonly Aj5051Settings _settings;
 
-    public UnusedIndexAnalyzer(IAnalysisContext context, Aj5051Settings settings, IAstService astService)
+    public UnusedIndexAnalyzer(IGlobalAnalysisContext context, Aj5051Settings settings, IAstService astService)
     {
         _context = context;
         _settings = settings;

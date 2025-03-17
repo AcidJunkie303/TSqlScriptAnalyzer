@@ -97,7 +97,7 @@ internal sealed class Analyzer : IAnalyzer
         {
             try
             {
-                var analysisContext = new AnalysisContext
+                var analysisContext = new GlobalAnalysisContext
                 (
                     _applicationSettings.DefaultSchemaName,
                     _scripts,
