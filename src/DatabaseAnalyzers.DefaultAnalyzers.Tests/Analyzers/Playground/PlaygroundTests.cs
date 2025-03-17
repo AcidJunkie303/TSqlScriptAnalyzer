@@ -2,6 +2,9 @@ using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.Models;
 using DatabaseAnalyzer.Common.SqlParsing;
 using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Contracts.Services;
+using DatabaseAnalyzer.Services;
+using DatabaseAnalyzer.Services.Settings;
 using DatabaseAnalyzer.Testing;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.ObjectCreation;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
@@ -12,6 +15,8 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Playground;
 public sealed class PlaygroundTests(ITestOutputHelper testOutputHelper)
     : ScriptAnalyzerTestsBase<ObjectCreationWithoutOrAlterAnalyzer>(testOutputHelper)
 {
+    private static readonly IAstService AstService = new AstService(AstServiceSettings.Default);
+
     [Fact]
     public void PlaygroundTests1()
     {
@@ -54,7 +59,7 @@ public sealed class PlaygroundTests(ITestOutputHelper testOutputHelper)
 
         public override void Visit(ColumnReferenceExpression node)
         {
-            var resolver = new TableColumnResolver(new FakeIssueReporter(), _script, node, "dummy.sql", "dbo");
+            var resolver = new TableColumnResolver(new FakeIssueReporter(), AstService, _script, node, "dummy.sql", "dbo");
 
             var aaa = resolver.Resolve();
             Console.Write(aaa);

@@ -5,6 +5,7 @@ using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 using DatabaseAnalyzer.Common.Various;
 using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Contracts.Services;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
@@ -12,13 +13,15 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
 
 public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
 {
+    private readonly IAstService _astService;
     private readonly IAnalysisContext _context;
     private readonly Aj5051Settings _settings;
 
-    public UnusedIndexAnalyzer(IAnalysisContext context, Aj5051Settings settings)
+    public UnusedIndexAnalyzer(IAnalysisContext context, Aj5051Settings settings, IAstService astService)
     {
         _context = context;
         _settings = settings;
+        _astService = astService;
     }
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
@@ -87,7 +90,7 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
 
     private IEnumerable<ColumnReference> GetFilteringColumnFromStatement(IScriptModel script, TSqlFragment fragment)
     {
-        var finder = new FilteringColumnFinder(_context.IssueReporter, script.ParsedScript, script.RelativeScriptFilePath, _context.DefaultSchemaName, script.ParentFragmentProvider);
+        var finder = new FilteringColumnFinder(_context.IssueReporter, _astService, script.ParsedScript, script.RelativeScriptFilePath, _context.DefaultSchemaName, script.ParentFragmentProvider);
 
         foreach (var filteringColumn in finder.Find(fragment))
         {

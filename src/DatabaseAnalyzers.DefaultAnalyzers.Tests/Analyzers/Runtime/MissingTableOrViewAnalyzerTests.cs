@@ -1,3 +1,6 @@
+using DatabaseAnalyzer.Contracts.Services;
+using DatabaseAnalyzer.Services;
+using DatabaseAnalyzer.Services.Settings;
 using DatabaseAnalyzer.Testing;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
@@ -41,7 +44,7 @@ public sealed class MissingTableOrViewAnalyzerTests(ITestOutputHelper testOutput
                             SELECT * FROM [dbo].[Table1]
                             """;
 
-        Verify(Settings, SharedCodeForTables, code);
+        VerifyLocal(Settings, SharedCodeForTables, code);
     }
 
     [Fact]
@@ -57,7 +60,7 @@ public sealed class MissingTableOrViewAnalyzerTests(ITestOutputHelper testOutput
                             WHERE       t.Id = 1
                             """;
 
-        Verify(Settings, SharedCodeForTables, code);
+        VerifyLocal(Settings, SharedCodeForTables, code);
     }
 
     [Fact]
@@ -74,7 +77,7 @@ public sealed class MissingTableOrViewAnalyzerTests(ITestOutputHelper testOutput
                             WHERE       t2.Column2 = 1
                             """;
 
-        Verify(Settings, SharedCodeForTables, code);
+        VerifyLocal(Settings, SharedCodeForTables, code);
     }
 
     [Fact]
@@ -91,6 +94,15 @@ public sealed class MissingTableOrViewAnalyzerTests(ITestOutputHelper testOutput
                             WHERE       t3.Column3 = 1
                             """;
 
-        Verify(Settings, SharedCodeForTables, code);
+        VerifyLocal(Settings, SharedCodeForTables, code);
+    }
+
+    private void VerifyLocal(object settings, params string[] scripts)
+    {
+        var tester = GetDefaultTesterBuilder(scripts)
+            .WithSettings(settings)
+            .WithService<IAstService>(new AstService(AstServiceSettings.Default))
+            .Build();
+        Verify(tester);
     }
 }

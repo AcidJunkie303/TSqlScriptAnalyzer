@@ -1,11 +1,13 @@
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Contracts.Services;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Common.SqlParsing;
 
 public sealed class TableResolver
 {
+    private readonly IAstService _astService;
     private readonly string _defaultSchemaName;
     private readonly IIssueReporter _issueReporter;
     private readonly Dictionary<string, CommonTableExpression> _parentCtesByName;
@@ -14,15 +16,16 @@ public sealed class TableResolver
     private readonly string _relativeScriptFilePath;
     private readonly TSqlScript _script;
 
-    public TableResolver(IIssueReporter issueReporter, TSqlScript script, NamedTableReference referenceToResolve, string relativeScriptFilePath, string defaultSchemaName)
-        : this(issueReporter, script, referenceToResolve, relativeScriptFilePath, script.CreateParentFragmentProvider(), defaultSchemaName)
+    public TableResolver(IIssueReporter issueReporter, IAstService astService, TSqlScript script, NamedTableReference referenceToResolve, string relativeScriptFilePath, string defaultSchemaName)
+        : this(issueReporter, astService, script, referenceToResolve, relativeScriptFilePath, script.CreateParentFragmentProvider(), defaultSchemaName)
     {
         _relativeScriptFilePath = relativeScriptFilePath;
     }
 
-    public TableResolver(IIssueReporter issueReporter, TSqlScript script, NamedTableReference referenceToResolve, string relativeScriptFilePath, IParentFragmentProvider parentFragmentProvider, string defaultSchemaName)
+    public TableResolver(IIssueReporter issueReporter, IAstService astService, TSqlScript script, NamedTableReference referenceToResolve, string relativeScriptFilePath, IParentFragmentProvider parentFragmentProvider, string defaultSchemaName)
     {
         _issueReporter = issueReporter;
+        _astService = astService;
         _script = script;
         _relativeScriptFilePath = relativeScriptFilePath;
         _parentFragmentProvider = parentFragmentProvider;
@@ -39,6 +42,11 @@ public sealed class TableResolver
             .FirstOrDefault(a => a is TSqlBatch);
 
         if (batch is null)
+        {
+            return null;
+        }
+
+        if (_astService.IsChildOfFunctionEnumParameter(_referenceToResolve, _parentFragmentProvider))
         {
             return null;
         }

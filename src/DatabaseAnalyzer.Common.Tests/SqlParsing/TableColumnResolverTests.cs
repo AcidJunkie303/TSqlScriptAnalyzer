@@ -1,5 +1,8 @@
 using DatabaseAnalyzer.Common.SqlParsing;
 using DatabaseAnalyzer.Common.Tests.Fakes;
+using DatabaseAnalyzer.Contracts.Services;
+using DatabaseAnalyzer.Services;
+using DatabaseAnalyzer.Services.Settings;
 using FluentAssertions;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 using Xunit.Abstractions;
@@ -10,6 +13,8 @@ namespace DatabaseAnalyzer.Common.Tests.SqlParsing;
 
 public sealed class TableColumnResolverTests : ResolverTestBase
 {
+    private static readonly IAstService AstService = new AstService(AstServiceSettings.Default);
+
     public TableColumnResolverTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
     {
     }
@@ -29,14 +34,14 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
         var column = sut.Resolve();
 
         // assert
         column.Should().NotBeNull();
-        column!.DatabaseName.Should().Be("MyDb");
+        column.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
         column.TableName.Should().Be("Table1");
         column.ColumnName.Should().Be("Value3");
@@ -56,14 +61,14 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
         var column = sut.Resolve();
 
         // assert
         column.Should().NotBeNull();
-        column!.DatabaseName.Should().Be("MyDb");
+        column.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
         column.TableName.Should().Be("Table1");
         column.ColumnName.Should().Be("Value3");
@@ -84,14 +89,14 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
         var column = sut.Resolve();
 
         // assert
         column.Should().NotBeNull();
-        column!.DatabaseName.Should().Be("MyDb");
+        column.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
         column.TableName.Should().Be("Table1");
         column.ColumnName.Should().Be("Value1");
@@ -114,14 +119,14 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
         var column = sut.Resolve();
 
         // assert
         column.Should().NotBeNull();
-        column!.DatabaseName.Should().Be("MyDb");
+        column.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
         column.TableName.Should().Be("Table3");
         column.ColumnName.Should().Be("Value3");
@@ -144,14 +149,14 @@ public sealed class TableColumnResolverTests : ResolverTestBase
 
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
-        var sut = new TableColumnResolver(new FakeIssueReporter(), script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new TableColumnResolver(new FakeIssueReporter(), AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
         var column = sut.Resolve();
 
         // assert
         column.Should().NotBeNull();
-        column!.DatabaseName.Should().Be("MyDb");
+        column.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
         column.TableName.Should().Be("Table2");
         column.ColumnName.Should().Be("id");
@@ -172,14 +177,14 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
         var column = sut.Resolve();
 
         // assert
         column.Should().NotBeNull();
-        column!.DatabaseName.Should().Be("MyDb");
+        column.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
         column.TableName.Should().Be("Table1");
         column.ColumnName.Should().Be("Value1");
@@ -200,14 +205,14 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
         var column = sut.Resolve();
 
         // assert
         column.Should().NotBeNull();
-        column!.DatabaseName.Should().Be("MyDb");
+        column.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
         column.TableName.Should().Be("Table1");
         column.ColumnName.Should().Be("Value1");
@@ -231,14 +236,14 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
         var column = sut.Resolve();
 
         // assert
         column.Should().NotBeNull();
-        column!.DatabaseName.Should().Be("MyDb");
+        column.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
         column.TableName.Should().Be("Table4");
         column.ColumnName.Should().Be("Value4");
@@ -264,14 +269,14 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
         var column = sut.Resolve();
 
         // assert
         column.Should().NotBeNull();
-        column!.DatabaseName.Should().Be("MyDb");
+        column.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
         column.TableName.Should().Be("Table1");
         column.ColumnName.Should().Be("Id");
@@ -295,14 +300,14 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
         var column = sut.Resolve();
 
         // assert
         column.Should().NotBeNull();
-        column!.DatabaseName.Should().Be("MyDb");
+        column.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
         column.TableName.Should().Be("Table3");
         column.ColumnName.Should().Be("ID");
@@ -324,14 +329,14 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
         var column = sut.Resolve();
 
         // assert
         column.Should().NotBeNull();
-        column!.DatabaseName.Should().Be("MyDb");
+        column.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
         column.TableName.Should().Be("Table2");
         column.ColumnName.Should().Be("Id");
@@ -352,14 +357,14 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
         var column = sut.Resolve();
 
         // assert
         column.Should().NotBeNull();
-        column!.DatabaseName.Should().Be("MyDb");
+        column.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
         column.TableName.Should().Be("Table1");
         column.ColumnName.Should().Be("Id");
@@ -381,14 +386,14 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
         var column = sut.Resolve();
 
         // assert
         column.Should().NotBeNull();
-        column!.DatabaseName.Should().Be("MyDb");
+        column.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
         column.TableName.Should().Be("Table1");
         column.ColumnName.Should().Be("Id");
@@ -411,14 +416,14 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
         var column = sut.Resolve();
 
         // assert
         column.Should().NotBeNull();
-        column!.DatabaseName.Should().Be("MyDb");
+        column.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
         column.TableName.Should().Be("Table2");
         column.ColumnName.Should().Be("Value2");
@@ -441,14 +446,14 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
         var column = sut.Resolve();
 
         // assert
         column.Should().NotBeNull();
-        column!.DatabaseName.Should().Be("MyDb");
+        column.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
         column.TableName.Should().Be("Table1");
         column.ColumnName.Should().Be("Id");
@@ -475,14 +480,14 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
         var column = sut.Resolve();
 
         // assert
         column.Should().NotBeNull();
-        column!.DatabaseName.Should().Be("MyDb");
+        column.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
         column.TableName.Should().Be("CTE");
         column.ColumnName.Should().Be("Value1");
@@ -511,14 +516,14 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
         var column = sut.Resolve();
 
         // assert
         column.Should().NotBeNull();
-        column!.DatabaseName.Should().Be("MyDb");
+        column.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
         column.TableName.Should().Be("Table2");
         column.ColumnName.Should().Be("Id");
@@ -546,14 +551,14 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
         var column = sut.Resolve();
 
         // assert
         column.Should().NotBeNull();
-        column!.DatabaseName.Should().Be("MyDb");
+        column.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
         column.TableName.Should().Be("Table1");
         column.ColumnName.Should().Be("IsActive");
@@ -581,14 +586,14 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
         var column = sut.Resolve();
 
         // assert
         column.Should().NotBeNull();
-        column!.DatabaseName.Should().Be("MyDb");
+        column.DatabaseName.Should().Be("MyDb");
         column.SchemaName.Should().Be("dbo");
         column.TableName.Should().Be("Table1");
         column.ColumnName.Should().Be("Status");
