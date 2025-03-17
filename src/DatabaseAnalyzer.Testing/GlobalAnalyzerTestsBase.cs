@@ -59,7 +59,7 @@ public abstract class GlobalAnalyzerTestsBase<TAnalyzer>
         Verify(GetDefaultTesterBuilder(scripts).Build());
     }
 
-    protected void Verify<TSettings>(TSettings settings, params string[] scripts)
+    protected virtual void Verify<TSettings>(TSettings settings, params string[] scripts)
         where TSettings : class, IDiagnosticSettings<TSettings>
     {
         if (scripts.Length == 0)

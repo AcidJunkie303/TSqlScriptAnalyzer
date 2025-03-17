@@ -1,3 +1,6 @@
+using DatabaseAnalyzer.Contracts.Services;
+using DatabaseAnalyzer.Services;
+using DatabaseAnalyzer.Services.Settings;
 using DatabaseAnalyzer.Testing;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
@@ -32,7 +35,7 @@ public sealed class UnusedIndexAnalyzerTests(ITestOutputHelper testOutputHelper)
                             """;
 
         var settings = new Aj5051Settings(IgnoreUnusedPrimaryKeyIndices: false);
-        Verify(settings, code);
+        VerifyLocal(settings, code);
     }
 
     [Fact]
@@ -65,7 +68,7 @@ public sealed class UnusedIndexAnalyzerTests(ITestOutputHelper testOutputHelper)
                             """;
 
         var settings = new Aj5051Settings(IgnoreUnusedPrimaryKeyIndices: false);
-        Verify(settings, code);
+        VerifyLocal(settings, code);
     }
 
     [Fact]
@@ -92,7 +95,7 @@ public sealed class UnusedIndexAnalyzerTests(ITestOutputHelper testOutputHelper)
                             """;
 
         var settings = new Aj5051Settings(IgnoreUnusedPrimaryKeyIndices: true);
-        Verify(settings, code);
+        VerifyLocal(settings, code);
     }
 
     [Fact]
@@ -119,6 +122,15 @@ public sealed class UnusedIndexAnalyzerTests(ITestOutputHelper testOutputHelper)
                             """;
 
         var settings = new Aj5051Settings(IgnoreUnusedPrimaryKeyIndices: false);
-        Verify(settings, code);
+        VerifyLocal(settings, code);
+    }
+
+    private void VerifyLocal(object settings, params string[] scripts)
+    {
+        var tester = GetDefaultTesterBuilder(scripts)
+            .WithSettings(settings)
+            .WithService<IAstService>(new AstService(AstServiceSettings.Default))
+            .Build();
+        Verify(tester);
     }
 }

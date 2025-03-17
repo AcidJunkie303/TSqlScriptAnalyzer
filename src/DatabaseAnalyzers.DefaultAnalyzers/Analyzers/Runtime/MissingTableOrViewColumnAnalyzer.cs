@@ -40,7 +40,7 @@ public sealed class MissingTableOrViewColumnAnalyzer : IGlobalAnalyzer
 
     private void AnalyzeTableReference(IScriptModel script, ColumnReferenceExpression columnReference, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
     {
-        var columnResolver = new TableColumnResolver(_context.IssueReporter, script.ParsedScript, columnReference, script.RelativeScriptFilePath, script.ParentFragmentProvider, _context.DefaultSchemaName);
+        var columnResolver = new TableColumnResolver(_context.IssueReporter, _astService, script.ParsedScript, columnReference, script.RelativeScriptFilePath, script.ParentFragmentProvider, _context.DefaultSchemaName);
         var resolvedColumn = columnResolver.Resolve();
         if (resolvedColumn is null)
         {

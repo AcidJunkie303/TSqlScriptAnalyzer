@@ -1,11 +1,13 @@
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Contracts.Services;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Common.SqlParsing;
 
 public sealed class TableColumnResolver
 {
+    private readonly IAstService _astService;
     private readonly string _defaultSchemaName;
     private readonly IIssueReporter _issueReporter;
     private readonly Dictionary<string, CommonTableExpression> _parentCtesByName;
@@ -14,15 +16,16 @@ public sealed class TableColumnResolver
     private readonly string _relativeScriptFilePath;
     private readonly TSqlScript _script;
 
-    public TableColumnResolver(IIssueReporter issueReporter, TSqlScript script, ColumnReferenceExpression referenceToResolve, string relativeScriptFilePath, string defaultSchemaName)
-        : this(issueReporter, script, referenceToResolve, relativeScriptFilePath, script.CreateParentFragmentProvider(), defaultSchemaName)
+    public TableColumnResolver(IIssueReporter issueReporter, IAstService astService, TSqlScript script, ColumnReferenceExpression referenceToResolve, string relativeScriptFilePath, string defaultSchemaName)
+        : this(issueReporter, astService, script, referenceToResolve, relativeScriptFilePath, script.CreateParentFragmentProvider(), defaultSchemaName)
     {
         _relativeScriptFilePath = relativeScriptFilePath;
     }
 
-    public TableColumnResolver(IIssueReporter issueReporter, TSqlScript script, ColumnReferenceExpression referenceToResolve, string relativeScriptFilePath, IParentFragmentProvider parentFragmentProvider, string defaultSchemaName)
+    public TableColumnResolver(IIssueReporter issueReporter, IAstService astService, TSqlScript script, ColumnReferenceExpression referenceToResolve, string relativeScriptFilePath, IParentFragmentProvider parentFragmentProvider, string defaultSchemaName)
     {
         _issueReporter = issueReporter;
+        _astService = astService;
         _script = script;
         _relativeScriptFilePath = relativeScriptFilePath;
         _parentFragmentProvider = parentFragmentProvider;
@@ -34,6 +37,11 @@ public sealed class TableColumnResolver
     public ColumnReference? Resolve()
     {
         if (_referenceToResolve.MultiPartIdentifier?.Identifiers is null)
+        {
+            return null;
+        }
+
+        if (_astService.IsChildOfFunctionEnumParameter(_referenceToResolve, _parentFragmentProvider))
         {
             return null;
         }
@@ -50,13 +58,13 @@ public sealed class TableColumnResolver
 
             var column = fragment switch
             {
-                QualifiedJoin qualifiedJoin => Check(qualifiedJoin),
+                QualifiedJoin qualifiedJoin             => Check(qualifiedJoin),
                 DeleteSpecification deleteSpecification => Check(deleteSpecification),
-                FromClause fromClause => Check(fromClause),
-                QuerySpecification querySpecification => Check(querySpecification),
+                FromClause fromClause                   => Check(fromClause),
+                QuerySpecification querySpecification   => Check(querySpecification),
                 UpdateSpecification updateSpecification => Check(updateSpecification),
-                MergeSpecification mergeSpecification => Check(mergeSpecification),
-                _ => null
+                MergeSpecification mergeSpecification   => Check(mergeSpecification),
+                _                                       => null
             };
 
             if (column is not null)

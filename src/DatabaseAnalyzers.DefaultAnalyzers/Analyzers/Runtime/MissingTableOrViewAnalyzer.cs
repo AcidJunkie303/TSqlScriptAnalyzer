@@ -3,6 +3,7 @@ using DatabaseAnalyzer.Common.SqlParsing;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Contracts.Services;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
@@ -10,13 +11,15 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime;
 
 public sealed class MissingTableOrViewAnalyzer : IGlobalAnalyzer
 {
+    private readonly IAstService _astService;
     private readonly IAnalysisContext _context;
     private readonly Aj5044Settings _settings;
 
-    public MissingTableOrViewAnalyzer(IAnalysisContext context, Aj5044Settings settings)
+    public MissingTableOrViewAnalyzer(IAnalysisContext context, Aj5044Settings settings, IAstService astService)
     {
         _context = context;
         _settings = settings;
+        _astService = astService;
     }
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [SharedDiagnosticDefinitions.MissingObject];
@@ -45,7 +48,7 @@ public sealed class MissingTableOrViewAnalyzer : IGlobalAnalyzer
 
     private void AnalyzeTableReference(IScriptModel script, NamedTableReference tableReference, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
     {
-        var tableResolver = new TableResolver(_context.IssueReporter, script.ParsedScript, tableReference, script.RelativeScriptFilePath, script.ParentFragmentProvider, _context.DefaultSchemaName);
+        var tableResolver = new TableResolver(_context.IssueReporter, _astService, script.ParsedScript, tableReference, script.RelativeScriptFilePath, script.ParentFragmentProvider, _context.DefaultSchemaName);
         var resolvedTable = tableResolver.Resolve();
         if (resolvedTable is null)
         {

@@ -106,7 +106,7 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
 
     private void AnalyzeStatements(IScriptModel script, TSqlFragment fragment, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
     {
-        var finder = new FilteringColumnFinder(_context.IssueReporter, script.ParsedScript, script.RelativeScriptFilePath, _context.DefaultSchemaName, script.ParentFragmentProvider);
+        var finder = new FilteringColumnFinder(_context.IssueReporter, _astService, script.ParsedScript, script.RelativeScriptFilePath, _context.DefaultSchemaName, script.ParentFragmentProvider);
 
         foreach (var filteringColumn in finder.Find(fragment))
         {
