@@ -29,7 +29,7 @@
 
     <div>
         <h2>Database Analysis Result</h2>
-        <table class="data-table">
+        <table class="data-table right-align-2nd-column">
             <tbody>
             <tr>
                 <td>Generated at (UTC)</td>
@@ -57,7 +57,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Scripts Analyze Duration</td>
+                <td>Scripts Analysis Duration</td>
                 <td>
                     @if (Model.Statistics.AnalysisDuration.TotalSeconds < 0.1)
                     {
@@ -159,7 +159,7 @@
     </div>
 
     <div>
-        <h2>Top 8 Issues</h2>
+        <h2>Top 8 Issues by ID</h2>
         @{
             var topIssues = GetTopIssueTypes(8, Model);
         }
