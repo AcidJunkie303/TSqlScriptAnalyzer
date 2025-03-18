@@ -1,9 +1,18 @@
-using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Common.Contracts;
 
 namespace DatabaseAnalyzer.Common.Models;
 
 public sealed class Issue : IIssue
 {
+    public string DatabaseName { get; }
+
+    public IDiagnosticDefinition DiagnosticDefinition { get; }
+    public string RelativeScriptFilePath { get; }
+    public string? ObjectName { get; }
+    public CodeRegion CodeRegion { get; }
+    public IReadOnlyList<object> MessageInsertions { get; }
+    public string Message { get; }
+
     private Issue(
         IDiagnosticDefinition diagnosticDefinition,
         string databaseName,
@@ -21,15 +30,6 @@ public sealed class Issue : IIssue
         MessageInsertions = messageInsertionStrings;
         Message = message;
     }
-
-    public string DatabaseName { get; }
-
-    public IDiagnosticDefinition DiagnosticDefinition { get; }
-    public string RelativeScriptFilePath { get; }
-    public string? ObjectName { get; }
-    public CodeRegion CodeRegion { get; }
-    public IReadOnlyList<object> MessageInsertions { get; }
-    public string Message { get; }
 
     public static Issue Create(IDiagnosticDefinition diagnosticDefinition, string databaseName, string relativeScriptFilePath, string? fullObjectName, CodeRegion codeRegion, params object[] insertions)
     {

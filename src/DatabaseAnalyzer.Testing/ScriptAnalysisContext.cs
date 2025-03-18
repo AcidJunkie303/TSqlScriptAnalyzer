@@ -3,7 +3,6 @@ using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Contracts.Services;
-using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Core.Services;
 using Microsoft.Extensions.Logging;
 

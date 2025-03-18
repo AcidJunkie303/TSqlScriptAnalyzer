@@ -1,7 +1,8 @@
 using System.Collections.Immutable;
 using System.Reflection;
+using DatabaseAnalyzer.Common.Contracts;
+using DatabaseAnalyzer.Common.Contracts.Settings;
 using DatabaseAnalyzer.Common.Extensions;
-using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Core.Configuration;
 
 namespace DatabaseAnalyzer.Core.Plugins;

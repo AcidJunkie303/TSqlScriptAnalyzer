@@ -1,4 +1,4 @@
-using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Common.Contracts;
 
 namespace DatabaseAnalyzer.Testing.Tests;
 

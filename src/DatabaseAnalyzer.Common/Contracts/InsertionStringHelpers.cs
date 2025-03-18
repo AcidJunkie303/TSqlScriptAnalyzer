@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace DatabaseAnalyzer.Contracts;
+namespace DatabaseAnalyzer.Common.Contracts;
 
 public static partial class InsertionStringHelpers
 {

@@ -1,15 +1,15 @@
-using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Common.Contracts;
 
 namespace DatabaseAnalyzer.Common.SqlParsing.Extraction;
 
 public abstract class Extractor<T>
 {
+    protected string DefaultSchemaName { get; }
+
     protected Extractor(string defaultSchemaName)
     {
         DefaultSchemaName = defaultSchemaName;
     }
-
-    protected string DefaultSchemaName { get; }
 
     public IEnumerable<T> Extract(IEnumerable<IScriptModel> scripts)
         => scripts.SelectMany(Extract);

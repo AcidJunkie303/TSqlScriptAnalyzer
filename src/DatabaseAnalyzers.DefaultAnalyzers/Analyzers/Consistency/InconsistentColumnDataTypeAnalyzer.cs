@@ -1,7 +1,6 @@
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction;
-using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Consistency;
@@ -11,13 +10,13 @@ public sealed class InconsistentColumnDataTypeAnalyzer : IGlobalAnalyzer
     private readonly IGlobalAnalysisContext _context;
     private readonly Aj5054Settings _settings;
 
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
     public InconsistentColumnDataTypeAnalyzer(IGlobalAnalysisContext context, Aj5054Settings settings)
     {
         _context = context;
         _settings = settings;
     }
-
-    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
     public void Analyze()
     {

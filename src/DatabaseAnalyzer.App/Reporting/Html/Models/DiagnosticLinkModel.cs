@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Common.Contracts;
 
 namespace DatabaseAnalyzer.App.Reporting.Html.Models;
 

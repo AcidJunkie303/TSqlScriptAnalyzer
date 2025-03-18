@@ -1,6 +1,5 @@
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
-using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using DatabaseAnalyzers.DefaultAnalyzers.Services;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
@@ -13,14 +12,14 @@ public sealed class KeywordCasingAnalyzer : IScriptAnalyzer
     private readonly IScriptModel _script;
     private readonly Aj5056Settings _settings;
 
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
     public KeywordCasingAnalyzer(IScriptAnalysisContext context, Aj5056Settings settings)
     {
         _context = context;
         _script = context.Script;
         _settings = settings;
     }
-
-    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
     public void AnalyzeScript()
     {

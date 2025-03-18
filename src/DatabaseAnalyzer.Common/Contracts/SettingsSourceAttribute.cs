@@ -1,4 +1,4 @@
-namespace DatabaseAnalyzer.Contracts;
+namespace DatabaseAnalyzer.Common.Contracts;
 
 [AttributeUsage(AttributeTargets.Class)]
 public sealed class SettingsSourceAttribute : Attribute

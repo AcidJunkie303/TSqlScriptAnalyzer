@@ -1,7 +1,6 @@
 using System.Text.RegularExpressions;
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
-using DatabaseAnalyzer.Contracts;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Maintainability;
 
@@ -10,13 +9,13 @@ public sealed partial class DefaultObjectCreationCommentsAnalyzer : IScriptAnaly
     private readonly IScriptAnalysisContext _context;
     private readonly IScriptModel _script;
 
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
     public DefaultObjectCreationCommentsAnalyzer(IScriptAnalysisContext context)
     {
         _context = context;
         _script = context.Script;
     }
-
-    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
     public void AnalyzeScript()
     {

@@ -1,11 +1,21 @@
 using System.Text;
+using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
-using DatabaseAnalyzer.Contracts;
 
 namespace DatabaseAnalyzer.Common;
 
 public sealed class DataType : IDataType
 {
+    public bool IsString { get; }
+    public bool IsAsciiString { get; }
+    public bool IsUnicodeString { get; }
+
+    public string Name { get; }
+    public int? Argument1 { get; }
+    public int? Argument2 { get; }
+    public string FullName { get; }
+    public string QuotedFullName { get; }
+
     public DataType(string name, int? argument1, int? argument2)
     {
         ArgumentNullException.ThrowIfNull(name);
@@ -20,16 +30,6 @@ public sealed class DataType : IDataType
         IsUnicodeString = upperCaseName.EqualsOrdinal("NVARCHAR");
         IsString = IsAsciiString || IsUnicodeString;
     }
-
-    public bool IsString { get; }
-    public bool IsAsciiString { get; }
-    public bool IsUnicodeString { get; }
-
-    public string Name { get; }
-    public int? Argument1 { get; }
-    public int? Argument2 { get; }
-    public string FullName { get; }
-    public string QuotedFullName { get; }
 
     public bool Equals(IDataType? other)
     {

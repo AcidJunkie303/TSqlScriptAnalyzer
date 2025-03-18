@@ -1,5 +1,5 @@
 using System.Collections.Frozen;
-using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Common.Contracts;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Common.SqlParsing;
@@ -20,13 +20,14 @@ public static class ParentFragmentProviderFactory
     {
         private readonly FrozenDictionary<TSqlFragment, TSqlFragment?> _parentByChild;
 
+        public TSqlFragment Root { get; }
+
         public Provider(TSqlFragment root, FrozenDictionary<TSqlFragment, TSqlFragment?> parentByChild)
         {
             _parentByChild = parentByChild;
             Root = root;
         }
 
-        public TSqlFragment Root { get; }
         public TSqlFragment? GetParent(TSqlFragment fragment) => _parentByChild.GetValueOrDefault(fragment);
     }
 

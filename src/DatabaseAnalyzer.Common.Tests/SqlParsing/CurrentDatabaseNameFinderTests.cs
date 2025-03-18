@@ -1,6 +1,6 @@
+using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.SqlParsing;
-using DatabaseAnalyzer.Contracts;
 using FluentAssertions;
 
 namespace DatabaseAnalyzer.Common.Tests.SqlParsing;

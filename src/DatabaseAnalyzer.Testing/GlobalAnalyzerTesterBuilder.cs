@@ -1,12 +1,12 @@
 using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
+using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.Models;
 using DatabaseAnalyzer.Common.Services;
 using DatabaseAnalyzer.Common.Settings;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction;
-using DatabaseAnalyzer.Contracts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

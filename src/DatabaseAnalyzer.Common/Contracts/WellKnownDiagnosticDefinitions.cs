@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace DatabaseAnalyzer.Contracts;
+namespace DatabaseAnalyzer.Common.Contracts;
 
 [SuppressMessage("Minor Code Smell", "S1075:URIs should not be hardcoded")]
 public static class WellKnownDiagnosticDefinitions

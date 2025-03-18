@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using Ardalis.GuardClauses;
-using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Common.Contracts;
+using DatabaseAnalyzer.Common.Contracts.Settings;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 

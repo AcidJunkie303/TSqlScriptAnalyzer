@@ -1,5 +1,5 @@
+using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.SqlParsing;
-using DatabaseAnalyzer.Contracts;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Common.Extensions;
@@ -63,12 +63,12 @@ public static class SqlScriptExtensions
     {
         private readonly IParentFragmentProvider _parentFragmentProvider;
 
+        public List<T> Nodes { get; } = [];
+
         public GetTopLevelDescendantVisitor(IParentFragmentProvider parentFragmentProvider)
         {
             _parentFragmentProvider = parentFragmentProvider;
         }
-
-        public List<T> Nodes { get; } = [];
 
         public override void Visit(TSqlFragment fragment)
         {

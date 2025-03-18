@@ -1,4 +1,4 @@
-using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Common.Contracts;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Common.Extensions;
@@ -42,12 +42,12 @@ public static class VariableReferenceExtensions
     {
         private readonly string _variableName;
 
+        public DeclareVariableElement? VariableDeclaration { get; private set; }
+
         public Visitor(string variableName)
         {
             _variableName = variableName;
         }
-
-        public DeclareVariableElement? VariableDeclaration { get; private set; }
 
         public override void Visit(DeclareVariableElement node)
         {

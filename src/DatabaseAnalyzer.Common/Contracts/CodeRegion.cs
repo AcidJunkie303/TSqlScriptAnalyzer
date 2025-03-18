@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace DatabaseAnalyzer.Contracts;
+namespace DatabaseAnalyzer.Common.Contracts;
 
 [StructLayout(LayoutKind.Auto)]
 public record struct CodeRegion(

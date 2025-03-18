@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
+using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Models;
-using DatabaseAnalyzer.Contracts;
 
 namespace DatabaseAnalyzer.Core.Services;
 

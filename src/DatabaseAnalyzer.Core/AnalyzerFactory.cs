@@ -1,12 +1,12 @@
 using System.Collections.Frozen;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
+using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.Services;
 using DatabaseAnalyzer.Common.Settings;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction;
-using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Core.Configuration;
 using DatabaseAnalyzer.Core.Extensions;
 using DatabaseAnalyzer.Core.Logging;

@@ -1,6 +1,5 @@
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
-using DatabaseAnalyzer.Contracts;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.UnreferencedObject;
@@ -10,13 +9,13 @@ public sealed class UnreferencedVariableAnalyzer : IScriptAnalyzer
     private readonly IScriptAnalysisContext _context;
     private readonly IScriptModel _script;
 
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
     public UnreferencedVariableAnalyzer(IScriptAnalysisContext context)
     {
         _context = context;
         _script = context.Script;
     }
-
-    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
     public void AnalyzeScript()
     {

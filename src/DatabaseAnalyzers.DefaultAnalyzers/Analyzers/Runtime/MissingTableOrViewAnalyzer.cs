@@ -4,7 +4,6 @@ using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.SqlParsing;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
-using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
@@ -16,14 +15,14 @@ public sealed class MissingTableOrViewAnalyzer : IGlobalAnalyzer
     private readonly IGlobalAnalysisContext _context;
     private readonly Aj5044Settings _settings;
 
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [SharedDiagnosticDefinitions.MissingObject];
+
     public MissingTableOrViewAnalyzer(IGlobalAnalysisContext context, Aj5044Settings settings, IAstService astService)
     {
         _context = context;
         _settings = settings;
         _astService = astService;
     }
-
-    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [SharedDiagnosticDefinitions.MissingObject];
 
     public void Analyze()
     {

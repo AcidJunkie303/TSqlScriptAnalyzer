@@ -1,6 +1,6 @@
 using System.ComponentModel;
 using System.Reflection;
-using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Common.Contracts.Settings;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.InfrastructureTasks.Docs;
 

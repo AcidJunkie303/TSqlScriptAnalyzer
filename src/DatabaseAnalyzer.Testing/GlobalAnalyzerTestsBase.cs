@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
-using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Common.Contracts;
+using DatabaseAnalyzer.Common.Contracts.Settings;
 using Xunit.Abstractions;
 
 namespace DatabaseAnalyzer.Testing;

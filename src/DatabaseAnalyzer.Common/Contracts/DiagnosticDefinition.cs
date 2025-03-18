@@ -1,7 +1,16 @@
-namespace DatabaseAnalyzer.Contracts;
+namespace DatabaseAnalyzer.Common.Contracts;
 
 public sealed class DiagnosticDefinition : IDiagnosticDefinition
 {
+    public int RequiredInsertionStringCount { get; }
+
+    public string DiagnosticId { get; }
+    public IssueType IssueType { get; }
+    public string Title { get; }
+    public string MessageTemplate { get; }
+    public IReadOnlyList<string> InsertionStringDescriptions { get; }
+    public Uri HelpUrl { get; }
+
     public DiagnosticDefinition(string diagnosticId, IssueType issueType, string title, string messageTemplate, IReadOnlyList<string> insertionStringDescriptions, Uri helpUrl)
     {
         DiagnosticId = diagnosticId;
@@ -12,15 +21,6 @@ public sealed class DiagnosticDefinition : IDiagnosticDefinition
         HelpUrl = new Uri(helpUrl.ToString().Replace("{DiagnosticId}", diagnosticId, StringComparison.OrdinalIgnoreCase));
         RequiredInsertionStringCount = InsertionStringHelpers.CountInsertionStringPlaceholders(messageTemplate);
     }
-
-    public int RequiredInsertionStringCount { get; }
-
-    public string DiagnosticId { get; }
-    public IssueType IssueType { get; }
-    public string Title { get; }
-    public string MessageTemplate { get; }
-    public IReadOnlyList<string> InsertionStringDescriptions { get; }
-    public Uri HelpUrl { get; }
 
     public bool Equals(IDiagnosticDefinition? other)
     {

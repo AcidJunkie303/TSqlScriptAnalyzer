@@ -4,7 +4,6 @@ using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.SqlParsing;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
-using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
@@ -17,6 +16,8 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
     private readonly Aj5017Settings _missingForeignKeyIndexSettings;
     private readonly Aj5015Settings _missingIndexSettings;
 
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.FilteringColumnNotIndexed, DiagnosticDefinitions.ForeignKeyColumnNotIndexed];
+
     public MissingIndexAnalyzer(IGlobalAnalysisContext context, Aj5015Settings missingIndexSettings, Aj5017Settings missingForeignKeyIndexSettings, IAstService astService)
     {
         _context = context;
@@ -24,8 +25,6 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
         _missingForeignKeyIndexSettings = missingForeignKeyIndexSettings;
         _astService = astService;
     }
-
-    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.FilteringColumnNotIndexed, DiagnosticDefinitions.ForeignKeyColumnNotIndexed];
 
     public void Analyze()
     {

@@ -1,6 +1,6 @@
 using System.Collections.Frozen;
 using System.ComponentModel;
-using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Common.Contracts.Settings;
 
 namespace DatabaseAnalyzer.Common.Settings;
 

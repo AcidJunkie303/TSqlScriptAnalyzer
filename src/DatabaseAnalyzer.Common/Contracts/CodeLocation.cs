@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace DatabaseAnalyzer.Contracts;
+namespace DatabaseAnalyzer.Common.Contracts;
 
 [StructLayout(LayoutKind.Auto)]
 public record struct CodeLocation(int Line, int Column) : IComparable<CodeLocation>, IComparable, IEquatable<CodeLocation>
