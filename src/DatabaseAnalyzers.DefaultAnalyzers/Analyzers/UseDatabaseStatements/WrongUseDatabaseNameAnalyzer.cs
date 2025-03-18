@@ -1,6 +1,5 @@
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
-using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
@@ -12,14 +11,14 @@ public sealed class WrongUseDatabaseNameAnalyzer : IScriptAnalyzer
     private readonly IScriptModel _script;
     private readonly Aj5003Settings _settings;
 
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
     public WrongUseDatabaseNameAnalyzer(IScriptAnalysisContext context, Aj5003Settings settings)
     {
         _context = context;
         _settings = settings;
         _script = context.Script;
     }
-
-    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
     public void AnalyzeScript()
     {

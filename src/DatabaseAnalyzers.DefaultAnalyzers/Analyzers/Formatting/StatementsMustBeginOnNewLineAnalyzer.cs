@@ -1,6 +1,5 @@
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
-using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
@@ -12,14 +11,14 @@ public sealed class StatementsMustBeginOnNewLineAnalyzer : IScriptAnalyzer
     private readonly IScriptModel _script;
     private readonly Aj5023Settings _settings;
 
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
     public StatementsMustBeginOnNewLineAnalyzer(IScriptAnalysisContext context, Aj5023Settings settings)
     {
         _context = context;
         _script = context.Script;
         _settings = settings;
     }
-
-    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
     public void AnalyzeScript()
     {

@@ -1,7 +1,8 @@
 using System.Collections.Immutable;
 using System.ComponentModel;
+using DatabaseAnalyzer.Common.Contracts;
+using DatabaseAnalyzer.Common.Contracts.Settings;
 using DatabaseAnalyzer.Common.Extensions;
-using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzers.DefaultAnalyzers.Model;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;

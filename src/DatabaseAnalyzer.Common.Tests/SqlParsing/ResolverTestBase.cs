@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
+using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.Models;
-using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Testing;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 using Xunit.Abstractions;
@@ -11,12 +11,12 @@ namespace DatabaseAnalyzer.Common.Tests.SqlParsing;
 [SuppressMessage("Maintainability", "CA1515:Consider making public types internal", Justification = "Used as base class for tests -> false positive")]
 public abstract class ResolverTestBase
 {
+    protected ITestOutputHelper TestOutputHelper { get; }
+
     protected ResolverTestBase(ITestOutputHelper testOutputHelper)
     {
         TestOutputHelper = testOutputHelper;
     }
-
-    protected ITestOutputHelper TestOutputHelper { get; }
 
     protected (ScriptModel ScriptModel, T TableReference) CreateScript<T>(string code)
         where T : TSqlFragment

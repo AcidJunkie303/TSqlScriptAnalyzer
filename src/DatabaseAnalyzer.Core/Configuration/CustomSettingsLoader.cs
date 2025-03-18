@@ -1,5 +1,6 @@
 using System.Collections.Frozen;
-using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Common.Contracts;
+using DatabaseAnalyzer.Common.Contracts.Settings;
 using Microsoft.Extensions.Configuration;
 
 namespace DatabaseAnalyzer.Core.Configuration;

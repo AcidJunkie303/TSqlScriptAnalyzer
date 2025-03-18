@@ -1,9 +1,9 @@
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
+using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.Models;
 using DatabaseAnalyzer.Common.Services;
-using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Core.Configuration;
 using DatabaseAnalyzer.Core.Extensions;
 using DatabaseAnalyzer.Core.Models;
@@ -62,10 +62,9 @@ public sealed class ScriptProvider
 #if !DEBUG
             .AsParallel()
             .WithExecutionMode(ParallelExecutionMode.ForceParallelism)
-#else
+#endif
             .Select(ParseScript)
             .ToList();
-#endif
     }
 
     private IScriptModel ParseScript(BasicScriptInformation script)

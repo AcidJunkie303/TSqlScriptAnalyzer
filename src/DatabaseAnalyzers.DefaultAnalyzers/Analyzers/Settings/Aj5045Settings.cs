@@ -1,5 +1,6 @@
 using System.ComponentModel;
-using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Common.Contracts;
+using DatabaseAnalyzer.Common.Contracts.Settings;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 

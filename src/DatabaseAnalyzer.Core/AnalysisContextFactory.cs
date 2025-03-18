@@ -1,7 +1,6 @@
 using System.Collections.Frozen;
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Contracts.Services;
-using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Core.Models;
 using Microsoft.Extensions.Logging;
 

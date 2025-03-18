@@ -1,6 +1,5 @@
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
-using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using DatabaseAnalyzers.DefaultAnalyzers.Model;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
@@ -13,14 +12,14 @@ public sealed class IndexNamingAnalyzer : IScriptAnalyzer
     private readonly IScriptModel _script;
     private readonly Aj5052Settings _settings;
 
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
     public IndexNamingAnalyzer(IScriptAnalysisContext context, Aj5052Settings settings)
     {
         _context = context;
         _script = context.Script;
         _settings = settings;
     }
-
-    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
     public void AnalyzeScript()
     {

@@ -1,5 +1,5 @@
+using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
-using DatabaseAnalyzer.Contracts;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Common.SqlParsing.Extraction;

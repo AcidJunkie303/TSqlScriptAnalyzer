@@ -1,5 +1,5 @@
 using System.Reflection;
-using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Common.Contracts;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.InfrastructureTasks.Docs;
 

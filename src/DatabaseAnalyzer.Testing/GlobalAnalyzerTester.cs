@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using DatabaseAnalyzer.Common.Contracts;
-using DatabaseAnalyzer.Contracts;
 using FluentAssertions;
 
 namespace DatabaseAnalyzer.Testing;

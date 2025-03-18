@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using BetterConsoleTables;
+using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
-using DatabaseAnalyzer.Contracts;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Testing;

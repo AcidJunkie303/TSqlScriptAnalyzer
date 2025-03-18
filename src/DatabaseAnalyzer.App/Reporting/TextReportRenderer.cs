@@ -1,6 +1,6 @@
 using System.Globalization;
 using System.Text;
-using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Core;
 
 namespace DatabaseAnalyzer.App.Reporting;

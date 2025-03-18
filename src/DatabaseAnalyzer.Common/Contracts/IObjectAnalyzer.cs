@@ -1,4 +1,4 @@
-namespace DatabaseAnalyzer.Contracts;
+namespace DatabaseAnalyzer.Common.Contracts;
 
 public interface IObjectAnalyzer
 {

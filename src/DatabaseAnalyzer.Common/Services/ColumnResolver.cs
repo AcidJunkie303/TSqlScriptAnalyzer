@@ -3,7 +3,6 @@ using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.SqlParsing;
-using DatabaseAnalyzer.Contracts;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Common.Services;

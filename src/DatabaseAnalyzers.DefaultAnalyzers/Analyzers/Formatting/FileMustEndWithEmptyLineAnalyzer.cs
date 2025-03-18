@@ -1,6 +1,5 @@
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
-using DatabaseAnalyzer.Contracts;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 
@@ -9,13 +8,13 @@ public sealed class FileMustEndWithEmptyLineAnalyzer : IScriptAnalyzer
     private readonly IScriptAnalysisContext _context;
     private readonly IScriptModel _script;
 
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
     public FileMustEndWithEmptyLineAnalyzer(IScriptAnalysisContext context)
     {
         _context = context;
         _script = context.Script;
     }
-
-    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
     public void AnalyzeScript()
     {

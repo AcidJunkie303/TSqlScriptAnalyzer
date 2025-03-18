@@ -1,7 +1,6 @@
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Services;
-using DatabaseAnalyzer.Contracts;
 
 namespace DatabaseAnalyzer.Core.Services;
 

@@ -1,8 +1,8 @@
+using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.Models;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Common.Tests.Fakes;
-using DatabaseAnalyzer.Contracts;
 using FluentAssertions;
 
 namespace DatabaseAnalyzer.Common.Tests.SqlParsing.Extraction;

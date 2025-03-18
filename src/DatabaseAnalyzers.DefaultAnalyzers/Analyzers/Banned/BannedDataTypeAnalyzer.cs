@@ -1,7 +1,6 @@
 using System.Text.RegularExpressions;
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
-using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
@@ -13,14 +12,14 @@ public sealed class BannedDataTypeAnalyzer : IScriptAnalyzer
     private readonly IScriptModel _script;
     private readonly Aj5006Settings _settings;
 
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
     public BannedDataTypeAnalyzer(IScriptAnalysisContext context, Aj5006Settings settings)
     {
         _context = context;
         _settings = settings;
         _script = context.Script;
     }
-
-    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
     public void AnalyzeScript()
     {

@@ -1,5 +1,5 @@
+using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Models;
-using DatabaseAnalyzer.Contracts;
 
 namespace DatabaseAnalyzer.Common.Tests.Fakes;
 

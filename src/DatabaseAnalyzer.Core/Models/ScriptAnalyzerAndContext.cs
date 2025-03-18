@@ -1,5 +1,4 @@
 using DatabaseAnalyzer.Common.Contracts;
-using DatabaseAnalyzer.Contracts;
 
 namespace DatabaseAnalyzer.Core.Models;
 

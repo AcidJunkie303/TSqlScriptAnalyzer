@@ -6,7 +6,6 @@ using DatabaseAnalyzer.Common.SqlParsing;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 using DatabaseAnalyzer.Common.Various;
-using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
@@ -18,14 +17,14 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
     private readonly IGlobalAnalysisContext _context;
     private readonly Aj5051Settings _settings;
 
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+
     public UnusedIndexAnalyzer(IGlobalAnalysisContext context, Aj5051Settings settings, IAstService astService)
     {
         _context = context;
         _settings = settings;
         _astService = astService;
     }
-
-    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
     public void Analyze()
     {

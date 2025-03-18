@@ -2,7 +2,6 @@ using System.Collections.Frozen;
 using System.Collections.Immutable;
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Contracts.Services;
-using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Core.Services;
 using Microsoft.Extensions.Logging;
 

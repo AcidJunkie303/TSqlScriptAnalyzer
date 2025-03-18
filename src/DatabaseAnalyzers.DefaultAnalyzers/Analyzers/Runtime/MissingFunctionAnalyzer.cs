@@ -3,7 +3,6 @@ using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
-using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
@@ -14,13 +13,13 @@ public sealed class MissingFunctionAnalyzer : IGlobalAnalyzer
     private readonly IGlobalAnalysisContext _context;
     private readonly Aj5044Settings _settings;
 
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [SharedDiagnosticDefinitions.MissingObject];
+
     public MissingFunctionAnalyzer(IGlobalAnalysisContext context, Aj5044Settings settings)
     {
         _context = context;
         _settings = settings;
     }
-
-    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [SharedDiagnosticDefinitions.MissingObject];
 
     public void Analyze()
     {

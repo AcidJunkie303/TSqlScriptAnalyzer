@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace DatabaseAnalyzer.Contracts;
+namespace DatabaseAnalyzer.Common.Contracts.Settings;
 
 public interface IDiagnosticSettings
 {
