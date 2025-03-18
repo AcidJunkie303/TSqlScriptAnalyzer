@@ -3,7 +3,7 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Common.Contracts.Services;
 
-public interface ITableResolver
+public interface IColumnResolver
 {
-    TableOrViewReference? Resolve(NamedTableReference tableReference);
+    ColumnReference? Resolve(ColumnReferenceExpression columnReference);
 }

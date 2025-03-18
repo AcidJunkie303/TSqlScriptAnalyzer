@@ -5,6 +5,7 @@ using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.Services;
 using DatabaseAnalyzer.Common.Settings;
+using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Core.Configuration;
 using DatabaseAnalyzer.Core.Extensions;
@@ -93,6 +94,12 @@ public sealed class AnalyzerFactory : IDisposable
                 services.AddSingleton<IScriptSourceProvider, ScriptSourceProvider>();
                 services.AddSingleton<IDiagnosticSuppressionExtractor, DiagnosticSuppressionExtractor>();
                 services.AddSingleton<IAstService, AstService>();
+                services.AddSingleton<IObjectProvider>(_ =>
+                {
+                    var databasesByName = new DatabaseObjectExtractor(_issueReporter)
+                        .Extract(_scripts, _settings.DefaultSchemaName);
+                    return new ObjectProvider(databasesByName);
+                });
 
                 var pluginAssemblies = PluginAssemblyLoader.LoadPlugins();
                 RegisterAnalyzers(services, pluginAssemblies);

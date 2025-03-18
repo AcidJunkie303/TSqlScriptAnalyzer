@@ -1,7 +1,8 @@
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Contracts.Services;
+using DatabaseAnalyzer.Common.Services;
 
-namespace DatabaseAnalyzer.Common.Services;
+namespace DatabaseAnalyzer.Core.Services;
 
 public sealed class ScriptAnalysisContextServices : IScriptAnalysisContextServices
 {
@@ -15,4 +16,5 @@ public sealed class ScriptAnalysisContextServices : IScriptAnalysisContextServic
     }
 
     public ITableResolver CreateTableResolver() => TableResolver.Create(_context, _astService);
+    public IColumnResolver CreateColumnResolver() => ColumnResolver.Create(_context, _astService);
 }

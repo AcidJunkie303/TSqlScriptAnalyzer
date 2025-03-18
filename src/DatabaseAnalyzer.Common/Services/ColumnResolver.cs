@@ -1,28 +1,24 @@
+using System.Diagnostics.CodeAnalysis;
+using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
+using DatabaseAnalyzer.Common.SqlParsing;
 using DatabaseAnalyzer.Contracts;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
-namespace DatabaseAnalyzer.Common.SqlParsing;
+namespace DatabaseAnalyzer.Common.Services;
 
-public sealed class TableColumnResolver
+[SuppressMessage("Major Code Smell", "S1200:Classes should not be coupled to too many other classes")]
+public sealed class ColumnResolver : IColumnResolver
 {
     private readonly IAstService _astService;
     private readonly string _defaultSchemaName;
     private readonly IIssueReporter _issueReporter;
-    private readonly Dictionary<string, CommonTableExpression> _parentCtesByName;
     private readonly IParentFragmentProvider _parentFragmentProvider;
-    private readonly ColumnReferenceExpression _referenceToResolve;
     private readonly string _relativeScriptFilePath;
     private readonly TSqlScript _script;
 
-    public TableColumnResolver(IIssueReporter issueReporter, IAstService astService, TSqlScript script, ColumnReferenceExpression referenceToResolve, string relativeScriptFilePath, string defaultSchemaName)
-        : this(issueReporter, astService, script, referenceToResolve, relativeScriptFilePath, script.CreateParentFragmentProvider(), defaultSchemaName)
-    {
-        _relativeScriptFilePath = relativeScriptFilePath;
-    }
-
-    public TableColumnResolver(IIssueReporter issueReporter, IAstService astService, TSqlScript script, ColumnReferenceExpression referenceToResolve, string relativeScriptFilePath, IParentFragmentProvider parentFragmentProvider, string defaultSchemaName)
+    public ColumnResolver(IIssueReporter issueReporter, IAstService astService, TSqlScript script, string relativeScriptFilePath, IParentFragmentProvider parentFragmentProvider, string defaultSchemaName)
     {
         _issueReporter = issueReporter;
         _astService = astService;
@@ -30,23 +26,29 @@ public sealed class TableColumnResolver
         _relativeScriptFilePath = relativeScriptFilePath;
         _parentFragmentProvider = parentFragmentProvider;
         _defaultSchemaName = defaultSchemaName;
-        _referenceToResolve = referenceToResolve;
-        _parentCtesByName = GetParentCtesByName(referenceToResolve, _parentFragmentProvider);
     }
 
-    public ColumnReference? Resolve()
+    public static ColumnResolver Create(IScriptAnalysisContext context, IAstService astService)
+        => new(context.IssueReporter, astService, context.Script.ParsedScript, context.Script.RelativeScriptFilePath, context.Script.ParentFragmentProvider, context.DefaultSchemaName);
+
+    public static ColumnResolver Create(IGlobalAnalysisContext context, IScriptModel script, IAstService astService)
+        => new(context.IssueReporter, astService, script.ParsedScript, script.RelativeScriptFilePath, script.ParentFragmentProvider, context.DefaultSchemaName);
+
+    public ColumnReference? Resolve(ColumnReferenceExpression columnReference)
     {
-        if (_referenceToResolve.MultiPartIdentifier?.Identifiers is null)
+        if (columnReference.MultiPartIdentifier?.Identifiers is null)
         {
             return null;
         }
 
-        if (_astService.IsChildOfFunctionEnumParameter(_referenceToResolve, _parentFragmentProvider))
+        if (_astService.IsChildOfFunctionEnumParameter(columnReference, _parentFragmentProvider))
         {
             return null;
         }
 
-        TSqlFragment? fragment = _referenceToResolve;
+        var parentCtesByName = GetParentCtesByName(columnReference, _parentFragmentProvider);
+
+        TSqlFragment? fragment = columnReference;
 
         while (true)
         {
@@ -58,12 +60,12 @@ public sealed class TableColumnResolver
 
             var column = fragment switch
             {
-                QualifiedJoin qualifiedJoin             => Check(qualifiedJoin),
-                DeleteSpecification deleteSpecification => Check(deleteSpecification),
-                FromClause fromClause                   => Check(fromClause),
-                QuerySpecification querySpecification   => Check(querySpecification),
-                UpdateSpecification updateSpecification => Check(updateSpecification),
-                MergeSpecification mergeSpecification   => Check(mergeSpecification),
+                QualifiedJoin qualifiedJoin             => Check(qualifiedJoin, parentCtesByName, columnReference),
+                DeleteSpecification deleteSpecification => Check(deleteSpecification, parentCtesByName, columnReference),
+                FromClause fromClause                   => Check(fromClause, parentCtesByName, columnReference),
+                QuerySpecification querySpecification   => Check(querySpecification, parentCtesByName, columnReference),
+                UpdateSpecification updateSpecification => Check(updateSpecification, parentCtesByName, columnReference),
+                MergeSpecification mergeSpecification   => Check(mergeSpecification, parentCtesByName, columnReference),
                 _                                       => null
             };
 
@@ -79,7 +81,7 @@ public sealed class TableColumnResolver
         }
     }
 
-    private ColumnReference? Check(MergeSpecification mergeSpecification)
+    private ColumnReference? Check(MergeSpecification mergeSpecification, IReadOnlyDictionary<string, CommonTableExpression> parentCtesByName, ColumnReferenceExpression referenceToResolve)
     {
         // The Alias is stored separately from the target table
         // to make our logic work, we do assign the alias to targetNamedTableReference
@@ -93,40 +95,40 @@ public sealed class TableColumnResolver
 
         if (mergeSpecification.TableReference is not null)
         {
-            var column = CheckTableReference(mergeSpecification.TableReference as NamedTableReference);
+            var column = CheckTableReference(mergeSpecification.TableReference as NamedTableReference, parentCtesByName, referenceToResolve);
             if (column is not null)
             {
                 return column;
             }
         }
 
-        return CheckTableReference(mergeSpecification.Target as NamedTableReference);
+        return CheckTableReference(mergeSpecification.Target as NamedTableReference, parentCtesByName, referenceToResolve);
     }
 
-    private ColumnReference? Check(UpdateSpecification updateSpecification)
+    private ColumnReference? Check(UpdateSpecification updateSpecification, IReadOnlyDictionary<string, CommonTableExpression> parentCtesByName, ColumnReferenceExpression referenceToResolve)
     {
         if (updateSpecification.FromClause is not null)
         {
-            var column = Check(updateSpecification.FromClause);
+            var column = Check(updateSpecification.FromClause, parentCtesByName, referenceToResolve);
             if (column is not null)
             {
                 return column;
             }
         }
 
-        return CheckTableReference(updateSpecification.Target as NamedTableReference);
+        return CheckTableReference(updateSpecification.Target as NamedTableReference, parentCtesByName, referenceToResolve);
     }
 
-    private ColumnReference? Check(QuerySpecification querySpecification)
-        => querySpecification.FromClause is null ? null : Check(querySpecification.FromClause);
+    private ColumnReference? Check(QuerySpecification querySpecification, IReadOnlyDictionary<string, CommonTableExpression> parentCtesByName, ColumnReferenceExpression referenceToResolve)
+        => querySpecification.FromClause is null ? null : Check(querySpecification.FromClause, parentCtesByName, referenceToResolve);
 
-    private ColumnReference? Check(FromClause fromClause)
+    private ColumnReference? Check(FromClause fromClause, IReadOnlyDictionary<string, CommonTableExpression> parentCtesByName, ColumnReferenceExpression referenceToResolve)
     {
         foreach (var tableReference in fromClause.TableReferences ?? [])
         {
             if (tableReference is QualifiedJoin qualifiedJoin)
             {
-                var column = Check(qualifiedJoin);
+                var column = Check(qualifiedJoin, parentCtesByName, referenceToResolve);
                 if (column is not null)
                 {
                     return column;
@@ -134,7 +136,7 @@ public sealed class TableColumnResolver
             }
             else
             {
-                var column = CheckTableReference(tableReference as NamedTableReference);
+                var column = CheckTableReference(tableReference as NamedTableReference, parentCtesByName, referenceToResolve);
                 if (column is not null)
                 {
                     return column;
@@ -145,39 +147,39 @@ public sealed class TableColumnResolver
         return null;
     }
 
-    private ColumnReference? Check(DeleteSpecification deleteSpecification)
+    private ColumnReference? Check(DeleteSpecification deleteSpecification, IReadOnlyDictionary<string, CommonTableExpression> parentCtesByName, ColumnReferenceExpression referenceToResolve)
     {
         if (deleteSpecification.FromClause is not null)
         {
-            var column = Check(deleteSpecification.FromClause);
+            var column = Check(deleteSpecification.FromClause, parentCtesByName, referenceToResolve);
             if (column is not null)
             {
                 return column;
             }
         }
 
-        return CheckTableReference(deleteSpecification.Target as NamedTableReference);
+        return CheckTableReference(deleteSpecification.Target as NamedTableReference, parentCtesByName, referenceToResolve);
     }
 
-    private ColumnReference? Check(QualifiedJoin qualifiedJoin)
+    private ColumnReference? Check(QualifiedJoin qualifiedJoin, IReadOnlyDictionary<string, CommonTableExpression> parentCtesByName, ColumnReferenceExpression referenceToResolve)
     {
-        if (_referenceToResolve.GetParent(_parentFragmentProvider) is AssignmentSetClause assignmentExpression)
+        if (referenceToResolve.GetParent(_parentFragmentProvider) is AssignmentSetClause assignmentExpression)
         {
-            if (assignmentExpression.Column == _referenceToResolve)
+            if (assignmentExpression.Column == referenceToResolve)
             {
                 return null; // we don't check the left part of update statement assignments
             }
         }
 
-        if (_referenceToResolve.MultiPartIdentifier.Identifiers.Count < 2)
+        if (referenceToResolve.MultiPartIdentifier.Identifiers.Count < 2)
         {
-            ReportMissingAlias(_referenceToResolve);
+            ReportMissingAlias(referenceToResolve);
             return null;
         }
 
         if (qualifiedJoin.FirstTableReference is QualifiedJoin firstJoin)
         {
-            var column = Check(firstJoin);
+            var column = Check(firstJoin, parentCtesByName, referenceToResolve);
             if (column is not null)
             {
                 return column;
@@ -186,7 +188,7 @@ public sealed class TableColumnResolver
 
         if (qualifiedJoin.SecondTableReference is QualifiedJoin secondJoin)
         {
-            var column = Check(secondJoin);
+            var column = Check(secondJoin, parentCtesByName, referenceToResolve);
             if (column is not null)
             {
                 return column;
@@ -194,22 +196,22 @@ public sealed class TableColumnResolver
         }
 
         // qualifiedJoin.FirstTableReference can also be joins -> check previous joins too
-        return CheckTableReference(qualifiedJoin.FirstTableReference as NamedTableReference)
-               ?? CheckTableReference(qualifiedJoin.SecondTableReference as NamedTableReference);
+        return CheckTableReference(qualifiedJoin.FirstTableReference as NamedTableReference, parentCtesByName, referenceToResolve)
+               ?? CheckTableReference(qualifiedJoin.SecondTableReference as NamedTableReference, parentCtesByName, referenceToResolve);
     }
 
-    private ColumnReference? CheckTableReference(NamedTableReference? namedTableReference)
+    private ColumnReference? CheckTableReference(NamedTableReference? namedTableReference, IReadOnlyDictionary<string, CommonTableExpression> parentCtesByName, ColumnReferenceExpression referenceToResolve)
     {
         if (namedTableReference is null)
         {
             return null;
         }
 
-        var (tableNameOrAlias, columnName) = _referenceToResolve.MultiPartIdentifier.GetColumnReferenceParts();
+        var (tableNameOrAlias, columnName) = referenceToResolve.MultiPartIdentifier.GetColumnReferenceParts();
         var tableReferenceTableName = namedTableReference.SchemaObject.BaseIdentifier.Value;
         var tableReferenceSchemaName = namedTableReference.SchemaObject.SchemaIdentifier?.Value ?? _defaultSchemaName;
         var currentDatabaseName = namedTableReference.SchemaObject.DatabaseIdentifier?.Value
-                                  ?? _script.TryFindCurrentDatabaseNameAtFragment(_referenceToResolve)
+                                  ?? _script.TryFindCurrentDatabaseNameAtFragment(referenceToResolve)
                                   ?? DatabaseNames.Unknown;
 
         // if we don't have an alias, we have aborted earlier on in case there are multiple tables involved
@@ -217,7 +219,7 @@ public sealed class TableColumnResolver
         if (tableNameOrAlias is null)
         {
             var fullObjectName = GetFullObjectName();
-            return new ColumnReference(currentDatabaseName, tableReferenceSchemaName, tableReferenceTableName, columnName, TableSourceType.NotDetermined, _referenceToResolve, fullObjectName);
+            return new ColumnReference(currentDatabaseName, tableReferenceSchemaName, tableReferenceTableName, columnName, TableSourceType.NotDetermined, referenceToResolve, fullObjectName);
         }
 
         var tableReferenceAlias = namedTableReference.Alias?.Value;
@@ -226,16 +228,16 @@ public sealed class TableColumnResolver
             return null;
         }
 
-        var sourceType = _parentCtesByName.ContainsKey(tableNameOrAlias) || _parentCtesByName.ContainsKey(tableReferenceAlias)
+        var sourceType = parentCtesByName.ContainsKey(tableNameOrAlias) || parentCtesByName.ContainsKey(tableReferenceAlias)
             ? TableSourceType.Cte
             : TableSourceType.TableOrView;
 
         return tableReferenceAlias.EqualsOrdinalIgnoreCase(tableNameOrAlias)
-            ? new ColumnReference(currentDatabaseName, tableReferenceSchemaName, tableReferenceTableName, columnName, sourceType, _referenceToResolve, GetFullObjectName())
+            ? new ColumnReference(currentDatabaseName, tableReferenceSchemaName, tableReferenceTableName, columnName, sourceType, referenceToResolve, GetFullObjectName())
             : null;
 
         string GetFullObjectName()
-            => _referenceToResolve.TryGetFirstClassObjectName(_defaultSchemaName, _script, _parentFragmentProvider) ?? _relativeScriptFilePath;
+            => referenceToResolve.TryGetFirstClassObjectName(_defaultSchemaName, _script, _parentFragmentProvider) ?? _relativeScriptFilePath;
     }
 
     private static bool IsStatementTopmostFragment(TSqlFragment fragment)

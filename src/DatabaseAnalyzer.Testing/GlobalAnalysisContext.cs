@@ -3,22 +3,39 @@ using System.Collections.Immutable;
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Core.Services;
 using Microsoft.Extensions.Logging;
 
 namespace DatabaseAnalyzer.Testing;
 
-internal sealed record GlobalAnalysisContext(
-    string DefaultSchemaName,
-    IReadOnlyList<IScriptModel> Scripts,
-    IReadOnlyDictionary<string, IReadOnlyList<IScriptModel>> ScriptsByDatabaseName,
-    IIssueReporter IssueReporter,
-    ILogger Logger,
-    FrozenSet<string> DisabledDiagnosticIds
-)
-    : IGlobalAnalysisContext
+internal sealed class GlobalAnalysisContext : IGlobalAnalysisContext
 {
-    public IReadOnlyList<IScriptModel> ErrorFreeScripts { get; } = Scripts.Where(a => !a.HasErrors).ToImmutableArray();
+    public IReadOnlyList<IScriptModel> ErrorFreeScripts { get; }
+    public IGlobalAnalysisContextServices Services { get; }
+    public string DefaultSchemaName { get; }
+    public IReadOnlyList<IScriptModel> Scripts { get; }
+    public IReadOnlyDictionary<string, IReadOnlyList<IScriptModel>> ScriptsByDatabaseName { get; }
+    public IIssueReporter IssueReporter { get; }
+    public ILogger Logger { get; }
+    public IAstService AstService { get; }
+    public FrozenSet<string> DisabledDiagnosticIds { get; }
 
-    // TODO:
-    public IGlobalAnalysisContextServices Services => null!;
+    public GlobalAnalysisContext(string defaultSchemaName,
+                                 IReadOnlyList<IScriptModel> scripts,
+                                 IReadOnlyDictionary<string, IReadOnlyList<IScriptModel>> scriptsByDatabaseName,
+                                 IIssueReporter issueReporter,
+                                 ILogger logger,
+                                 IAstService astService,
+                                 FrozenSet<string> disabledDiagnosticIds)
+    {
+        ErrorFreeScripts = scripts.Where(a => !a.HasErrors).ToImmutableArray();
+        DefaultSchemaName = defaultSchemaName;
+        Scripts = scripts;
+        ScriptsByDatabaseName = scriptsByDatabaseName;
+        IssueReporter = issueReporter;
+        Logger = logger;
+        AstService = astService;
+        DisabledDiagnosticIds = disabledDiagnosticIds;
+        Services = new GlobalAnalysisContextServices(this, astService);
+    }
 }

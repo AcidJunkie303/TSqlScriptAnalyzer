@@ -1,6 +1,7 @@
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
+using DatabaseAnalyzer.Common.Services;
 using DatabaseAnalyzer.Common.SqlParsing;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
@@ -16,14 +17,14 @@ public sealed class MissingTableOrViewColumnAnalyzer : IGlobalAnalyzer
     private readonly IGlobalAnalysisContext _context;
     private readonly Aj5044Settings _settings;
 
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [SharedDiagnosticDefinitions.MissingObject];
+
     public MissingTableOrViewColumnAnalyzer(IGlobalAnalysisContext context, Aj5044Settings settings, IAstService astService)
     {
         _context = context;
         _settings = settings;
         _astService = astService;
     }
-
-    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [SharedDiagnosticDefinitions.MissingObject];
 
     public void Analyze()
     {
@@ -41,8 +42,8 @@ public sealed class MissingTableOrViewColumnAnalyzer : IGlobalAnalyzer
 
     private void AnalyzeTableReference(IScriptModel script, ColumnReferenceExpression columnReference, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
     {
-        var columnResolver = new TableColumnResolver(_context.IssueReporter, _astService, script.ParsedScript, columnReference, script.RelativeScriptFilePath, script.ParentFragmentProvider, _context.DefaultSchemaName);
-        var resolvedColumn = columnResolver.Resolve();
+        var columnResolver = new ColumnResolver(_context.IssueReporter, _astService, script.ParsedScript, script.RelativeScriptFilePath, script.ParentFragmentProvider, _context.DefaultSchemaName);
+        var resolvedColumn = columnResolver.Resolve(columnReference);
         if (resolvedColumn is null)
         {
             return;

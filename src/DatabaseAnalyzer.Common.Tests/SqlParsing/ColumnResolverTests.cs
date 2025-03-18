@@ -1,7 +1,6 @@
 using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Services;
 using DatabaseAnalyzer.Common.Settings;
-using DatabaseAnalyzer.Common.SqlParsing;
 using DatabaseAnalyzer.Common.Tests.Fakes;
 using FluentAssertions;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
@@ -11,11 +10,11 @@ namespace DatabaseAnalyzer.Common.Tests.SqlParsing;
 
 // TODO: CTEs
 
-public sealed class TableColumnResolverTests : ResolverTestBase
+public sealed class ColumnResolverTests : ResolverTestBase
 {
     private static readonly IAstService AstService = new AstService(AstServiceSettings.Default);
 
-    public TableColumnResolverTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+    public ColumnResolverTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
     {
     }
 
@@ -34,10 +33,10 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new ColumnResolver(issueReporter, AstService, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
-        var column = sut.Resolve();
+        var column = sut.Resolve(columnReference);
 
         // assert
         column.Should().NotBeNull();
@@ -61,10 +60,10 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new ColumnResolver(issueReporter, AstService, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
-        var column = sut.Resolve();
+        var column = sut.Resolve(columnReference);
 
         // assert
         column.Should().NotBeNull();
@@ -89,10 +88,10 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new ColumnResolver(issueReporter, AstService, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
-        var column = sut.Resolve();
+        var column = sut.Resolve(columnReference);
 
         // assert
         column.Should().NotBeNull();
@@ -119,10 +118,10 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new ColumnResolver(issueReporter, AstService, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
-        var column = sut.Resolve();
+        var column = sut.Resolve(columnReference);
 
         // assert
         column.Should().NotBeNull();
@@ -149,10 +148,10 @@ public sealed class TableColumnResolverTests : ResolverTestBase
 
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
-        var sut = new TableColumnResolver(new FakeIssueReporter(), AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new ColumnResolver(new FakeIssueReporter(), AstService, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
-        var column = sut.Resolve();
+        var column = sut.Resolve(columnReference);
 
         // assert
         column.Should().NotBeNull();
@@ -177,10 +176,10 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new ColumnResolver(issueReporter, AstService, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
-        var column = sut.Resolve();
+        var column = sut.Resolve(columnReference);
 
         // assert
         column.Should().NotBeNull();
@@ -205,10 +204,10 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new ColumnResolver(issueReporter, AstService, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
-        var column = sut.Resolve();
+        var column = sut.Resolve(columnReference);
 
         // assert
         column.Should().NotBeNull();
@@ -236,10 +235,10 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new ColumnResolver(issueReporter, AstService, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
-        var column = sut.Resolve();
+        var column = sut.Resolve(columnReference);
 
         // assert
         column.Should().NotBeNull();
@@ -269,10 +268,10 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new ColumnResolver(issueReporter, AstService, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
-        var column = sut.Resolve();
+        var column = sut.Resolve(columnReference);
 
         // assert
         column.Should().NotBeNull();
@@ -300,10 +299,10 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new ColumnResolver(issueReporter, AstService, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
-        var column = sut.Resolve();
+        var column = sut.Resolve(columnReference);
 
         // assert
         column.Should().NotBeNull();
@@ -329,10 +328,10 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new ColumnResolver(issueReporter, AstService, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
-        var column = sut.Resolve();
+        var column = sut.Resolve(columnReference);
 
         // assert
         column.Should().NotBeNull();
@@ -357,10 +356,10 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new ColumnResolver(issueReporter, AstService, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
-        var column = sut.Resolve();
+        var column = sut.Resolve(columnReference);
 
         // assert
         column.Should().NotBeNull();
@@ -386,10 +385,10 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new ColumnResolver(issueReporter, AstService, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
-        var column = sut.Resolve();
+        var column = sut.Resolve(columnReference);
 
         // assert
         column.Should().NotBeNull();
@@ -416,10 +415,10 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new ColumnResolver(issueReporter, AstService, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
-        var column = sut.Resolve();
+        var column = sut.Resolve(columnReference);
 
         // assert
         column.Should().NotBeNull();
@@ -446,10 +445,10 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new ColumnResolver(issueReporter, AstService, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
-        var column = sut.Resolve();
+        var column = sut.Resolve(columnReference);
 
         // assert
         column.Should().NotBeNull();
@@ -480,10 +479,10 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new ColumnResolver(issueReporter, AstService, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
-        var column = sut.Resolve();
+        var column = sut.Resolve(columnReference);
 
         // assert
         column.Should().NotBeNull();
@@ -516,10 +515,10 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new ColumnResolver(issueReporter, AstService, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
-        var column = sut.Resolve();
+        var column = sut.Resolve(columnReference);
 
         // assert
         column.Should().NotBeNull();
@@ -551,10 +550,10 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new ColumnResolver(issueReporter, AstService, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
-        var column = sut.Resolve();
+        var column = sut.Resolve(columnReference);
 
         // assert
         column.Should().NotBeNull();
@@ -586,10 +585,10 @@ public sealed class TableColumnResolverTests : ResolverTestBase
         // arrange
         var (script, columnReference) = CreateScript<ColumnReferenceExpression>(code);
         var issueReporter = new FakeIssueReporter();
-        var sut = new TableColumnResolver(issueReporter, AstService, script.ParsedScript, columnReference, "script.sql", script.ParentFragmentProvider, "dbo");
+        var sut = new ColumnResolver(issueReporter, AstService, script.ParsedScript, "script.sql", script.ParentFragmentProvider, "dbo");
 
         // act
-        var column = sut.Resolve();
+        var column = sut.Resolve(columnReference);
 
         // assert
         column.Should().NotBeNull();

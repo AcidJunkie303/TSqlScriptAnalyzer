@@ -1,5 +1,6 @@
 using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
+using DatabaseAnalyzer.Common.Services;
 using DatabaseAnalyzer.Contracts;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
@@ -34,13 +35,13 @@ public sealed class FilteringColumnFinder
     {
         foreach (var columnReference in searchRoot.GetChildren<ColumnReferenceExpression>(recursive: true))
         {
-            var columnResolver = new TableColumnResolver(_issueReporter, _astService, _script, columnReference, _relativeScriptFilePath, _parentFragmentProvider, _defaultSchemaName);
+            var columnResolver = new ColumnResolver(_issueReporter, _astService, _script, _relativeScriptFilePath, _parentFragmentProvider, _defaultSchemaName);
             if (!IsUsedInComparison(columnReference))
             {
                 continue;
             }
 
-            var column = columnResolver.Resolve();
+            var column = columnResolver.Resolve(columnReference);
             if (column is null)
             {
                 continue;

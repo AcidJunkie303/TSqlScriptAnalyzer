@@ -1,9 +1,11 @@
 using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
-using DatabaseAnalyzer.Common.Contracts;
+using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.Models;
 using DatabaseAnalyzer.Common.Services;
+using DatabaseAnalyzer.Common.Settings;
+using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Contracts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -100,6 +102,7 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
             allScriptsByDatabaseName,
             new IssueReporter(),
             NullLogger.Instance,
+            new AstService(AstServiceSettings.Default),
             FrozenSet<string>.Empty);
 
         var host = CreateHost(analysisContext);
@@ -113,7 +116,7 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
         );
     }
 
-    private IHost CreateHost(IGlobalAnalysisContext analysisContext)
+    private IHost CreateHost(GlobalAnalysisContext analysisContext)
         => Host
             .CreateDefaultBuilder()
             .ConfigureServices((_, services) =>
@@ -126,11 +129,16 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
                 services.AddSingleton<IGlobalAnalyzer>(sp => ActivatorUtilities.CreateInstance<TAnalyzer>(sp, analysisContext));
                 services.AddSingleton(typeof(ILogger<>), typeof(NullLogger<>));
                 services.AddSingleton<ILoggerFactory>(NullLoggerFactory.Instance);
-
+                services.AddSingleton(analysisContext.AstService);
                 foreach (var service in _services)
                 {
                     services.AddSingleton(service.InterfaceType, service.Implementation);
                 }
+
+                var databasesByName = new DatabaseObjectExtractor(new IssueReporter())
+                    .Extract(analysisContext.Scripts, analysisContext.DefaultSchemaName);
+
+                services.AddSingleton<IObjectProvider>(new ObjectProvider(databasesByName));
             })
             .Build();
 

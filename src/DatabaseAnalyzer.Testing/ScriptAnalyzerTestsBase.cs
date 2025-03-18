@@ -15,10 +15,18 @@ public abstract class ScriptAnalyzerTestsBase<TAnalyzer>
         TestOutputHelper = testOutputHelper;
     }
 
-    protected static ScriptAnalyzerTesterBuilder<TAnalyzer> GetDefaultTesterBuilder(string sql)
-        => ScriptAnalyzerTesterBuilder
-            .Create<TAnalyzer>()
-            .WithScriptFile(sql, "MyDb");
+    protected static ScriptAnalyzerTesterBuilder<TAnalyzer> GetDefaultTesterBuilder(params string[] scriptsContents)
+    {
+        var builder = ScriptAnalyzerTesterBuilder
+            .Create<TAnalyzer>();
+
+        foreach (var scriptContent in scriptsContents)
+        {
+            builder.WithScriptFile(scriptContent, "MyDb");
+        }
+
+        return builder;
+    }
 
     protected void Verify(ScriptAnalyzerTester tester)
     {

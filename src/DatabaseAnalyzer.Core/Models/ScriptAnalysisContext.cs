@@ -7,21 +7,19 @@ using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Core.Services;
 using Microsoft.Extensions.Logging;
 
-namespace DatabaseAnalyzer.Testing;
+namespace DatabaseAnalyzer.Core.Models;
 
-[SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters")]
 internal sealed class ScriptAnalysisContext : IScriptAnalysisContext
 {
-    public IReadOnlyList<IScriptModel> ErrorFreeScripts { get; }
+    public IScriptModel Script { get; }
+    public IReadOnlyList<IScriptModel> ErrorFreeScripts { get; set; }
     public IScriptAnalysisContextServices Services { get; }
-    public string DefaultSchemaName { get; init; }
-    public IReadOnlyList<IScriptModel> Scripts { get; init; }
-    public IScriptModel Script { get; init; }
-    public IReadOnlyDictionary<string, IReadOnlyList<IScriptModel>> ScriptsByDatabaseName { get; init; }
-    public IIssueReporter IssueReporter { get; init; }
-    public ILogger Logger { get; init; }
-    public IAstService AstService { get; }
-    public FrozenSet<string> DisabledDiagnosticIds { get; init; }
+    public string DefaultSchemaName { get; }
+    public IReadOnlyList<IScriptModel> Scripts { get; }
+    public IReadOnlyDictionary<string, IReadOnlyList<IScriptModel>> ScriptsByDatabaseName { get; }
+    public IIssueReporter IssueReporter { get; }
+    public ILogger Logger { get; }
+    public FrozenSet<string> DisabledDiagnosticIds { get; }
 
     [SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters")]
     public ScriptAnalysisContext(string defaultSchemaName,
@@ -40,8 +38,8 @@ internal sealed class ScriptAnalysisContext : IScriptAnalysisContext
         ScriptsByDatabaseName = scriptsByDatabaseName;
         IssueReporter = issueReporter;
         Logger = logger;
-        AstService = astService;
         DisabledDiagnosticIds = disabledDiagnosticIds;
+
         Services = new ScriptAnalysisContextServices(this, astService);
     }
 }

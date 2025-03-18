@@ -2,6 +2,7 @@ using System.Collections.Frozen;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzer.Core.Collections;
@@ -29,6 +30,7 @@ internal sealed class Analyzer : IAnalyzer
 
     private readonly AnalyzerTypes _analyzerTypes;
     private readonly ApplicationSettings _applicationSettings;
+    private readonly IAstService _astService;
     private readonly IDiagnosticDefinitionProvider _diagnosticDefinitionProvider;
     private readonly IIssueReporter _issueReporter;
     private readonly ILogger<Analyzer> _logger;
@@ -47,7 +49,8 @@ internal sealed class Analyzer : IAnalyzer
         IDiagnosticDefinitionProvider diagnosticDefinitionProvider,
         AnalyzerTypes analyzerTypes,
         IReadOnlyDictionary<string, IReadOnlyList<IScriptModel>> scriptsByDatabaseName,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        IAstService astService)
     {
         _progressCallback = progressCallback;
         _applicationSettings = applicationSettings;
@@ -58,6 +61,7 @@ internal sealed class Analyzer : IAnalyzer
         _analyzerTypes = analyzerTypes;
         _scriptsByDatabaseName = scriptsByDatabaseName;
         _serviceProvider = serviceProvider;
+        _astService = astService;
     }
 
     public AnalysisResult Analyze()
@@ -104,6 +108,7 @@ internal sealed class Analyzer : IAnalyzer
                     _scriptsByDatabaseName,
                     _issueReporter,
                     _logger,
+                    _astService,
                     _applicationSettings.Diagnostics.DisabledDiagnostics
                 );
 
@@ -140,6 +145,7 @@ internal sealed class Analyzer : IAnalyzer
                         _scriptsByDatabaseName,
                         _issueReporter,
                         _logger,
+                        _astService,
                         _applicationSettings.Diagnostics.DisabledDiagnostics
                     );
 

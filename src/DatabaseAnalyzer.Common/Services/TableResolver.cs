@@ -28,9 +28,9 @@ public sealed class TableResolver : ITableResolver
         _defaultSchemaName = defaultSchemaName;
     }
 
-    public TableOrViewReference? Resolve(NamedTableReference namedTableToResolve)
+    public TableOrViewReference? Resolve(NamedTableReference tableReference)
     {
-        var batch = (TSqlBatch?) namedTableToResolve
+        var batch = (TSqlBatch?) tableReference
             .GetParents(_parentFragmentProvider)
             .FirstOrDefault(a => a is TSqlBatch);
 
@@ -39,14 +39,14 @@ public sealed class TableResolver : ITableResolver
             return null;
         }
 
-        if (_astService.IsChildOfFunctionEnumParameter(namedTableToResolve, _parentFragmentProvider))
+        if (_astService.IsChildOfFunctionEnumParameter(tableReference, _parentFragmentProvider))
         {
             return null;
         }
 
-        var parentCtesByName = GetParentCtesByName(namedTableToResolve, _parentFragmentProvider);
+        var parentCtesByName = GetParentCtesByName(tableReference, _parentFragmentProvider);
 
-        TSqlFragment? fragment = namedTableToResolve;
+        TSqlFragment? fragment = tableReference;
         while (true)
         {
             fragment = fragment.GetParent(_parentFragmentProvider);
@@ -57,13 +57,13 @@ public sealed class TableResolver : ITableResolver
 
             var source = fragment switch
             {
-                JoinTableReference join                 => Check(join, parentCtesByName, namedTableToResolve),
-                DeleteSpecification deleteSpecification => Check(deleteSpecification, parentCtesByName, namedTableToResolve),
-                FromClause fromClause                   => Check(fromClause, parentCtesByName, namedTableToResolve),
-                QuerySpecification querySpecification   => Check(querySpecification, parentCtesByName, namedTableToResolve),
-                UpdateSpecification updateSpecification => Check(updateSpecification, parentCtesByName, namedTableToResolve),
-                MergeSpecification mergeSpecification   => Check(mergeSpecification, parentCtesByName, namedTableToResolve),
-                SelectStatement selectStatement         => Check(selectStatement, namedTableToResolve),
+                JoinTableReference join                 => Check(join, parentCtesByName, tableReference),
+                DeleteSpecification deleteSpecification => Check(deleteSpecification, parentCtesByName, tableReference),
+                FromClause fromClause                   => Check(fromClause, parentCtesByName, tableReference),
+                QuerySpecification querySpecification   => Check(querySpecification, parentCtesByName, tableReference),
+                UpdateSpecification updateSpecification => Check(updateSpecification, parentCtesByName, tableReference),
+                MergeSpecification mergeSpecification   => Check(mergeSpecification, parentCtesByName, tableReference),
+                SelectStatement selectStatement         => Check(selectStatement, tableReference),
                 _                                       => null
             };
 

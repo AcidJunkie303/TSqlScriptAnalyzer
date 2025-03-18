@@ -60,6 +60,9 @@
         <None Update="docs\source\AJ5060.main.md">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
+        <None Update="docs\source\AJ5061.main.md">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
     <ItemGroup>

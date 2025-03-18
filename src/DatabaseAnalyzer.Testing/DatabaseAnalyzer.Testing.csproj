@@ -11,6 +11,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\DatabaseAnalyzer.Common\DatabaseAnalyzer.Common.csproj"/>
+        <ProjectReference Include="..\DatabaseAnalyzer.Core\DatabaseAnalyzer.Core.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
