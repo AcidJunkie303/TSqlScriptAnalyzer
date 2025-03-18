@@ -11,6 +11,9 @@ public sealed class ParameterReferenceWithDifferentCasingAnalyzerTests(ITestOutp
     public void WithProcedure_WhenParameterReferenceHasSameCasing_ThenOk()
     {
         const string code = """
+                            USE MyDB
+                            GO
+
                             CREATE PROCEDURE [dbo].[P1]
                                     @Param1 VARCHAR(MAX)
                             AS

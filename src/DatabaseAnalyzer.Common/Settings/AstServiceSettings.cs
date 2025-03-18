@@ -2,7 +2,7 @@ using System.Collections.Frozen;
 using System.ComponentModel;
 using DatabaseAnalyzer.Contracts;
 
-namespace DatabaseAnalyzer.Services.Settings;
+namespace DatabaseAnalyzer.Common.Settings;
 
 public sealed class AstServiceSettingsRaw : IRawSettings<AstServiceSettings>
 {

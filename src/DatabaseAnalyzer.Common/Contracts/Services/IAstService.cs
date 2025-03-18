@@ -1,6 +1,7 @@
+using DatabaseAnalyzer.Contracts;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
-namespace DatabaseAnalyzer.Contracts.Services;
+namespace DatabaseAnalyzer.Common.Contracts.Services;
 
 public interface IAstService : IService
 {

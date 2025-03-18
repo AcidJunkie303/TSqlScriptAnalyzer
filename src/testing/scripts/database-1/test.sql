@@ -65,3 +65,7 @@ BEGIN
     
 END
 
+
+GO
+SELECT CoLuMn5 FROM TaBlE1
+GO

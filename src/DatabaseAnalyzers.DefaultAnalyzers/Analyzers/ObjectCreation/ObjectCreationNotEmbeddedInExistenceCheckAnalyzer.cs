@@ -1,3 +1,4 @@
+using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
@@ -8,7 +9,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.ObjectCreation;
 public sealed class ObjectCreationNotEmbeddedInExistenceCheckAnalyzer : IScriptAnalyzer
 {
     // IF NOT EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[dbo].[V1]'))
-    private readonly IAnalysisContext _context;
+    private readonly IScriptAnalysisContext _context;
     private readonly IScriptModel _script;
     private readonly Aj5025Settings _settings;
 

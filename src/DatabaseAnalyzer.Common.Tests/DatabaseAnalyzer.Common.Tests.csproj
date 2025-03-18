@@ -10,7 +10,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\DatabaseAnalyzer.Services\DatabaseAnalyzer.Services.csproj"/>
         <ProjectReference Include="..\DatabaseAnalyzer.Testing\DatabaseAnalyzer.Testing.csproj"/>
     </ItemGroup>
 

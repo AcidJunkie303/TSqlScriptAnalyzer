@@ -1,3 +1,4 @@
+using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
@@ -6,7 +7,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Maintainability;
 
 public sealed class UnusedLabelAnalyzer : IScriptAnalyzer
 {
-    private readonly IAnalysisContext _context;
+    private readonly IScriptAnalysisContext _context;
     private readonly IScriptModel _script;
 
     public UnusedLabelAnalyzer(IScriptAnalysisContext context)

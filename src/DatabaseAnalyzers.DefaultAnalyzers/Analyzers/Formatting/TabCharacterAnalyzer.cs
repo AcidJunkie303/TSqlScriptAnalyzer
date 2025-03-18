@@ -1,3 +1,4 @@
+using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
 
@@ -5,7 +6,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 
 public sealed class TabCharacterAnalyzer : IScriptAnalyzer
 {
-    private readonly IAnalysisContext _context;
+    private readonly IScriptAnalysisContext _context;
     private readonly IScriptModel _script;
 
     public TabCharacterAnalyzer(IScriptAnalysisContext context)

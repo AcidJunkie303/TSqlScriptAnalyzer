@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Contracts;
 
@@ -6,7 +7,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Maintainability;
 
 public sealed partial class DefaultObjectCreationCommentsAnalyzer : IScriptAnalyzer
 {
-    private readonly IAnalysisContext _context;
+    private readonly IScriptAnalysisContext _context;
     private readonly IScriptModel _script;
 
     public DefaultObjectCreationCommentsAnalyzer(IScriptAnalysisContext context)

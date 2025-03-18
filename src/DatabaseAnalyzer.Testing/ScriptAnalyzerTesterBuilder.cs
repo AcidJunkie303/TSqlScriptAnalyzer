@@ -1,8 +1,11 @@
 using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
+using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.Models;
 using DatabaseAnalyzer.Common.Services;
+using DatabaseAnalyzer.Common.Settings;
+using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Contracts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -25,6 +28,7 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
     where TAnalyzer : class, IScriptAnalyzer
 {
     private readonly Dictionary<string, (string Contents, string DatabaseName)> _scriptContentsByFilePath = new(StringComparer.OrdinalIgnoreCase);
+    private readonly List<(Type InterfaceType, object Implementation)> _services = [];
     private readonly List<object> _settings = [];
     private string _defaultSchemaName = "dbo";
     private ITestOutputHelper? _testOutputHelper;
@@ -51,6 +55,12 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
     public ScriptAnalyzerTesterBuilder<TAnalyzer> WithDefaultSchema(string schemaName)
     {
         _defaultSchemaName = schemaName;
+        return this;
+    }
+
+    public ScriptAnalyzerTesterBuilder<TAnalyzer> WithService<TService>(object implementation)
+    {
+        _services.Add((typeof(TService), implementation));
         return this;
     }
 
@@ -95,6 +105,7 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
             allScriptsByDatabaseName,
             new IssueReporter(),
             NullLogger.Instance,
+            new AstService(AstServiceSettings.Default),
             FrozenSet<string>.Empty);
 
         var host = CreateHost(analysisContext);
@@ -108,7 +119,7 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
         );
     }
 
-    private IHost CreateHost(IScriptAnalysisContext analysisContext)
+    private IHost CreateHost(ScriptAnalysisContext analysisContext)
         => Host
             .CreateDefaultBuilder()
             .ConfigureServices((_, services) =>
@@ -121,6 +132,16 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
                 services.AddSingleton<IScriptAnalyzer>(sp => ActivatorUtilities.CreateInstance<TAnalyzer>(sp, analysisContext));
                 services.AddSingleton(typeof(ILogger<>), typeof(NullLogger<>));
                 services.AddSingleton<ILoggerFactory>(NullLoggerFactory.Instance);
+
+                foreach (var service in _services)
+                {
+                    services.AddSingleton(service.InterfaceType, service.Implementation);
+                }
+
+                var databasesByName = new DatabaseObjectExtractor(new IssueReporter())
+                    .Extract(analysisContext.Scripts, analysisContext.DefaultSchemaName);
+
+                services.AddSingleton<IObjectProvider>(new ObjectProvider(databasesByName));
             })
             .Build();
 

@@ -1,3 +1,4 @@
+using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
@@ -8,10 +9,10 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
 
 public sealed class MissingPrimaryKeyAnalyzer : IGlobalAnalyzer
 {
-    private readonly IAnalysisContext _context;
+    private readonly IGlobalAnalysisContext _context;
     private readonly Aj5026Settings _settings;
 
-    public MissingPrimaryKeyAnalyzer(IAnalysisContext context, Aj5026Settings settings)
+    public MissingPrimaryKeyAnalyzer(IGlobalAnalysisContext context, Aj5026Settings settings)
     {
         _context = context;
         _settings = settings;

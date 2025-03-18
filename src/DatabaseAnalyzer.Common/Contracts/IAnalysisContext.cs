@@ -1,7 +1,8 @@
 using System.Collections.Frozen;
+using DatabaseAnalyzer.Contracts;
 using Microsoft.Extensions.Logging;
 
-namespace DatabaseAnalyzer.Contracts;
+namespace DatabaseAnalyzer.Common.Contracts;
 
 public interface IAnalysisContext
 {

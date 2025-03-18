@@ -1,3 +1,4 @@
+using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
@@ -9,10 +10,10 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime;
 
 public sealed class MissingProcedureAnalyzer : IGlobalAnalyzer
 {
-    private readonly IAnalysisContext _context;
+    private readonly IGlobalAnalysisContext _context;
     private readonly Aj5044Settings _settings;
 
-    public MissingProcedureAnalyzer(IAnalysisContext context, Aj5044Settings settings)
+    public MissingProcedureAnalyzer(IGlobalAnalysisContext context, Aj5044Settings settings)
     {
         _context = context;
         _settings = settings;

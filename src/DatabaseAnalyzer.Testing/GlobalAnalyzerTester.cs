@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Contracts;
 using FluentAssertions;
 
@@ -7,14 +8,14 @@ namespace DatabaseAnalyzer.Testing;
 [SuppressMessage("maintainability", "CA1515:Consider making public types internal", Justification = "False positive. It is used in the DatabaseAnalyzers.DefaultAnalyzers.Tests project")]
 public sealed class GlobalAnalyzerTester
 {
-    private readonly IAnalysisContext _analysisContext;
+    private readonly IGlobalAnalysisContext _analysisContext;
     private readonly IGlobalAnalyzer _analyzer;
 
     public IReadOnlyList<IScriptModel> Scripts { get; }
     public IReadOnlyList<IIssue> ExpectedIssues { get; }
 
     public GlobalAnalyzerTester(
-        IAnalysisContext analysisContext,
+        IGlobalAnalysisContext analysisContext,
         IGlobalAnalyzer analyzer,
         IReadOnlyList<IScriptModel> scripts,
         IReadOnlyList<IIssue> expectedIssues)

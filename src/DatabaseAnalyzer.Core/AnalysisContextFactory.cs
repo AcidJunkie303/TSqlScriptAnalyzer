@@ -1,11 +1,15 @@
 using System.Collections.Frozen;
+using DatabaseAnalyzer.Common.Contracts;
+using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Contracts;
+using DatabaseAnalyzer.Core.Models;
 using Microsoft.Extensions.Logging;
 
 namespace DatabaseAnalyzer.Core;
 
 internal sealed class AnalysisContextFactory
 {
+    private readonly IAstService _astService;
     private readonly string _defaultSchema;
     private readonly FrozenSet<string> _disabledDiagnosticIds;
     private readonly IIssueReporter _issueReporter;
@@ -20,6 +24,7 @@ internal sealed class AnalysisContextFactory
         FrozenDictionary<string, IReadOnlyList<IScriptModel>> scriptByDatabaseName,
         IIssueReporter issueReporter,
         ILoggerFactory loggerFactory,
+        IAstService astService,
         FrozenSet<string> disabledDiagnosticIds)
     {
         _defaultSchema = defaultSchema;
@@ -27,6 +32,7 @@ internal sealed class AnalysisContextFactory
         _scriptByDatabaseName = scriptByDatabaseName;
         _issueReporter = issueReporter;
         _loggerFactory = loggerFactory;
+        _astService = astService;
         _disabledDiagnosticIds = disabledDiagnosticIds;
     }
 
@@ -48,21 +54,23 @@ internal sealed class AnalysisContextFactory
             _scriptByDatabaseName,
             _issueReporter,
             logger,
+            _astService,
             _disabledDiagnosticIds
         );
     }
 
-    public IAnalysisContext CreateForGlobalAnalyzer(Type analyzerType)
+    public IGlobalAnalysisContext CreateForGlobalAnalyzer(Type analyzerType)
     {
         var logger = _loggerFactory.CreateLogger(analyzerType);
 
-        return new AnalysisContext
+        return new GlobalAnalysisContext
         (
             _defaultSchema,
             _scripts,
             _scriptByDatabaseName,
             _issueReporter,
             logger,
+            _astService,
             _disabledDiagnosticIds
         );
     }

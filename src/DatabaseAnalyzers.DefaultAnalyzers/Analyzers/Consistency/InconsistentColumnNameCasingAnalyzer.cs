@@ -1,3 +1,4 @@
+using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Contracts;
@@ -7,10 +8,10 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Consistency;
 
 public sealed class InconsistentColumnNameCasingAnalyzer : IGlobalAnalyzer
 {
-    private readonly IAnalysisContext _context;
+    private readonly IGlobalAnalysisContext _context;
     private readonly Aj5055Settings _settings;
 
-    public InconsistentColumnNameCasingAnalyzer(IAnalysisContext context, Aj5055Settings settings)
+    public InconsistentColumnNameCasingAnalyzer(IGlobalAnalysisContext context, Aj5055Settings settings)
     {
         _context = context;
         _settings = settings;

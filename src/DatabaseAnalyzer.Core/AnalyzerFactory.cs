@@ -1,18 +1,18 @@
 using System.Collections.Frozen;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
+using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.Services;
+using DatabaseAnalyzer.Common.Settings;
+using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Contracts;
-using DatabaseAnalyzer.Contracts.Services;
 using DatabaseAnalyzer.Core.Configuration;
 using DatabaseAnalyzer.Core.Extensions;
 using DatabaseAnalyzer.Core.Logging;
 using DatabaseAnalyzer.Core.Models;
 using DatabaseAnalyzer.Core.Plugins;
 using DatabaseAnalyzer.Core.Services;
-using DatabaseAnalyzer.Services;
-using DatabaseAnalyzer.Services.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -72,35 +72,41 @@ public sealed class AnalyzerFactory : IDisposable
     private IHostBuilder CreateHostBuilder()
     {
         return Host
-                .CreateDefaultBuilder()
-                .UseDefaultServiceProvider((_, options) =>
+            .CreateDefaultBuilder()
+            .UseDefaultServiceProvider((_, options) =>
+            {
+                options.ValidateScopes = true;
+                options.ValidateOnBuild = true;
+            })
+            .ConfigureServices((_, services) =>
+            {
+                services.AddSingleton(_configuration);
+                services.AddSingleton(_settings);
+                services.AddSingleton(_settings.Diagnostics);
+                services.AddSingleton(_settings.ScriptSource);
+                services.AddSingleton(_progressCallback);
+                services.AddSingleton(_issueReporter);
+                services.AddSingleton(_scripts);
+                services.AddSingleton<IReadOnlyDictionary<string, IReadOnlyList<IScriptModel>>>(_scriptByDatabaseName);
+                services.AddSingleton(_scripts);
+                services.AddLogging(_logFilePath, _minimumLogLevel);
+                services.AddSingleton<IAnalyzer, Analyzer>();
+                services.AddSingleton<IScriptSourceProvider, ScriptSourceProvider>();
+                services.AddSingleton<IDiagnosticSuppressionExtractor, DiagnosticSuppressionExtractor>();
+                services.AddSingleton<IAstService, AstService>();
+                services.AddSingleton<IObjectProvider>(_ =>
                 {
-                    options.ValidateScopes = true;
-                    options.ValidateOnBuild = true;
-                })
-                .ConfigureServices((_, services) =>
-                {
-                    services.AddSingleton(_configuration);
-                    services.AddSingleton(_settings);
-                    services.AddSingleton(_settings.Diagnostics);
-                    services.AddSingleton(_settings.ScriptSource);
-                    services.AddSingleton(_progressCallback);
-                    services.AddSingleton(_issueReporter);
-                    services.AddSingleton(_scripts);
-                    services.AddSingleton<IReadOnlyDictionary<string, IReadOnlyList<IScriptModel>>>(_scriptByDatabaseName);
-                    services.AddSingleton(_scripts);
-                    services.AddLogging(_logFilePath, _minimumLogLevel);
-                    services.AddSingleton<IAnalyzer, Analyzer>();
-                    services.AddSingleton<IScriptSourceProvider, ScriptSourceProvider>();
-                    services.AddSingleton<IDiagnosticSuppressionExtractor, DiagnosticSuppressionExtractor>();
-                    services.AddSingleton<IAstService, AstService>();
-
-                    var pluginAssemblies = PluginAssemblyLoader.LoadPlugins();
-                    RegisterAnalyzers(services, pluginAssemblies);
-                    RegisterSettings(services, pluginAssemblies);
-                    RegisterInternalSettings(services, _configuration);
-                    RegisterDiagnosticDefinitions(services, pluginAssemblies);
+                    var databasesByName = new DatabaseObjectExtractor(_issueReporter)
+                        .Extract(_scripts, _settings.DefaultSchemaName);
+                    return new ObjectProvider(databasesByName);
                 });
+
+                var pluginAssemblies = PluginAssemblyLoader.LoadPlugins();
+                RegisterAnalyzers(services, pluginAssemblies);
+                RegisterSettings(services, pluginAssemblies);
+                RegisterInternalSettings(services, _configuration);
+                RegisterDiagnosticDefinitions(services, pluginAssemblies);
+            });
     }
 
     private static void RegisterAnalyzers(IServiceCollection services, IReadOnlyList<PluginAssembly> pluginAssemblies)

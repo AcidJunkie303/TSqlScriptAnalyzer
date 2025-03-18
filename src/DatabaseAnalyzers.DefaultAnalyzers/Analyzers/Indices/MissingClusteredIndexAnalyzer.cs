@@ -1,3 +1,4 @@
+using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
@@ -8,10 +9,10 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
 
 public sealed class MissingClusteredIndexAnalyzer : IGlobalAnalyzer
 {
-    private readonly IAnalysisContext _context;
+    private readonly IGlobalAnalysisContext _context;
     private readonly Aj5027Settings _settings;
 
-    public MissingClusteredIndexAnalyzer(IAnalysisContext context, Aj5027Settings settings)
+    public MissingClusteredIndexAnalyzer(IGlobalAnalysisContext context, Aj5027Settings settings)
     {
         _context = context;
         _settings = settings;
@@ -32,7 +33,7 @@ public sealed class MissingClusteredIndexAnalyzer : IGlobalAnalyzer
         }
     }
 
-    private static void Analyze(IAnalysisContext context, Aj5027Settings settings, TableInformation table)
+    private static void Analyze(IGlobalAnalysisContext context, Aj5027Settings settings, TableInformation table)
     {
         if (table.ObjectName.IsTempTableName())
         {
