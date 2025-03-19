@@ -41,5 +41,12 @@ internal sealed class ProcedureExtractor : Extractor<ProcedureInformation>
         );
     }
 
-    private static ParameterInformation GetParameter(ProcedureParameter parameter) => new(parameter.VariableName.Value, parameter.DataType, parameter.Modifier == ParameterModifier.Output);
+    private static ParameterInformation GetParameter(ProcedureParameter parameter)
+    {
+        var isOutput = parameter.Modifier == ParameterModifier.Output;
+        var hasDefaultValue = parameter.Value is Literal { Value: not null };
+        var isNullable = parameter.Nullable?.Nullable ?? false;
+
+        return new ParameterInformation(parameter.VariableName.Value, parameter.DataType, isOutput, hasDefaultValue, isNullable);
+    }
 }

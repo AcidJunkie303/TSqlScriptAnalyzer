@@ -40,5 +40,11 @@ internal sealed class FunctionExtractor : Extractor<FunctionInformation>
         );
     }
 
-    private static ParameterInformation GetParameter(ProcedureParameter parameter) => new(parameter.VariableName.Value, parameter.DataType, parameter.Modifier == ParameterModifier.Output);
+    private static ParameterInformation GetParameter(ProcedureParameter parameter)
+    {
+        var hasDefaultValue = parameter.Value is not null;
+        var isNullable = parameter.Nullable?.Nullable ?? false;
+
+        return new ParameterInformation(parameter.VariableName.Value, parameter.DataType, false, hasDefaultValue, isNullable);
+    }
 }
