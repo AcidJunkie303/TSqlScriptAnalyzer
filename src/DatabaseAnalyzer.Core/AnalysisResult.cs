@@ -10,5 +10,6 @@ public sealed record AnalysisResult(
     IReadOnlyDictionary<string, IReadOnlyList<IIssue>> IssuesByObjectName,
     IReadOnlySet<string> DisabledDiagnostics,
     IReadOnlyDictionary<string, IDiagnosticDefinition> DiagnosticDefinitionsById,
+    IReadOnlyList<IScriptModel> Scripts,
     AnalysisResultStatistics Statistics
 );
