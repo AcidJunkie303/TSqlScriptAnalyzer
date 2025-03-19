@@ -8,7 +8,7 @@ using Xunit.Abstractions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Runtime;
 
-public sealed class MissingTableOrViewColumnTests(ITestOutputHelper testOutputHelper)
+public sealed class MissingTableOrViewColumnAnalyzerTests(ITestOutputHelper testOutputHelper)
     : GlobalAnalyzerTestsBase<MissingTableOrViewColumnAnalyzer>(testOutputHelper)
 {
     private const string SharedCode = """
@@ -62,6 +62,44 @@ public sealed class MissingTableOrViewColumnTests(ITestOutputHelper testOutputHe
 
                             SELECT  ▶️AJ5044💛script_1.sql💛💛column💛MyDb.dbo.Table1.DoesNotExist✅DoesNotExist◀️
                             FROM    [dbo].[Table1]
+                            """;
+
+        var tester = GetDefaultTesterBuilder(SharedCode, code)
+            .WithSettings(Settings)
+            .WithService<IAstService>(AstService)
+            .Build();
+        Verify(tester);
+    }
+
+    [Fact]
+    public void WithJoin_WhenUpdate_WhenColumnExists_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            UPDATE      t1
+                            SET         [Column1] = 0
+                            FROM        MyDb.dbo.Table1 t1
+                            JOIN        Table2 t2 ON t2.Id = t1.Id and t2.Column2 = 303
+                            """;
+
+        var tester = GetDefaultTesterBuilder(SharedCode, code)
+            .WithSettings(Settings)
+            .WithService<IAstService>(AstService)
+            .Build();
+        Verify(tester);
+    }
+
+    [Fact]
+    public void WhenTempTable_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            SELECT      Column1
+                            FROM        #temp
                             """;
 
         var tester = GetDefaultTesterBuilder(SharedCode, code)

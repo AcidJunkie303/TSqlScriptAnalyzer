@@ -27,6 +27,12 @@ public sealed class TableResolver : ITableResolver
         _defaultSchemaName = defaultSchemaName;
     }
 
+    public static TableResolver Create(IScriptAnalysisContext context, IAstService astService)
+        => new(context.IssueReporter, astService, context.Script.ParsedScript, context.Script.RelativeScriptFilePath, context.Script.ParentFragmentProvider, context.DefaultSchemaName);
+
+    public static TableResolver Create(IGlobalAnalysisContext context, IScriptModel script, IAstService astService)
+        => new(context.IssueReporter, astService, script.ParsedScript, script.RelativeScriptFilePath, script.ParentFragmentProvider, context.DefaultSchemaName);
+
     public TableOrViewReference? Resolve(NamedTableReference tableReference)
     {
         var batch = (TSqlBatch?) tableReference
@@ -46,6 +52,7 @@ public sealed class TableResolver : ITableResolver
         var parentCtesByName = GetParentCtesByName(tableReference, _parentFragmentProvider);
 
         TSqlFragment? fragment = tableReference;
+
         while (true)
         {
             fragment = fragment.GetParent(_parentFragmentProvider);
@@ -76,36 +83,6 @@ public sealed class TableResolver : ITableResolver
                 return null;
             }
         }
-    }
-
-    public static TableResolver Create(IScriptAnalysisContext context, IAstService astService)
-        => new(context.IssueReporter, astService, context.Script.ParsedScript, context.Script.RelativeScriptFilePath, context.Script.ParentFragmentProvider, context.DefaultSchemaName);
-
-    public static TableResolver Create(IGlobalAnalysisContext context, IScriptModel script, IAstService astService)
-        => new(context.IssueReporter, astService, script.ParsedScript, script.RelativeScriptFilePath, script.ParentFragmentProvider, context.DefaultSchemaName);
-
-    private static Dictionary<string, CommonTableExpression> GetParentCtesByName(TSqlFragment fragement, IParentFragmentProvider parentFragmentProvider)
-    {
-        foreach (var parent in fragement.GetParents(parentFragmentProvider))
-        {
-            if (parent is not SelectStatement selectStatement)
-            {
-                continue;
-            }
-
-            if ((selectStatement.WithCtesAndXmlNamespaces?.CommonTableExpressions).IsNullOrEmpty())
-            {
-                return [];
-            }
-
-            return selectStatement.WithCtesAndXmlNamespaces.CommonTableExpressions
-                .ToDictionary(
-                    a => a.ExpressionName.Value,
-                    a => a,
-                    StringComparer.OrdinalIgnoreCase);
-        }
-
-        return [];
     }
 
     private TableOrViewReference? Check(MergeSpecification mergeSpecification, IReadOnlyDictionary<string, CommonTableExpression> parentCtesByName, NamedTableReference namedTableToResolve)
@@ -317,5 +294,29 @@ public sealed class TableResolver : ITableResolver
         var currentDatabaseName = _script.TryFindCurrentDatabaseNameAtFragment(tableReference);
         var fullObjectName = tableReference.TryGetFirstClassObjectName(_defaultSchemaName, _script, _parentFragmentProvider);
         _issueReporter.Report(WellKnownDiagnosticDefinitions.MissingAlias, currentDatabaseName ?? DatabaseNames.Unknown, _relativeScriptFilePath, fullObjectName, tableReference.GetCodeRegion(), tableReference.GetSql());
+    }
+
+    private static Dictionary<string, CommonTableExpression> GetParentCtesByName(TSqlFragment fragement, IParentFragmentProvider parentFragmentProvider)
+    {
+        foreach (var parent in fragement.GetParents(parentFragmentProvider))
+        {
+            if (parent is not SelectStatement selectStatement)
+            {
+                continue;
+            }
+
+            if ((selectStatement.WithCtesAndXmlNamespaces?.CommonTableExpressions).IsNullOrEmpty())
+            {
+                return [];
+            }
+
+            return selectStatement.WithCtesAndXmlNamespaces.CommonTableExpressions
+                .ToDictionary(
+                    a => a.ExpressionName.Value,
+                    a => a,
+                    StringComparer.OrdinalIgnoreCase);
+        }
+
+        return [];
     }
 }
