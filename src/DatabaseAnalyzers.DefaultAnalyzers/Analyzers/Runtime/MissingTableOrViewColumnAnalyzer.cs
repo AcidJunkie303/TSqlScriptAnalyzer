@@ -48,6 +48,11 @@ public sealed class MissingTableOrViewColumnAnalyzer : IGlobalAnalyzer
             return;
         }
 
+        if (resolvedColumn.TableName.IsTempTableName())
+        {
+            return;
+        }
+
         if (resolvedColumn.SourceType is TableSourceType.Cte or TableSourceType.TempTable)
         {
             return;
@@ -59,6 +64,12 @@ public sealed class MissingTableOrViewColumnAnalyzer : IGlobalAnalyzer
         }
 
         if (IsIgnored(resolvedColumn))
+        {
+            return;
+        }
+
+        // we don't check the left part of the assignment clause in update statements
+        if (columnReference.GetParents(script.ParentFragmentProvider).OfType<AssignmentSetClause>().Any())
         {
             return;
         }
