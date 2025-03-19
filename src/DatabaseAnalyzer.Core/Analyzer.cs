@@ -208,6 +208,7 @@ internal sealed class Analyzer : IAnalyzer
             IssuesByObjectName: issuesByObjectName,
             DisabledDiagnostics: _applicationSettings.Diagnostics.DisabledDiagnostics,
             Statistics: statistics,
+            Scripts: _scripts,
             DiagnosticDefinitionsById: _diagnosticDefinitionProvider.DiagnosticDefinitionsById
         );
     }

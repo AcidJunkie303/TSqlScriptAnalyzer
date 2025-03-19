@@ -226,7 +226,8 @@ else
                         class="issue-type-@issue.DiagnosticDefinition.IssueType.ToString().ToLower()">@issue.DiagnosticDefinition.IssueType.ToName()</span>
                 </td>
                 <td>@issue.DatabaseName</td>
-                <td><a href="@MakeFullPath(issue.RelativeScriptFilePath)"
+                <td>
+                    <a href="@MakeFullPath(issue.RelativeScriptFilePath)@CreateJumpToFragmentUrlSuffix(issue)"
                        target="_blank">@issue.FullObjectNameOrFileName</a></td>
                 <td>@issue.CodeRegion.ToString().Replace("(", "").Replace(")", "")</td>
                 <td>@HighLightCodeParts(issue.Message)</td>
@@ -283,8 +284,15 @@ else
 </body>
 </html>
 
+@{
+}
+
 @functions
 {
+    private IReadOnlyDictionary<string, IScriptModel>? _scriptsByRelativePathName;
+
+    private IReadOnlyDictionary<string, IScriptModel> GetScriptsByRelativePathName() => _scriptsByRelativePathName ??= Model.Scripts.ToDictionary(a => a.RelativeScriptFilePath, a => a, StringComparer.OrdinalIgnoreCase);
+
     static IReadOnlyList<(IDiagnosticDefinition DiagnosticDefinition, int Count)> GetTopIssueTypes(int topCount, AnalysisResult analysisResult)
         => analysisResult.Issues
             .GroupBy(a => a.DiagnosticDefinition.DiagnosticId, StringComparer.OrdinalIgnoreCase)
@@ -314,5 +322,27 @@ else
             });
 
         return new HtmlString(markup);
+    }
+
+    string? GetIssueLineContent(IIssue issue)
+    {
+        var scriptsByRelativePathName = GetScriptsByRelativePathName();
+        if (!scriptsByRelativePathName.TryGetValue(issue.RelativeScriptFilePath, out var script))
+        {
+            return null;
+        }
+
+        return script.Contents.Split('\n')
+            .Skip(issue.CodeRegion.Begin.Line - 1) // line numbers are one-based
+            .FirstOrDefault()
+            ?.TrimEnd('\r');
+    }
+
+    string CreateJumpToFragmentUrlSuffix(IIssue issue)
+    {
+        var lineContents = GetIssueLineContent(issue);
+        return string.IsNullOrWhiteSpace(lineContents)
+            ? string.Empty
+            : $"#:~:text={Uri.EscapeDataString(lineContents)}";
     }
 }
