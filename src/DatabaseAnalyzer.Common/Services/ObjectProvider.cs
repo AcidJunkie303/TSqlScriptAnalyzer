@@ -1,5 +1,6 @@
 using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
+using DatabaseAnalyzer.Common.Models;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 
 namespace DatabaseAnalyzer.Common.Services;
@@ -40,4 +41,8 @@ public sealed class ObjectProvider : IObjectProvider
     public FunctionInformation? GetFunction(string databaseName, string schemaName, string functionName)
         => GetSchema(databaseName, schemaName)
             ?.FunctionsByName.GetValueOrDefault(functionName);
+
+    public ProcedureInformation? GetProcedure(string databaseName, string schemaName, string functionName)
+        => GetSchema(databaseName, schemaName)
+            ?.ProceduresByName.GetValueOrDefault(functionName);
 }

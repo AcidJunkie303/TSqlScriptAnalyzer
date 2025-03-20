@@ -1,7 +1,8 @@
+using System.Collections.Frozen;
+using System.Collections.Immutable;
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.Models;
-using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Common.SqlParsing.Extraction;
@@ -29,17 +30,30 @@ internal sealed class ProcedureExtractor : Extractor<ProcedureInformation>
 
         var parameters = statement.Parameters
             .Select(GetParameter)
-            .ToList();
+            .ToImmutableArray();
+        var parametersByName = parameters
+            .ToFrozenDictionary(a => a.Name, a => a, StringComparer.OrdinalIgnoreCase);
+        var parametersByTrimmedName = parameters
+            .ToFrozenDictionary(a => a.Name.TrimStart('@'), a => a, StringComparer.OrdinalIgnoreCase);
 
         return new ProcedureInformation(
-            databaseName!,
-            statement.ProcedureReference.Name.SchemaIdentifier?.Value ?? DefaultSchemaName,
-            statement.ProcedureReference.Name.BaseIdentifier.Value,
-            parameters,
-            statement,
-            script.RelativeScriptFilePath
+            DatabaseName: databaseName!,
+            SchemaName: statement.ProcedureReference.Name.SchemaIdentifier?.Value ?? DefaultSchemaName,
+            ObjectName: statement.ProcedureReference.Name.BaseIdentifier.Value,
+            Parameters: parameters,
+            ParametersByName: parametersByName,
+            ParametersByTrimmedName: parametersByTrimmedName,
+            CreationStatement: statement,
+            RelativeScriptFilePath: script.RelativeScriptFilePath
         );
     }
 
-    private static ParameterInformation GetParameter(ProcedureParameter parameter) => new(parameter.VariableName.Value, parameter.DataType, parameter.Modifier == ParameterModifier.Output);
+    private static ParameterInformation GetParameter(ProcedureParameter parameter)
+    {
+        var isOutput = parameter.Modifier == ParameterModifier.Output;
+        var hasDefaultValue = parameter.Value is Literal { Value: not null };
+        var isNullable = parameter.Nullable?.Nullable ?? false;
+
+        return new ParameterInformation(parameter.VariableName.Value, parameter.DataType, isOutput, hasDefaultValue, isNullable);
+    }
 }

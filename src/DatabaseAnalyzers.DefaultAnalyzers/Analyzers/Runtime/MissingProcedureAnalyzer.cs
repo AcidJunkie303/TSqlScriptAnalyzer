@@ -1,5 +1,6 @@
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
+using DatabaseAnalyzer.Common.Models;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;

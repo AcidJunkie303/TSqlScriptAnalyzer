@@ -31,17 +31,24 @@ public abstract class ScriptAnalyzerTestsBase<TAnalyzer>
 
     protected void Verify(ScriptAnalyzerTester tester)
     {
-        TestOutputHelper.WriteLine(string.Empty);
-        TestOutputHelper.WriteLine(string.Empty);
-        TestOutputHelper.WriteLine(string.Empty);
-        TestOutputHelper.WriteLine("Syntax Tree:");
-        TestOutputHelper.WriteLine(SyntaxTreeVisualizer.Visualize(tester.MainScript.ParsedScript));
+        foreach (var script in tester.AnalysisContext.Scripts)
+        {
+            TestOutputHelper.WriteLine(string.Empty);
+            TestOutputHelper.WriteLine(string.Empty);
+            TestOutputHelper.WriteLine(string.Empty);
+            TestOutputHelper.WriteLine("==========================================");
+            TestOutputHelper.WriteLine($"= Syntax Tree of script {script.RelativeScriptFilePath}");
+            TestOutputHelper.WriteLine("==========================================");
+            TestOutputHelper.WriteLine(SyntaxTreeVisualizer.Visualize(script.ParsedScript));
 
-        TestOutputHelper.WriteLine(string.Empty);
-        TestOutputHelper.WriteLine(string.Empty);
-        TestOutputHelper.WriteLine(string.Empty);
-        TestOutputHelper.WriteLine("Tokens:");
-        TestOutputHelper.WriteLine(TokenVisualizer.Visualize(tester.MainScript.ParsedScript));
+            TestOutputHelper.WriteLine(string.Empty);
+            TestOutputHelper.WriteLine(string.Empty);
+            TestOutputHelper.WriteLine(string.Empty);
+            TestOutputHelper.WriteLine("==========================================");
+            TestOutputHelper.WriteLine($"= Tokens of script {script.RelativeScriptFilePath}");
+            TestOutputHelper.WriteLine("==========================================");
+            TestOutputHelper.WriteLine(TokenVisualizer.Visualize(script.ParsedScript));
+        }
 
         tester.Test();
     }
@@ -73,13 +80,7 @@ public abstract class ScriptAnalyzerTestsBase<TAnalyzer>
             throw new ArgumentException("At least one script is required", nameof(scripts));
         }
 
-        var builder = GetDefaultTesterBuilder(scripts[0]);
-        foreach (var scriptContent in scripts.Skip(1))
-        {
-            builder.WithScriptFile(scriptContent, "MyDb");
-        }
-
-        var tester = builder
+        var tester = GetDefaultTesterBuilder(scripts)
             .WithSettings(settings)
             .WithTestOutputHelper(TestOutputHelper)
             .Build();

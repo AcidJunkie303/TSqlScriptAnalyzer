@@ -314,6 +314,11 @@
                 "WAITFOR;WHEN;WHENEVER;WHERE;WHILE;WITH;WITHIN;WORK;WRITE;WRITETEXT",
                 "YEAR"
             ]
+        },
+        "AJ5062": // Procedure invocation without explicit value for all parameters
+        {
+            "ValueRequiredForNullableParameters": true,
+            "ValueRequiredForParametersWithDefaultValue": true
         }
     },
     "Services": {

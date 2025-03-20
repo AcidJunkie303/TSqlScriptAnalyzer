@@ -1,3 +1,4 @@
+using DatabaseAnalyzer.Common.Models;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 
 namespace DatabaseAnalyzer.Common.Contracts.Services;
@@ -13,4 +14,5 @@ public interface IObjectProvider
     ViewInformation? GetView(string databaseName, string schemaName, string viewName);
     SynonymInformation? GetSynonym(string databaseName, string schemaName, string synonymName);
     FunctionInformation? GetFunction(string databaseName, string schemaName, string functionName);
+    ProcedureInformation? GetProcedure(string databaseName, string schemaName, string functionName);
 }

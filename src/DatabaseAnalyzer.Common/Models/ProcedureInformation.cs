@@ -1,15 +1,17 @@
 using System.Collections.Immutable;
 using DatabaseAnalyzer.Common.Extensions;
-using DatabaseAnalyzer.Common.Models;
+using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
-namespace DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
+namespace DatabaseAnalyzer.Common.Models;
 
 public sealed record ProcedureInformation(
     string DatabaseName,
     string SchemaName,
     string ObjectName,
     IReadOnlyList<ParameterInformation> Parameters,
+    IReadOnlyDictionary<string, ParameterInformation> ParametersByName,
+    IReadOnlyDictionary<string, ParameterInformation> ParametersByTrimmedName,
     ProcedureStatementBody CreationStatement,
     string RelativeScriptFilePath)
     : ISchemaBoundObject
