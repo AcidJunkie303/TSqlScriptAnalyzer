@@ -3,7 +3,7 @@
     "profiles": {
         "DatabaseAnalyzer.App": {
             "commandName": "Project",
-            "commandLineArgs": "analyze --file ..\\..\\..\\..\\testing\\settings\\project1.jsonc  -crt JsonSummary -j __report.json -h __report.html -t __report.txt -s __report-summary.json -m verbose",
+            "commandLineArgs": "analyze --file ..\\..\\..\\..\\testing\\settings\\project1.jsonc  -crt JsonSummary -j __report.json -h __report.html -t __report.txt -s __report-summary.json -m verbose -l .\\__log.jsonl",
             // -hrt light
             "environmentVariables": {
             }
