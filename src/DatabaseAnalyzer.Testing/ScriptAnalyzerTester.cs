@@ -9,10 +9,9 @@ namespace DatabaseAnalyzer.Testing;
 [SuppressMessage("maintainability", "CA1515:Consider making public types internal", Justification = "False positive. It is used in the DatabaseAnalyzers.DefaultAnalyzers.Tests project")]
 public sealed class ScriptAnalyzerTester
 {
-    private readonly IScriptAnalysisContext _analysisContext;
     private readonly IScriptAnalyzer _analyzer;
     private readonly ITestOutputHelper? _testOutputHelper;
-
+    public IScriptAnalysisContext AnalysisContext { get; }
     public IScriptModel MainScript { get; }
     public IReadOnlyList<IIssue> ExpectedIssues { get; }
 
@@ -22,7 +21,7 @@ public sealed class ScriptAnalyzerTester
         IReadOnlyList<IIssue> expectedIssues,
         ITestOutputHelper? testOutputHelper)
     {
-        _analysisContext = analysisContext;
+        AnalysisContext = analysisContext;
         _analyzer = analyzer;
         _testOutputHelper = testOutputHelper;
         MainScript = analysisContext.Scripts[0];
@@ -31,7 +30,7 @@ public sealed class ScriptAnalyzerTester
 
     public void Test()
     {
-        var firstScriptError = _analysisContext.Scripts.SelectMany(static script => script.Errors).FirstOrDefault();
+        var firstScriptError = AnalysisContext.Scripts.SelectMany(static script => script.Errors).FirstOrDefault();
         if (firstScriptError is not null)
         {
             throw new InvalidOperationException($"Error in script: {firstScriptError}");
@@ -39,7 +38,7 @@ public sealed class ScriptAnalyzerTester
 
         _analyzer.AnalyzeScript();
 
-        var reportedIssues = _analysisContext.IssueReporter.Issues;
+        var reportedIssues = AnalysisContext.IssueReporter.Issues;
         WriteIssues(reportedIssues);
 
         // sometimes the order is not the same, therefore we cannot use BeEquivalentTo()

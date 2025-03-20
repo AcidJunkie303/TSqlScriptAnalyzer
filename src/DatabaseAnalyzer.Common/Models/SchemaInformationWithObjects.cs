@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using DatabaseAnalyzer.Common.Extensions;
+using DatabaseAnalyzer.Common.Models;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;

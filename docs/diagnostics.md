@@ -69,6 +69,7 @@
 | [AJ5059](diagnostics/AJ5059.md) | Procedure Call without explicit Parameter Names                         | Warning      |
 | [AJ5060](diagnostics/AJ5060.md) | Reserved Word Usage                                                     | Warning      |
 | [AJ5061](diagnostics/AJ5061.md) | Object Name Reference with different casing                             | Formatting   |
+| [AJ5062](diagnostics/AJ5062.md) | Procedure Invocation without explicit Parameter Names                   | Warning      |
 | [AJ9000](diagnostics/AJ9000.md) | The first statement in a script must be 'USE <DATABASE>'                | Warning      |
 | [AJ9001](diagnostics/AJ9001.md) | Missing table alias                                                     | Warning      |
 | [AJ9002](diagnostics/AJ9002.md) | Duplicate object creation statement                                     | Error        |
