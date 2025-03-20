@@ -21,21 +21,17 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
     [SuppressMessage("Design", "MA0051:Method is too long")]
     public IReadOnlyDictionary<string, DatabaseInformation> Extract(IReadOnlyCollection<IScriptModel> scripts, string defaultSchemaName)
     {
-        var schemas = new SchemaExtractor(defaultSchemaName).Extract(scripts).ToList();
-        var functions = new FunctionExtractor(defaultSchemaName).Extract(scripts).ToList();
-        var procedures = new ProcedureExtractor(defaultSchemaName).Extract(scripts).ToList();
-        var synonyms = new SynonymExtractor(defaultSchemaName).Extract(scripts).ToList();
-        var tables = new TableExtractor(defaultSchemaName).Extract(scripts).ToList();
-        var indices = new IndexExtractor(defaultSchemaName).Extract(scripts).ToList();
-        var foreignKeyConstraints = new ForeignKeyConstraintExtractor(defaultSchemaName).Extract(scripts).ToList();
-        var aggregatedTables = AggregateTables(tables, foreignKeyConstraints, indices);
-        var views = new ViewExtractor(defaultSchemaName).Extract(scripts).ToList();
+        var schemas = Deduplicate(new SchemaExtractor(defaultSchemaName).Extract(scripts));
+        var functions = Deduplicate(new FunctionExtractor(defaultSchemaName).Extract(scripts));
+        var procedures = Deduplicate(new ProcedureExtractor(defaultSchemaName).Extract(scripts));
+        var synonyms = Deduplicate(new SynonymExtractor(defaultSchemaName).Extract(scripts));
+        var tables = Deduplicate(new TableExtractor(defaultSchemaName).Extract(scripts));
+        var indices = Deduplicate(new IndexExtractor(defaultSchemaName).Extract(scripts));
+        var foreignKeyConstraints = Deduplicate(new ForeignKeyConstraintExtractor(defaultSchemaName).Extract(scripts));
+        var aggregatedTables = Deduplicate(AggregateTables(tables, foreignKeyConstraints, indices));
+        var views = Deduplicate(new ViewExtractor(defaultSchemaName).Extract(scripts));
         ISchemaBoundObject[] allObjects = [.. schemas, .. aggregatedTables, .. functions, .. procedures, .. synonyms];
         allObjects = RemoveAndReportDuplicates(allObjects);
-
-        functions = allObjects.OfType<FunctionInformation>().ToList();
-        aggregatedTables = allObjects.OfType<TableInformation>().ToList();
-        procedures = allObjects.OfType<ProcedureInformation>().ToList();
 
         var synonymsByDatabaseNameBySchemaName = GroupByDatabaseNameBySchemaName(synonyms, a => a.SchemaName);
         var functionsByDatabaseNameBySchemaName = GroupByDatabaseNameBySchemaName(functions, a => a.SchemaName);
@@ -45,7 +41,7 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
 
         return allObjects
             .GroupBy(a => a.DatabaseName, StringComparer.OrdinalIgnoreCase)
-            .ToDictionary(
+            .ToFrozenDictionary(
                 comparer: StringComparer.OrdinalIgnoreCase,
                 keySelector: db => db.Key,
                 elementSelector: db => new DatabaseInformation
@@ -53,7 +49,7 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
                     db.Key,
                     db
                         .GroupBy(schema => schema.SchemaName, StringComparer.OrdinalIgnoreCase)
-                        .ToDictionary(
+                        .ToFrozenDictionary(
                             comparer: StringComparer.OrdinalIgnoreCase,
                             keySelector: schema => schema.Key,
                             elementSelector: schema => new SchemaInformationWithObjects
@@ -63,27 +59,27 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
                                 tablesByDatabaseNameBySchemaName
                                     .GetValueOrDefault(db.Key)
                                     ?.GetValueOrDefault(schema.Key)
-                                    ?.ToDictionary(static table => table.ObjectName, table => table, StringComparer.OrdinalIgnoreCase)
+                                    ?.ToFrozenDictionary(static table => table.ObjectName, table => table, StringComparer.OrdinalIgnoreCase)
                                     .AsIReadOnlyDictionary() ?? FrozenDictionary<string, TableInformation>.Empty.AsIReadOnlyDictionary(),
                                 viewsByDatabaseNameBySchemaName
                                     .GetValueOrDefault(db.Key)
                                     ?.GetValueOrDefault(schema.Key)
-                                    ?.ToDictionary(static table => table.ObjectName, table => table, StringComparer.OrdinalIgnoreCase)
+                                    ?.ToFrozenDictionary(static view => view.ObjectName, view => view, StringComparer.OrdinalIgnoreCase)
                                     .AsIReadOnlyDictionary() ?? FrozenDictionary<string, ViewInformation>.Empty.AsIReadOnlyDictionary(),
                                 proceduresByDatabaseNameBySchemaName
                                     .GetValueOrDefault(db.Key)
                                     ?.GetValueOrDefault(schema.Key)
-                                    ?.ToDictionary(static procedure => procedure.ObjectName, procedure => procedure, StringComparer.OrdinalIgnoreCase)
+                                    ?.ToFrozenDictionary(static procedure => procedure.ObjectName, procedure => procedure, StringComparer.OrdinalIgnoreCase)
                                     .AsIReadOnlyDictionary() ?? FrozenDictionary<string, ProcedureInformation>.Empty.AsIReadOnlyDictionary(),
                                 functionsByDatabaseNameBySchemaName
                                     .GetValueOrDefault(db.Key)
                                     ?.GetValueOrDefault(schema.Key)
-                                    ?.ToDictionary(static function => function.ObjectName, function => function, StringComparer.OrdinalIgnoreCase)
+                                    ?.ToFrozenDictionary(static function => function.ObjectName, function => function, StringComparer.OrdinalIgnoreCase)
                                     .AsIReadOnlyDictionary() ?? FrozenDictionary<string, FunctionInformation>.Empty.AsIReadOnlyDictionary(),
                                 synonymsByDatabaseNameBySchemaName
                                     .GetValueOrDefault(db.Key)
                                     ?.GetValueOrDefault(schema.Key)
-                                    ?.ToDictionary(static synonym => synonym.ObjectName, synonym => synonym, StringComparer.OrdinalIgnoreCase)
+                                    ?.ToFrozenDictionary(static synonym => synonym.ObjectName, synonym => synonym, StringComparer.OrdinalIgnoreCase)
                                     .AsIReadOnlyDictionary() ?? FrozenDictionary<string, SynonymInformation>.Empty.AsIReadOnlyDictionary(),
                                 new CreateSchemaStatement(),
                                 string.Empty
@@ -91,6 +87,36 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
                         )
                 )
             );
+    }
+
+    private List<T> Deduplicate<T>(IEnumerable<T> source) where T : IDatabaseObject
+    {
+        var grouped = source
+            .GroupBy(a => a.FullName, (_, objects) => objects.ToList(), StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        foreach (var group in grouped)
+        {
+            if (group.Count > 1)
+            {
+                var databaseObject = group[0];
+                var scriptFilePaths = group
+                    .Select(static a => a.RelativeScriptFilePath)
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .StringJoin("    ;    ");
+
+                _issueReporter.Report(WellKnownDiagnosticDefinitions.DuplicateObjectCreationStatement,
+                    databaseObject.DatabaseName,
+                    databaseObject.RelativeScriptFilePath,
+                    databaseObject.FullNameParts.StringJoin('.'),
+                    databaseObject.CreationStatement.GetCodeRegion(),
+                    databaseObject.FullNameParts.StringJoin('.'),
+                    scriptFilePaths
+                );
+            }
+        }
+
+        return grouped.ConvertAll(a => a[0]);
     }
 
     private ISchemaBoundObject[] RemoveAndReportDuplicates(ISchemaBoundObject[] objects)
@@ -128,7 +154,6 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
         }
 
         return objectsGroupedByName
-            .Where(static a => a.Count == 1)
             .Select(static a => a[0])
             .Concat(indicesWithoutName)
             .ToArray();

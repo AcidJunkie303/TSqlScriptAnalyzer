@@ -94,6 +94,8 @@ public sealed class AnalyzerFactory : IDisposable
                 services.AddSingleton<IScriptSourceProvider, ScriptSourceProvider>();
                 services.AddSingleton<IDiagnosticSuppressionExtractor, DiagnosticSuppressionExtractor>();
                 services.AddSingleton<IAstService, AstService>();
+                services.AddSingleton<ITableResolverFactory, TableResolverFactory>();
+                services.AddSingleton<IColumnResolverFactory, ColumnResolverFactory>();
                 services.AddSingleton<IObjectProvider>(_ =>
                 {
                     var databasesByName = new DatabaseObjectExtractor(_issueReporter)

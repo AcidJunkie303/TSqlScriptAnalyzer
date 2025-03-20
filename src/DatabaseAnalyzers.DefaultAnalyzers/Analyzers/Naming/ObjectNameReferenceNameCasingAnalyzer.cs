@@ -7,15 +7,17 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Naming;
 
 public sealed class ObjectNameReferenceNameCasingAnalyzer : IScriptAnalyzer
 {
+    private readonly IColumnResolverFactory _columnResolverFactory;
     private readonly IScriptAnalysisContext _context;
     private readonly IObjectProvider _objectProvider;
     private readonly IScriptModel _script;
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public ObjectNameReferenceNameCasingAnalyzer(IScriptAnalysisContext context, IObjectProvider objectProvider)
+    public ObjectNameReferenceNameCasingAnalyzer(IScriptAnalysisContext context, IObjectProvider objectProvider, IColumnResolverFactory columnResolverFactory)
     {
         _context = context;
         _objectProvider = objectProvider;
+        _columnResolverFactory = columnResolverFactory;
         _script = context.Script;
     }
 
@@ -62,7 +64,7 @@ public sealed class ObjectNameReferenceNameCasingAnalyzer : IScriptAnalyzer
 
     private void AnalyzeColumnReferenceExpression(ColumnReferenceExpression columnReference)
     {
-        var columnResolver = _context.Services.CreateColumnResolver();
+        var columnResolver = _columnResolverFactory.CreateColumnResolver(_context);
         var column = columnResolver.Resolve(columnReference);
 
         if (column is null)

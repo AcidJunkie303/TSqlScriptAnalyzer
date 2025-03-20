@@ -2,8 +2,6 @@ using System.Collections.Frozen;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using DatabaseAnalyzer.Common.Contracts;
-using DatabaseAnalyzer.Common.Contracts.Services;
-using DatabaseAnalyzer.Core.Services;
 using Microsoft.Extensions.Logging;
 
 namespace DatabaseAnalyzer.Core.Models;
@@ -12,7 +10,6 @@ internal sealed class ScriptAnalysisContext : IScriptAnalysisContext
 {
     public IScriptModel Script { get; }
     public IReadOnlyList<IScriptModel> ErrorFreeScripts { get; set; }
-    public IScriptAnalysisContextServices Services { get; }
     public string DefaultSchemaName { get; }
     public IReadOnlyList<IScriptModel> Scripts { get; }
     public IReadOnlyDictionary<string, IReadOnlyList<IScriptModel>> ScriptsByDatabaseName { get; }
@@ -27,7 +24,6 @@ internal sealed class ScriptAnalysisContext : IScriptAnalysisContext
                                  IReadOnlyDictionary<string, IReadOnlyList<IScriptModel>> scriptsByDatabaseName,
                                  IIssueReporter issueReporter,
                                  ILogger logger,
-                                 IAstService astService,
                                  FrozenSet<string> disabledDiagnosticIds)
     {
         ErrorFreeScripts = scripts.Where(a => !a.HasErrors).ToImmutableArray();
@@ -38,7 +34,5 @@ internal sealed class ScriptAnalysisContext : IScriptAnalysisContext
         IssueReporter = issueReporter;
         Logger = logger;
         DisabledDiagnosticIds = disabledDiagnosticIds;
-
-        Services = new ScriptAnalysisContextServices(this, astService);
     }
 }

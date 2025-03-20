@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using DatabaseAnalyzer.Common.Contracts;
+using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
-using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
@@ -12,30 +12,29 @@ public sealed class MissingFunctionAnalyzer : IGlobalAnalyzer
 {
     private readonly IGlobalAnalysisContext _context;
     private readonly Aj5044Settings _settings;
+    private readonly IObjectProvider _objectProvider;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [SharedDiagnosticDefinitions.MissingObject];
 
-    public MissingFunctionAnalyzer(IGlobalAnalysisContext context, Aj5044Settings settings)
+    public MissingFunctionAnalyzer(IGlobalAnalysisContext context, Aj5044Settings settings, IObjectProvider objectProvider)
     {
         _context = context;
         _settings = settings;
+        _objectProvider = objectProvider;
     }
 
     public void Analyze()
     {
-        var databasesByName = new DatabaseObjectExtractor(_context.IssueReporter)
-            .Extract(_context.ErrorFreeScripts, _context.DefaultSchemaName);
-
         foreach (var script in _context.ErrorFreeScripts)
         {
             foreach (var call in script.ParsedScript.GetChildren<FunctionCall>(recursive: true))
             {
-                AnalyzeCall(script, databasesByName, call);
+                AnalyzeCall(script, _objectProvider.DatabasesByName, call);
             }
 
             foreach (var reference in script.ParsedScript.GetChildren<SchemaObjectFunctionTableReference>(recursive: true))
             {
-                AnalyzeCall(script, databasesByName, reference);
+                AnalyzeCall(script, _objectProvider.DatabasesByName, reference);
             }
         }
     }

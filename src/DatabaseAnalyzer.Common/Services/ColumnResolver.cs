@@ -30,7 +30,7 @@ public sealed class ColumnResolver : IColumnResolver
     public static ColumnResolver Create(IScriptAnalysisContext context, IAstService astService)
         => new(context.IssueReporter, astService, context.Script.ParsedScript, context.Script.RelativeScriptFilePath, context.Script.ParentFragmentProvider, context.DefaultSchemaName);
 
-    public static ColumnResolver Create(IGlobalAnalysisContext context, IScriptModel script, IAstService astService)
+    public static ColumnResolver Create(IGlobalAnalysisContext context, IAstService astService, IScriptModel script)
         => new(context.IssueReporter, astService, script.ParsedScript, script.RelativeScriptFilePath, script.ParentFragmentProvider, context.DefaultSchemaName);
 
     public ColumnReference? Resolve(ColumnReferenceExpression columnReference)

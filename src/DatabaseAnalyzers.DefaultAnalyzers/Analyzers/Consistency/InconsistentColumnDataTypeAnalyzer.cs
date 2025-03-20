@@ -1,6 +1,6 @@
 using DatabaseAnalyzer.Common.Contracts;
+using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
-using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Consistency;
@@ -9,19 +9,20 @@ public sealed class InconsistentColumnDataTypeAnalyzer : IGlobalAnalyzer
 {
     private readonly IGlobalAnalysisContext _context;
     private readonly Aj5054Settings _settings;
+    private readonly IObjectProvider _objectProvider;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public InconsistentColumnDataTypeAnalyzer(IGlobalAnalysisContext context, Aj5054Settings settings)
+    public InconsistentColumnDataTypeAnalyzer(IGlobalAnalysisContext context, Aj5054Settings settings, IObjectProvider objectProvider)
     {
         _context = context;
         _settings = settings;
+        _objectProvider = objectProvider;
     }
 
     public void Analyze()
     {
-        var columnsAndScriptsByColumnName = new DatabaseObjectExtractor(_context.IssueReporter)
-            .Extract(_context.ErrorFreeScripts, _context.DefaultSchemaName)
+        var columnsAndScriptsByColumnName = _objectProvider.DatabasesByName
             .SelectMany(static a => a.Value.SchemasByName)
             .SelectMany(static a => a.Value.TablesByName.Values.Select(x => (Script: x.ScriptModel, Table: x)))
             .SelectMany(static a => a.Table.Columns.Select(x => (a.Script, a.Table, Column: x, DataType: x.ColumnDefinition.DataType.ToDataTypeString())))

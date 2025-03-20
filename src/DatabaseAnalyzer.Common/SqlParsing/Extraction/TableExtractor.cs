@@ -1,6 +1,7 @@
 using System.Collections.Frozen;
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
+using DatabaseAnalyzer.Common.Models;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
@@ -76,6 +77,11 @@ public sealed class TableExtractor : Extractor<TableInformation>
         var allColumns = statement.Definition.ColumnDefinitions
             .Select(a => GetColumn(a, calculatedDatabaseName, tableSchemaName, tableName, script.RelativeScriptFilePath))
             .ToList();
+        var columnsByName = allColumns
+            .ToFrozenDictionary(
+                a => a.ObjectName,
+                a => a,
+                StringComparer.OrdinalIgnoreCase);
 
         return new TableInformation
         (
@@ -83,6 +89,7 @@ public sealed class TableExtractor : Extractor<TableInformation>
             tableSchemaName,
             tableName,
             allColumns,
+            columnsByName,
             allIndices,
             allForeignKeyConstraints,
             statement,

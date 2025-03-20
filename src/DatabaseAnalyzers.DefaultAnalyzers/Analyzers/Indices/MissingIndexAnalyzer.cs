@@ -2,7 +2,6 @@ using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.SqlParsing;
-using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
@@ -12,33 +11,37 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
 public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
 {
     private readonly IAstService _astService;
+    private readonly IObjectProvider _objectProvider;
     private readonly IGlobalAnalysisContext _context;
     private readonly Aj5017Settings _missingForeignKeyIndexSettings;
     private readonly Aj5015Settings _missingIndexSettings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.FilteringColumnNotIndexed, DiagnosticDefinitions.ForeignKeyColumnNotIndexed];
 
-    public MissingIndexAnalyzer(IGlobalAnalysisContext context, Aj5015Settings missingIndexSettings, Aj5017Settings missingForeignKeyIndexSettings, IAstService astService)
+    public MissingIndexAnalyzer(
+        IGlobalAnalysisContext context,
+        Aj5015Settings missingIndexSettings,
+        Aj5017Settings missingForeignKeyIndexSettings,
+        IAstService astService,
+        IObjectProvider objectProvider)
     {
         _context = context;
         _missingIndexSettings = missingIndexSettings;
         _missingForeignKeyIndexSettings = missingForeignKeyIndexSettings;
         _astService = astService;
+        _objectProvider = objectProvider;
     }
 
     public void Analyze()
     {
-        var databasesByName = new DatabaseObjectExtractor(_context.IssueReporter)
-            .Extract(_context.ErrorFreeScripts, _context.DefaultSchemaName);
-
         if (!_context.DisabledDiagnosticIds.Contains(DiagnosticDefinitions.FilteringColumnNotIndexed.DiagnosticId))
         {
-            AnalyzeModules(_context, databasesByName);
+            AnalyzeModules(_context, _objectProvider.DatabasesByName);
         }
 
         if (!_context.DisabledDiagnosticIds.Contains(DiagnosticDefinitions.ForeignKeyColumnNotIndexed.DiagnosticId))
         {
-            AnalyzeForeignKeys(_context, databasesByName);
+            AnalyzeForeignKeys(_context,  _objectProvider.DatabasesByName);
         }
     }
 

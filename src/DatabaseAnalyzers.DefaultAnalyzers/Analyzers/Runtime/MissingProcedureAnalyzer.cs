@@ -1,7 +1,7 @@
 using DatabaseAnalyzer.Common.Contracts;
+using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.Models;
-using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
@@ -11,27 +11,27 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime;
 public sealed class MissingProcedureAnalyzer : IGlobalAnalyzer
 {
     private readonly IGlobalAnalysisContext _context;
+    private readonly IObjectProvider _objectProvider;
     private readonly Aj5044Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [SharedDiagnosticDefinitions.MissingObject];
 
-    public MissingProcedureAnalyzer(IGlobalAnalysisContext context, Aj5044Settings settings)
+    public MissingProcedureAnalyzer(IGlobalAnalysisContext context, Aj5044Settings settings, IObjectProvider objectProvider)
     {
         _context = context;
         _settings = settings;
+        _objectProvider = objectProvider;
     }
 
     public void Analyze()
     {
-        var databasesByName = new DatabaseObjectExtractor(_context.IssueReporter)
-            .Extract(_context.ErrorFreeScripts, _context.DefaultSchemaName);
-        var procedures = databasesByName
+        var procedures = _objectProvider.DatabasesByName
             .SelectMany(a => a.Value.SchemasByName.Values)
             .SelectMany(a => a.ProceduresByName.Values);
 
         foreach (var procedure in procedures)
         {
-            AnalyzeCalls(databasesByName, procedure);
+            AnalyzeCalls(_objectProvider.DatabasesByName, procedure);
         }
     }
 

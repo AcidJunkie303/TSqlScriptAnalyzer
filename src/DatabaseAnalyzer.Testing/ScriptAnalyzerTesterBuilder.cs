@@ -105,7 +105,6 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
             allScriptsByDatabaseName,
             new IssueReporter(),
             NullLogger.Instance,
-            new AstService(AstServiceSettings.Default),
             FrozenSet<string>.Empty);
 
         var host = CreateHost(analysisContext);
@@ -132,6 +131,9 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
                 services.AddSingleton<IScriptAnalyzer>(sp => ActivatorUtilities.CreateInstance<TAnalyzer>(sp, analysisContext));
                 services.AddSingleton(typeof(ILogger<>), typeof(NullLogger<>));
                 services.AddSingleton<ILoggerFactory>(NullLoggerFactory.Instance);
+                services.AddSingleton<ITableResolverFactory, TableResolverFactory>();
+                services.AddSingleton<IColumnResolverFactory, ColumnResolverFactory>();
+                services.AddSingleton<IAstService>(new AstService(AstServiceSettings.Default));
 
                 foreach (var service in _services)
                 {

@@ -1,6 +1,7 @@
 using DatabaseAnalyzer.Common.Contracts;
+using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
-using DatabaseAnalyzer.Common.SqlParsing.Extraction;
+using DatabaseAnalyzer.Common.Models;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 
@@ -9,20 +10,21 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
 public sealed class MissingPrimaryKeyAnalyzer : IGlobalAnalyzer
 {
     private readonly IGlobalAnalysisContext _context;
+    private readonly IObjectProvider _objectProvider;
     private readonly Aj5026Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public MissingPrimaryKeyAnalyzer(IGlobalAnalysisContext context, Aj5026Settings settings)
+    public MissingPrimaryKeyAnalyzer(IGlobalAnalysisContext context, Aj5026Settings settings, IObjectProvider objectProvider)
     {
         _context = context;
         _settings = settings;
+        _objectProvider = objectProvider;
     }
 
     public void Analyze()
     {
-        var allTables = new DatabaseObjectExtractor(_context.IssueReporter)
-            .Extract(_context.ErrorFreeScripts, _context.DefaultSchemaName)
+        var allTables = _objectProvider.DatabasesByName
             .SelectMany(static a => a.Value.SchemasByName)
             .SelectMany(static a => a.Value.TablesByName.Values);
 

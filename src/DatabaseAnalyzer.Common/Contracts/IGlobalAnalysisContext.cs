@@ -1,8 +1,6 @@
-using DatabaseAnalyzer.Common.Contracts.Services;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DatabaseAnalyzer.Common.Contracts;
 
-public interface IGlobalAnalysisContext : IAnalysisContext
-{
-    IGlobalAnalysisContextServices Services { get; }
-}
+[SuppressMessage("Minor Code Smell", "S4023:Interfaces should not be empty", Justification = "Marker interface")]
+public interface IGlobalAnalysisContext : IAnalysisContext;

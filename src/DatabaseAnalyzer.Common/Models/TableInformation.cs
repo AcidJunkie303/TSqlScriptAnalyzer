@@ -1,14 +1,16 @@
 using System.Collections.Immutable;
 using DatabaseAnalyzer.Common.Contracts;
+using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
-namespace DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
+namespace DatabaseAnalyzer.Common.Models;
 
 public sealed record TableInformation(
     string DatabaseName,
     string SchemaName,
     string ObjectName,
     IReadOnlyList<ColumnInformation> Columns,
+    IReadOnlyDictionary<string, ColumnInformation> ColumnsByName,
     IReadOnlyList<IndexInformation> Indices,
     IReadOnlyList<ForeignKeyConstraintInformation> ForeignKeys,
     TSqlFragment CreationStatement,

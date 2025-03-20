@@ -3,7 +3,6 @@ using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.SqlParsing;
-using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 using DatabaseAnalyzer.Common.Various;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
@@ -15,15 +14,17 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
 {
     private readonly IAstService _astService;
     private readonly IGlobalAnalysisContext _context;
+    private readonly IObjectProvider _objectProvider;
     private readonly Aj5051Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public UnusedIndexAnalyzer(IGlobalAnalysisContext context, Aj5051Settings settings, IAstService astService)
+    public UnusedIndexAnalyzer(IGlobalAnalysisContext context, Aj5051Settings settings, IAstService astService, IObjectProvider objectProvider)
     {
         _context = context;
         _settings = settings;
         _astService = astService;
+        _objectProvider = objectProvider;
     }
 
     public void Analyze()
@@ -34,10 +35,7 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
             .ToDictionary(a => a.Key, a => a.ToImmutableArray())
             .AsIReadOnlyDictionary();
 
-        var databasesByName = new DatabaseObjectExtractor(_context.IssueReporter)
-            .Extract(_context.ErrorFreeScripts, _context.DefaultSchemaName);
-
-        var allIndices = databasesByName.Values
+        var allIndices = _objectProvider.DatabasesByName.Values
             .SelectMany(db => db.SchemasByName.Values)
             .SelectMany(schema => schema.TablesByName.Values)
             .SelectMany(table => table.Indices);

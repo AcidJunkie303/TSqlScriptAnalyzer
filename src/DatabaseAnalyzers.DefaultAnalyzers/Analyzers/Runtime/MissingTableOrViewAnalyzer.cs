@@ -2,8 +2,6 @@ using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.SqlParsing;
-using DatabaseAnalyzer.Common.SqlParsing.Extraction;
-using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
@@ -13,40 +11,39 @@ public sealed class MissingTableOrViewAnalyzer : IGlobalAnalyzer
 {
     private readonly IAstService _astService;
     private readonly IGlobalAnalysisContext _context;
+    private readonly IObjectProvider _objectProvider;
     private readonly Aj5044Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [SharedDiagnosticDefinitions.MissingObject];
 
-    public MissingTableOrViewAnalyzer(IGlobalAnalysisContext context, Aj5044Settings settings, IAstService astService)
+    public MissingTableOrViewAnalyzer(IGlobalAnalysisContext context, Aj5044Settings settings, IAstService astService, IObjectProvider objectProvider)
     {
         _context = context;
         _settings = settings;
         _astService = astService;
+        _objectProvider = objectProvider;
     }
 
     public void Analyze()
     {
-        var databasesByName = new DatabaseObjectExtractor(_context.IssueReporter)
-            .Extract(_context.ErrorFreeScripts, _context.DefaultSchemaName);
-
         foreach (var script in _context.Scripts)
         {
             foreach (var batch in script.ParsedScript.Batches)
             {
-                AnalyzeBatch(script, batch, databasesByName);
+                AnalyzeBatch(script, batch);
             }
         }
     }
 
-    private void AnalyzeBatch(IScriptModel script, TSqlBatch batch, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
+    private void AnalyzeBatch(IScriptModel script, TSqlBatch batch)
     {
         foreach (var tableReference in batch.GetChildren<NamedTableReference>(recursive: true))
         {
-            AnalyzeTableReference(script, tableReference, databasesByName);
+            AnalyzeTableReference(script, tableReference);
         }
     }
 
-    private void AnalyzeTableReference(IScriptModel script, NamedTableReference tableReference, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
+    private void AnalyzeTableReference(IScriptModel script, NamedTableReference tableReference)
     {
         var tableResolver = new TableResolverOld(_context.IssueReporter, _astService, script.ParsedScript, tableReference, script.RelativeScriptFilePath, script.ParentFragmentProvider, _context.DefaultSchemaName);
         var resolvedTable = tableResolver.Resolve();
@@ -60,7 +57,7 @@ public sealed class MissingTableOrViewAnalyzer : IGlobalAnalyzer
             return;
         }
 
-        if (DoesTableOrViewExist(resolvedTable.DatabaseName, resolvedTable.SchemaName, resolvedTable.ObjectName, databasesByName))
+        if (DoesTableOrViewExist(resolvedTable.DatabaseName, resolvedTable.SchemaName, resolvedTable.ObjectName))
         {
             return;
         }
@@ -75,19 +72,10 @@ public sealed class MissingTableOrViewAnalyzer : IGlobalAnalyzer
         _context.IssueReporter.Report(SharedDiagnosticDefinitions.MissingObject, resolvedTable.DatabaseName, script.RelativeScriptFilePath, fullObjectName, tableReference.GetCodeRegion(), "table or view", resolvedTable.FullName);
     }
 
-    private static bool DoesTableOrViewExist(string databaseName, string schemaName, string tableOrViewName, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
+    private bool DoesTableOrViewExist(string databaseName, string schemaName, string tableOrViewName)
     {
-        var schema = databasesByName
-            .GetValueOrDefault(databaseName)
-            ?.SchemasByName.GetValueOrDefault(schemaName);
-
-        if (schema is null)
-        {
-            return false;
-        }
-
-        return schema.TablesByName.ContainsKey(tableOrViewName)
-               || schema.ViewsByName.ContainsKey(tableOrViewName);
+        return _objectProvider.GetTable(databaseName, schemaName, tableOrViewName) is not null
+               || _objectProvider.GetView(databaseName, schemaName, tableOrViewName) is not null;
     }
 
     private bool IsIgnored(TableOrViewReference reference)

@@ -3,8 +3,6 @@ using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.Services;
 using DatabaseAnalyzer.Common.SqlParsing;
-using DatabaseAnalyzer.Common.SqlParsing.Extraction;
-using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
@@ -14,32 +12,31 @@ public sealed class MissingTableOrViewColumnAnalyzer : IGlobalAnalyzer
 {
     private readonly IAstService _astService;
     private readonly IGlobalAnalysisContext _context;
+    private readonly IObjectProvider _objectProvider;
     private readonly Aj5044Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [SharedDiagnosticDefinitions.MissingObject];
 
-    public MissingTableOrViewColumnAnalyzer(IGlobalAnalysisContext context, Aj5044Settings settings, IAstService astService)
+    public MissingTableOrViewColumnAnalyzer(IGlobalAnalysisContext context, Aj5044Settings settings, IAstService astService, IObjectProvider objectProvider)
     {
         _context = context;
         _settings = settings;
         _astService = astService;
+        _objectProvider = objectProvider;
     }
 
     public void Analyze()
     {
-        var databasesByName = new DatabaseObjectExtractor(_context.IssueReporter)
-            .Extract(_context.ErrorFreeScripts, _context.DefaultSchemaName);
-
         foreach (var script in _context.ErrorFreeScripts)
         {
             foreach (var columnReference in script.ParsedScript.GetChildren<ColumnReferenceExpression>(recursive: true))
             {
-                AnalyzeTableReference(script, columnReference, databasesByName);
+                AnalyzeTableReference(script, columnReference);
             }
         }
     }
 
-    private void AnalyzeTableReference(IScriptModel script, ColumnReferenceExpression columnReference, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
+    private void AnalyzeTableReference(IScriptModel script, ColumnReferenceExpression columnReference)
     {
         var columnResolver = new ColumnResolver(_context.IssueReporter, _astService, script.ParsedScript, script.RelativeScriptFilePath, script.ParentFragmentProvider, _context.DefaultSchemaName);
         var resolvedColumn = columnResolver.Resolve(columnReference);
@@ -58,7 +55,7 @@ public sealed class MissingTableOrViewColumnAnalyzer : IGlobalAnalyzer
             return;
         }
 
-        if (DoesColumnExist(databasesByName, resolvedColumn.DatabaseName, resolvedColumn.SchemaName, resolvedColumn.TableName, resolvedColumn.ColumnName))
+        if (DoesColumnExist(resolvedColumn.DatabaseName, resolvedColumn.SchemaName, resolvedColumn.TableName, resolvedColumn.ColumnName))
         {
             return;
         }
@@ -84,30 +81,24 @@ public sealed class MissingTableOrViewColumnAnalyzer : IGlobalAnalyzer
         _context.IssueReporter.Report(SharedDiagnosticDefinitions.MissingObject, resolvedColumn.DatabaseName, script.RelativeScriptFilePath, fullObjectName, columnReference.GetCodeRegion(), "column", resolvedColumn.FullName);
     }
 
-    private static bool DoesColumnExist(IReadOnlyDictionary<string, DatabaseInformation> databasesByName, string databaseName, string schemaName, string tableOrViewName, string columnName)
+    private bool DoesColumnExist(string databaseName, string schemaName, string tableOrViewName, string columnName)
     {
-        var schema = databasesByName
-            .GetValueOrDefault(databaseName)
-            ?.SchemasByName.GetValueOrDefault(schemaName);
-
-        if (schema is null)
+        var table = _objectProvider.GetTable(databaseName, schemaName, tableOrViewName);
+        if (table is not null)
         {
-            return false;
+            return table.ColumnsByName.ContainsKey(columnName);
         }
 
-        if (schema.TablesByName.TryGetValue(tableOrViewName, out var table))
+        var view = _objectProvider.GetView(databaseName, schemaName, tableOrViewName);
+        if (view is not null)
         {
-            return table.Columns.Any(a => a.ObjectName.EqualsOrdinalIgnoreCase(columnName));
+            return view.Columns.Contains(columnName, StringComparer.OrdinalIgnoreCase);
         }
 
-        if (schema.ViewsByName.TryGetValue(tableOrViewName, out var view))
+        var synonym = _objectProvider.GetSynonym(databaseName, schemaName, tableOrViewName);
+        if (synonym is not null)
         {
-            return view.Columns.Any(a => a.EqualsOrdinalIgnoreCase(columnName));
-        }
-
-        if (schema.SynonymsByName.TryGetValue(tableOrViewName, out var synonym))
-        {
-            return DoesColumnExist(databasesByName, synonym.DatabaseName, synonym.SchemaName, synonym.TargetObjectName, columnName);
+            return DoesColumnExist(synonym.DatabaseName, synonym.SchemaName, synonym.TargetObjectName, columnName);
         }
 
         return false;
