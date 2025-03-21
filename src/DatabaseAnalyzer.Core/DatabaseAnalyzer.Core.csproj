@@ -17,8 +17,4 @@
         <ProjectReference Include="..\DatabaseAnalyzer.Common\DatabaseAnalyzer.Common.csproj"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="Settings\"/>
-    </ItemGroup>
-
 </Project>

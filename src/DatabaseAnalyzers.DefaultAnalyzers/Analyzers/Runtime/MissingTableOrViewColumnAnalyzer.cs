@@ -13,25 +13,29 @@ public sealed class MissingTableOrViewColumnAnalyzer : IGlobalAnalyzer
     private readonly IColumnResolverFactory _columnResolverFactory;
     private readonly IGlobalAnalysisContext _context;
     private readonly IObjectProvider _objectProvider;
+    private readonly ParallelOptions _parallelOptions;
     private readonly Aj5044Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [SharedDiagnosticDefinitions.MissingObject];
 
-    public MissingTableOrViewColumnAnalyzer(IGlobalAnalysisContext context, Aj5044Settings settings, IAstService astService, IObjectProvider objectProvider, IColumnResolverFactory columnResolverFactory)
+    public MissingTableOrViewColumnAnalyzer(IGlobalAnalysisContext context, Aj5044Settings settings, IAstService astService, IObjectProvider objectProvider, IColumnResolverFactory columnResolverFactory, ParallelOptions parallelOptions)
     {
         _context = context;
         _settings = settings;
         _astService = astService;
         _objectProvider = objectProvider;
         _columnResolverFactory = columnResolverFactory;
+        _parallelOptions = parallelOptions;
     }
 
     public void Analyze()
     {
-        Parallel.ForEach(_context.ErrorFreeScripts, script =>
+        Parallel.ForEach(_context.ErrorFreeScripts, _parallelOptions, script =>
         {
-            var columReferenceExpressions = script.ParsedScript.GetChildren<ColumnReferenceExpression>(recursive: true);
-            Parallel.ForEach(columReferenceExpressions, columnReference => AnalyzeTableReference(script, columnReference));
+            foreach (var columnReference in script.ParsedScript.GetChildren<ColumnReferenceExpression>(recursive: true))
+            {
+                AnalyzeTableReference(script, columnReference);
+            }
         });
     }
 

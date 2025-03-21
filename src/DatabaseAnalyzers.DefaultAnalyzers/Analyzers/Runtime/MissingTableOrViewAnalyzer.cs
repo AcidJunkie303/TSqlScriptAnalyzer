@@ -12,21 +12,24 @@ public sealed class MissingTableOrViewAnalyzer : IGlobalAnalyzer
     private readonly IAstService _astService;
     private readonly IGlobalAnalysisContext _context;
     private readonly IObjectProvider _objectProvider;
+    private readonly ParallelOptions _parallelOptions;
     private readonly Aj5044Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [SharedDiagnosticDefinitions.MissingObject];
 
-    public MissingTableOrViewAnalyzer(IGlobalAnalysisContext context, Aj5044Settings settings, IAstService astService, IObjectProvider objectProvider)
+    public MissingTableOrViewAnalyzer(IGlobalAnalysisContext context, Aj5044Settings settings, IAstService astService, IObjectProvider objectProvider, ParallelOptions parallelOptions)
     {
         _context = context;
         _settings = settings;
         _astService = astService;
         _objectProvider = objectProvider;
+        _parallelOptions = parallelOptions;
     }
 
     public void Analyze()
     {
-        Parallel.ForEach(_context.Scripts, script =>
+        // pretty performance hungry
+        Parallel.ForEach(_context.Scripts, _parallelOptions, script =>
         {
             foreach (var batch in script.ParsedScript.Batches)
             {

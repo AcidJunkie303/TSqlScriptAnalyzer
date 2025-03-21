@@ -16,16 +16,18 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
     private readonly IAstService _astService;
     private readonly IGlobalAnalysisContext _context;
     private readonly IObjectProvider _objectProvider;
+    private readonly ParallelOptions _parallelOptions;
     private readonly Aj5051Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public UnusedIndexAnalyzer(IGlobalAnalysisContext context, Aj5051Settings settings, IAstService astService, IObjectProvider objectProvider)
+    public UnusedIndexAnalyzer(IGlobalAnalysisContext context, Aj5051Settings settings, IAstService astService, IObjectProvider objectProvider, ParallelOptions parallelOptions)
     {
         _context = context;
         _settings = settings;
         _astService = astService;
         _objectProvider = objectProvider;
+        _parallelOptions = parallelOptions;
     }
 
     public void Analyze()
@@ -64,9 +66,10 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
 
     private List<ColumnReference> GetFilteringColumns()
     {
+        // this is pretty performance hungry. That's why we nest another Parallel.Foreach
         var result = new ConcurrentBag<ColumnReference>();
 
-        Parallel.ForEach(_context.ErrorFreeScripts, script =>
+        foreach (var script in _context.ErrorFreeScripts)
         {
             IEnumerable<StatementList?> statementLists =
             [
@@ -74,7 +77,7 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
                 .. script.ParsedScript.GetChildren<FunctionStatementBody>(recursive: true).Select(static a => a.StatementList)
             ];
 
-            Parallel.ForEach(statementLists, statementList =>
+            Parallel.ForEach(statementLists, _parallelOptions, statementList =>
             {
                 if (statementList is null)
                 {
@@ -86,7 +89,7 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
                     result.Add(filteringColumn);
                 }
             });
-        });
+        }
 
         return result.ToList();
     }

@@ -19,25 +19,17 @@ namespace DatabaseAnalyzer.Core;
 [SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters")]
 internal sealed class Analyzer : IAnalyzer
 {
-    private static readonly ParallelOptions ParallelOptions = new()
-    {
-#if DEBUG
-        MaxDegreeOfParallelism = 1,
-#else
-        MaxDegreeOfParallelism = Environment.ProcessorCount
-#endif
-    };
-
+    private readonly Dictionary<Type, (AnalyzerKind AnalyzerKind, ConcurrentBag<TimeSpan> Durations)> _analysisDurationsByAnalyzerType = [];
     private readonly AnalyzerTypes _analyzerTypes;
     private readonly ApplicationSettings _applicationSettings;
     private readonly IDiagnosticDefinitionProvider _diagnosticDefinitionProvider;
     private readonly IIssueReporter _issueReporter;
     private readonly ILogger<Analyzer> _logger;
+    private readonly ParallelOptions _parallelOptions;
     private readonly IProgressCallback _progressCallback;
     private readonly IReadOnlyList<IScriptModel> _scripts;
     private readonly IReadOnlyDictionary<string, IReadOnlyList<IScriptModel>> _scriptsByDatabaseName;
     private readonly IServiceProvider _serviceProvider;
-    private readonly Dictionary<Type, (AnalyzerKind AnalyzerKind, ConcurrentBag<TimeSpan> Durations)> _analysisDurationsByAnalyzerType = [];
 
     public Analyzer
     (
@@ -49,7 +41,8 @@ internal sealed class Analyzer : IAnalyzer
         IDiagnosticDefinitionProvider diagnosticDefinitionProvider,
         AnalyzerTypes analyzerTypes,
         IReadOnlyDictionary<string, IReadOnlyList<IScriptModel>> scriptsByDatabaseName,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        ParallelOptions parallelOptions)
     {
         _progressCallback = progressCallback;
         _applicationSettings = applicationSettings;
@@ -60,6 +53,7 @@ internal sealed class Analyzer : IAnalyzer
         _analyzerTypes = analyzerTypes;
         _scriptsByDatabaseName = scriptsByDatabaseName;
         _serviceProvider = serviceProvider;
+        _parallelOptions = parallelOptions;
 
         foreach (var type in analyzerTypes.GlobalAnalyzers)
         {
@@ -91,12 +85,13 @@ internal sealed class Analyzer : IAnalyzer
 
         using var _ = _progressCallback.OnProgressWithAutoEndActionNotification("Performing scripts analysis");
 
-        IEnumerable<(Type AnalyzerType, IScriptModel? Script)> analyzerTypesAndScripts = [
-            .. _analyzerTypes.GlobalAnalyzers.Select(type=> (Type: type, (IScriptModel?) null)),
+        IEnumerable<(Type AnalyzerType, IScriptModel? Script)> analyzerTypesAndScripts =
+        [
+            .. _analyzerTypes.GlobalAnalyzers.Select(type => (Type: type, (IScriptModel?) null)),
             .. _analyzerTypes.ScriptAnalyzers
                 .CrossJoin(_scripts)
-                .Select(a=> (Type: a.Item1, (IScriptModel?) a.Item2))
-            ];
+                .Select(a => (Type: a.Item1, (IScriptModel?) a.Item2))
+        ];
 
         PerformAnalysis(analyzerTypesAndScripts);
         LogExecutionDurations();
@@ -106,7 +101,7 @@ internal sealed class Analyzer : IAnalyzer
 
     private void PerformAnalysis(IEnumerable<(Type AnalyzerType, IScriptModel? Script)> analyzerTypesAndScripts)
     {
-        Parallel.ForEach(analyzerTypesAndScripts, ParallelOptions, analyzerTypeAndScript =>
+        Parallel.ForEach(analyzerTypesAndScripts, _parallelOptions, analyzerTypeAndScript =>
         {
             var (analyzerType, script) = analyzerTypeAndScript;
             var startedAt = Stopwatch.GetTimestamp();
