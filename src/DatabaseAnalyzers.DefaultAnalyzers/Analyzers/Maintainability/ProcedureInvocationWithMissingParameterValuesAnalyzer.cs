@@ -70,6 +70,7 @@ public sealed class ProcedureInvocationWithMissingParameterValuesAnalyzer : IScr
         }
 
         var parametersByName = procedureCall.Parameters
+            .Where(a => a.Variable?.Name is not null)
             .ToDictionary(
                 a => a.Variable!.Name,
                 a => a,

@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Contracts.Services;
@@ -61,9 +62,11 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
         }
     }
 
-    private IEnumerable<ColumnReference> GetFilteringColumns()
+    private List<ColumnReference> GetFilteringColumns()
     {
-        foreach (var script in _context.ErrorFreeScripts)
+        var result = new ConcurrentBag<ColumnReference>();
+
+        Parallel.ForEach(_context.ErrorFreeScripts, script =>
         {
             IEnumerable<StatementList?> statementLists =
             [
@@ -71,19 +74,21 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
                 .. script.ParsedScript.GetChildren<FunctionStatementBody>(recursive: true).Select(static a => a.StatementList)
             ];
 
-            foreach (var statementList in statementLists)
+            Parallel.ForEach(statementLists, statementList =>
             {
                 if (statementList is null)
                 {
-                    continue;
+                    return;
                 }
 
                 foreach (var filteringColumn in GetFilteringColumnFromStatement(script, statementList))
                 {
-                    yield return filteringColumn;
+                    result.Add(filteringColumn);
                 }
-            }
-        }
+            });
+        });
+
+        return result.ToList();
     }
 
     private IEnumerable<ColumnReference> GetFilteringColumnFromStatement(IScriptModel script, TSqlFragment fragment)
