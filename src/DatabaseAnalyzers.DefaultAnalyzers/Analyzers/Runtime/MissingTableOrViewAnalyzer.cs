@@ -9,21 +9,21 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime;
 
 public sealed class MissingTableOrViewAnalyzer : IGlobalAnalyzer
 {
-    private readonly IAstService _astService;
     private readonly IGlobalAnalysisContext _context;
     private readonly IObjectProvider _objectProvider;
     private readonly ParallelOptions _parallelOptions;
     private readonly Aj5044Settings _settings;
+    private readonly ITableResolverFactory _tableResolverFactory;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [SharedDiagnosticDefinitions.MissingObject];
 
-    public MissingTableOrViewAnalyzer(IGlobalAnalysisContext context, Aj5044Settings settings, IAstService astService, IObjectProvider objectProvider, ParallelOptions parallelOptions)
+    public MissingTableOrViewAnalyzer(IGlobalAnalysisContext context, Aj5044Settings settings, IObjectProvider objectProvider, ParallelOptions parallelOptions, ITableResolverFactory tableResolverFactory)
     {
         _context = context;
         _settings = settings;
-        _astService = astService;
         _objectProvider = objectProvider;
         _parallelOptions = parallelOptions;
+        _tableResolverFactory = tableResolverFactory;
     }
 
     public void Analyze()
@@ -48,8 +48,8 @@ public sealed class MissingTableOrViewAnalyzer : IGlobalAnalyzer
 
     private void AnalyzeTableReference(IScriptModel script, NamedTableReference tableReference)
     {
-        var tableResolver = new TableResolverOld(_context.IssueReporter, _astService, script.ParsedScript, tableReference, script.RelativeScriptFilePath, script.ParentFragmentProvider, _context.DefaultSchemaName);
-        var resolvedTable = tableResolver.Resolve();
+        var tableResolver = _tableResolverFactory.CreateTableResolver(_context, script);
+        var resolvedTable = tableResolver.Resolve(tableReference);
         if (resolvedTable is null)
         {
             return;

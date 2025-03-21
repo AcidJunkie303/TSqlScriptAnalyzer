@@ -300,17 +300,17 @@ public sealed class TableResolver : ITableResolver
     {
         foreach (var parent in fragement.GetParents(parentFragmentProvider))
         {
-            if (parent is not SelectStatement selectStatement)
+            if (parent is not StatementWithCtesAndXmlNamespaces statementWithCtes)
             {
                 continue;
             }
 
-            if ((selectStatement.WithCtesAndXmlNamespaces?.CommonTableExpressions).IsNullOrEmpty())
+            if ((statementWithCtes.WithCtesAndXmlNamespaces?.CommonTableExpressions).IsNullOrEmpty())
             {
                 return [];
             }
 
-            return selectStatement.WithCtesAndXmlNamespaces.CommonTableExpressions
+            return statementWithCtes.WithCtesAndXmlNamespaces.CommonTableExpressions
                 .ToDictionary(
                     a => a.ExpressionName.Value,
                     a => a,
