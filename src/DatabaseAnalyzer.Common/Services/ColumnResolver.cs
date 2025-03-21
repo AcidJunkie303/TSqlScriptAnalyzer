@@ -213,6 +213,12 @@ public sealed class ColumnResolver : IColumnResolver
                                   ?? _script.TryFindCurrentDatabaseNameAtFragment(referenceToResolve)
                                   ?? DatabaseNames.Unknown;
 
+        var tableReferenceIsCteReference = parentCtesByName.ContainsKey(namedTableReference.SchemaObject.BaseIdentifier.Value);
+        if (tableReferenceIsCteReference)
+        {
+            return new ColumnReference(currentDatabaseName, tableReferenceSchemaName, tableReferenceTableName, columnName, TableSourceType.Cte, referenceToResolve, GetFullObjectName());
+        }
+
         // if we don't have an alias, we have aborted earlier on in case there are multiple tables involved
         // Therefore, we assume that this is the table we're looking for
         if (tableNameOrAlias is null)
@@ -261,17 +267,17 @@ public sealed class ColumnResolver : IColumnResolver
     {
         foreach (var parent in fragment.GetParents(parentFragmentProvider))
         {
-            if (parent is not SelectStatement selectStatement)
+            if (parent is not StatementWithCtesAndXmlNamespaces statementWithCtes)
             {
                 continue;
             }
 
-            if ((selectStatement.WithCtesAndXmlNamespaces?.CommonTableExpressions).IsNullOrEmpty())
+            if ((statementWithCtes.WithCtesAndXmlNamespaces?.CommonTableExpressions).IsNullOrEmpty())
             {
                 return [];
             }
 
-            return selectStatement.WithCtesAndXmlNamespaces.CommonTableExpressions
+            return statementWithCtes.WithCtesAndXmlNamespaces.CommonTableExpressions
                 .ToDictionary(
                     a => a.ExpressionName.Value,
                     a => a,
