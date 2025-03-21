@@ -102,6 +102,15 @@ public sealed class AnalyzerFactory : IDisposable
                         .Extract(_scripts, _settings.DefaultSchemaName);
                     return new ObjectProvider(databasesByName);
                 });
+                services.AddSingleton(new ParallelOptions
+                {
+#if DEBUG
+                    MaxDegreeOfParallelism = 1
+#else
+                    MaxDegreeOfParallelism = Environment.ProcessorCount,
+                    TaskScheduler = new LimitedConcurrencyLevelTaskScheduler(Environment.ProcessorCount)
+#endif
+                });
 
                 var pluginAssemblies = PluginAssemblyLoader.LoadPlugins();
                 RegisterAnalyzers(services, pluginAssemblies);

@@ -131,6 +131,14 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
                 services.AddSingleton<ITableResolverFactory, TableResolverFactory>();
                 services.AddSingleton<IColumnResolverFactory, ColumnResolverFactory>();
                 services.AddSingleton<IAstService>(new AstService(AstServiceSettings.Default));
+                services.AddSingleton(new ParallelOptions
+                {
+#if DEBUG
+                    MaxDegreeOfParallelism = 1
+#else
+                    MaxDegreeOfParallelism = Environment.ProcessorCount
+#endif
+                });
                 foreach (var service in _services)
                 {
                     services.AddSingleton(service.InterfaceType, service.Implementation);
