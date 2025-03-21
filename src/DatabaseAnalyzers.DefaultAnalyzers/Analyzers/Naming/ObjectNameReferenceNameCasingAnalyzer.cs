@@ -25,12 +25,8 @@ public sealed class ObjectNameReferenceNameCasingAnalyzer : IScriptAnalyzer
     {
         Analyze<NamedTableReference>(AnalyzeNamedTableReference);
         Analyze<ColumnReferenceExpression>(AnalyzeColumnReferenceExpression);
-
-        // TODO:
-#pragma warning disable S125
-//        Analyze<FunctionCall>(AnalyzeFunctionCall);
-//        Analyze<SchemaObjectFunctionTableReference>(AnalyzeSchemaObjectFunctionTableReference);
-#pragma warning restore S125
+        Analyze<FunctionCall>(AnalyzeScalarFunctionCall);
+        Analyze<SchemaObjectFunctionTableReference>(AnalyzeTableValuedFunctionCall);
     }
 
     private void Analyze<T>(Action<T> analyzerDelegate)
@@ -54,12 +50,74 @@ public sealed class ObjectNameReferenceNameCasingAnalyzer : IScriptAnalyzer
         schemaName ??= _context.DefaultSchemaName;
 
         var table = _objectProvider.GetTable(databaseName, schemaName, tableName);
-        if (table is null)
+        if (table is not null)
+        {
+            CompareAndReport(tableReference, tableName, table.ObjectName, "table", () => $"{databaseName}.{schemaName}.{table.ObjectName}");
+            return;
+        }
+
+        var synonym = _objectProvider.GetSynonym(databaseName, schemaName, tableName);
+        if (synonym is not null)
+        {
+            CompareAndReport(tableReference, tableName, synonym.ObjectName, "table synonym", () => $"{databaseName}.{schemaName}.{synonym.ObjectName}");
+        }
+    }
+
+    private void AnalyzeScalarFunctionCall(FunctionCall functionCall)
+    {
+        var functionName = functionCall.FunctionName?.Value;
+        if (functionName is null)
         {
             return;
         }
 
-        CompareAndReport(tableReference, tableName, table.ObjectName, "table", () => $"{databaseName}.{schemaName}.{table.ObjectName}");
+        if (functionCall.CallTarget is not MultiPartIdentifierCallTarget multiPartIdentifierCallTarget)
+        {
+            return;
+        }
+
+        var (_, _, databaseName, schemaName) = multiPartIdentifierCallTarget.MultiPartIdentifier.GetParts();
+
+        databaseName ??= _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(functionCall) ?? _script.DatabaseName;
+        schemaName ??= _context.DefaultSchemaName;
+
+        var function = _objectProvider.GetFunction(databaseName, schemaName, functionName);
+        if (function is not null)
+        {
+            CompareAndReport(functionCall, functionName, function.ObjectName, "function", () => $"{function.DatabaseName}.{function.SchemaName}.{function.ObjectName}");
+            return;
+        }
+
+        var synonym = _objectProvider.GetSynonym(databaseName, schemaName, functionName);
+        if (synonym is not null)
+        {
+            CompareAndReport(functionCall, functionName, synonym.ObjectName, "function synonym", () => $"{synonym.DatabaseName}.{synonym.SchemaName}.{synonym.ObjectName}");
+        }
+    }
+
+    private void AnalyzeTableValuedFunctionCall(SchemaObjectFunctionTableReference functionCall)
+    {
+        var (databaseName, schemaName, functionName) = functionCall.SchemaObject.GetIdentifierParts();
+        if (functionName.IsNullOrWhiteSpace())
+        {
+            return;
+        }
+
+        databaseName ??= _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(functionCall) ?? _script.DatabaseName;
+        schemaName ??= _context.DefaultSchemaName;
+
+        var function = _objectProvider.GetFunction(databaseName, schemaName, functionName);
+        if (function is not null)
+        {
+            CompareAndReport(functionCall, functionName, function.ObjectName, "function", () => $"{function.DatabaseName}.{function.SchemaName}.{function.ObjectName}");
+            return;
+        }
+
+        var synonym = _objectProvider.GetSynonym(databaseName, schemaName, functionName);
+        if (synonym is not null)
+        {
+            CompareAndReport(functionCall, functionName, synonym.ObjectName, "function synonym", () => $"{synonym.DatabaseName}.{synonym.SchemaName}.{synonym.ObjectName}");
+        }
     }
 
     private void AnalyzeColumnReferenceExpression(ColumnReferenceExpression columnReference)
@@ -102,7 +160,7 @@ public sealed class ObjectNameReferenceNameCasingAnalyzer : IScriptAnalyzer
             IssueType.Formatting,
             "Object Name Reference with different casing",
             "The `{0}` reference `{1}` uses different casing than the original name `{2}` (`{3}`).",
-            ["Object name", "The name used", "Original name", "Full original name"],
+            ["Object type name", "The name used", "Original name", "Full original name"],
             UrlPatterns.DefaultDiagnosticHelp
         );
     }

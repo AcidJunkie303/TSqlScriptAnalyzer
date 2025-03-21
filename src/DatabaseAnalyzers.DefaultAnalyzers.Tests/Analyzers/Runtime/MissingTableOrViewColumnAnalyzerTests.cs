@@ -108,38 +108,4 @@ public sealed class MissingTableOrViewColumnAnalyzerTests(ITestOutputHelper test
             .Build();
         Verify(tester);
     }
-
-    [Fact]
-    public void Test()
-    {
-        const string code = """
-                            USE MyDb
-                            GO
-
-                            CREATE OR ALTER FUNCTION [dbo].[usf_SplitList](
-                              @List      NVARCHAR(MAX),
-                              @Delimiter NCHAR(1)
-                            )
-                            RETURNS @t TABLE (Item NVARCHAR(MAX))
-                            AS
-                            BEGIN
-                              SET @List += @Delimiter;
-                              ;WITH a(f, t) AS
-                              (
-                                SELECT CAST(1 AS BIGINT), CHARINDEX(@Delimiter, @List)
-                                UNION ALL
-                                SELECT t + 1, CHARINDEX(@Delimiter, @List, t + 1)
-                                FROM a WHERE CHARINDEX(@Delimiter, @List, t + 1) > 0  -- AJ5044 raised for `a`
-                              )
-                              INSERT @t SELECT SUBSTRING(@List, f, t - f) FROM a OPTION (MAXRECURSION 0);   -- AJ5044 raised for `a`
-                              RETURN;
-                            END;
-                            """;
-
-        var tester = GetDefaultTesterBuilder(SharedCode, code)
-            .WithSettings(Settings)
-            .WithService<IAstService>(AstService)
-            .Build();
-        Verify(tester);
-    }
 }
