@@ -11,8 +11,8 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime;
 public sealed class MissingFunctionAnalyzer : IGlobalAnalyzer
 {
     private readonly IGlobalAnalysisContext _context;
-    private readonly Aj5044Settings _settings;
     private readonly IObjectProvider _objectProvider;
+    private readonly Aj5044Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [SharedDiagnosticDefinitions.MissingObject];
 
@@ -46,33 +46,13 @@ public sealed class MissingFunctionAnalyzer : IGlobalAnalyzer
             return;
         }
 
-        var identifiers = multiPartIdentifierCallTarget.MultiPartIdentifier.Identifiers;
+        var (_, _, databaseName, schemaName) = multiPartIdentifierCallTarget.MultiPartIdentifier.GetParts();
 
-        string databaseName;
-        string schemaName;
-
-        switch (multiPartIdentifierCallTarget.MultiPartIdentifier.Identifiers.Count)
-        {
-            case 0:
-                databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(call) ?? DatabaseNames.Unknown;
-                schemaName = _context.DefaultSchemaName;
-                break;
-
-            case 1:
-                databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(call) ?? DatabaseNames.Unknown;
-                schemaName = identifiers[0].Value;
-                break;
-
-            case 2:
-                databaseName = identifiers[0].Value;
-                schemaName = identifiers[1].Value;
-                break;
-            default:
-                return;
-        }
+        databaseName ??= script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(call) ?? DatabaseNames.Unknown;
+        schemaName ??= _context.DefaultSchemaName;
 
         var functionName = call.FunctionName.Value;
-        AnalyzeCall(script, databasesByName, databaseName, schemaName ?? _context.DefaultSchemaName, functionName, call);
+        AnalyzeCall(script, databasesByName, databaseName, schemaName, functionName, call);
     }
 
     private void AnalyzeCall(IScriptModel script, IReadOnlyDictionary<string, DatabaseInformation> databasesByName, SchemaObjectFunctionTableReference reference)
