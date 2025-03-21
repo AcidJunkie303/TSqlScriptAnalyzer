@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.Frozen;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -36,6 +37,7 @@ internal sealed class Analyzer : IAnalyzer
     private readonly IReadOnlyList<IScriptModel> _scripts;
     private readonly IReadOnlyDictionary<string, IReadOnlyList<IScriptModel>> _scriptsByDatabaseName;
     private readonly IServiceProvider _serviceProvider;
+    private readonly Dictionary<Type, (AnalyzerKind AnalyzerKind, ConcurrentBag<TimeSpan> Durations)> _analysisDurationsByAnalyzerType = [];
 
     public Analyzer
     (
@@ -58,6 +60,16 @@ internal sealed class Analyzer : IAnalyzer
         _analyzerTypes = analyzerTypes;
         _scriptsByDatabaseName = scriptsByDatabaseName;
         _serviceProvider = serviceProvider;
+
+        foreach (var type in analyzerTypes.GlobalAnalyzers)
+        {
+            _analysisDurationsByAnalyzerType.Add(type, (AnalyzerKind.GlobalAnalyzer, new ConcurrentBag<TimeSpan>()));
+        }
+
+        foreach (var type in analyzerTypes.ScriptAnalyzers)
+        {
+            _analysisDurationsByAnalyzerType.Add(type, (AnalyzerKind.ScriptAnalyzer, new ConcurrentBag<TimeSpan>()));
+        }
     }
 
     public AnalysisResult Analyze()
@@ -79,58 +91,43 @@ internal sealed class Analyzer : IAnalyzer
 
         using var _ = _progressCallback.OnProgressWithAutoEndActionNotification("Performing scripts analysis");
 
-#if DEBUG
-        AnalyzeWithGlobalAnalyzers();
-        AnalyzeWithScriptAnalyzers();
-#else
-        var task1 = Task.Run(() => AnalyzeWithGlobalAnalyzers(), ParallelOptions.CancellationToken);
-        var task2 = Task.Run(() => AnalyzeWithScriptAnalyzers(), ParallelOptions.CancellationToken);
-        Task.WaitAll(task1, task2);
-#endif
+        IEnumerable<(Type AnalyzerType, IScriptModel? Script)> analyzerTypesAndScripts = [
+            .. _analyzerTypes.GlobalAnalyzers.Select(type=> (Type: type, (IScriptModel?) null)),
+            .. _analyzerTypes.ScriptAnalyzers
+                .CrossJoin(_scripts)
+                .Select(a=> (Type: a.Item1, (IScriptModel?) a.Item2))
+            ];
+
+        PerformAnalysis(analyzerTypesAndScripts);
+        LogExecutionDurations();
 
         return stopwatch.Elapsed;
     }
 
-    private void AnalyzeWithGlobalAnalyzers()
+    private void PerformAnalysis(IEnumerable<(Type AnalyzerType, IScriptModel? Script)> analyzerTypesAndScripts)
     {
-        Parallel.ForEach(_analyzerTypes.GlobalAnalyzers, ParallelOptions, analyzerType =>
+        Parallel.ForEach(analyzerTypesAndScripts, ParallelOptions, analyzerTypeAndScript =>
         {
+            var (analyzerType, script) = analyzerTypeAndScript;
+            var startedAt = Stopwatch.GetTimestamp();
             try
             {
-                var analysisContext = new GlobalAnalysisContext
-                (
-                    _applicationSettings.DefaultSchemaName,
-                    _scripts,
-                    _scriptsByDatabaseName,
-                    _issueReporter,
-                    _logger,
-                    _applicationSettings.Diagnostics.DisabledDiagnostics
-                );
+                if (script is null)
+                {
+                    var analysisContext = new GlobalAnalysisContext
+                    (
+                        _applicationSettings.DefaultSchemaName,
+                        _scripts,
+                        _scriptsByDatabaseName,
+                        _issueReporter,
+                        _logger,
+                        _applicationSettings.Diagnostics.DisabledDiagnostics
+                    );
 
-                var analyzer = (IGlobalAnalyzer) ActivatorUtilities.CreateInstance(_serviceProvider, analyzerType, analysisContext);
-                analyzer.Analyze();
-            }
-#pragma warning disable CA1031 // Do not catch general exception types -> yes we do
-            catch (Exception ex)
-#pragma warning restore CA1031
-            {
-                var analyzerName = analyzerType.FullName ?? "<unknown>";
-
-                // We need to have a script file path, otherwise the aggregation between issue and script file for Global Analyzers won't work
-                var relativeScriptFilePath = _scripts.Count == 0 ? "Unknown" : _scripts[0].RelativeScriptFilePath;
-                _issueReporter.Report(WellKnownDiagnosticDefinitions.UnhandledAnalyzerException, "<Unknown>", relativeScriptFilePath, null, CodeRegion.Unknown, analyzerName, ex.Message);
-                _logger.LogError(ex, "Analyzer threw an unhandled exception");
-            }
-        });
-    }
-
-    private void AnalyzeWithScriptAnalyzers()
-    {
-        foreach (var script in _scripts)
-        {
-            Parallel.ForEach(_analyzerTypes.ScriptAnalyzers, ParallelOptions, analyzerType =>
-            {
-                try
+                    var analyzer = (IGlobalAnalyzer) ActivatorUtilities.CreateInstance(_serviceProvider, analyzerType, analysisContext);
+                    analyzer.Analyze();
+                }
+                else
                 {
                     var analysisContext = new ScriptAnalysisContext
                     (
@@ -146,19 +143,21 @@ internal sealed class Analyzer : IAnalyzer
                     var analyzer = (IScriptAnalyzer) ActivatorUtilities.CreateInstance(_serviceProvider, analyzerType, analysisContext);
                     analyzer.AnalyzeScript();
                 }
+            }
 #pragma warning disable CA1031 // Do not catch general exception types -> yes we do
-                catch (Exception ex)
+            catch (Exception ex)
 #pragma warning restore CA1031
-                {
-                    var analyzerName = analyzerType.FullName ?? "<unknown>";
+            {
+                var analyzerName = analyzerType.FullName ?? "<unknown>";
+                // We need to have a script file path, otherwise the aggregation between issue and script file for Global Analyzers won't work
+                var relativeScriptFilePath = script?.RelativeScriptFilePath ?? (_scripts.Count == 0 ? "Unknown" : _scripts[0].RelativeScriptFilePath);
+                _issueReporter.Report(WellKnownDiagnosticDefinitions.UnhandledAnalyzerException, "<Unknown>", relativeScriptFilePath, null, CodeRegion.Unknown, analyzerName, ex.Message);
+                _logger.LogError(ex, "Analyzer threw an unhandled exception");
+            }
 
-                    // We need to have a script file path, otherwise the aggregation between issue and script file for Global Analyzers won't work
-                    var relativeScriptFilePath = _scripts.Count == 0 ? "Unknown" : _scripts[0].RelativeScriptFilePath;
-                    _issueReporter.Report(WellKnownDiagnosticDefinitions.UnhandledAnalyzerException, "<Unknown>", relativeScriptFilePath, null, CodeRegion.Unknown, analyzerName, ex.Message);
-                    _logger.LogError(ex, "Analyzer threw an unhandled exception");
-                }
-            });
-        }
+            var duration = Stopwatch.GetElapsedTime(startedAt);
+            _analysisDurationsByAnalyzerType[analyzerType].Durations.Add(duration);
+        });
     }
 
     private AnalysisResult CalculateAnalysisResult(IReadOnlyList<IIssue> issues, ref readonly TimeSpan scriptParseDuration, ref readonly TimeSpan analysisDuration)
@@ -207,6 +206,32 @@ internal sealed class Analyzer : IAnalyzer
         );
     }
 
+    private void LogExecutionDurations()
+    {
+        var analyzerNameAndDurations = _analysisDurationsByAnalyzerType
+            .Select(a =>
+            {
+                var analyzerKind = a.Value.AnalyzerKind;
+                var analyzerType = a.Key;
+                var durations = a.Value.Durations;
+                var analyzerName = analyzerType.Name;
+                var analyzerFullName = analyzerType.FullName;
+                var averageDuration = durations.Aggregate(TimeSpan.Zero, (x, y) => x + y) / durations.Count;
+                var maxDuration = durations.Max();
+                var minDuration = durations.Min();
+
+                return (AnalyzerKind: analyzerKind, Name: analyzerName, FullName: analyzerFullName, AverageDuration: averageDuration, MinDuration: minDuration, MaxDuration: maxDuration);
+            })
+            .OrderBy(a => a.AnalyzerKind)
+            .ThenByDescending(a => a.AverageDuration);
+
+        foreach (var entry in analyzerNameAndDurations)
+        {
+            _logger.LogInformation("Execution statistics {Kind}: Avg={AverageDuration} Min={MinDuration} Max={MaxDuration} {AnalyzerName} {FullName}",
+                entry.AnalyzerKind, entry.AverageDuration, entry.MinDuration, entry.MaxDuration, entry.Name, entry.FullName);
+        }
+    }
+
     private (List<IIssue> UnsuppressedIssues, List<SuppressedIssue> SuppressedIssues) SplitIssuesToSuppressedAndUnsuppressed(List<IIssue> issues)
     {
         var unsuppressedIssues = new List<IIssue>(issues.Count);
@@ -246,5 +271,12 @@ internal sealed class Analyzer : IAnalyzer
                 _issueReporter.Report(WellKnownDiagnosticDefinitions.ScriptContainsErrors, script.DatabaseName, script.RelativeScriptFilePath, null, error.CodeRegion, error.Message);
             }
         }
+    }
+
+    private enum AnalyzerKind
+    {
+        None = 0,
+        GlobalAnalyzer = 1,
+        ScriptAnalyzer = 2
     }
 }

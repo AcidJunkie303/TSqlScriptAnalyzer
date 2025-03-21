@@ -1,7 +1,6 @@
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
-using DatabaseAnalyzer.Common.Services;
 using DatabaseAnalyzer.Common.SqlParsing;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
@@ -11,34 +10,34 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime;
 public sealed class MissingTableOrViewColumnAnalyzer : IGlobalAnalyzer
 {
     private readonly IAstService _astService;
+    private readonly IColumnResolverFactory _columnResolverFactory;
     private readonly IGlobalAnalysisContext _context;
     private readonly IObjectProvider _objectProvider;
     private readonly Aj5044Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [SharedDiagnosticDefinitions.MissingObject];
 
-    public MissingTableOrViewColumnAnalyzer(IGlobalAnalysisContext context, Aj5044Settings settings, IAstService astService, IObjectProvider objectProvider)
+    public MissingTableOrViewColumnAnalyzer(IGlobalAnalysisContext context, Aj5044Settings settings, IAstService astService, IObjectProvider objectProvider, IColumnResolverFactory columnResolverFactory)
     {
         _context = context;
         _settings = settings;
         _astService = astService;
         _objectProvider = objectProvider;
+        _columnResolverFactory = columnResolverFactory;
     }
 
     public void Analyze()
     {
-        foreach (var script in _context.ErrorFreeScripts)
+        Parallel.ForEach(_context.ErrorFreeScripts, script =>
         {
-            foreach (var columnReference in script.ParsedScript.GetChildren<ColumnReferenceExpression>(recursive: true))
-            {
-                AnalyzeTableReference(script, columnReference);
-            }
-        }
+            var columReferenceExpressions = script.ParsedScript.GetChildren<ColumnReferenceExpression>(recursive: true);
+            Parallel.ForEach(columReferenceExpressions, columnReference => AnalyzeTableReference(script, columnReference));
+        });
     }
 
     private void AnalyzeTableReference(IScriptModel script, ColumnReferenceExpression columnReference)
     {
-        var columnResolver = new ColumnResolver(_context.IssueReporter, _astService, script.ParsedScript, script.RelativeScriptFilePath, script.ParentFragmentProvider, _context.DefaultSchemaName);
+        var columnResolver = _columnResolverFactory.CreateColumnResolver(_context, script);
         var resolvedColumn = columnResolver.Resolve(columnReference);
         if (resolvedColumn is null)
         {
@@ -55,11 +54,6 @@ public sealed class MissingTableOrViewColumnAnalyzer : IGlobalAnalyzer
             return;
         }
 
-        if (DoesColumnExist(resolvedColumn.DatabaseName, resolvedColumn.SchemaName, resolvedColumn.TableName, resolvedColumn.ColumnName))
-        {
-            return;
-        }
-
         if (IsIgnored(resolvedColumn))
         {
             return;
@@ -67,6 +61,11 @@ public sealed class MissingTableOrViewColumnAnalyzer : IGlobalAnalyzer
 
         // we don't check the left part of the assignment clause in update statements
         if (columnReference.GetParents(script.ParentFragmentProvider).OfType<AssignmentSetClause>().Any())
+        {
+            return;
+        }
+
+        if (DoesColumnExist(resolvedColumn.DatabaseName, resolvedColumn.SchemaName, resolvedColumn.TableName, resolvedColumn.ColumnName))
         {
             return;
         }

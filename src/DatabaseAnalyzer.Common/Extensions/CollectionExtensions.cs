@@ -156,4 +156,7 @@ public static class CollectionExtensions
             .Select(elementSelector)
             .Distinct(comparer)
             .Count();
+
+    public static IEnumerable<(T1, T2)> CrossJoin<T1, T2>(this IEnumerable<T1> source1, IEnumerable<T2> source2)
+        => source1.SelectMany(a => source2.Select(b => (a, b)));
 }

@@ -26,7 +26,7 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
         var procedures = Deduplicate(new ProcedureExtractor(defaultSchemaName).Extract(scripts));
         var synonyms = Deduplicate(new SynonymExtractor(defaultSchemaName).Extract(scripts));
         var tables = Deduplicate(new TableExtractor(defaultSchemaName).Extract(scripts));
-        var indices = Deduplicate(new IndexExtractor(defaultSchemaName).Extract(scripts));
+        var indices = Deduplicate(new IndexExtractor(defaultSchemaName).Extract(scripts).Where(a => !a.TableName.IsTempTableName()));
         var foreignKeyConstraints = Deduplicate(new ForeignKeyConstraintExtractor(defaultSchemaName).Extract(scripts));
         var aggregatedTables = Deduplicate(AggregateTables(tables, foreignKeyConstraints, indices));
         var views = Deduplicate(new ViewExtractor(defaultSchemaName).Extract(scripts));

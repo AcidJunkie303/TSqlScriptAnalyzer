@@ -128,6 +128,16 @@ public sealed class IndexNamingAnalyzer : IScriptAnalyzer
 
     private void AnalyzeCreateIndexStatement(TSqlFragment fragment)
     {
+        if (fragment is CreateIndexStatement createIndexStatement)
+        {
+            var tableName = createIndexStatement.OnName?.BaseIdentifier?.Value;
+
+            if (tableName?.IsTempTableName() == true)
+            {
+                return;
+            }
+        }
+
         var indexData = GetIndexProperties(_context.DefaultSchemaName, fragment);
         if (indexData is null)
         {

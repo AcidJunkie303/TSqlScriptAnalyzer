@@ -26,13 +26,13 @@ public sealed class MissingTableOrViewAnalyzer : IGlobalAnalyzer
 
     public void Analyze()
     {
-        foreach (var script in _context.Scripts)
+        Parallel.ForEach(_context.Scripts, script =>
         {
             foreach (var batch in script.ParsedScript.Batches)
             {
                 AnalyzeBatch(script, batch);
             }
-        }
+        });
     }
 
     private void AnalyzeBatch(IScriptModel script, TSqlBatch batch)
