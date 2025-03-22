@@ -1,5 +1,5 @@
 using DatabaseAnalyzer.Testing;
-using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
+using DatabaseAnalyzers.DefaultAnalyzers.Settings;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.UseDatabaseStatements;
 using Xunit.Abstractions;
 

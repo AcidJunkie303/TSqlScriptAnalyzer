@@ -3,7 +3,7 @@ using DatabaseAnalyzer.Common.Services;
 using DatabaseAnalyzer.Common.Settings;
 using DatabaseAnalyzer.Testing;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
-using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
+using DatabaseAnalyzers.DefaultAnalyzers.Settings;
 using Xunit.Abstractions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Indices;

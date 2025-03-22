@@ -141,7 +141,7 @@ public sealed class DeadCodeAnalyzerTests(ITestOutputHelper testOutputHelper)
         const string code = """
                             USE MyDb
                             GO
-                            
+
                                 GOTO MyLabel
                             MyLabel:
                                 PRINT 'Hello'

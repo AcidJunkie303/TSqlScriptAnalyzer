@@ -1,6 +1,6 @@
 using DatabaseAnalyzer.Testing;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.ObjectCreation;
-using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
+using DatabaseAnalyzers.DefaultAnalyzers.Settings;
 using Xunit.Abstractions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.ObjectCreation;

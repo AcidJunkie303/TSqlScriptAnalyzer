@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
+using DatabaseAnalyzers.DefaultAnalyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Services;

@@ -1,7 +1,7 @@
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
-using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
+using DatabaseAnalyzers.DefaultAnalyzers.Settings;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Consistency;
 

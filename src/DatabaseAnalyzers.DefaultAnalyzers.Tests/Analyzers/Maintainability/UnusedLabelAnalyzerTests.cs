@@ -13,10 +13,10 @@ public sealed class UnusedLabelAnalyzerTests(ITestOutputHelper testOutputHelper)
         const string code = """
                             USE MyDb
                             GO
-                            
+
                                 GOTO MyLabel -- would cause an error at runtime, but perfect for testing
                             GO
-                            
+
                                 GOTO MyLabel
                                 PRINT 'Hello'
                             MyLabel:
@@ -31,7 +31,7 @@ public sealed class UnusedLabelAnalyzerTests(ITestOutputHelper testOutputHelper)
         const string code = """
                             USE MyDb
                             GO
-                            
+
                                 PRINT 'Hello'
                             ▶️AJ5036💛script_0.sql💛💛MyLabel✅MyLabel:◀️
                                 PRINT 'Hello'

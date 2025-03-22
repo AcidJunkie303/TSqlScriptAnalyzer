@@ -1,6 +1,6 @@
 using DatabaseAnalyzer.Testing;
 using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Naming;
-using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
+using DatabaseAnalyzers.DefaultAnalyzers.Settings;
 using Xunit.Abstractions;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Naming;
