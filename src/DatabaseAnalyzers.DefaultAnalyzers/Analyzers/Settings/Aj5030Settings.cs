@@ -24,6 +24,7 @@ public sealed class Aj5030SettingsRaw : IRawDiagnosticSettings<Aj5030Settings>
     public PatternEntryRaw? TriggerName { get; set; }
     public PatternEntryRaw? VariableName { get; set; }
     public PatternEntryRaw? ViewName { get; set; }
+    public PatternEntryRaw? TableAliasName { get; set; }
     public IReadOnlyCollection<string?>? IgnoredObjectNamePatterns { get; set; }
 
     public Aj5030Settings ToSettings() => new
@@ -37,6 +38,7 @@ public sealed class Aj5030SettingsRaw : IRawDiagnosticSettings<Aj5030Settings>
         TriggerName: ToPatternEntry(TriggerName),
         VariableName: ToPatternEntry(VariableName),
         ViewName: ToPatternEntry(ViewName),
+        TableAliasName: ToPatternEntry(TableAliasName),
         IgnoredObjectNamePatterns: IgnoredObjectNamePatterns
                                        ?.WhereNotNullOrWhiteSpaceOnly()
                                        .Select(a => a.ToRegexWithSimpleWildcards(caseSensitive: false, compileRegex: true))
@@ -77,12 +79,15 @@ public sealed record Aj5030Settings(
     Aj5030Settings.PatternEntry VariableName,
     [property: Description("The naming policy for views.")]
     Aj5030Settings.PatternEntry ViewName,
+    [property: Description("The naming policy for table aliases.")]
+    Aj5030Settings.PatternEntry TableAliasName,
     [property: Description("The object names to exclude from this rule. Wildcards like `*` and `?` are supported.")]
     IReadOnlyList<Regex> IgnoredObjectNamePatterns)
     : IDiagnosticSettings<Aj5030Settings>
 {
     public static Aj5030Settings Default { get; } = new
     (
+        new PatternEntry(Aj5030SettingsRaw.AlwaysMatchRegex, string.Empty),
         new PatternEntry(Aj5030SettingsRaw.AlwaysMatchRegex, string.Empty),
         new PatternEntry(Aj5030SettingsRaw.AlwaysMatchRegex, string.Empty),
         new PatternEntry(Aj5030SettingsRaw.AlwaysMatchRegex, string.Empty),

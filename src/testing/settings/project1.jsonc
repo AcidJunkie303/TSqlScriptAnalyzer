@@ -156,6 +156,10 @@
                 "Pattern": "\\AV_[A-Z][A-Za-z0-1]+",
                 "Description": "View names must start with a capital letter followed by characters or numbers only"
             },
+            "TableAliasName": {
+                "Pattern": "\\A[a-z0-9_]+",
+                "Description": "View names must start with a lower case letter and followed by underscores, lower case letters or numbers only"
+            },
             "IgnoredObjectNamePatterns": [
                 "MyDb.MySchema.*"
             ]
