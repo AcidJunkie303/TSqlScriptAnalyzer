@@ -1,6 +1,6 @@
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
-using DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Settings;
+using DatabaseAnalyzers.DefaultAnalyzers.Settings;
 using DatabaseAnalyzers.DefaultAnalyzers.Model;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
