@@ -70,6 +70,14 @@ END
 
 GO
 SELECT CoLuMn5 FROM TaBlE1
+SELECT Column1, Columne2 FROM Table1
+SELECT Column1,
+       Columne2 
+FROM Table1
+SELECT Column1,
+        Columne2 
+FROM Table1
+
 GO
 
 EXEC P2222 @Param1 = 303
@@ -92,6 +100,8 @@ BEGIN
     SELECT t + 1, CHARINDEX(@Delimiter, @List, t + 1) 
     FROM a WHERE CHARINDEX(@Delimiter, @List, t + 1) > 0  -- AJ5044 raised for `a`
   )  
-  INSERT @t SELECT SUBSTRING(@List, f, t - f) FROM a OPTION (MAXRECURSION 0);   -- AJ5044 raised for `a`
+  INSERT @t 
+  SELECT SUBSTRING(@List, f, t - f)
+  FROM a OPTION (MAXRECURSION 0);   -- AJ5044 raised for `a`
   RETURN;
 END
