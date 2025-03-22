@@ -1,4 +1,6 @@
 using System.Runtime.InteropServices;
+using DatabaseAnalyzer.Common.Extensions;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Common.Contracts;
 
@@ -17,6 +19,12 @@ public record struct CodeRegion(
         => new(new CodeLocation(beginLineNumber, beginColumnNumber), new CodeLocation(endLineNumber, endColumnNumber));
 
     public static CodeRegion CreateSpan(CodeRegion begin, CodeRegion end) => Create(begin.Begin, end.End);
+
+    public static CodeRegion CreateSpan(TSqlFragment begin, TSqlFragment end)
+    {
+        var endRegion = end.GetCodeRegion();
+        return Create(begin.StartLine, begin.StartColumn, endRegion.End.Line, endRegion.End.Column);
+    }
 
     public readonly bool IsAround(int lineNumber, int columnNumber)
         => lineNumber >= Begin.Line

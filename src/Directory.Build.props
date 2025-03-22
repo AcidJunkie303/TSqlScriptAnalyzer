@@ -54,7 +54,7 @@
 
     <!-- C# Analyzers -->
     <ItemGroup>
-        <PackageReference Include="Meziantou.Analyzer" Version="2.0.188">
+        <PackageReference Include="Meziantou.Analyzer" Version="2.0.189">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
@@ -89,7 +89,7 @@
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0"/>
         <PackageReference Include="xunit" Version="2.9.3"/>
         <PackageReference Include="xunit.runner.visualstudio" Version="3.0.2" privateAssets="all"/>
-        <PackageReference Include="JunitXml.TestLogger" Version="6.0.0"/>
+        <PackageReference Include="JunitXml.TestLogger" Version="6.1.0"/>
         <PackageReference Include="coverlet.collector" Version="6.0.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
