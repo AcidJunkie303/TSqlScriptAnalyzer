@@ -45,7 +45,7 @@ internal sealed class Aj5058SettingsRaw : IRawDiagnosticSettings<Aj5058Settings>
 
         var flatFileNamePatterns = rawFileNamePatterns
             .WhereNotNullOrWhiteSpaceOnly()
-            .StringJoin("    ;    ");
+            .StringJoin("\n");
 
         return new Aj5058FileNamePatternsAndExpressions(expressions, flatFileNamePatterns, shortenedName);
     }
