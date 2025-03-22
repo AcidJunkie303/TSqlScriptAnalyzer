@@ -63,12 +63,15 @@ BEGIN
     SELECT
         Tbl.Col.value('Id[1]', 'INT')                     AS Id,
         Tbl.Col.value('PosDate[1]', 'DATETIME2')          AS PosDate
-    FROM    @MyXml.nodes('//Limit') Tbl(Col)
+    FROM    @MyXml.nodes('//Limit') tbl(Col)
     
 END
 
+SELECT      t1.Id,
+            t2.Column2
+FROM        Table1 t1
+INNER JOIN  Table2 t2 ON t2.Id = t1.Id
 
-GO
 SELECT CoLuMn5 FROM TaBlE1
 SELECT Column1, Columne2 FROM Table1
 SELECT Column1,

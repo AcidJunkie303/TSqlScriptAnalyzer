@@ -26,6 +26,7 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
         var triggers = _script.ParsedScript.GetTopLevelDescendantsOfType<TriggerStatementBody>(_script.ParentFragmentProvider);
         var variables = _script.ParsedScript.GetTopLevelDescendantsOfType<DeclareVariableStatement>(_script.ParentFragmentProvider);
         var views = _script.ParsedScript.GetTopLevelDescendantsOfType<ViewStatementBody>(_script.ParentFragmentProvider);
+        var tableReferences = _script.ParsedScript.GetTopLevelDescendantsOfType<TableReferenceWithAlias>(_script.ParentFragmentProvider);
         var functions = _script.ParsedScript
             .GetTopLevelDescendantsOfType<FunctionStatementBody>(_script.ParentFragmentProvider)
             .ToList();
@@ -46,6 +47,24 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
         AnalyzeProcedures(procedures);
         AnalyzeFunctions(functions);
         AnalyzeParameters(parameters);
+        AnalyzeTableReferences(tableReferences);
+    }
+
+    private void AnalyzeTableReferences(IEnumerable<TableReferenceWithAlias> tableReferences)
+    {
+        foreach (var tableReference in tableReferences)
+        {
+            if (string.IsNullOrEmpty(tableReference.Alias?.Value))
+            {
+                continue;
+            }
+
+            Analyze(tableReference, "alias", _settings.TableAliasName, AliasNameGetter, FragmentToReportGetter, AliasNameToReportGetter);
+        }
+
+        static string AliasNameGetter(TableReferenceWithAlias a) => a.Alias.Value;
+        static TSqlFragment FragmentToReportGetter(TableReferenceWithAlias a) => a.Alias;
+        static string AliasNameToReportGetter(TableReferenceWithAlias a) => a.Alias.Value;
     }
 
     private void AnalyzeParameters(IEnumerable<ProcedureParameter> parameters)

@@ -20,6 +20,7 @@ public sealed class NamingAnalyzerTests(ITestOutputHelper testOutputHelper)
         TriggerName = new Aj5030SettingsRaw.PatternEntryRaw { Pattern = "\\ATRG_", Description = "HHH" },
         VariableName = new Aj5030SettingsRaw.PatternEntryRaw { Pattern = "\\AVariable", Description = "III" },
         ViewName = new Aj5030SettingsRaw.PatternEntryRaw { Pattern = "\\AView", Description = "JJJ" },
+        TableAliasName = new Aj5030SettingsRaw.PatternEntryRaw { Pattern = "\\A[a-z]+", Description = "KKK" },
         IgnoredObjectNamePatterns = ["OtherDb.*"]
     }.ToSettings();
 
@@ -191,6 +192,21 @@ public sealed class NamingAnalyzerTests(ITestOutputHelper testOutputHelper)
                     (
                         Column303        NVARCHAR(128) NOT NULL
                     )
+                    """;
+        Verify(Settings, code);
+    }
+
+    [Theory]
+    [InlineData("/* 0001 */ lower")]
+    [InlineData("/* 0002*/ ▶️AJ5030💛script_0.sql💛💛alias💛Upper💛KKK✅Upper◀️")]
+    public void TableAliasName_Theory(string tableAliasName)
+    {
+        var code = $"""
+                    USE MyDb
+                    GO
+
+                    SELECT      Id
+                    FROM        Table1 {tableAliasName}
                     """;
         Verify(Settings, code);
     }
