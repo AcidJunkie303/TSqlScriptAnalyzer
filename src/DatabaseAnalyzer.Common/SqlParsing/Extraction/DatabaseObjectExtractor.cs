@@ -103,7 +103,7 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
                 var scriptFilePaths = group
                     .Select(static a => a.RelativeScriptFilePath)
                     .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .StringJoin("    ;    ");
+                    .StringJoin("\n");
 
                 _issueReporter.Report(WellKnownDiagnosticDefinitions.DuplicateObjectCreationStatement,
                     databaseObject.DatabaseName,
@@ -140,7 +140,7 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
                 var scriptFilePaths = databaseObjects
                     .Select(static a => a.RelativeScriptFilePath)
                     .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .StringJoin("    ;    ");
+                    .StringJoin("\n");
 
                 _issueReporter.Report(WellKnownDiagnosticDefinitions.DuplicateObjectCreationStatement,
                     databaseObject.DatabaseName,
