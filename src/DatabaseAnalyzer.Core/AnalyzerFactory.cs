@@ -18,6 +18,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog.Events;
 
+#if !DEBUG
+using DatabaseAnalyzer.Core.Threading;
+#endif
+
 namespace DatabaseAnalyzer.Core;
 
 [SuppressMessage("Major Code Smell", "S1200:Classes should not be coupled to too many other classes", Justification = "Since this is a factory class that sets up a DI container, kinda hard to prevent")]

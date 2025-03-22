@@ -10,13 +10,13 @@ namespace DatabaseAnalyzer.Testing;
 internal sealed class ScriptAnalysisContext : IScriptAnalysisContext
 {
     public IReadOnlyList<IScriptModel> ErrorFreeScripts { get; }
-    public string DefaultSchemaName { get; init; }
-    public IReadOnlyList<IScriptModel> Scripts { get; init; }
-    public IScriptModel Script { get; init; }
-    public IReadOnlyDictionary<string, IReadOnlyList<IScriptModel>> ScriptsByDatabaseName { get; init; }
-    public IIssueReporter IssueReporter { get; init; }
-    public ILogger Logger { get; init; }
-    public FrozenSet<string> DisabledDiagnosticIds { get; init; }
+    public string DefaultSchemaName { get; }
+    public IReadOnlyList<IScriptModel> Scripts { get; }
+    public IScriptModel Script { get; }
+    public IReadOnlyDictionary<string, IReadOnlyList<IScriptModel>> ScriptsByDatabaseName { get; }
+    public IIssueReporter IssueReporter { get; }
+    public ILogger Logger { get; }
+    public FrozenSet<string> DisabledDiagnosticIds { get; }
 
     [SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters")]
     public ScriptAnalysisContext(string defaultSchemaName,
