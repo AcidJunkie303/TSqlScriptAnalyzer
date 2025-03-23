@@ -1,47 +1,71 @@
 # Creating analyzers
 
-Before we dive into the analyzers itself, there are some data structures you need to know first.
+### Analyzer Types
 
-### IDiagnosticDefinition
+There are two kind of analyzers:
+
+| Type             | Description                                                                                                                   | 
+|:-----------------|:------------------------------------------------------------------------------------------------------------------------------|
+| Script Analyzers | This type of analyzer is executed once per SQL script found. For every script, a new instance for of the analyzer is created. |
+| Global Analyzers | Executed only once. This is useful to analyze things which concern more than one file.                                        |
+
+### Important Structures
+
+Before we dive into the analyzers itself, there are some data structures you need to know first.
 
 ```csharp
 public interface IDiagnosticDefinition : IEquatable<IDiagnosticDefinition>
 {
-    string DiagnosticId { get; } // e.g. AJ1234
-    IssueType IssueType { get; } // Warning, Error, Information
-    string Title { get; } 
+    string DiagnosticId { get; }
+    IssueType IssueType { get; }
+    string Title { get; }
     string MessageTemplate { get; }
-    int RequiredInsertionStringCount { get; }
+    IReadOnlyList<string> InsertionStringDescriptions { get; }
+    Uri HelpUrl { get; }
 }
 ```
 
-| Property                     | Description                                                                                                                                 | 
-|:-----------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------|
-| MessageTemplate              | The message template used to report the issue. It can contain insertions strings indices enclosed in curly brackets. E.g. `{0}`, `{1}` etc. |
-| RequiredInsertionStringCount | The insertion string count required to for this diagnostic to be reported.                                                                  |
+| Property                    | Description                                                                                                                                 | 
+|:----------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------|
+| DiagnosticId                | The unique identifier for this diagnostic. Normally, this are some letter followed by numbers. E.g. `XY1234`.                               |
+| IssueType                   | Possible values: `Information`, `Warning`, `Error`, `Formatting` or `MissingIndex`                                                          |
+| Title                       | Simple title. E.g. `Excessive string concatenation`.                                                                                        |
+| MessageTemplate             | The message template used to report the issue. It can contain insertions strings indices enclosed in curly brackets. E.g. `{0}`, `{1}` etc. |
+| InsertionStringDescriptions | Description for each insertion string of `MessageTemplate`.                                                                                 |
+| HelpUrl                     | The URL for additional diagnostic information.                                                                                              |
 
-### IAnalysisContext
+A default implementation is available: `DatabaseAnalyzer.Common.Contracts.DiagnosticDefinition`.
+
+#### IScriptAnalysisContext and IGlobalAnalysisContext
 
 ```csharp
-public interface IAnalysisContext
+public interface IScriptAnalysisContext
 {
     string DefaultSchemaName { get; }
+    FrozenSet<string> DisabledDiagnosticIds { get; }
     IReadOnlyList<IScriptModel> Scripts { get; }
-    IReadOnlyDictionary<string, IReadOnlyList<IScriptModel>> ScriptsByDatabaseName { get; }
-    IDiagnosticSettingsProvider DiagnosticSettingsProvider { get; }
+    IReadOnlyList<IScriptModel> ErrorFreeScripts { get; }
     IIssueReporter IssueReporter { get; }
+    ILogger Logger { get; }
+    IReadOnlyDictionary<string, IReadOnlyList<IScriptModel>> ScriptsByDatabaseName { get; }
+    IScriptModel Script { get; } // only available in IScriptAnalysisContext
 }
+
+
 ```
 
-| Property                    | Description                                                          | 
-|:----------------------------|:---------------------------------------------------------------------|
-| DefaultSchemaName           | The default schema name. This is provided through the configuration. |
-| Scripts                     | All parsed scripts.                                                  |
-| ScriptsByDatabaseName       | Scripts grouped by database names.                                   |
-| IDiagnosticSettingsProvider | Settings provider. Every diagnostic has it's own configuration.      |
-| IIssueReporter              | Use to report diagnostics/issues.                                    |
+| Property              | Description                                                          | 
+|:----------------------|:---------------------------------------------------------------------|
+| DefaultSchemaName     | The default schema name. This is provided through the configuration. |
+| DisabledDiagnosticIds |                                                                      |
+| Scripts               | All parsed scripts. Some may contain errors. Use with caution!       |
+| ErrorFreeScripts      | All parsed scripts which do not contain errors.                      |
+| IIssueReporter        | Used to report diagnostics/issues.                                   |
+| Logger                | An instance of `ILogger`.                                            |
+| ScriptsByDatabaseName | Scripts grouped by database names.                                   |
+| Script                | The script to analyze (only available on `IScriptAnalysisContext`.   |
 
-### IScriptModel
+#### IScriptModel
 
 ```csharp
 public interface IScriptModel
@@ -51,7 +75,9 @@ public interface IScriptModel
     string Contents { get; }
     TSqlScript ParsedScript { get; }
     IParentFragmentProvider ParentFragmentProvider { get; }
+    IReadOnlyList<ScriptError> Errors { get; }
     IReadOnlyList<DiagnosticSuppression> DiagnosticSuppressions { get; }
+    bool HasErrors { get; }
 }
 ```
 
@@ -62,38 +88,29 @@ public interface IScriptModel
 | Contents               | The bare script contents as string.                                                                                                                                                              |
 | ParsedScript           | The parsed script as AST (abstract syntax tree) represented through `Microsoft.SqlServer.TransactSql.ScriptDom.ParsedScript`.                                                                    |
 | ParentFragmentProvider | Use to get the parent AST node.                                                                                                                                                                  |
+| Errors                 | The script parsing errors.                                                                                                                                                                       |
 | DiagnosticSuppressions | The diagnostic suppressions regions defined in this script through `#pragma diagnostic disable X` and restored through `#pragma diagnostic restore X`.                                           |
+| HasErrors              | Indicates whether the script has any parsing errors.                                                                                                                                             |
 
-### IObjectAnalyzer
+#### IScriptAnalyzer and IGlobalAnalyzer
 
-Base interface for analyzers is `IObjectAnalyzer` provides information about which diagnostic types this analyzer will
-report:
-
-```csharp
-public interface IObjectAnalyzer
-{
-    IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; }
-}
-```
-
-### IScriptAnalyzer
+IScriptAnalyzer:
 
 ```csharp
 public interface IScriptAnalyzer : IObjectAnalyzer
 {
-    void AnalyzeScript(IAnalysisContext context, IScriptModel script);
+    static virtual IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [];
+    void AnalyzeScript();
 }
 ```
 
-### IGlobalAnalyzer
-
-Global analyzers are not bound to a single script. They can be used to perform analysis in a wider scope which involves
-multiple script files.
+IGlobalAnalyzer:
 
 ```csharp
 public interface IGlobalAnalyzer : IObjectAnalyzer
 {
-    void Analyze(IAnalysisContext context);
+    static virtual IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [];
+    void Analyze();
 }
 ```
 
@@ -131,8 +148,8 @@ public interface IRawSettings<out TSettings>
 }
 ```
 
-Settings are not defined per analyzer though. They are defined per diagnostic ID.
-Example is for a settings implementation can be found in the next section
+- Settings are not defined per analyzer though. They are defined per diagnostic ID.
+- Example is for a settings implementation can be found in the next section.
 
 # Walkthrough
 
@@ -145,30 +162,30 @@ We also want to make it configurable. The settings contain the information wheth
 All we need to do is to create the following two classes:
 
 ```csharp
-internal sealed class Aj5022SettingsRaw : IRawDiagnosticSettings<Aj5022Settings>
+[SettingsSource(SettingsSourceKind.Diagnostics, "XY1234")] // To tell the framework where to find the settings in the project file
+internal sealed class Xy1234SettingsRaw : IRawDiagnosticSettings<Xy1234Settings>
 {
     public bool IfRequiresBeginEndBlock { get; set; }
     public bool WhileRequiresBeginEndBlock { get; set; }
 
-    public Aj5022Settings ToSettings() => new
+    public Xy1234Settings ToSettings() => new
     (
         IfRequiresBeginEndBlock,
         WhileRequiresBeginEndBlock
     );
 }
 
-internal sealed record Aj5022Settings(
+internal sealed record Xy1234Settings(
     bool IfRequiresBeginEndBlock,
     bool WhileRequiresBeginEndBlock
-) : ISettings<Aj5022Settings>
+) : ISettings<Xy1234Settings>
 {
-    public static Aj5022Settings Default { get; } = new(IfRequiresBeginEndBlock: true, WhileRequiresBeginEndBlock: true);
-    public static string DiagnosticId => "AJ5022";
+    public static Xy1234Settings Default { get; } = new(IfRequiresBeginEndBlock: true, WhileRequiresBeginEndBlock: true);
+    public static string DiagnosticId => "Xy1234";
 }
 ```
 
-The framework will extract this information and provides it to the analyzer through
-`IAnalysisContext.DiagnosticSettingsProvider`.
+The framework will load and injected settings into the analyzers through the constructor (when defined).
 
 Important:
 Even if the project configuration doesn't contain settings for this diagnostics, it will instantiate the raw class with
@@ -176,77 +193,91 @@ default property values.
 
 ## Analyzer Code
 
-Barebone implementation:
+Bare-bone implementation:
 
 ```csharp
 public sealed class MissingBeginEndAnalyzer : IScriptAnalyzer
 {
+    private readonly Xy1234Settings _settings;
+    private readonly IScriptAnalysisContext _context;
+    private readonly IScriptModel _script;
+    
     public IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+    public MissingBeginEndAnalyzer(IScriptAnalysisContext context, Xy1234Settings settings)
     {
-        var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5022Settings>();
-        // analysis code will come here
+        // IScriptAnalysisContext and Xy1234Settings are injected through the constructor
+        
+        _context = context;
+        _script = context.Script;
+        _settings = settings;
+    }
+
+    public void AnalyzeScript()
+    {
+        // analysis will be done here...
     }
 
     private static class DiagnosticDefinitions
     {
         public static DiagnosticDefinition Default { get; } = new
         (
-            "AJ5022",
+            "XY1234",
             IssueType.Formatting,
             "Missing BEGIN/END blocks",
             "The children of '{0}' should be enclosed in BEGIN/END blocks.",
             ["Statement name"], // describes the insertion strings used above
-            new Uri("https://link.to.the.issue")
+            new Uri("https://link.to.the.issue/{DiagnosticId}")
         );
     }
 }
 ```
 
-Check out the class `DiagnosticDefinition`. The message template (4th property) contains one insertion string. This will
-be the name of the statement (`IF` or `WHILE`).
+- The message template contains one insertion string. This will
+  be the name of the statement (`IF` or `WHILE`).
+- The `Uri` argument contains a placeholder `{DiagnosticId}`. This placeholder will be replaced by the actual diagnostic
+  id (when found).
 
-Let's have a look at the analyzer core implementation:
+Let's have a look at the script analyzer core implementation:
 
 ```csharp
-public void AnalyzeScript(IAnalysisContext context, IScriptModel script)
+public void AnalyzeScript()
 {
-    var settings = context.DiagnosticSettingsProvider.GetSettings<Aj5022Settings>();
-
-    if (settings.WhileRequiresBeginEndBlock)
+    if (_settings.WhileRequiresBeginEndBlock)
     {
-        foreach (var statement in script.ParsedScript.GetChildren<WhileStatement>(recursive: true))
+        foreach (var statement in _script.ParsedScript.GetChildren<WhileStatement>(recursive: true))
         {
-            AnalyzeWhileStatement(context, script, statement);
+            AnalyzeWhileStatement(statement);
         }
     }
 
-    if (settings.IfRequiresBeginEndBlock)
+    if (_settings.IfRequiresBeginEndBlock)
     {
-        foreach (var statement in script.ParsedScript.GetChildren<IfStatement>(recursive: true))
+        foreach (var statement in _script.ParsedScript.GetChildren<IfStatement>(recursive: true))
         {
-            AnalyzeIfStatement(context, script, statement.ThenStatement, "IF");
+            AnalyzeIfThenStatement(statement.ThenStatement, "IF");
             if (statement.ElseStatement is not null)
             {
-                AnalyzeIfStatement(context, script, statement.ElseStatement, "ELSE");
+                AnalyzeIfStatement(statement.ElseStatement, "ELSE");
             }
         }
     }
 }
 
-private static void AnalyzeWhileStatement(IAnalysisContext context, IScriptModel script, WhileStatement statement)
+private static void AnalyzeWhileStatement(WhileStatement statement)
 {
+    // if the statement is not of type BeginEndBlockStatement, the body of the while statement is not a BEGIN/END block.
     if (statement.Statement is BeginEndBlockStatement)
     {
         return;
     }
 
-    Report(context, script, statement.Statement, "WHILE");
+    Report(context, _script, statement.Statement, "WHILE");
 }
 
-private static void AnalyzeIfStatement(IAnalysisContext context, IScriptModel script, TSqlStatement statement, string statementName)
+private static void AnalyzeIfThenStatement(TSqlStatement statement, string statementName)
 {
+    // if the statement is not of type BeginEndBlockStatement, the body of the if statement is not a BEGIN/END block.
     if (statement is BeginEndBlockStatement)
     {
         return;
@@ -255,33 +286,24 @@ private static void AnalyzeIfStatement(IAnalysisContext context, IScriptModel sc
     Report(context, script, statement, statementName);
 }
 
-private static void Report(IAnalysisContext context, IScriptModel script, TSqlFragment fragmentToReport, string statementName)
+private static void Report(TSqlFragment fragmentToReport, string statementName)
 {
-    var fullObjectName = fragmentToReport.TryGetFirstClassObjectName(context, script);
+    var fullObjectName = fragmentToReport.TryGetFirstClassObjectName(context, _script);
     var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(fragmentToReport) ?? DatabaseNames.Unknown;
-    context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, fragmentToReport.GetCodeRegion(), statementName);
+    _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, fragmentToReport.GetCodeRegion(), statementName);
 }
 ```
 
-Pretty easy isn't it? Well, you need to know the AST classes of course...
+Pretty easy isn't it?
 
 Let's have a look at the Report method:
-
-```csharp
-private static void Report(IAnalysisContext context, IScriptModel script, TSqlFragment fragmentToReport, string statementName)
-{
-    var fullObjectName = fragmentToReport.TryGetFirstClassObjectName(context, script);
-    var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(fragmentToReport) ?? DatabaseNames.Unknown;
-    context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, fragmentToReport.GetCodeRegion(), statementName);
-}
-```
 
 ```csharp
 var fullObjectName = statement.TryGetFirstClassObjectName(context, script);
 ```
 
 The code above uses an extension method `TryGetFirstClassObjectName` to find the first parent in the AST which is a
-function, stored procedure, table etc. If such an element is found, the method returns the full object name like
+function, stored procedure, table or function. If such an element is found, the method returns the full object name like
 `MyDatabase.dbo.Procedure1`. Otherwise, it will return null.
 
 ```csharp
@@ -299,3 +321,17 @@ context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script
 `WHILE` is the one and only insertion string we provide.
 
 Let's continue with [Unit Testing Analyzers](UnitTestingAnalyzers.md)
+
+# Injectable Services
+
+| Type                     | Description                                                                                                                                                                 | 
+|:-------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Any settings class       | If setting class pairs are implemented correctly, any such settings class can be injected.                                                                                  |
+| `IGlobalAnalysisContext` | In case the analyzer is a global analyzer, this type should be injected to get the necessary scripts etc.                                                                   |
+| `IScriptAnalysisContext` | For script analyzers, this type should be injected to get the script to analyze.                                                                                            |
+| `IAstService`            | Provides various AST services. Well, currently it only allows checking whether a AST node is the child of an function enum parameter e.g. (the 1st argument of `DATEADD()`) |
+| `IColumnResolverFactory` | Factory to create `IColumnResolver` which is used to resolve columns within a query.                                                                                        |
+| `ITableResolverFactory`  | Factory to create `ITableResolver` used to resolve tables within a query.                                                                                                   |
+| `IObjectProvider`        | Provides information about all extracted objects (e.g. Tables, functions, procedures etc.).                                                                                 |
+
+

@@ -94,7 +94,7 @@ public sealed class SelectStarAnalyzerTests(ITestOutputHelper testOutputHelper)
                     GO
 
                     SELECT      t1.Value
-                    FROM        Table1 AS t
+                    FROM        Table1 t1
                     WHERE EXISTS (
                         SELECT  {insertion}
                         FROM    Table2 t2
