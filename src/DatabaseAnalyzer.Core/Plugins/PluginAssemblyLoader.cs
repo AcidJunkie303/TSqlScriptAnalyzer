@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Contracts.Settings;
@@ -9,25 +10,29 @@ namespace DatabaseAnalyzer.Core.Plugins;
 
 internal static class PluginAssemblyLoader
 {
-    private static readonly string PluginsDirectoryPath = GetPluginsDirectoryPath();
+    private static readonly string AssemblyDirectoryPath = Path.GetDirectoryName(Environment.ProcessPath)!;
 
-    public static IReadOnlyList<PluginAssembly> LoadPlugins()
+    [SuppressMessage("Critical Code Smell", "S134:Control flow statements \"if\", \"switch\", \"for\", \"foreach\", \"while\", \"do\"  and \"try\" should not be nested too deeply")]
+    public static IReadOnlyList<PluginAssembly> LoadPlugins(IEnumerable<string> pluginsDirectoryPaths)
     {
         var pluginAssemblies = new List<PluginAssembly>();
 
         try
         {
-            foreach (var assemblyPath in GetPluginAssemblyPaths())
+            foreach (var directoryPath in GetExistingPluginDirectoryPaths(pluginsDirectoryPaths))
             {
-#pragma warning disable CA2000 // Dispose objects before losing scope -> done
-                var pluginAssembly = LoadAssemblyFromPath(assemblyPath);
-#pragma warning restore CA2000
-                if (pluginAssembly is null)
+                foreach (var assemblyPath in GetPluginAssemblyPaths(directoryPath))
                 {
-                    continue;
-                }
+#pragma warning disable CA2000 // Dispose objects before losing scope -> done
+                    var pluginAssembly = LoadAssemblyFromPath(assemblyPath);
+#pragma warning restore CA2000
+                    if (pluginAssembly is null)
+                    {
+                        continue;
+                    }
 
-                pluginAssemblies.Add(pluginAssembly);
+                    pluginAssemblies.Add(pluginAssembly);
+                }
             }
         }
         catch
@@ -42,6 +47,11 @@ internal static class PluginAssemblyLoader
 
         return pluginAssemblies;
     }
+
+    private static IEnumerable<string> GetExistingPluginDirectoryPaths(IEnumerable<string> pluginsDirectoryPaths)
+        => pluginsDirectoryPaths
+            .WhereNotNullOrWhiteSpaceOnly()
+            .Where(Directory.Exists);
 
     private static PluginAssembly? LoadAssemblyFromPath(string assemblyFilePath)
     {
@@ -109,17 +119,15 @@ internal static class PluginAssemblyLoader
                 } && a.GetInterfaces().Any(static x => x == typeof(TService));
             });
 
-    private static string[] GetPluginAssemblyPaths()
+    private static string[] GetPluginAssemblyPaths(string pluginsDirectoryPath)
     {
-        return Directory.Exists(PluginsDirectoryPath)
-            ? Directory.GetFiles(PluginsDirectoryPath, "*.dll", SearchOption.AllDirectories)
-            : [];
-    }
+        var directoryPath = Path.IsPathRooted(pluginsDirectoryPath)
+            ? pluginsDirectoryPath
+            : Path.GetFullPath(pluginsDirectoryPath, AssemblyDirectoryPath);
 
-    private static string GetPluginsDirectoryPath()
-    {
-        var currentDirectory = Path.GetDirectoryName(Environment.ProcessPath) ?? throw new InvalidOperationException("Unable to determine application directory.");
-        return Path.Combine(currentDirectory, "plugins");
+        return Directory.Exists(directoryPath)
+            ? Directory.GetFiles(directoryPath, "*.dll", SearchOption.AllDirectories)
+            : [];
     }
 
     private static List<SettingMetadata> GetSettingsMetadata(Assembly assembly)

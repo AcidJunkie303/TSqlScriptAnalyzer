@@ -1,5 +1,10 @@
 {
     "DefaultSchemaName": "dbo",
+    "Plugins": {
+        "PluginDirectoryPaths": [
+            ".\\Plugins"
+        ]
+    },
     "ScriptSource": {
         "ExclusionFilters": [],
         "ScriptsRootDirectoryPath": "..\\..\\testing\\scripts\\",
@@ -21,7 +26,8 @@
         "AJ5003": // Wrong USE DATABASE name statement
         {
             "ExcludedFilePathPatterns": [
-                "0000 Create*.sql"
+                "0000 Create*.sql",
+                "0001 Drop*.sql"
             ]
         },
         "AJ5004": // open points / todo
