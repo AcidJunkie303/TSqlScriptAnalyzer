@@ -1,5 +1,4 @@
 using DatabaseAnalyzer.Common.Models;
-using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 
 namespace DatabaseAnalyzer.Common.Contracts.Services;
 

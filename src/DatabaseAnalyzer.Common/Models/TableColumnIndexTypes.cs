@@ -1,4 +1,4 @@
-namespace DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
+namespace DatabaseAnalyzer.Common.Models;
 
 [Flags]
 public enum TableColumnIndexTypes

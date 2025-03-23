@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 using DatabaseAnalyzer.Common.Contracts;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
-namespace DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
+namespace DatabaseAnalyzer.Common.Models;
 
 public sealed record SynonymInformation(
     string DatabaseName,
