@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 using DatabaseAnalyzer.Common.Extensions;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
-namespace DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
+namespace DatabaseAnalyzer.Common.Models;
 
 public sealed record IndexInformation(
     string DatabaseName,

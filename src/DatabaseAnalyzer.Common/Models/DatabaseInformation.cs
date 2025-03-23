@@ -1,4 +1,4 @@
-namespace DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
+namespace DatabaseAnalyzer.Common.Models;
 
 public sealed record DatabaseInformation(
     string DatabaseName,

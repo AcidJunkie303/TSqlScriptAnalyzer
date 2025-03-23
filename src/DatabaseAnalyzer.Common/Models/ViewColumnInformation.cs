@@ -4,19 +4,22 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Common.Models;
 
-public sealed record FunctionInformation(
+public sealed record ViewColumnInformation(
     string DatabaseName,
     string SchemaName,
+    string ViewName,
     string ObjectName,
-    IReadOnlyList<ParameterInformation> Parameters,
-    FunctionStatementBody CreationStatement,
-    string RelativeScriptFilePath)
-    : ISchemaBoundObject
+    TSqlFragment CreationStatement,
+    string RelativeScriptFilePath
+) : ISchemaBoundObject
 {
+    public string FullColumnName { get; } = $"{DatabaseName}.{SchemaName}.{ViewName}.{ObjectName}";
+
     public string FullName { get; } = new[]
     {
         DatabaseName,
         SchemaName,
+        ViewName,
         ObjectName
     }.StringJoin('.');
 
@@ -24,8 +27,7 @@ public sealed record FunctionInformation(
     {
         DatabaseName,
         SchemaName,
+        ViewName,
         ObjectName
     }.ToImmutableArray();
-
-    TSqlFragment IDatabaseObject.CreationStatement => CreationStatement;
 }

@@ -1,7 +1,7 @@
 using System.Collections.Frozen;
 using DatabaseAnalyzer.Common.Extensions;
+using DatabaseAnalyzer.Common.Models;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction;
-using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 using DatabaseAnalyzer.Testing;
 using FluentAssertions;
 using FluentAssertions.Execution;

@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.Models;
-using DatabaseAnalyzer.Testing;
+using DatabaseAnalyzer.Testing.Visualization;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 using Xunit.Abstractions;
 

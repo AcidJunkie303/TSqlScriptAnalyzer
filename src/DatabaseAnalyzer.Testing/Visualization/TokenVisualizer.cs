@@ -3,7 +3,7 @@ using BetterConsoleTables;
 using DatabaseAnalyzer.Common.Extensions;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
-namespace DatabaseAnalyzer.Testing;
+namespace DatabaseAnalyzer.Testing.Visualization;
 
 [SuppressMessage("Maintainability", "CA1515:Consider making public types internal")]
 public static class TokenVisualizer

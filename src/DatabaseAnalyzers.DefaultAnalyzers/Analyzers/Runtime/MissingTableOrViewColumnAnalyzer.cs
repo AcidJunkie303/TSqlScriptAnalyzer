@@ -95,7 +95,7 @@ public sealed class MissingTableOrViewColumnAnalyzer : IGlobalAnalyzer
         var view = _objectProvider.GetView(databaseName, schemaName, tableOrViewName);
         if (view is not null)
         {
-            return view.Columns.Contains(columnName, StringComparer.OrdinalIgnoreCase);
+            return view.ColumnsByName.ContainsKey(columnName);
         }
 
         var synonym = _objectProvider.GetSynonym(databaseName, schemaName, tableOrViewName);

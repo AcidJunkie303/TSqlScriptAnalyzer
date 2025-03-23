@@ -1,7 +1,6 @@
 using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.Models;
-using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 
 namespace DatabaseAnalyzer.Common.Services;
 

@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
-using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
+using DatabaseAnalyzer.Common.Models;
 using DatabaseAnalyzers.DefaultAnalyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 

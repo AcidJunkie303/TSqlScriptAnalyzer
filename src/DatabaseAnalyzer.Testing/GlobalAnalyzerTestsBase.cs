@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Contracts.Settings;
+using DatabaseAnalyzer.Testing.Visualization;
 using Xunit.Abstractions;
 
 namespace DatabaseAnalyzer.Testing;
@@ -31,21 +32,7 @@ public abstract class GlobalAnalyzerTestsBase<TAnalyzer>
 
     protected void Verify(GlobalAnalyzerTester tester)
     {
-        foreach (var script in tester.Scripts)
-        {
-            TestOutputHelper.WriteLine("***************************************************************************");
-            TestOutputHelper.WriteLine(string.Empty);
-            TestOutputHelper.WriteLine(string.Empty);
-            TestOutputHelper.WriteLine(string.Empty);
-            TestOutputHelper.WriteLine($"Syntax Tree of script {script.RelativeScriptFilePath}:");
-            TestOutputHelper.WriteLine(SyntaxTreeVisualizer.Visualize(script.ParsedScript));
-
-            TestOutputHelper.WriteLine(string.Empty);
-            TestOutputHelper.WriteLine(string.Empty);
-            TestOutputHelper.WriteLine(string.Empty);
-            TestOutputHelper.WriteLine($"Tokens of script {script.RelativeScriptFilePath}:");
-            TestOutputHelper.WriteLine(TokenVisualizer.Visualize(script.ParsedScript.ScriptTokenStream));
-        }
+        AstAndTokenVisualizer.Visualize(TestOutputHelper, tester.Scripts);
 
         tester.Test();
     }

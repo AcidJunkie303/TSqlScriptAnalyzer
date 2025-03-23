@@ -1,6 +1,6 @@
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
-namespace DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
+namespace DatabaseAnalyzer.Common.Models;
 
 public interface IDatabaseObject
 {

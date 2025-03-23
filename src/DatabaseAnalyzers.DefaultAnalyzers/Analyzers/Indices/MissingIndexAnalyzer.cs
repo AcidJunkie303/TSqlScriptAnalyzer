@@ -1,8 +1,8 @@
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
+using DatabaseAnalyzer.Common.Models;
 using DatabaseAnalyzer.Common.SqlParsing;
-using DatabaseAnalyzer.Common.SqlParsing.Extraction.Models;
 using DatabaseAnalyzers.DefaultAnalyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
@@ -11,10 +11,10 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
 public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
 {
     private readonly IAstService _astService;
-    private readonly IObjectProvider _objectProvider;
     private readonly IGlobalAnalysisContext _context;
     private readonly Aj5017Settings _missingForeignKeyIndexSettings;
     private readonly Aj5015Settings _missingIndexSettings;
+    private readonly IObjectProvider _objectProvider;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.FilteringColumnNotIndexed, DiagnosticDefinitions.ForeignKeyColumnNotIndexed];
 
@@ -41,7 +41,7 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
 
         if (!_context.DisabledDiagnosticIds.Contains(DiagnosticDefinitions.ForeignKeyColumnNotIndexed.DiagnosticId))
         {
-            AnalyzeForeignKeys(_context,  _objectProvider.DatabasesByName);
+            AnalyzeForeignKeys(_context, _objectProvider.DatabasesByName);
         }
     }
 
