@@ -10,7 +10,7 @@ public sealed class AliasReferenceWithDifferentCasingAnalyzerTests(ITestOutputHe
     [Theory]
     [InlineData("t1")]
     [InlineData("▶️AJ5065💛script_0.sql💛💛T1💛t1✅T1◀️")]
-    public void ProcedureParameterName_Theory(string aliasReferenceName)
+    public void Theory(string aliasReferenceName)
     {
         var code = $"""
                     USE MyDb
