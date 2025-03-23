@@ -11,6 +11,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Settings;
 [SettingsSource(SettingsSourceKind.Diagnostics, "AJ5003")]
 internal sealed class Aj5003SettingsRaw : IRawDiagnosticSettings<Aj5003Settings>
 {
+    [Description("Script file path patterns to exclude. Wildcards like `*` and `?` are supported.")]
     public IReadOnlyList<string?>? ExcludedFilePathPatterns { get; set; }
 
     public Aj5003Settings ToSettings()
@@ -30,7 +31,6 @@ internal sealed class Aj5003SettingsRaw : IRawDiagnosticSettings<Aj5003Settings>
 }
 
 public sealed record Aj5003Settings(
-    [property: Description("Script file path patterns to exclude. Wildcards like `*` and `?` are supported.")]
     IReadOnlyList<Regex> ExcludedFilePathPatterns
 ) : IDiagnosticSettings<Aj5003Settings>
 {

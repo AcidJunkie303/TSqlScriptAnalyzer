@@ -14,17 +14,37 @@ public sealed class Aj5030SettingsRaw : IRawDiagnosticSettings<Aj5030Settings>
 {
     internal static Regex AlwaysMatchRegex { get; } = new(string.Empty, RegexOptions.Compiled, TimeSpan.FromMilliseconds(100)); // ReSharper disable UnusedAutoPropertyAccessor.Global -> used during deserialization
 
+    [Description("The naming policy for columns.")]
     public PatternEntryRaw? ColumnName { get; set; }
+
+    [Description("The naming policy for functions.")]
     public PatternEntryRaw? FunctionName { get; set; }
+
+    [Description("The naming policy for parameters.")]
     public PatternEntryRaw? ParameterName { get; set; }
-    public PatternEntryRaw? PrimaryKeyConstraintName { get; set; }
+
+    [Description("The naming policy for procedures.")]
     public PatternEntryRaw? ProcedureName { get; set; }
+
+    [Description("The naming policy for tables.")]
     public PatternEntryRaw? TableName { get; set; }
+
+    [Description("The naming policy for temp tables.")]
     public PatternEntryRaw? TempTableName { get; set; }
+
+    [Description("The naming policy for triggers.")]
     public PatternEntryRaw? TriggerName { get; set; }
+
+    [Description("The naming policy for variables.")]
     public PatternEntryRaw? VariableName { get; set; }
+
+    [Description("The naming policy for views.")]
     public PatternEntryRaw? ViewName { get; set; }
+
+    [Description("The naming policy for table aliases.")]
     public PatternEntryRaw? TableAliasName { get; set; }
+
+    [Description("The object names to exclude from this rule. Wildcards like `*` and `?` are supported.")]
     public IReadOnlyCollection<string?>? IgnoredObjectNamePatterns { get; set; }
 
     public Aj5030Settings ToSettings() => new
@@ -61,27 +81,16 @@ public sealed class Aj5030SettingsRaw : IRawDiagnosticSettings<Aj5030Settings>
 }
 
 public sealed record Aj5030Settings(
-    [property: Description("The naming policy for columns.")]
     Aj5030Settings.PatternEntry ColumnName,
-    [property: Description("The naming policy for functions.")]
     Aj5030Settings.PatternEntry FunctionName,
-    [property: Description("The naming policy for parameters.")]
     Aj5030Settings.PatternEntry ParameterName,
-    [property: Description("The naming policy for procedures.")]
     Aj5030Settings.PatternEntry ProcedureName,
-    [property: Description("The naming policy for tables.")]
     Aj5030Settings.PatternEntry TableName,
-    [property: Description("The naming policy for temp tables.")]
     Aj5030Settings.PatternEntry TempTableName,
-    [property: Description("The naming policy for triggers.")]
     Aj5030Settings.PatternEntry TriggerName,
-    [property: Description("The naming policy for variables.")]
     Aj5030Settings.PatternEntry VariableName,
-    [property: Description("The naming policy for views.")]
     Aj5030Settings.PatternEntry ViewName,
-    [property: Description("The naming policy for table aliases.")]
     Aj5030Settings.PatternEntry TableAliasName,
-    [property: Description("The object names to exclude from this rule. Wildcards like `*` and `?` are supported.")]
     IReadOnlyList<Regex> IgnoredObjectNamePatterns)
     : IDiagnosticSettings<Aj5030Settings>
 {

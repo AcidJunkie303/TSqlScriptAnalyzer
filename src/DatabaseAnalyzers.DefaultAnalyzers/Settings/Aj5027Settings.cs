@@ -12,6 +12,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Settings;
 internal sealed class Aj5027SettingsRaw : IRawDiagnosticSettings<Aj5027Settings>
 {
     // ReSharper disable UnusedAutoPropertyAccessor.Global -> used during deserialization
+    [Description("Full table names (`database`.`schema`.`table`) to ignore. Wildcards like `*` and `?` are supported.")]
     public IReadOnlyList<string>? FullTableNamesToIgnore { get; set; }
 
     public Aj5027Settings ToSettings() => new
@@ -25,7 +26,6 @@ internal sealed class Aj5027SettingsRaw : IRawDiagnosticSettings<Aj5027Settings>
 }
 
 public sealed record Aj5027Settings(
-    [property: Description("Full table names (`database`.`schema`.`table`) to ignore. Wildcards like `*` and `?` are supported.")]
     IReadOnlyList<Regex> FullTableNamesToIgnore
 ) : IDiagnosticSettings<Aj5027Settings>
 {

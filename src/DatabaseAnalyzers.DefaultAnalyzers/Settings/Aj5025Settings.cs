@@ -8,6 +8,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Settings;
 [SettingsSource(SettingsSourceKind.Diagnostics, "AJ5025")]
 internal sealed class Aj5025SettingsRaw : IRawDiagnosticSettings<Aj5025Settings>
 {
+    [Description("The statement pattern which must preceed table creation statements. The following insertion strings are supported: `{TableSchemaName}` and `{TableName}`.")]
     public string? ExistenceCheckPatternForTableCreation { get; set; }
 
     public Aj5025Settings ToSettings() => new
@@ -17,7 +18,6 @@ internal sealed class Aj5025SettingsRaw : IRawDiagnosticSettings<Aj5025Settings>
 }
 
 public sealed record Aj5025Settings(
-    [property: Description("The statement pattern which must preceed table creation statements. The following insertion strings are supported: `{TableSchemaName}` and `{TableName}`.")]
     string? ExistenceCheckPatternForTableCreation
 ) : IDiagnosticSettings<Aj5025Settings>
 {

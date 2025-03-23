@@ -11,6 +11,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Settings;
 [SettingsSource(SettingsSourceKind.Diagnostics, "AJ5023")]
 internal sealed class Aj5023SettingsRaw : IRawDiagnosticSettings<Aj5023Settings>
 {
+    [Description("Statement type names to ignore.")]
     public IReadOnlyCollection<string?>? StatementTypesToIgnore { get; set; }
 
     public Aj5023Settings ToSettings() => new
@@ -27,7 +28,6 @@ internal sealed class Aj5023SettingsRaw : IRawDiagnosticSettings<Aj5023Settings>
 }
 
 public sealed record Aj5023Settings(
-    [property: Description("Statement type names to ignore.")]
     FrozenSet<TSqlTokenType> StatementTypesToIgnore
 ) : IDiagnosticSettings<Aj5023Settings>
 {

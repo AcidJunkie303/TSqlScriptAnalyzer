@@ -11,6 +11,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Settings;
 internal sealed class Aj5040SettingsRaw : IRawDiagnosticSettings<Aj5040Settings>
 {
     // ReSharper disable UnusedAutoPropertyAccessor.Global -> used during deserialization
+    [Description("Banned function names. The key is the function name itself and the value is the bann-reason.")]
     public IReadOnlyDictionary<string, string?>? BanReasonByFunctionName { get; set; }
 
     public Aj5040Settings ToSettings() => new
@@ -26,7 +27,6 @@ internal sealed class Aj5040SettingsRaw : IRawDiagnosticSettings<Aj5040Settings>
 }
 
 public sealed record Aj5040Settings(
-    [property: Description("Banned function names. The key is the function name itself and the value is the bann-reason.")]
     IReadOnlyDictionary<string, string> BanReasonByFunctionName
 ) : IDiagnosticSettings<Aj5040Settings>
 {

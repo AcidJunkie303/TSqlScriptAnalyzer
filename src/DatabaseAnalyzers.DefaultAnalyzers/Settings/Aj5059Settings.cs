@@ -11,6 +11,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Settings;
 [SettingsSource(SettingsSourceKind.Diagnostics, "AJ5059")]
 internal sealed class Aj5059SettingsRaw : IRawDiagnosticSettings<Aj5059Settings>
 {
+    [Description("Procedure names to ignore. Wildcards like `*` and `?` are supported.")]
     public IReadOnlyCollection<string?>? IgnoredProcedureNamePatterns { get; set; }
 
     public Aj5059Settings ToSettings() => new
@@ -24,7 +25,6 @@ internal sealed class Aj5059SettingsRaw : IRawDiagnosticSettings<Aj5059Settings>
 }
 
 public sealed record Aj5059Settings(
-    [property: Description("Procedure names to ignore. Wildcards like `*` and `?` are supported.")]
     IReadOnlyList<Regex> IgnoredProcedureNamePatterns
 ) : IDiagnosticSettings<Aj5059Settings>
 {

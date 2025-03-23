@@ -13,6 +13,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Settings;
 [SettingsSource(SettingsSourceKind.Diagnostics, "AJ5004")]
 internal sealed class Aj5004SettingsRaw : IRawDiagnosticSettings<Aj5004Settings>
 {
+    [Description("An array of objects containing `Topic` and `Pattern` properties.")]
     public IReadOnlyCollection<TopicAndPatternRaw?>? TopicsAndPatterns { get; set; }
 
     public Aj5004Settings ToSettings() => new
@@ -34,7 +35,6 @@ internal sealed class TopicAndPatternRaw
 }
 
 public sealed record Aj5004Settings(
-    [property: Description("An array of objects containing `Topic` and `Pattern` properties.")]
     IReadOnlyCollection<TopicAndPattern> TopicsAndPatterns
 ) : IDiagnosticSettings<Aj5004Settings>
 {

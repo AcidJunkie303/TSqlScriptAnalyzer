@@ -10,6 +10,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Settings;
 [SettingsSource(SettingsSourceKind.Diagnostics, "AJ5060")]
 internal sealed class Aj5060SettingsRaw : IRawDiagnosticSettings<Aj5060Settings>
 {
+    [Description("Reserved words / keywords to report for table, view, column, procedure and function names. They can be defined in one or more strings (array) where each word is separated by a semicolon.")]
     public IReadOnlyCollection<string?>? ReservedIdentifierNames { get; set; }
 
     public Aj5060Settings ToSettings() => new
@@ -24,7 +25,6 @@ internal sealed class Aj5060SettingsRaw : IRawDiagnosticSettings<Aj5060Settings>
 }
 
 public sealed record Aj5060Settings(
-    [property: Description("Reserved words / keywords to report for table, view, column, procedure and function names. They can be defined in one or more strings (array) where each word is separated by a semicolon.")]
     FrozenSet<string> ReservedIdentifierNames
 ) : IDiagnosticSettings<Aj5060Settings>
 {

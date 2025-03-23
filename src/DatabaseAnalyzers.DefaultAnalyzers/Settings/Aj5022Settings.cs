@@ -8,7 +8,10 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Settings;
 [SettingsSource(SettingsSourceKind.Diagnostics, "AJ5022")]
 internal sealed class Aj5022SettingsRaw : IRawDiagnosticSettings<Aj5022Settings>
 {
+    [Description("Indicates whether IF statements require BEGIN/END blocks. Default is true.")]
     public bool IfRequiresBeginEndBlock { get; set; }
+
+    [Description("Indicates whether WHILE statements require BEGIN/END blocks. Default is true.")]
     public bool WhileRequiresBeginEndBlock { get; set; }
 
     public Aj5022Settings ToSettings() => new
@@ -19,9 +22,7 @@ internal sealed class Aj5022SettingsRaw : IRawDiagnosticSettings<Aj5022Settings>
 }
 
 public sealed record Aj5022Settings(
-    [property: Description("Indicates whether IF statements require BEGIN/END blocks. Default is true.")]
     bool IfRequiresBeginEndBlock,
-    [property: Description("Indicates whether WHILE statements require BEGIN/END blocks. Default is true.")]
     bool WhileRequiresBeginEndBlock
 ) : IDiagnosticSettings<Aj5022Settings>
 {

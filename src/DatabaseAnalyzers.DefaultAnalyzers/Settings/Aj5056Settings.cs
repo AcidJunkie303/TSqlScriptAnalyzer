@@ -8,6 +8,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Settings;
 [SettingsSource(SettingsSourceKind.Diagnostics, "AJ5056")]
 internal sealed class Aj5056SettingsRaw : IRawDiagnosticSettings<Aj5056Settings>
 {
+    [Description("A policy which describes which casing type keyword must use. Possible values: `Disabled`, `UpperCase`, `LowerCase`, `CamelCase` or `PascalCase`. Default is `UpperCase`.")]
     public Aj5056SKeywordNamingPolicy KeywordNamingPolicy { get; set; }
 
     public Aj5056Settings ToSettings() => new
@@ -17,7 +18,6 @@ internal sealed class Aj5056SettingsRaw : IRawDiagnosticSettings<Aj5056Settings>
 }
 
 public sealed record Aj5056Settings(
-    [property: Description("A policy which describes which casing type keyword must use. Possible values: `Disabled`, `UpperCase`, `LowerCase`, `CamelCase` or `PascalCase`. Default is `UpperCase`.")]
     Aj5056SKeywordNamingPolicy KeywordNamingPolicy
 ) : IDiagnosticSettings<Aj5056Settings>
 {

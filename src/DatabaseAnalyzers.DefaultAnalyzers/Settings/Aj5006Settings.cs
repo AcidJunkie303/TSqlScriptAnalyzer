@@ -12,9 +12,16 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Settings;
 internal sealed class Aj5006SettingsRaw : IRawDiagnosticSettings<Aj5006Settings>
 {
     // ReSharper disable UnusedAutoPropertyAccessor.Global -> used during deserialization
+    [Description("Banned data types for columns. Wildcards like `*` and `?` are supported.")]
     public IReadOnlyCollection<string?>? BannedColumnDataTypes { get; set; }
+
+    [Description("Banned data types function parameters. Wildcards like `*` and `?` are supported.")]
     public IReadOnlyCollection<string?>? BannedFunctionParameterDataTypes { get; set; }
+
+    [Description("Banned data types for procedure parameters. Wildcards like `*` and `?` are supported.")]
     public IReadOnlyCollection<string?>? BannedProcedureParameterDataTypes { get; set; }
+
+    [Description("Banned data types for variables. Wildcards like `*` and `?` are supported.")]
     public IReadOnlyCollection<string?>? BannedScriptVariableDataTypes { get; set; }
 
     public Aj5006Settings ToSettings() => new
@@ -34,13 +41,9 @@ internal sealed class Aj5006SettingsRaw : IRawDiagnosticSettings<Aj5006Settings>
 }
 
 public sealed record Aj5006Settings(
-    [property: Description("Banned data types for columns. Wildcards like `*` and `?` are supported.")]
     IReadOnlyCollection<Regex> BannedColumnDataTypes,
-    [property: Description("Banned data types function parameters. Wildcards like `*` and `?` are supported.")]
     IReadOnlyCollection<Regex> BannedFunctionParameterDataTypes,
-    [property: Description("Banned data types for procedure parameters. Wildcards like `*` and `?` are supported.")]
     IReadOnlyCollection<Regex> BannedProcedureParameterDataTypes,
-    [property: Description("Banned data types for variables. Wildcards like `*` and `?` are supported.")]
     IReadOnlyCollection<Regex> BannedScriptVariableDataTypes
 ) : IDiagnosticSettings<Aj5006Settings>
 {

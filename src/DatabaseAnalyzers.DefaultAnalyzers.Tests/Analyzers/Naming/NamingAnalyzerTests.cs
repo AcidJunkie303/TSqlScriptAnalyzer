@@ -13,7 +13,6 @@ public sealed class NamingAnalyzerTests(ITestOutputHelper testOutputHelper)
         ColumnName = new Aj5030SettingsRaw.PatternEntryRaw { Pattern = "\\AColumn", Description = "AAA" },
         FunctionName = new Aj5030SettingsRaw.PatternEntryRaw { Pattern = "\\AFunction", Description = "BBB" },
         ParameterName = new Aj5030SettingsRaw.PatternEntryRaw { Pattern = "\\AParameter", Description = "CCC" },
-        PrimaryKeyConstraintName = new Aj5030SettingsRaw.PatternEntryRaw { Pattern = "\\APK_", Description = "DDD" },
         ProcedureName = new Aj5030SettingsRaw.PatternEntryRaw { Pattern = "\\AProcedure", Description = "EEE" },
         TableName = new Aj5030SettingsRaw.PatternEntryRaw { Pattern = "\\ATable", Description = "FFF" },
         TempTableName = new Aj5030SettingsRaw.PatternEntryRaw { Pattern = "\\A##?Table", Description = "GGG" },

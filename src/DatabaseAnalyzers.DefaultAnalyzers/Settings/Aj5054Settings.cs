@@ -11,7 +11,10 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Settings;
 internal sealed class Aj5054SettingsRaw : IRawDiagnosticSettings<Aj5054Settings>
 {
     // ReSharper disable UnusedAutoPropertyAccessor.Global -> used during deserialization
+    [Description("Database names to ignore.")]
     public IReadOnlyCollection<string?>? DatabasesToExclude { get; set; }
+
+    [Description("Column names to ignore.")]
     public IReadOnlyCollection<string?>? ColumnNamesToExclude { get; set; }
 
     public Aj5054Settings ToSettings() => new
@@ -28,9 +31,7 @@ internal sealed class Aj5054SettingsRaw : IRawDiagnosticSettings<Aj5054Settings>
 }
 
 public sealed record Aj5054Settings(
-    [property: Description("Database names to ignore.")]
     FrozenSet<string> DatabasesToExclude,
-    [property: Description("Column names to ignore.")]
     FrozenSet<string> ColumnNamesToExclude
 ) : IDiagnosticSettings<Aj5054Settings>
 {
