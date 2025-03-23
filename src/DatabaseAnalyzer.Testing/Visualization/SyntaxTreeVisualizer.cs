@@ -4,12 +4,12 @@ using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
-namespace DatabaseAnalyzer.Testing;
+namespace DatabaseAnalyzer.Testing.Visualization;
 
 [SuppressMessage("Maintainability", "CA1515:Consider making public types internal")]
 public static class SyntaxTreeVisualizer
 {
-    public static string Visualize(TSqlScript script)
+    public static string Visualize(TSqlFragment script)
     {
         var traverser = new Traverser();
         script.Accept(traverser);
@@ -55,7 +55,7 @@ public static class SyntaxTreeVisualizer
 
             var codeRegion = fragment is { StartLine: >= 0, StartColumn: >= 0 }
                 ? fragment.GetCodeRegion().ToString()
-                : CodeRegion.Create(1, 1, 1, 2).ToString();
+                : CodeRegion.Unknown.ToString();
 
             var code = fragment.GetSql()
                 .Replace("\r", "\\r", StringComparison.Ordinal)

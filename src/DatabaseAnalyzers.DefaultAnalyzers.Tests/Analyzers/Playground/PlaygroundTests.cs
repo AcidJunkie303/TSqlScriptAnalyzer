@@ -21,4 +21,25 @@ public sealed class PlaygroundTests(ITestOutputHelper testOutputHelper)
         var tester = GetDefaultTesterBuilder(code).Build();
         Verify(tester);
     }
+
+    [Fact]
+    public void PlaygroundTests2()
+    {
+        const string code = """
+                            USE MyDB
+                            GO
+
+                            CREATE OR ALTER VIEW dbo.V1
+                            AS
+                                SELECT
+                                    1 AS Expr1,
+                                    Column1,
+                                    Column2 AS MyColumn
+                                FROM Table1
+
+                            """;
+
+        var tester = GetDefaultTesterBuilder(code).Build();
+        Verify(tester);
+    }
 }
