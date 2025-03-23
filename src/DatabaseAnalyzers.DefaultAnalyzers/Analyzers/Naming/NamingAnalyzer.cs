@@ -26,7 +26,7 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
         var triggers = _script.ParsedScript.GetTopLevelDescendantsOfType<TriggerStatementBody>(_script.ParentFragmentProvider);
         var variables = _script.ParsedScript.GetTopLevelDescendantsOfType<DeclareVariableStatement>(_script.ParentFragmentProvider);
         var views = _script.ParsedScript.GetTopLevelDescendantsOfType<ViewStatementBody>(_script.ParentFragmentProvider);
-        var tableReferences = _script.ParsedScript.GetTopLevelDescendantsOfType<TableReferenceWithAlias>(_script.ParentFragmentProvider);
+        var tableReferences = _script.ParsedScript.GetChildren<TableReferenceWithAlias>(recursive: true);
         var functions = _script.ParsedScript
             .GetTopLevelDescendantsOfType<FunctionStatementBody>(_script.ParentFragmentProvider)
             .ToList();
@@ -47,10 +47,10 @@ public sealed class NamingAnalyzer : IScriptAnalyzer
         AnalyzeProcedures(procedures);
         AnalyzeFunctions(functions);
         AnalyzeParameters(parameters);
-        AnalyzeTableReferences(tableReferences);
+        AnalyzeTableAliases(tableReferences);
     }
 
-    private void AnalyzeTableReferences(IEnumerable<TableReferenceWithAlias> tableReferences)
+    private void AnalyzeTableAliases(IEnumerable<TableReferenceWithAlias> tableReferences)
     {
         foreach (var tableReference in tableReferences)
         {

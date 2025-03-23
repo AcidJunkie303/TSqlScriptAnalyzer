@@ -216,7 +216,7 @@ public sealed class ColumnResolver : IColumnResolver
         var tableReferenceIsCteReference = parentCtesByName.ContainsKey(namedTableReference.SchemaObject.BaseIdentifier.Value);
         if (tableReferenceIsCteReference)
         {
-            return new ColumnReference(currentDatabaseName, tableReferenceSchemaName, tableReferenceTableName, columnName, TableSourceType.Cte, referenceToResolve, GetFullObjectName());
+            return new ColumnReference(currentDatabaseName, tableReferenceSchemaName, tableReferenceTableName, columnName, TableSourceType.Cte, referenceToResolve, GetFullObjectName(), namedTableReference.Alias?.Value);
         }
 
         // if we don't have an alias, we have aborted earlier on in case there are multiple tables involved
@@ -224,7 +224,7 @@ public sealed class ColumnResolver : IColumnResolver
         if (tableNameOrAlias is null)
         {
             var fullObjectName = GetFullObjectName();
-            return new ColumnReference(currentDatabaseName, tableReferenceSchemaName, tableReferenceTableName, columnName, TableSourceType.NotDetermined, referenceToResolve, fullObjectName);
+            return new ColumnReference(currentDatabaseName, tableReferenceSchemaName, tableReferenceTableName, columnName, TableSourceType.NotDetermined, referenceToResolve, fullObjectName, namedTableReference.Alias?.Value);
         }
 
         var tableReferenceAlias = namedTableReference.Alias?.Value;
@@ -238,7 +238,7 @@ public sealed class ColumnResolver : IColumnResolver
             : TableSourceType.TableOrView;
 
         return tableReferenceAlias.EqualsOrdinalIgnoreCase(tableNameOrAlias)
-            ? new ColumnReference(currentDatabaseName, tableReferenceSchemaName, tableReferenceTableName, columnName, sourceType, referenceToResolve, GetFullObjectName())
+            ? new ColumnReference(currentDatabaseName, tableReferenceSchemaName, tableReferenceTableName, columnName, sourceType, referenceToResolve, GetFullObjectName(), namedTableReference.Alias?.Value)
             : null;
 
         string GetFullObjectName()
