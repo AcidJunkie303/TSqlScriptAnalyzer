@@ -12,6 +12,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Settings;
 internal sealed class Aj5044SettingsRaw : IRawDiagnosticSettings<Aj5044Settings>
 {
     // ReSharper disable UnusedAutoPropertyAccessor.Global -> used during deserialization
+    [Description("Object names to ignore. Wildcards like `*` and `?` are supported.")]
     public IReadOnlyList<string?>? IgnoredObjectNamePatterns { get; set; }
 
     public Aj5044Settings ToSettings() => new
@@ -26,7 +27,6 @@ internal sealed class Aj5044SettingsRaw : IRawDiagnosticSettings<Aj5044Settings>
 }
 
 public sealed record Aj5044Settings(
-    [property: Description("Object names to ignore. Wildcards like `*` and `?` are supported.")]
     IReadOnlyList<Regex> IgnoredObjectNamePatterns
 ) : IDiagnosticSettings<Aj5044Settings>
 {

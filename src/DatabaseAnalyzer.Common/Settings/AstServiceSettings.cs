@@ -19,7 +19,7 @@ public sealed class AstServiceSettingsRaw : IRawSettings<AstServiceSettings>
 }
 
 public sealed record AstServiceSettings(
-    [property: Description("A dictionary where the key represents the function name the value is an array of parameter indices which are enum-like values")]
+    [Description("A dictionary where the key represents the function name the value is an array of parameter indices which are enum-like values")]
     IReadOnlyDictionary<string, FrozenSet<int>> EnumerationValueParameterIndicesByFunctionName
 ) : ISettings<AstServiceSettings>
 {

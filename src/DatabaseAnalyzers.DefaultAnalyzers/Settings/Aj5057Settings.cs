@@ -10,6 +10,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Settings;
 [SettingsSource(SettingsSourceKind.Diagnostics, "AJ5057")]
 internal sealed class Aj5057SettingsRaw : IRawDiagnosticSettings<Aj5057Settings>
 {
+    [Description("Casing by identifier name.")]
     public IReadOnlyDictionary<string, string?>? CasingByIdentifier { get; set; }
 
     public Aj5057Settings ToSettings() => new
@@ -22,7 +23,6 @@ internal sealed class Aj5057SettingsRaw : IRawDiagnosticSettings<Aj5057Settings>
 }
 
 public sealed record Aj5057Settings(
-    [property: Description("Casing by identifier name.")]
     IReadOnlyDictionary<string, string> CasingByIdentifier
 ) : IDiagnosticSettings<Aj5057Settings>
 {

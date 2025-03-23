@@ -9,6 +9,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Settings;
 [SettingsSource(SettingsSourceKind.Diagnostics, "AJ5001")]
 internal sealed class Aj5001SettingsRaw : IRawDiagnosticSettings<Aj5001Settings>
 {
+    [Description("Defines how many concatenations are tolerated. A value of 0 means no limit.")]
     public int MaxAllowedConcatenations { get; set; } = Aj5001Settings.Default.MaxAllowedConcatenations;
 
     public Aj5001Settings ToSettings() => new
@@ -18,7 +19,6 @@ internal sealed class Aj5001SettingsRaw : IRawDiagnosticSettings<Aj5001Settings>
 }
 
 public sealed record Aj5001Settings(
-    [property: Description("Defines how many concatenations are tolerated. A value of 0 means no limit.")]
     int MaxAllowedConcatenations
 ) : IDiagnosticSettings<Aj5001Settings>
 {

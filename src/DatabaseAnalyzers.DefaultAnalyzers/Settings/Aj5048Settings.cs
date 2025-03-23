@@ -9,8 +9,13 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Settings;
 internal sealed class Aj5048SettingsRaw : IRawDiagnosticSettings<Aj5048Settings>
 {
     // ReSharper disable UnusedAutoPropertyAccessor.Global -> used during deserialization
+    [Description("The keyword notation type for `Execute | Exec`. Supported are: `None`, `Long` or `Short`. Default is `Short`.")]
     public Aj5048KeywordNotationType? Execute { get; set; }
+
+    [Description("The keyword notation type for `Procedure | Proc`. Supported are: `None`, `Long` or `Short`. Default is `Long`.")]
     public Aj5048KeywordNotationType? Procedure { get; set; }
+
+    [Description("The keyword notation type for `Transaction | Tran`. Supported are: `None`, `Long` or `Short`. Default is `Long`.")]
     public Aj5048KeywordNotationType? Transaction { get; set; }
 
     public Aj5048Settings ToSettings() => new
@@ -22,11 +27,8 @@ internal sealed class Aj5048SettingsRaw : IRawDiagnosticSettings<Aj5048Settings>
 }
 
 public sealed record Aj5048Settings(
-    [property: Description("The keyword notation type for `Execute | Exec`. Supported are: `None`, `Long` or `Short`. Default is `Short`.")]
     Aj5048KeywordNotationType Execute,
-    [property: Description("The keyword notation type for `Procedure | Proc`. Supported are: `None`, `Long` or `Short`. Default is `Long`.")]
     Aj5048KeywordNotationType Procedure,
-    [property: Description("The keyword notation type for `Transaction | Tran`. Supported are: `None`, `Long` or `Short`. Default is `Long`.")]
     Aj5048KeywordNotationType Transaction
 ) : IDiagnosticSettings<Aj5048Settings>
 {

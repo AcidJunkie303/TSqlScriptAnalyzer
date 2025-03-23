@@ -8,7 +8,10 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Settings;
 [SettingsSource(SettingsSourceKind.Diagnostics, "AJ5062")]
 internal sealed class Aj5062SettingsRaw : IRawDiagnosticSettings<Aj5062Settings>
 {
+    [Description("A value must be specified for nullable parameters.")]
     public bool ValueRequiredForNullableParameters { get; set; }
+
+    [Description("A value must be specified for paramters with a default value.")]
     public bool ValueRequiredForParametersWithDefaultValue { get; set; }
 
     public Aj5062Settings ToSettings() => new
@@ -19,9 +22,7 @@ internal sealed class Aj5062SettingsRaw : IRawDiagnosticSettings<Aj5062Settings>
 }
 
 public sealed record Aj5062Settings(
-    [property: Description("A value must be specified for nullable parameters.")]
     bool ValueRequiredForNullableParameters,
-    [property: Description("A value must be specified for paramters with a default value.")]
     bool ValueRequiredForParametersWithDefaultValue
 ) : IDiagnosticSettings<Aj5062Settings>
 {

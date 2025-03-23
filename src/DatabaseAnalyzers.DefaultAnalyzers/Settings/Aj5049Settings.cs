@@ -11,6 +11,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Settings;
 [SettingsSource(SettingsSourceKind.Diagnostics, "AJ5049")]
 internal sealed class Aj5049SettingsRaw : IRawDiagnosticSettings<Aj5049Settings>
 {
+    [Description("Object names to exclude. Wildcards like `*` and `?` are supported.")]
     public IReadOnlyCollection<string?>? IgnoredObjectNamePatterns { get; set; }
 
     public Aj5049Settings ToSettings() => new
@@ -25,7 +26,6 @@ internal sealed class Aj5049SettingsRaw : IRawDiagnosticSettings<Aj5049Settings>
 }
 
 public sealed record Aj5049Settings(
-    [property: Description("Object names to exclude. Wildcards like `*` and `?` are supported.")]
     IReadOnlyList<Regex> IgnoredObjectNamePatterns
 ) : IDiagnosticSettings<Aj5049Settings>
 {

@@ -10,6 +10,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Settings;
 [SettingsSource(SettingsSourceKind.Diagnostics, "AJ5055")]
 internal sealed class Aj5055SettingsRaw : IRawDiagnosticSettings<Aj5055Settings>
 {
+    [Description("Database names to exclude from this rule.")]
     public IReadOnlyCollection<string?>? ExcludedDatabaseNames { get; set; }
 
     public Aj5055Settings ToSettings() => new
@@ -22,7 +23,6 @@ internal sealed class Aj5055SettingsRaw : IRawDiagnosticSettings<Aj5055Settings>
 }
 
 public sealed record Aj5055Settings(
-    [property: Description("Database names to exclude from this rule.")]
     FrozenSet<string> ExcludedDatabaseNames
 ) : IDiagnosticSettings<Aj5055Settings>
 {

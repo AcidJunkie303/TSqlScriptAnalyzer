@@ -8,6 +8,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Settings;
 [SettingsSource(SettingsSourceKind.Diagnostics, "AJ5051")]
 internal sealed class Aj5051SettingsRaw : IRawDiagnosticSettings<Aj5051Settings>
 {
+    [Description("Indicates whether to ignore unused primary keys. Default is `false`")]
     public bool IgnoreUnusedPrimaryKeyIndices { get; set; }
 
     public Aj5051Settings ToSettings() => new
@@ -17,7 +18,6 @@ internal sealed class Aj5051SettingsRaw : IRawDiagnosticSettings<Aj5051Settings>
 }
 
 public sealed record Aj5051Settings(
-    [property: Description("Indicates whether to ignore unused primary keys. Default is `false`")]
     bool IgnoreUnusedPrimaryKeyIndices
 ) : IDiagnosticSettings<Aj5051Settings>
 {
