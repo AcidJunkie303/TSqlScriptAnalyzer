@@ -11,6 +11,9 @@ The framework allows writing unit tests in a declarative way. For that, it suppo
 Markup explanation:
 The markup is enclosed in ▶️ and ◀️ and split by ✅ into two sections:
 
+These emoji characters look nice in the Rider IDE as well as Visual Studio Code. Unfortunately, Visual Studio doesn't do
+a good job in drawing colored emojis :(
+
 **Left Section**
 
 This part is split by 💛 where the tokens have the following meaning:
@@ -33,7 +36,7 @@ Each token of `▶️AJ5022💛Procedure1.sql💛MyDatabase.dbo.Procedure💛IF�
 | Procedure1.sql            | Relative script file path                                                                                                                        |
 | MyDatabase.dbo.Procedure1 | The full name of the enclosing object name (if any). If this code is not within in a procedure, table, view, function etc., this value is empty. |
 | IF                        | 1st insertion string                                                                                                                             |
-| `PRINT 'tb'`              | The code which caused the issue                                                                                                                  |
+| PRINT 'tb'                | The code which caused the issue                                                                                                                  |
 
 ## Base Classes
 
@@ -229,4 +232,5 @@ Tokens:
 AJ5022    CodeRegion="(5,5) - (5,19)"    Insertions="WHILE
 ```
 
-Therefore, before implementing any analyzer logic, it's worth creating the unit tests first and check the AST.
+Therefore, before implementing any analyzer logic, it's worth creating the unit tests first and check the AST or token
+list.
