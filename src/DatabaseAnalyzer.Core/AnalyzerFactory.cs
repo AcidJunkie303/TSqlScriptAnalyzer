@@ -17,7 +17,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog.Events;
-
 #if !DEBUG
 using DatabaseAnalyzer.Core.Threading;
 #endif
@@ -116,11 +115,14 @@ public sealed class AnalyzerFactory : IDisposable
 #endif
                 });
 
-                var pluginAssemblies = PluginAssemblyLoader.LoadPlugins();
-                RegisterAnalyzers(services, pluginAssemblies);
-                RegisterSettings(services, pluginAssemblies);
-                RegisterInternalSettings(services, _configuration);
-                RegisterDiagnosticDefinitions(services, pluginAssemblies);
+                if (!_settings.Plugins.PluginDirectoryPaths.IsNullOrEmpty())
+                {
+                    var pluginAssemblies = PluginAssemblyLoader.LoadPlugins(_settings.Plugins.PluginDirectoryPaths);
+                    RegisterAnalyzers(services, pluginAssemblies);
+                    RegisterSettings(services, pluginAssemblies);
+                    RegisterInternalSettings(services, _configuration);
+                    RegisterDiagnosticDefinitions(services, pluginAssemblies);
+                }
             });
     }
 
