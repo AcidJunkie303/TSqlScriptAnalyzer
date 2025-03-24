@@ -18,6 +18,7 @@ internal sealed class JsonSummaryReportRenderer : IReportRenderer
         var report = new
         {
             CreatedAt = DateTimeOffset.UtcNow,
+            analysisResult.Statistics.AnalysisDuration,
             TotalIssueCount = totalIssueCount,
             SuppressedIssueCount = suppressedIssueCount,
             IssueCountByType = issueCountByType

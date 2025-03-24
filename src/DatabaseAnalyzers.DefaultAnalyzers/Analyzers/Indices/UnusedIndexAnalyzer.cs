@@ -43,7 +43,7 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
             .SelectMany(schema => schema.TablesByName.Values)
             .SelectMany(table => table.Indices);
 
-        foreach (var index in allIndices)
+        Parallel.ForEach(allIndices, _parallelOptions, index =>
         {
             foreach (var column in index.ColumnNames)
             {
@@ -61,7 +61,7 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
                 _context.IssueReporter.Report(DiagnosticDefinitions.Default, index.DatabaseName, index.RelativeScriptFilePath, index.IndexName, index.CreationStatement.GetCodeRegion(),
                     index.DatabaseName, index.SchemaName, index.TableName, column, index.IndexName ?? Constants.UnknownObjectName);
             }
-        }
+        });
     }
 
     private List<ColumnReference> GetFilteringColumns()
@@ -69,7 +69,7 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
         // this is pretty performance hungry. That's why we nest another Parallel.Foreach
         var result = new ConcurrentBag<ColumnReference>();
 
-        foreach (var script in _context.ErrorFreeScripts)
+        Parallel.ForEach(_context.ErrorFreeScripts, _parallelOptions, script =>
         {
             IEnumerable<StatementList?> statementLists =
             [
@@ -89,7 +89,7 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
                     result.Add(filteringColumn);
                 }
             });
-        }
+        });
 
         return result.ToList();
     }
