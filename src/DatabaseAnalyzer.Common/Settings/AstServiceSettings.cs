@@ -13,7 +13,10 @@ public sealed class AstServiceSettingsRaw : IRawSettings<AstServiceSettings>
     (
         EnumerationValueParameterIndicesByFunctionName
             ?.Where(a => a.Value?.Count > 0)
-            .ToFrozenDictionary(a => a.Key, a => a.Value!.ToFrozenSet())
+            .ToFrozenDictionary(
+                a => a.Key,
+                a => a.Value!.ToFrozenSet(),
+                StringComparer.OrdinalIgnoreCase)
         ?? AstServiceSettings.Default.EnumerationValueParameterIndicesByFunctionName
     );
 }
@@ -28,7 +31,9 @@ public sealed record AstServiceSettings(
         EnumerationValueParameterIndicesByFunctionName = new Dictionary<string, IReadOnlyCollection<int>?>(StringComparer.OrdinalIgnoreCase)
         {
             { "DATEADD", [0] },
-            { "DATEPART", [0] }
+            { "DATEPART", [0] },
+            { "DATENAME", [0] },
+            { "DATEDIFF", [0] }
         }
     }.ToSettings();
 }

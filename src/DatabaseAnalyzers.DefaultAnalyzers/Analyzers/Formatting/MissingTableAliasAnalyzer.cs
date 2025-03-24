@@ -1,4 +1,5 @@
 using DatabaseAnalyzer.Common.Contracts;
+using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
@@ -6,14 +7,16 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 
 public sealed class MissingTableAliasAnalyzer : IScriptAnalyzer
 {
+    private readonly IAstService _astService;
     private readonly IScriptAnalysisContext _context;
     private readonly IScriptModel _script;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public MissingTableAliasAnalyzer(IScriptAnalysisContext context)
+    public MissingTableAliasAnalyzer(IScriptAnalysisContext context, IAstService astService)
     {
         _context = context;
+        _astService = astService;
         _script = context.Script;
     }
 
@@ -42,7 +45,7 @@ public sealed class MissingTableAliasAnalyzer : IScriptAnalyzer
             return;
         }
 
-        if (IsFirstArgumentOfDateAddOrDatePart(columnReference))
+        if (_astService.IsChildOfFunctionEnumParameter(columnReference, _script.ParentFragmentProvider))
         {
             return;
         }
@@ -57,27 +60,6 @@ public sealed class MissingTableAliasAnalyzer : IScriptAnalyzer
         var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(columnReference) ?? DatabaseNames.Unknown;
         var fullObjectName = columnReference.TryGetFirstClassObjectName(_context, _script);
         _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, columnReference.GetCodeRegion(), columnReference.GetSql());
-    }
-
-    private bool IsFirstArgumentOfDateAddOrDatePart(ColumnReferenceExpression columnReference)
-    {
-        if (columnReference.GetParent(_script.ParentFragmentProvider) is not FunctionCall functionCall)
-        {
-            return false;
-        }
-
-        if (!functionCall.FunctionName.Value.EqualsOrdinalIgnoreCase("DateAdd") && !functionCall.FunctionName.Value.EqualsOrdinalIgnoreCase("DatePart"))
-        {
-            return false;
-        }
-
-        if (functionCall.Parameters.Count == 0)
-        {
-            return false;
-        }
-
-        var firstParameter = functionCall.Parameters[0];
-        return firstParameter == columnReference;
     }
 
     private static class DiagnosticDefinitions

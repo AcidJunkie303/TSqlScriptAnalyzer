@@ -94,4 +94,17 @@ public sealed class MissingTableAliasAnalyzerTests(ITestOutputHelper testOutputH
                             """;
         Verify(code);
     }
+
+    [Fact]
+    public void WithDateDiffInColumn_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            SELECT      DATEDIFF(DAY, GETDATE(), t1.Id)
+                            FROM        Table1  t1
+                            """;
+        Verify(code);
+    }
 }
