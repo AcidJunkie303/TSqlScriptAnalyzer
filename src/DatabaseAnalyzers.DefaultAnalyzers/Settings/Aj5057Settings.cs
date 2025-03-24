@@ -16,8 +16,11 @@ internal sealed class Aj5057SettingsRaw : IRawDiagnosticSettings<Aj5057Settings>
     public Aj5057Settings ToSettings() => new
     (
         CasingByIdentifier
-            ?.Where(a => !a.Value.IsNullOrWhiteSpace())
-            .ToFrozenDictionary(a => a.Key, a => a.Value!, StringComparer.OrdinalIgnoreCase)
+            ?.Where(static a => !a.Value.IsNullOrWhiteSpace())
+            .ToFrozenDictionary(
+                static a => a.Key,
+                static a => a.Value!,
+                StringComparer.OrdinalIgnoreCase)
         ?? FrozenDictionary<string, string>.Empty
     );
 }

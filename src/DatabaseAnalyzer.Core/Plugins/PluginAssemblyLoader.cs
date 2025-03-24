@@ -205,10 +205,10 @@ internal static class PluginAssemblyLoader
     {
         var properties = type
             .GetProperties()
-            .Where(a => a.CanRead)
-            .Where(a => a.GetMethod?.IsPublic ?? false)
-            .Where(a => a.GetMethod?.IsStatic ?? false)
-            .Where(a => a.PropertyType.IsAssignableTo(typeof(IDiagnosticDefinition)));
+            .Where(static a => a.CanRead)
+            .Where(static a => a.GetMethod?.IsPublic ?? false)
+            .Where(static a => a.GetMethod?.IsStatic ?? false)
+            .Where(static a => a.PropertyType.IsAssignableTo(typeof(IDiagnosticDefinition)));
 
         foreach (var property in properties)
         {

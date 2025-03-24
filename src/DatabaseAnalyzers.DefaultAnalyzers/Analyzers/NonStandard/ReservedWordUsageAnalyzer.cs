@@ -26,23 +26,23 @@ public sealed class ReservedWordUsageAnalyzer : IScriptAnalyzer
         {
             if (fragment is CreateTableStatement createTableStatement)
             {
-                Analyze("table", createTableStatement.SchemaObjectName?.BaseIdentifier, a => a.Value);
+                Analyze("table", createTableStatement.SchemaObjectName?.BaseIdentifier, static a => a.Value);
             }
             else if (fragment is ViewStatementBody createViewStatement)
             {
-                Analyze("view", createViewStatement.SchemaObjectName?.BaseIdentifier, a => a.Value);
+                Analyze("view", createViewStatement.SchemaObjectName?.BaseIdentifier, static a => a.Value);
             }
             else if (fragment is CreateProcedureStatement createProcedureStatement)
             {
-                Analyze("procedure", createProcedureStatement.ProcedureReference?.Name.BaseIdentifier, a => a.Value);
+                Analyze("procedure", createProcedureStatement.ProcedureReference?.Name.BaseIdentifier, static a => a.Value);
             }
             else if (fragment is ColumnDefinition columnDefinition)
             {
-                Analyze("column", columnDefinition.ColumnIdentifier, a => a.Value);
+                Analyze("column", columnDefinition.ColumnIdentifier, static a => a.Value);
             }
             else if (fragment is FunctionStatementBody createFunctionStatement)
             {
-                Analyze("function", createFunctionStatement.Name.BaseIdentifier, a => a.Value);
+                Analyze("function", createFunctionStatement.Name.BaseIdentifier, static a => a.Value);
             }
         }
     }

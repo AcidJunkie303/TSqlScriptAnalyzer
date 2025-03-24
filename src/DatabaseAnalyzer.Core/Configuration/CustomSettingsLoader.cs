@@ -11,7 +11,7 @@ public static class CustomSettingsLoader
             (SourceKind: SettingsSourceKind.Diagnostics, Name: "Diagnostics"),
             (SourceKind: SettingsSourceKind.Services, Name: "Services")
         }
-        .ToFrozenDictionary(a => a.SourceKind, a => a.Name);
+        .ToFrozenDictionary(static a => a.SourceKind, static a => a.Name);
 
     public static object Load(SettingMetadata settingsMetadata, IConfiguration configuration)
         => LoadCore(settingsMetadata, configuration);

@@ -22,7 +22,7 @@ public sealed class ObjectCreationWithoutSchemaNameAnalyzer : IScriptAnalyzer
         Analyze(
             _script.ParsedScript
                 .GetChildren<CreateTableStatement>(recursive: true)
-                .Where(a => !a.SchemaObjectName.BaseIdentifier.Value.IsTempTableName()),
+                .Where(static a => !a.SchemaObjectName.BaseIdentifier.Value.IsTempTableName()),
             static s => s.SchemaObjectName.SchemaIdentifier?.Value,
             static s => s.SchemaObjectName.GetCodeRegion(),
             "table");

@@ -19,7 +19,7 @@ internal sealed class TextReportRenderer : IReportRenderer
         {
             buffer.AppendLine(CultureInfo.CurrentCulture, $"{analysisResult.Issues.Count} issue(s) found:");
 
-            foreach (var issue in OrderIssues(analysisResult.Issues, a => a))
+            foreach (var issue in OrderIssues(analysisResult.Issues, static a => a))
             {
                 buffer.AppendLine(CultureInfo.CurrentCulture, $"""{issue.DiagnosticDefinition.DiagnosticId} File="{issue.RelativeScriptFilePath}" Issue="{issue.Message}" Location="{issue.CodeRegion}" HelpUrl="{issue.DiagnosticDefinition.HelpUrl}" """);
             }
@@ -32,7 +32,7 @@ internal sealed class TextReportRenderer : IReportRenderer
         else
         {
             buffer.AppendLine(CultureInfo.CurrentCulture, $"{analysisResult.SuppressedIssues.Count} suppressed issue(s) found:");
-            foreach (var issue in OrderIssues(analysisResult.SuppressedIssues, a => a.Issue))
+            foreach (var issue in OrderIssues(analysisResult.SuppressedIssues, static a => a.Issue))
             {
                 buffer.AppendLine(CultureInfo.CurrentCulture, $"    {issue.Issue.DiagnosticDefinition.DiagnosticId} {issue.Issue.RelativeScriptFilePath} {issue.Issue.Message}.    Reason={issue.Reason}");
             }

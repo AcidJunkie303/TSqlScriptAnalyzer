@@ -12,7 +12,7 @@ internal sealed class PluginsSettingsRaw
         PluginDirectoryPaths
             .EmptyIfNull()
             .WhereNotNullOrWhiteSpaceOnly()
-            .Select(a => a!.Trim())
+            .Select(static a => a.Trim())
             .ToImmutableArray()
     );
 }

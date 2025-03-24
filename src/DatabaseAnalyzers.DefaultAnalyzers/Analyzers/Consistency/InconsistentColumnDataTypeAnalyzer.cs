@@ -8,8 +8,8 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Consistency;
 public sealed class InconsistentColumnDataTypeAnalyzer : IGlobalAnalyzer
 {
     private readonly IGlobalAnalysisContext _context;
-    private readonly Aj5054Settings _settings;
     private readonly IObjectProvider _objectProvider;
+    private readonly Aj5054Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
@@ -29,9 +29,9 @@ public sealed class InconsistentColumnDataTypeAnalyzer : IGlobalAnalyzer
             .GroupBy(static a => a.Column.ObjectName, StringComparer.OrdinalIgnoreCase)
             .Select(a => (ColumnName: a.Key, Columns: a));
 
-        foreach (var columnData in columnsAndScriptsByColumnName)
+        foreach (var (_, columns) in columnsAndScriptsByColumnName)
         {
-            var columnsAndScripts = columnData.Columns
+            var columnsAndScripts = columns
                 .Where(a => !_settings.DatabasesToExclude.Contains(a.Column.DatabaseName))
                 .Where(a => !_settings.ColumnNamesToExclude.Contains(a.Column.ObjectName))
                 .Where(a => !a.DataType.IsNullOrWhiteSpace())

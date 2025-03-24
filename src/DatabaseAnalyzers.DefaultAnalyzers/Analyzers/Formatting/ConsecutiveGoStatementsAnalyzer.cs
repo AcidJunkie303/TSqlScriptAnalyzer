@@ -39,12 +39,12 @@ public sealed class ConsecutiveGoStatementsAnalyzer : IScriptAnalyzer
             .SkipLast(1)
             .ToList();
 
-        if (tokensAfter.TrueForAll(a => a.TokenType != TSqlTokenType.Go))
+        if (tokensAfter.TrueForAll(static a => a.TokenType != TSqlTokenType.Go))
         {
             return;
         }
 
-        var lastGoToken = tokensAfter.LastOrDefault(a => a.TokenType == TSqlTokenType.Go);
+        var lastGoToken = tokensAfter.LastOrDefault(static a => a.TokenType == TSqlTokenType.Go);
         if (lastGoToken is null)
         {
             return;

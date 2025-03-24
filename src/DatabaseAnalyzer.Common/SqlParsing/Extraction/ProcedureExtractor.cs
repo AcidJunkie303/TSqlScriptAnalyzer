@@ -32,9 +32,9 @@ internal sealed class ProcedureExtractor : Extractor<ProcedureInformation>
             .Select(GetParameter)
             .ToImmutableArray();
         var parametersByName = parameters
-            .ToFrozenDictionary(a => a.Name, a => a, StringComparer.OrdinalIgnoreCase);
+            .ToFrozenDictionary(static a => a.Name, static a => a, StringComparer.OrdinalIgnoreCase);
         var parametersByTrimmedName = parameters
-            .ToFrozenDictionary(a => a.Name.TrimStart('@'), a => a, StringComparer.OrdinalIgnoreCase);
+            .ToFrozenDictionary(static a => a.Name.TrimStart('@'), static a => a, StringComparer.OrdinalIgnoreCase);
 
         return new ProcedureInformation(
             DatabaseName: databaseName!,

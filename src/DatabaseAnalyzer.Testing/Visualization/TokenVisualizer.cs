@@ -29,8 +29,8 @@ public static class TokenVisualizer
         foreach (var token in tokens)
         {
             var text = token.Text.EmptyIfNull()
-                .Replace("\r\n", "\\r\\n", StringComparison.Ordinal)
-                .Replace("\n", "\\n", StringComparison.Ordinal);
+                .Replace("\r\n", @"\r\n", StringComparison.Ordinal)
+                .Replace("\n", @"\n", StringComparison.Ordinal);
             text = text.IsNullOrWhiteSpace() ? $"¦{text}¦" : text;
             table.AddRow(index++, token.TokenType, token.GetCodeRegion(), text);
         }

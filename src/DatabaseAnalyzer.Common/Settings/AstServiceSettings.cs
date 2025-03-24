@@ -12,10 +12,10 @@ public sealed class AstServiceSettingsRaw : IRawSettings<AstServiceSettings>
     public AstServiceSettings ToSettings() => new
     (
         EnumerationValueParameterIndicesByFunctionName
-            ?.Where(a => a.Value?.Count > 0)
+            ?.Where(static a => a.Value?.Count > 0)
             .ToFrozenDictionary(
-                a => a.Key,
-                a => a.Value!.ToFrozenSet(),
+                static a => a.Key,
+                static a => a.Value!.ToFrozenSet(),
                 StringComparer.OrdinalIgnoreCase)
         ?? AstServiceSettings.Default.EnumerationValueParameterIndicesByFunctionName
     );

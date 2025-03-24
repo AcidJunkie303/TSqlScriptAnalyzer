@@ -85,8 +85,13 @@ public sealed class IntoSingleLineSqueezingAnalyzer : IScriptAnalyzer
     private static bool ContainsMultipleItemsOnTheSameLine<T>(IList<T> fragments)
         where T : TSqlFragment
         => fragments
-            .CountBy(a => a.StartLine)
-            .Any(a => a.Value > 1);
+#if NET_9
+            .CountBy(static a => a.StartLine)
+            .Any(static a => a.Value > 1);
+#else
+            .GroupBy(static a => a.StartLine)
+            .Any(static a => a.Count() > 1);
+#endif
 
     private static class DiagnosticDefinitions
     {

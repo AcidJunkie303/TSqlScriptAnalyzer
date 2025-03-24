@@ -87,10 +87,10 @@ internal sealed class Analyzer : IAnalyzer
 
         IEnumerable<(Type AnalyzerType, IScriptModel? Script)> analyzerTypesAndScripts =
         [
-            .. _analyzerTypes.GlobalAnalyzers.Select(type => (Type: type, (IScriptModel?) null)),
+            .. _analyzerTypes.GlobalAnalyzers.Select(static type => (Type: type, (IScriptModel?) null)),
             .. _analyzerTypes.ScriptAnalyzers
                 .CrossJoin(_scripts)
-                .Select(a => (Type: a.Item1, (IScriptModel?) a.Item2))
+                .Select(static a => (Type: a.Item1, (IScriptModel?) a.Item2))
         ];
 
         PerformAnalysis(analyzerTypesAndScripts);
@@ -146,7 +146,7 @@ internal sealed class Analyzer : IAnalyzer
                 var analyzerName = analyzerType.FullName ?? "<unknown>";
                 // We need to have a script file path, otherwise the aggregation between issue and script file for Global Analyzers won't work
                 var relativeScriptFilePath = script?.RelativeScriptFilePath ?? (_scripts.Count == 0 ? "Unknown" : _scripts[0].RelativeScriptFilePath);
-                _issueReporter.Report(WellKnownDiagnosticDefinitions.UnhandledAnalyzerException, "<Unknown>", relativeScriptFilePath, null, CodeRegion.Unknown, analyzerName, ex.Message);
+                _issueReporter.Report(WellKnownDiagnosticDefinitions.UnhandledAnalyzerException, "<Unknown>", relativeScriptFilePath, fullObjectName: null, CodeRegion.Unknown, analyzerName, ex.Message);
                 _logger.LogError(ex, "Analyzer threw an unhandled exception");
             }
 
@@ -204,21 +204,21 @@ internal sealed class Analyzer : IAnalyzer
     private void LogExecutionDurations()
     {
         var analyzerNameAndDurations = _analysisDurationsByAnalyzerType
-            .Select(a =>
+            .Select(static a =>
             {
                 var analyzerKind = a.Value.AnalyzerKind;
                 var analyzerType = a.Key;
                 var durations = a.Value.Durations;
                 var analyzerName = analyzerType.Name;
                 var analyzerFullName = analyzerType.FullName;
-                var averageDuration = durations.Aggregate(TimeSpan.Zero, (x, y) => x + y) / durations.Count;
+                var averageDuration = durations.Aggregate(TimeSpan.Zero, static (x, y) => x + y) / durations.Count;
                 var maxDuration = durations.Max();
                 var minDuration = durations.Min();
 
                 return (AnalyzerKind: analyzerKind, Name: analyzerName, FullName: analyzerFullName, AverageDuration: averageDuration, MinDuration: minDuration, MaxDuration: maxDuration);
             })
-            .OrderBy(a => a.AnalyzerKind)
-            .ThenByDescending(a => a.AverageDuration);
+            .OrderBy(static a => a.AnalyzerKind)
+            .ThenByDescending(static a => a.AverageDuration);
 
         foreach (var entry in analyzerNameAndDurations)
         {
@@ -259,11 +259,11 @@ internal sealed class Analyzer : IAnalyzer
 
     private void ReportErroneousScripts()
     {
-        foreach (var script in _scripts.Where(a => a.HasErrors))
+        foreach (var script in _scripts.Where(static a => a.HasErrors))
         {
             foreach (var error in script.Errors)
             {
-                _issueReporter.Report(WellKnownDiagnosticDefinitions.ScriptContainsErrors, script.DatabaseName, script.RelativeScriptFilePath, null, error.CodeRegion, error.Message);
+                _issueReporter.Report(WellKnownDiagnosticDefinitions.ScriptContainsErrors, script.DatabaseName, script.RelativeScriptFilePath, fullObjectName: null, error.CodeRegion, error.Message);
             }
         }
     }

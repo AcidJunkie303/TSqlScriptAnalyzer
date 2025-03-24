@@ -28,9 +28,9 @@ internal sealed class Aj5052SettingsRaw : IRawDiagnosticSettings<Aj5052Settings>
 
         var items = NamingPatterns
             .WhereNotNull()
-            .Where(a => a.IndexProperties.HasValue)
-            .Where(a => !a.Pattern.IsNullOrWhiteSpace())
-            .Select(a => new Aj5052SettingsEntry(a.IndexProperties!.Value, a.Pattern!))
+            .Where(static a => a.IndexProperties.HasValue)
+            .Where(static a => !a.Pattern.IsNullOrWhiteSpace())
+            .Select(static a => new Aj5052SettingsEntry(a.IndexProperties!.Value, a.Pattern!))
             .ToImmutableArray();
 
         var defaultPattern = DefaultPattern.NullIfEmptyOrWhiteSpace()?.Trim() ?? Aj5052Settings.Default.DefaultPattern;

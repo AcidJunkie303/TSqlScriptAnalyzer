@@ -45,7 +45,7 @@ public sealed class ScriptAnalyzerTester
         reportedIssues.Should().HaveCount(ExpectedIssues.Count);
         foreach (var expectedIssue in ExpectedIssues)
         {
-            reportedIssues.Should().ContainEquivalentOf(expectedIssue, options => options.Excluding(x => x.DatabaseName));
+            reportedIssues.Should().ContainEquivalentOf(expectedIssue, static options => options.Excluding(static x => x.DatabaseName));
         }
     }
 

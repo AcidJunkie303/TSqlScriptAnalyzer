@@ -18,7 +18,7 @@ internal sealed class Aj5066SettingsRaw : IRawDiagnosticSettings<Aj5066Settings>
         IgnoredTableNames
             .EmptyIfNull()
             .WhereNotNullOrWhiteSpaceOnly()
-            .Select(a => a.ToRegexWithSimpleWildcards(caseSensitive: false, compileRegex: true))
+            .Select(static a => a.ToRegexWithSimpleWildcards(caseSensitive: false, compileRegex: true))
             .ToList()
     );
 }

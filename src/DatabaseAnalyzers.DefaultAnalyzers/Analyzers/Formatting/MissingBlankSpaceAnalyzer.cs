@@ -87,7 +87,7 @@ public sealed class MissingBlankSpaceAnalyzer : IScriptAnalyzer
 
         if (token.TokenType == TSqlTokenType.Minus)
         {
-            var previousNonWhiteSpaceToken = GetPreviousToken(tokens, tokenIndex, a => a.TokenType == TSqlTokenType.WhiteSpace);
+            var previousNonWhiteSpaceToken = GetPreviousToken(tokens, tokenIndex, static a => a.TokenType == TSqlTokenType.WhiteSpace);
             if (previousNonWhiteSpaceToken is null)
             {
                 return false;

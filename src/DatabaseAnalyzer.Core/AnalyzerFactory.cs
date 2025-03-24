@@ -46,8 +46,10 @@ public sealed class AnalyzerFactory : IDisposable
         _minimumLogLevel = minimumLogLevel;
 
         _scriptByDatabaseName = scripts
-            .GroupBy(a => a.DatabaseName, StringComparer.OrdinalIgnoreCase)
-            .ToFrozenDictionary(a => a.Key, a => (IReadOnlyList<IScriptModel>) a.ToImmutableArray(), StringComparer.OrdinalIgnoreCase);
+            .GroupBy(static a => a.DatabaseName, StringComparer.OrdinalIgnoreCase)
+            .ToFrozenDictionary(
+                static a => a.Key,
+                static a => (IReadOnlyList<IScriptModel>) a.ToImmutableArray(), StringComparer.OrdinalIgnoreCase);
     }
 
     public void Dispose()
@@ -161,7 +163,7 @@ public sealed class AnalyzerFactory : IDisposable
     private bool AreAllDiagnosticIdsDisabled(IReadOnlyList<IDiagnosticDefinition> diagnostics)
         => diagnostics
             .Select(a => a.DiagnosticId)
-            .All(a => _settings.Diagnostics.DisabledDiagnostics.Contains(a));
+            .All(_settings.Diagnostics.DisabledDiagnostics.Contains);
 
     private void RegisterSettings(IServiceCollection services, IReadOnlyList<PluginAssembly> pluginAssemblies)
     {
@@ -184,9 +186,9 @@ public sealed class AnalyzerFactory : IDisposable
     private static void RegisterDiagnosticDefinitions(IServiceCollection services, IReadOnlyList<PluginAssembly> pluginAssemblies)
     {
         var diagnosticDefinitionsById = pluginAssemblies
-            .SelectMany(a => a.DiagnosticDefinitions)
-            .Deduplicate(a => a.DiagnosticId, StringComparer.OrdinalIgnoreCase)
-            .ToFrozenDictionary(a => a.DiagnosticId, a => a, StringComparer.OrdinalIgnoreCase);
+            .SelectMany(static a => a.DiagnosticDefinitions)
+            .Deduplicate(static a => a.DiagnosticId, StringComparer.OrdinalIgnoreCase)
+            .ToFrozenDictionary(static a => a.DiagnosticId, static a => a, StringComparer.OrdinalIgnoreCase);
 
         services.AddSingleton<IDiagnosticDefinitionProvider>(new DiagnosticDefinitionProvider(diagnosticDefinitionsById));
     }

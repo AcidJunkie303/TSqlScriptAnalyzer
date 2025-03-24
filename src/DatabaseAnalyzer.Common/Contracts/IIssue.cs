@@ -9,5 +9,5 @@ public interface IIssue
     CodeRegion CodeRegion { get; }
     IReadOnlyList<object> MessageInsertions { get; }
     string Message { get; }
-    public string FullObjectNameOrFileName => ObjectName ?? Path.GetFileName(RelativeScriptFilePath) ?? DatabaseNames.Unknown;
+    string FullObjectNameOrFileName => ObjectName ?? Path.GetFileName(RelativeScriptFilePath) ?? DatabaseNames.Unknown;
 }

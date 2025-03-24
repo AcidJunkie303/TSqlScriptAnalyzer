@@ -16,7 +16,6 @@ public sealed class ScriptProvider
 {
     private readonly DiagnosticSuppressionExtractor _diagnosticSuppressionExtractor = new();
     private readonly IProgressCallback _progressCallback;
-    private readonly ScriptLoader _scriptLoader = new();
     private readonly ApplicationSettings _settings;
 
     public ScriptProvider(ApplicationSettings settings, IProgressCallback progressCallback)
@@ -50,7 +49,7 @@ public sealed class ScriptProvider
             .WithExecutionMode(ParallelExecutionMode.ForceParallelism)
             .WithDegreeOfParallelism(4)
 #endif
-            .Select(_scriptLoader.LoadScript)
+            .Select(ScriptLoader.LoadScript)
             .ToList();
     }
 
@@ -73,7 +72,7 @@ public sealed class ScriptProvider
         using var reader = new StringReader(script.Contents);
         var parsedScript = parser.Parse(reader, out var parserErrors) as TSqlScript ?? new TSqlScript();
         var errorMessages = parserErrors
-            .Select(a => new ScriptError(a.Message, CodeRegion.Create(a.Line, a.Column, a.Line, a.Column)))
+            .Select(static a => new ScriptError(a.Message, CodeRegion.Create(a.Line, a.Column, a.Line, a.Column)))
             .ToImmutableArray();
         var suppressions = _diagnosticSuppressionExtractor.ExtractSuppressions(parsedScript).ToList();
         var parentFragmentProvider = parsedScript.CreateParentFragmentProvider();

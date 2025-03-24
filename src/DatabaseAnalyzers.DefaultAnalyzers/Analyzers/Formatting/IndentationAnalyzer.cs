@@ -91,9 +91,9 @@ public sealed class IndentationAnalyzer : IScriptAnalyzer
     private static bool HasMultipleItemsOnTheSameLine<T>(IList<T> fragments)
         where T : TSqlFragment
         => fragments
-            .Select(a => a.StartLine)
-            .GroupBy(a => a)
-            .Any(a => a.Count() > 1);
+            .Select(static a => a.StartLine)
+            .GroupBy(static a => a)
+            .Any(static a => a.Count() > 1);
 
     private static bool AllHaveSameIndentation<T>(IList<T> fragments)
         where T : TSqlFragment
@@ -104,7 +104,7 @@ public sealed class IndentationAnalyzer : IScriptAnalyzer
         }
 
         return fragments
-            .Select(a => a.GetCodeLocation().Column)
+            .Select(static a => a.GetCodeLocation().Column)
             .DistinctCount() == 1;
     }
 

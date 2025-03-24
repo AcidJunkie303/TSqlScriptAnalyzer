@@ -19,7 +19,7 @@ internal sealed class Aj5059SettingsRaw : IRawDiagnosticSettings<Aj5059Settings>
         IgnoredProcedureNamePatterns
             .EmptyIfNull()
             .WhereNotNullOrWhiteSpaceOnly()
-            .Select(a => a.ToRegexWithSimpleWildcards(caseSensitive: false, compileRegex: true))
+            .Select(static a => a.ToRegexWithSimpleWildcards(caseSensitive: false, compileRegex: true))
             .ToImmutableArray()
     );
 }
