@@ -19,8 +19,6 @@
     },
     "Diagnostics": {
         "DisabledDiagnostics": [
-            "AJ5066",
-            "AJ5003"
         ],
         "AJ5001": // Excessive string concatenation
         {
@@ -29,8 +27,8 @@
         "AJ5003": // Wrong USE DATABASE name statement
         {
             "ExcludedFilePathPatterns": [
-                "0000 Create*.sql",
-                "0001 Drop*.sql"
+                "*\\0000 Create*.sql",
+                "*\\0001 Drop*.sql"
             ]
         },
         "AJ5004": // open points / todo
