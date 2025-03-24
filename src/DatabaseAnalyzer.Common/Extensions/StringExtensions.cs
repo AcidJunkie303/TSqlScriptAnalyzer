@@ -20,10 +20,10 @@ public static class StringExtensions
             : value;
 
     public static Regex ToRegexWithSimpleWildcards(this string value)
-        => value.ToRegexWithSimpleWildcards(false, false);
+        => value.ToRegexWithSimpleWildcards(caseSensitive: false, compileRegex: false);
 
     public static Regex ToRegexWithSimpleWildcards(this string value, bool caseSensitive)
-        => value.ToRegexWithSimpleWildcards(caseSensitive, false);
+        => value.ToRegexWithSimpleWildcards(caseSensitive, compileRegex: false);
 
     public static Regex ToRegexWithSimpleWildcards(this string value, bool caseSensitive, bool compileRegex)
     {
@@ -115,7 +115,7 @@ public static class StringExtensions
 
     public static TSqlScript TryParseSqlScript(this string sqlScriptContents, out IReadOnlyList<ScriptError> errors)
     {
-        var parser = TSqlParser.CreateParser(SqlVersion.Sql170, true);
+        var parser = TSqlParser.CreateParser(SqlVersion.Sql170, initialQuotedIdentifiers: true);
         using var reader = new StringReader(sqlScriptContents);
         var script = parser.Parse(reader, out var parserErrors) as TSqlScript ?? new TSqlScript();
 

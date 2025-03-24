@@ -61,7 +61,7 @@ public sealed class IndexNamingAnalyzer : IScriptAnalyzer
 
         var primaryKeyDefinition = statement.Definition.TableConstraints
             .OfType<UniqueConstraintDefinition>()
-            .FirstOrDefault(a => a.IsPrimaryKey);
+            .FirstOrDefault(static a => a.IsPrimaryKey);
 
         if (primaryKeyDefinition is null)
         {
@@ -77,7 +77,7 @@ public sealed class IndexNamingAnalyzer : IScriptAnalyzer
     {
         var primaryKeyDefinition = statement.Definition.TableConstraints
             .OfType<UniqueConstraintDefinition>()
-            .FirstOrDefault(a => a.IsPrimaryKey);
+            .FirstOrDefault(static a => a.IsPrimaryKey);
 
         if (primaryKeyDefinition is null)
         {
@@ -234,7 +234,7 @@ public sealed class IndexNamingAnalyzer : IScriptAnalyzer
             DatabaseName: script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(fragment: statement) ?? Constants.UnknownObjectName,
             TableSchemaName: statement.OnName.SchemaIdentifier?.Value ?? defaultSchemaName,
             TableName: statement.OnName.BaseIdentifier?.Value ?? Constants.UnknownObjectName,
-            ColumnNames: statement.Columns.Select(selector: a => a.MultiPartIdentifier.ToString() ?? Constants.UnknownObjectName).ToList()
+            ColumnNames: statement.Columns.Select(selector: static a => a.MultiPartIdentifier.ToString() ?? Constants.UnknownObjectName).ToList()
         );
     }
 
@@ -279,7 +279,7 @@ public sealed class IndexNamingAnalyzer : IScriptAnalyzer
             DatabaseName: script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(fragment: statement) ?? Constants.UnknownObjectName,
             TableSchemaName: statement.OnName.SchemaIdentifier?.Value ?? defaultSchemaName,
             TableName: statement.OnName.BaseIdentifier?.Value ?? Constants.UnknownObjectName,
-            ColumnNames: statement.FullTextIndexColumns.Select(a => a.Name.Value).ToList()
+            ColumnNames: statement.FullTextIndexColumns.Select(static a => a.Name.Value).ToList()
         );
 
     private sealed record IndexData(

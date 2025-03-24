@@ -144,7 +144,7 @@ internal static class Program
                 await ReportFileRenderer.RenderAsync(new TextReportRenderer(), analysisResult, options.TextReportFilePath);
             }
 
-            var nonInfoIssueCount = analysisResult.Issues.Count(a => a.DiagnosticDefinition.IssueType != IssueType.Information);
+            var nonInfoIssueCount = analysisResult.Issues.Count(static a => a.DiagnosticDefinition.IssueType != IssueType.Information);
             Console.WriteLine();
             Console.WriteLine($"Exiting with exit code {nonInfoIssueCount}");
 
@@ -156,6 +156,7 @@ internal static class Program
         {
             Console.WriteLine(ex);
             Console.WriteLine("Exiting with exit code 1");
+
             return 1;
         }
     }

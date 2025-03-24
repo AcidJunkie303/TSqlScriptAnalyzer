@@ -48,7 +48,7 @@ public sealed class ProcedureInvocationWithMissingParameterValuesAnalyzer : IScr
 
         // if not all procedure parameter names are specified, we cannot analyze it
         // there's another analyzer for this case
-        if (procedureCall.Parameters.All(a => a.Variable is null))
+        if (procedureCall.Parameters.All(static a => a.Variable is null))
         {
             return;
         }
@@ -70,10 +70,10 @@ public sealed class ProcedureInvocationWithMissingParameterValuesAnalyzer : IScr
         }
 
         var parametersByName = procedureCall.Parameters
-            .Where(a => a.Variable?.Name is not null)
+            .Where(static a => a.Variable?.Name is not null)
             .ToDictionary(
-                a => a.Variable!.Name,
-                a => a,
+                static a => a.Variable!.Name,
+                static a => a,
                 StringComparer.OrdinalIgnoreCase);
 
         var parametersToReport = new List<string>();

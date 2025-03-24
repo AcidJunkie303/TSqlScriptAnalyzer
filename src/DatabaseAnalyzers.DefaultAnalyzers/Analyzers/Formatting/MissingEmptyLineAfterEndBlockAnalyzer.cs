@@ -163,7 +163,7 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzer : IScriptAnalyzer
 
         return fragment
             .GetParents(_script.ParentFragmentProvider)
-            .Any(a => a is SelectStatement or UpdateStatement or InsertStatement or DeleteStatement or MergeStatement);
+            .Any(static a => a is SelectStatement or UpdateStatement or InsertStatement or DeleteStatement or MergeStatement);
     }
 
     private static class DiagnosticDefinitions

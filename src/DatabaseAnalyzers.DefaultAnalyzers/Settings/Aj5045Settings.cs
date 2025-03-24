@@ -26,6 +26,6 @@ public sealed record Aj5045Settings(
     bool RequireEmptyLineAfterGo
 ) : IDiagnosticSettings<Aj5045Settings>
 {
-    public static Aj5045Settings Default { get; } = new(false, false);
+    public static Aj5045Settings Default { get; } = new(RequireEmptyLineBeforeGo: false, RequireEmptyLineAfterGo: false);
     public static string DiagnosticId => "AJ5045";
 }

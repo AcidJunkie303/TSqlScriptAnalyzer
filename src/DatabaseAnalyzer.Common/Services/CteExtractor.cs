@@ -10,8 +10,8 @@ public static class CteExtractor
         => batch
             .GetChildren(recursive: true)
             .OfType<SelectStatement>()
-            .Where(a => !(a.WithCtesAndXmlNamespaces?.CommonTableExpressions).IsNullOrEmpty())
-            .SelectMany(a => a.WithCtesAndXmlNamespaces.CommonTableExpressions)
-            .Select(a => a.ExpressionName.Value)
+            .Where(static a => !(a.WithCtesAndXmlNamespaces?.CommonTableExpressions).IsNullOrEmpty())
+            .SelectMany(static a => a.WithCtesAndXmlNamespaces.CommonTableExpressions)
+            .Select(static a => a.ExpressionName.Value)
             .ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 }

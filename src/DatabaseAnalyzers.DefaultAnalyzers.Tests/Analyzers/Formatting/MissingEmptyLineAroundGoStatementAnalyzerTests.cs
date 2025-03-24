@@ -8,8 +8,8 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Formatting;
 public sealed class MissingEmptyLineAroundGoStatementAnalyzerTests(ITestOutputHelper testOutputHelper)
     : ScriptAnalyzerTestsBase<MissingEmptyLineAroundGoStatementAnalyzer>(testOutputHelper)
 {
-    private static readonly Aj5045Settings RequiredBeforeSettings = new(true, false);
-    private static readonly Aj5045Settings RequiredAfterSettings = new(false, true);
+    private static readonly Aj5045Settings RequiredBeforeSettings = new(RequireEmptyLineBeforeGo: true, RequireEmptyLineAfterGo: false);
+    private static readonly Aj5045Settings RequiredAfterSettings = new(RequireEmptyLineBeforeGo: false, RequireEmptyLineAfterGo: true);
 
     [Fact]
     public void WithDefaultSettings_WhenNoEmptyLinesAfterAndBefore_ThenOk()

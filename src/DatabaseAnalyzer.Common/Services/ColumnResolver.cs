@@ -279,8 +279,8 @@ public sealed class ColumnResolver : IColumnResolver
 
             return statementWithCtes.WithCtesAndXmlNamespaces.CommonTableExpressions
                 .ToDictionary(
-                    a => a.ExpressionName.Value,
-                    a => a,
+                    static a => a.ExpressionName.Value,
+                    static a => a,
                     StringComparer.OrdinalIgnoreCase);
         }
 

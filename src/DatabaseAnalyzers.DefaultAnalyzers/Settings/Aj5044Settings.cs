@@ -21,7 +21,7 @@ internal sealed class Aj5044SettingsRaw : IRawDiagnosticSettings<Aj5044Settings>
             .EmptyIfNull()
             .WhereNotNull()
             .Distinct(StringComparer.OrdinalIgnoreCase)
-            .Select(a => a.ToRegexWithSimpleWildcards(caseSensitive: false, compileRegex: true))
+            .Select(static a => a.ToRegexWithSimpleWildcards(caseSensitive: false, compileRegex: true))
             .ToImmutableArray()
     );
 }

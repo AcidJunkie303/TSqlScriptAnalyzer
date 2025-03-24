@@ -12,8 +12,11 @@ internal sealed class JsonSummaryReportRenderer : IReportRenderer
         var totalIssueCount = analysisResult.Issues.Count;
         var suppressedIssueCount = analysisResult.SuppressedIssues.Count;
         var issueCountByType = analysisResult.Issues
-            .GroupBy(a => a.DiagnosticDefinition.IssueType.ToString(), StringComparer.OrdinalIgnoreCase)
-            .ToDictionary(a => a.Key, a => a.Count(), StringComparer.OrdinalIgnoreCase);
+            .GroupBy(static a => a.DiagnosticDefinition.IssueType.ToString(), StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(
+                static a => a.Key,
+                static a => a.Count(),
+                StringComparer.OrdinalIgnoreCase);
 
         var report = new
         {

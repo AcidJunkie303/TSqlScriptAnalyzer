@@ -134,13 +134,13 @@ public static class CollectionExtensions
 
         return items
             .GroupBy(keySelector, comparer)
-            .Select(a => a.First());
+            .Select(static a => a.First());
     }
 
     public static IEnumerable<T> Deduplicate<T>(this IEnumerable<T> items, IEqualityComparer<T> comparer)
         => items
-            .GroupBy(a => a, comparer)
-            .Select(a => a.First());
+            .GroupBy(static a => a, comparer)
+            .Select(static a => a.First());
 
     public static int DistinctCount<T>(this IEnumerable<T> items)
         => items.Distinct().Count();

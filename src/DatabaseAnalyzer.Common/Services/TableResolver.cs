@@ -37,7 +37,7 @@ public sealed class TableResolver : ITableResolver
     {
         var batch = (TSqlBatch?) tableReference
             .GetParents(_parentFragmentProvider)
-            .FirstOrDefault(a => a is TSqlBatch);
+            .FirstOrDefault(static a => a is TSqlBatch);
 
         if (batch is null)
         {
@@ -128,7 +128,7 @@ public sealed class TableResolver : ITableResolver
 
     private TableOrViewReference? Check(FromClause fromClause, IReadOnlyDictionary<string, CommonTableExpression> parentCtesByName, NamedTableReference namedTableToResolve)
     {
-        var selectStatement = (SelectStatement?) fromClause.GetParents(_parentFragmentProvider).FirstOrDefault(a => a is SelectStatement);
+        var selectStatement = (SelectStatement?) fromClause.GetParents(_parentFragmentProvider).FirstOrDefault(static a => a is SelectStatement);
         if (selectStatement is not null)
         {
             var table = Check(selectStatement, namedTableToResolve);
@@ -223,10 +223,9 @@ public sealed class TableResolver : ITableResolver
             {
                 var currentDatabaseName = _script.TryFindCurrentDatabaseNameAtFragment(namedTableToResolve) ?? DatabaseNames.Unknown;
                 var tableName = cte.ExpressionName.Value;
-                var tableSchemaName = _defaultSchemaName;
                 var fullObjectName = namedTableToResolve.TryGetFirstClassObjectName(_defaultSchemaName, _script, _parentFragmentProvider) ?? _relativeScriptFilePath;
 
-                return new TableOrViewReference(currentDatabaseName, tableSchemaName, tableName, TableSourceType.Cte, namedTableToResolve, fullObjectName);
+                return new TableOrViewReference(currentDatabaseName, _defaultSchemaName, tableName, TableSourceType.Cte, namedTableToResolve, fullObjectName);
             }
         }
 
@@ -312,8 +311,8 @@ public sealed class TableResolver : ITableResolver
 
             return statementWithCtes.WithCtesAndXmlNamespaces.CommonTableExpressions
                 .ToDictionary(
-                    a => a.ExpressionName.Value,
-                    a => a,
+                    static a => a.ExpressionName.Value,
+                    static a => a,
                     StringComparer.OrdinalIgnoreCase);
         }
 

@@ -18,8 +18,8 @@ internal sealed class Aj5060SettingsRaw : IRawDiagnosticSettings<Aj5060Settings>
         ReservedIdentifierNames
             .EmptyIfNull()
             .WhereNotNullOrWhiteSpaceOnly()
-            .SelectMany(a => a.Split(';', StringSplitOptions.RemoveEmptyEntries))
-            .Where(a => a.Length > 0)
+            .SelectMany(static a => a.Split(';', StringSplitOptions.RemoveEmptyEntries))
+            .Where(static a => a.Length > 0)
             .ToFrozenSet(StringComparer.OrdinalIgnoreCase)
     );
 }

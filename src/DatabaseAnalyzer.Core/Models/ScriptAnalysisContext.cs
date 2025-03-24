@@ -26,7 +26,7 @@ internal sealed class ScriptAnalysisContext : IScriptAnalysisContext
                                  ILogger logger,
                                  FrozenSet<string> disabledDiagnosticIds)
     {
-        ErrorFreeScripts = scripts.Where(a => !a.HasErrors).ToImmutableArray();
+        ErrorFreeScripts = scripts.Where(static a => !a.HasErrors).ToImmutableArray();
         DefaultSchemaName = defaultSchemaName;
         Scripts = scripts;
         Script = script;

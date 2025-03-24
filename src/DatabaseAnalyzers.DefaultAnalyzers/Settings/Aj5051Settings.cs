@@ -21,6 +21,6 @@ public sealed record Aj5051Settings(
     bool IgnoreUnusedPrimaryKeyIndices
 ) : IDiagnosticSettings<Aj5051Settings>
 {
-    public static Aj5051Settings Default { get; } = new(false);
+    public static Aj5051Settings Default { get; } = new(IgnoreUnusedPrimaryKeyIndices: false);
     public static string DiagnosticId => "AJ5051";
 }

@@ -56,7 +56,7 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
 
         var tableReferences = _script.ParsedScript
             .GetChildren<NamedTableReference>(recursive: true)
-            .Where(a =>
+            .Where(static a =>
             {
                 if (a.SchemaObject?.BaseIdentifier?.Value is null)
                 {

@@ -74,7 +74,7 @@ public sealed class ProcedureInvocationWithMissingParameterValuesAnalyzerTests(I
 
     private static class Settings
     {
-        public static Aj5062Settings AllRequired { get; } = Aj5062Settings.Default;
+        public static Aj5062Settings AllRequired => Aj5062Settings.Default;
         public static Aj5062Settings AllAllowed { get; } = new(ValueRequiredForNullableParameters: false, ValueRequiredForParametersWithDefaultValue: false);
     }
 }

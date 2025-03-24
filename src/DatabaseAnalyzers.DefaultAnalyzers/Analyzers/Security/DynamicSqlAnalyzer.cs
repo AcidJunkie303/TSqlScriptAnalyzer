@@ -38,31 +38,31 @@ public sealed class DynamicSqlAnalyzer : IScriptAnalyzer
 
         bool IsDynamicSql()
         {
-            if (statement.ExecuteSpecification.ExecutableEntity is ExecutableProcedureReference executableProcedureReference)
+            if (statement.ExecuteSpecification.ExecutableEntity is not ExecutableProcedureReference executableProcedureReference)
             {
-                var procedureReference = executableProcedureReference.ProcedureReference;
-                if (procedureReference is null)
+                return statement.ExecuteSpecification.ExecutableEntity switch
                 {
-                    return false;
-                }
-
-                var procedureName = procedureReference.ProcedureReference.Name?.BaseIdentifier?.Value;
-                if (!procedureName.EqualsOrdinalIgnoreCase("sp_executeSql"))
-                {
-                    return false;
-                }
-
-                var firstParameter = executableProcedureReference.Parameters.FirstOrDefault();
-                return firstParameter?.ParameterValue is VariableReference;
+                    ExecutableProcedureReference                                                                 => false,
+                    ExecutableStringList executableStringList when executableStringList.Strings.IsNullOrEmpty()  => false,
+                    ExecutableStringList executableStringList when !executableStringList.Strings.IsNullOrEmpty() => !executableStringList.Strings.All(s => s is StringLiteral),
+                    _                                                                                            => false
+                };
             }
 
-            return statement.ExecuteSpecification.ExecutableEntity switch
+            var procedureReference = executableProcedureReference.ProcedureReference;
+            if (procedureReference is null)
             {
-                ExecutableProcedureReference                                                                 => false,
-                ExecutableStringList executableStringList when executableStringList.Strings.IsNullOrEmpty()  => false,
-                ExecutableStringList executableStringList when !executableStringList.Strings.IsNullOrEmpty() => !executableStringList.Strings.All(s => s is StringLiteral),
-                _                                                                                            => false
-            };
+                return false;
+            }
+
+            var procedureName = procedureReference.ProcedureReference.Name?.BaseIdentifier?.Value;
+            if (!procedureName.EqualsOrdinalIgnoreCase("sp_executeSql"))
+            {
+                return false;
+            }
+
+            var firstParameter = executableProcedureReference.Parameters.FirstOrDefault();
+            return firstParameter?.ParameterValue is VariableReference;
         }
     }
 

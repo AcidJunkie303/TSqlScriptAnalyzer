@@ -19,17 +19,17 @@ internal sealed class Aj5058SettingsRaw : IRawDiagnosticSettings<Aj5058Settings>
     (
         AllowedInFilesByDropStatementType
             .EmptyIfNull()
-            .Where(a => !a.Value.IsNullOrEmpty())
+            .Where(static a => !a.Value.IsNullOrEmpty())
             .Join(
                 inner: Aj5058Helpers.GetDropStatementTypes(),
-                outerKeySelector: a => a.Key,
-                innerKeySelector: a => a.ShortenedName,
-                resultSelector: (outer, inner) => (inner.Type, inner.ShortenedName, FileNamePatterns: outer.Value),
+                outerKeySelector: static a => a.Key,
+                innerKeySelector: static a => a.ShortenedName,
+                resultSelector: static (outer, inner) => (inner.Type, inner.ShortenedName, FileNamePatterns: outer.Value),
                 comparer: StringComparer.OrdinalIgnoreCase
             )
             .ToFrozenDictionary(
-                a => a.Type,
-                a => ToExpressionsAndPatterns(a.ShortenedName, a.FileNamePatterns)
+                static a => a.Type,
+                static a => ToExpressionsAndPatterns(a.ShortenedName, a.FileNamePatterns)
             )
     );
 
@@ -42,7 +42,7 @@ internal sealed class Aj5058SettingsRaw : IRawDiagnosticSettings<Aj5058Settings>
 
         var expressions = rawFileNamePatterns
             .WhereNotNullOrWhiteSpaceOnly()
-            .Select(a => a.ToRegexWithSimpleWildcards(caseSensitive: false, compileRegex: true))
+            .Select(static a => a.ToRegexWithSimpleWildcards(caseSensitive: false, compileRegex: true))
             .ToList();
 
         var flatFileNamePatterns = rawFileNamePatterns

@@ -16,7 +16,7 @@ public sealed record ViewInformation(
 {
     public required IScriptModel ScriptModel { get; init; }
     public string FullName { get; } = $"{DatabaseName}.{SchemaName}.{ObjectName}";
-    public IReadOnlyDictionary<string, ViewColumnInformation> ColumnsByName { get; } = Columns.ToFrozenDictionary(a => a.ObjectName, a => a, StringComparer.OrdinalIgnoreCase);
+    public IReadOnlyDictionary<string, ViewColumnInformation> ColumnsByName { get; } = Columns.ToFrozenDictionary(static a => a.ObjectName, static a => a, StringComparer.OrdinalIgnoreCase);
 
     public IReadOnlyList<string> FullNameParts { get; } = new[]
     {

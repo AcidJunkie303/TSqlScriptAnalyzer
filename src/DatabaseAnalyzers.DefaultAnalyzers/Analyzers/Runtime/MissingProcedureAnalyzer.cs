@@ -25,8 +25,8 @@ public sealed class MissingProcedureAnalyzer : IGlobalAnalyzer
     public void Analyze()
     {
         var procedures = _objectProvider.DatabasesByName
-            .SelectMany(a => a.Value.SchemasByName.Values)
-            .SelectMany(a => a.ProceduresByName.Values);
+            .SelectMany(static a => a.Value.SchemasByName.Values)
+            .SelectMany(static a => a.ProceduresByName.Values);
 
         foreach (var procedure in procedures)
         {

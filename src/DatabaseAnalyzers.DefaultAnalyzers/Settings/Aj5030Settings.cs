@@ -61,7 +61,7 @@ public sealed class Aj5030SettingsRaw : IRawDiagnosticSettings<Aj5030Settings>
         TableAliasName: ToPatternEntry(TableAliasName),
         IgnoredObjectNamePatterns: IgnoredObjectNamePatterns
                                        ?.WhereNotNullOrWhiteSpaceOnly()
-                                       .Select(a => a.ToRegexWithSimpleWildcards(caseSensitive: false, compileRegex: true))
+                                       .Select(static a => a.ToRegexWithSimpleWildcards(caseSensitive: false, compileRegex: true))
                                        .ToImmutableList()
                                    ?? []
     );

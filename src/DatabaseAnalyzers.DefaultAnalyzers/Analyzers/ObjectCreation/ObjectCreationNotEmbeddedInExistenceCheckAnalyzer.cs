@@ -59,7 +59,7 @@ public sealed class ObjectCreationNotEmbeddedInExistenceCheckAnalyzer : IScriptA
             parentStatement is null
                 ? null
                 : _script.ParsedScript.ScriptTokenStream
-                    .Skip(parentStatement!.FirstTokenIndex)
+                    .Skip(parentStatement.FirstTokenIndex)
                     .Take(statement.FirstTokenIndex - parentStatement.FirstTokenIndex)
                     .Select(a => a.Text)
                     .StringJoin(string.Empty)

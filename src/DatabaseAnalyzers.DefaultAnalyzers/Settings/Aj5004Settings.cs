@@ -21,9 +21,9 @@ internal sealed class Aj5004SettingsRaw : IRawDiagnosticSettings<Aj5004Settings>
         TopicsAndPatterns
             .EmptyIfNull()
             .WhereNotNull()
-            .Where(a => !a.Topic.IsNullOrWhiteSpace())
-            .Where(a => !a.Topic.IsNullOrWhiteSpace())
-            .Select(a => new TopicAndPattern(a.Topic!, new Regex(a.Pattern!, RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.NonBacktracking | RegexOptions.ExplicitCapture, TimeSpan.FromMilliseconds(100))))
+            .Where(static a => !a.Topic.IsNullOrWhiteSpace())
+            .Where(static a => !a.Topic.IsNullOrWhiteSpace())
+            .Select(static a => new TopicAndPattern(a.Topic!, new Regex(a.Pattern!, RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.NonBacktracking | RegexOptions.ExplicitCapture, TimeSpan.FromMilliseconds(100))))
             .ToImmutableArray()
     );
 }

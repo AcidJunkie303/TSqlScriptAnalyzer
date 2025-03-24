@@ -91,7 +91,7 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
     private List<T> Deduplicate<T>(IEnumerable<T> source) where T : IDatabaseObject
     {
         var grouped = source
-            .GroupBy(a => a.FullName, (_, objects) => objects.ToList(), StringComparer.OrdinalIgnoreCase)
+            .GroupBy(static a => a.FullName, static (_, objects) => objects.ToList(), StringComparer.OrdinalIgnoreCase)
             .ToList();
 
         foreach (var group in grouped)
@@ -115,20 +115,20 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
             }
         }
 
-        return grouped.ConvertAll(a => a[0]);
+        return grouped.ConvertAll(static a => a[0]);
     }
 
     private ISchemaBoundObject[] RemoveAndReportDuplicates(ISchemaBoundObject[] objects)
     {
         var indicesWithoutName = objects
-            .Where(a => a is IndexInformation { IndexName: null })
+            .Where(static a => a is IndexInformation { IndexName: null })
             .ToList();
 
         var objectsGroupedByName = objects
             // depending on the index type, some indices might not have a name
-            .Where(a => a is not IndexInformation { IndexName: null })
-            .GroupBy(a => a.FullNameParts.StringJoin(":::"), StringComparer.OrdinalIgnoreCase)
-            .Select(a => a.ToList())
+            .Where(static a => a is not IndexInformation { IndexName: null })
+            .GroupBy(static a => a.FullNameParts.StringJoin(":::"), StringComparer.OrdinalIgnoreCase)
+            .Select(static a => a.ToList())
             .ToList();
 
         foreach (var databaseObjects in objectsGroupedByName)

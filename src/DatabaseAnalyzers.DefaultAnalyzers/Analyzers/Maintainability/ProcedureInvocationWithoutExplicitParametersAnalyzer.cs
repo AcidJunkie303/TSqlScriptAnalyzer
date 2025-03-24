@@ -54,7 +54,7 @@ public sealed class ProcedureInvocationWithoutExplicitParametersAnalyzer : IScri
             return;
         }
 
-        if (procedureCall.Parameters.All(a => a.Variable is not null))
+        if (procedureCall.Parameters.All(static a => a.Variable is not null))
         {
             return;
         }

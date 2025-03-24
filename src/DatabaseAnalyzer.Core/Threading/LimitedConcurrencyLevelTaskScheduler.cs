@@ -2,11 +2,11 @@ namespace DatabaseAnalyzer.Core.Threading;
 
 // Copied from https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.taskscheduler?view=net-9.0
 #pragma warning disable
+// ReSharper disable
 
 public sealed class LimitedConcurrencyLevelTaskScheduler : TaskScheduler
 {
     [ThreadStatic] private static bool CurrentThreadIsProcessingItems;
-
     private readonly LinkedList<Task> _tasks = new(); // protected by lock(_tasks)
     private int _delegatesQueuedOrRunning;
     public override int MaximumConcurrencyLevel { get; }
@@ -15,7 +15,7 @@ public sealed class LimitedConcurrencyLevelTaskScheduler : TaskScheduler
     {
         if (maxDegreeOfParallelism < 1)
         {
-            throw new ArgumentOutOfRangeException("maxDegreeOfParallelism");
+            throw new ArgumentOutOfRangeException(nameof(maxDegreeOfParallelism));
         }
 
         MaximumConcurrencyLevel = maxDegreeOfParallelism;
@@ -92,10 +92,8 @@ public sealed class LimitedConcurrencyLevelTaskScheduler : TaskScheduler
             {
                 return TryExecuteTask(task);
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
 
         return TryExecuteTask(task);

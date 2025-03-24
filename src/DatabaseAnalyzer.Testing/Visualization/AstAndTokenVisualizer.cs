@@ -14,7 +14,7 @@ public static class AstAndTokenVisualizer
         => Visualize(testOutputHelper, analysisContext.Scripts);
 
     public static void Visualize(ITestOutputHelper testOutputHelper, IEnumerable<IScriptModel> scripts)
-        => Visualize(testOutputHelper, scripts.Select(a => KeyValuePair.Create(a.RelativeScriptFilePath, (TSqlFragment) a.ParsedScript)));
+        => Visualize(testOutputHelper, scripts.Select(static a => KeyValuePair.Create(a.RelativeScriptFilePath, (TSqlFragment) a.ParsedScript)));
 
     public static void Visualize(ITestOutputHelper testOutputHelper, string scriptContent)
     {
@@ -43,7 +43,7 @@ public static class AstAndTokenVisualizer
     public static void Visualize(ITestOutputHelper testOutputHelper, IEnumerable<KeyValuePair<string, string>> scripts)
     {
         var parsedScripts = scripts
-            .Select(a => KeyValuePair.Create(a.Key, (TSqlFragment) a.Value.ParseSqlScript()));
+            .Select(static a => KeyValuePair.Create(a.Key, (TSqlFragment) a.Value.ParseSqlScript()));
 
         Visualize(testOutputHelper, parsedScripts);
     }

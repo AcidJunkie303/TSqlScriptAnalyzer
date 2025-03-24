@@ -23,7 +23,7 @@ public sealed class OpenItemAnalyzer : IScriptAnalyzer
     public void AnalyzeScript()
     {
         var commentTokens = _script.ParsedScript.ScriptTokenStream
-            .Where(a => a.TokenType is TSqlTokenType.SingleLineComment or TSqlTokenType.MultilineComment);
+            .Where(static a => a.TokenType is TSqlTokenType.SingleLineComment or TSqlTokenType.MultilineComment);
 
         foreach (var commentToken in commentTokens)
         {

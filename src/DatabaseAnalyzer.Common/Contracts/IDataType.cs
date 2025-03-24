@@ -2,7 +2,7 @@ namespace DatabaseAnalyzer.Common.Contracts;
 
 public interface IDataType : IEquatable<IDataType>
 {
-    public bool IsString { get; }
+    bool IsString { get; }
     bool IsAsciiString { get; }
     bool IsUnicodeString { get; }
 

@@ -44,6 +44,6 @@ internal sealed class FunctionExtractor : Extractor<FunctionInformation>
         var hasDefaultValue = parameter.Value is not null;
         var isNullable = parameter.Nullable?.Nullable ?? false;
 
-        return new ParameterInformation(parameter.VariableName.Value, parameter.DataType, false, hasDefaultValue, isNullable);
+        return new ParameterInformation(parameter.VariableName.Value, parameter.DataType, IsOutput: false, hasDefaultValue, isNullable);
     }
 }

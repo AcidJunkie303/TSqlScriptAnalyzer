@@ -74,7 +74,7 @@ public static class SqlScriptExtensions
         {
             if (fragment is T node)
             {
-                var anyParentIsOfSameType = _parentFragmentProvider.GetParents(fragment).Any(a => a is T);
+                var anyParentIsOfSameType = _parentFragmentProvider.GetParents(fragment).Any(static a => a is T);
                 if (!anyParentIsOfSameType)
                 {
                     Nodes.Add(node);

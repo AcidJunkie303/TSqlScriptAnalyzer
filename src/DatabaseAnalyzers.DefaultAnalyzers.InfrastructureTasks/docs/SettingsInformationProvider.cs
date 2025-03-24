@@ -11,29 +11,29 @@ internal static class SettingsInformationProvider
     {
         return AssemblyProvider
             .GetAssemblies()
-            .SelectMany(a => a
+            .SelectMany(static a => a
                 .GetTypes()
-                .Where(b => b.IsClass)
-                .Where(b => !b.IsAbstract)
-                .Where(b => b.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IRawDiagnosticSettings<>)))
-                .Select(b =>
+                .Where(static b => b.IsClass)
+                .Where(static b => !b.IsAbstract)
+                .Where(static b => b.GetInterfaces().Any(static x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IRawDiagnosticSettings<>)))
+                .Select(static b =>
                 {
                     var settingsSource = b.GetCustomAttribute<SettingsSourceAttribute>();
                     var diagnosticId = settingsSource?.Name;
                     var kind = settingsSource?.Kind;
-                    var propertyDescriptions = GetPropertyDescribers(b).Where(x => x.Description is not null).ToList();
+                    var propertyDescriptions = GetPropertyDescribers(b).Where(static x => x.Description is not null).ToList();
 
                     return (DiagnosticId: diagnosticId, Kind: kind, PropertyDescriptions: propertyDescriptions);
                 })
-                .Where(b => b.DiagnosticId is not null && b is { Kind: not null, PropertyDescriptions.Count: > 0 })
+                .Where(static b => b.DiagnosticId is not null && b is { Kind: not null, PropertyDescriptions.Count: > 0 })
             )
-            .ToDictionary(a => a.DiagnosticId!, a => a.PropertyDescriptions, StringComparer.OrdinalIgnoreCase);
+            .ToDictionary(static a => a.DiagnosticId!, static a => a.PropertyDescriptions, StringComparer.OrdinalIgnoreCase);
     }
 
     private static IEnumerable<PropertyDescriber> GetPropertyDescribers(Type type)
         => type
             .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-            .Select(a => new PropertyDescriber(a.Name, GetPropertyDescription(a)));
+            .Select(static a => new PropertyDescriber(a.Name, GetPropertyDescription(a)));
 
     private static string? GetPropertyDescription(PropertyInfo property)
         => property

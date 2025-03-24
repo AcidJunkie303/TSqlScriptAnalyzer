@@ -44,7 +44,7 @@ public sealed class MissingNoCountInProcedureOrTriggerAnalyzer : IScriptAnalyzer
             .Cast<PredicateSetStatement>()
             .ToList();
 
-        if (setOptionStatements.Count > 0 || setOptionStatements.Any(static a => a.IsOn && a.Options.HasFlag(SetOptions.NoCount)))
+        if (setOptionStatements.Count > 0 || setOptionStatements.Exists(static a => a.IsOn && a.Options.HasFlag(SetOptions.NoCount)))
         {
             return;
         }
@@ -65,7 +65,7 @@ public sealed class MissingNoCountInProcedureOrTriggerAnalyzer : IScriptAnalyzer
                 return [];
             }
 
-            if (statements.Count == 1 && statements[0] is BeginEndBlockStatement beginEndBlockStatement)
+            if (statements is [BeginEndBlockStatement beginEndBlockStatement])
             {
                 statementList = beginEndBlockStatement.StatementList;
                 continue;

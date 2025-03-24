@@ -8,7 +8,7 @@ namespace DatabaseAnalyzer.Common.Contracts;
 public record struct CodeRegion(
     CodeLocation Begin,
     CodeLocation End
-) : IComparable<CodeRegion>, IComparable, IEquatable<CodeRegion>
+) : IComparable<CodeRegion>, IComparable
 {
     public static CodeRegion Unknown { get; } = Create(1, 1, 1, 1);
 

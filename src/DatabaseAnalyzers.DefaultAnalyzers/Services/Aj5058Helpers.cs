@@ -12,11 +12,11 @@ internal static class Aj5058Helpers
         return Assembly
             .GetAssembly(typeof(DropTableStatement))!
             .GetTypes()
-            .Where(a => a is { IsPublic: true, IsAbstract: false, IsInterface: false })
+            .Where(static a => a is { IsPublic: true, IsAbstract: false, IsInterface: false })
             .Where(IsStatement)
-            .Where(a => a.Name.Contains("Drop", StringComparison.Ordinal))
-            .Where(a => a.Name.EndsWith(statement, StringComparison.Ordinal))
-            .Select(a => (ShortenedName: a.Name[..^statement.Length], Type: a));
+            .Where(static a => a.Name.Contains("Drop", StringComparison.Ordinal))
+            .Where(static a => a.Name.EndsWith(statement, StringComparison.Ordinal))
+            .Select(static a => (ShortenedName: a.Name[..^statement.Length], Type: a));
     }
 
     private static bool IsStatement(Type? type)

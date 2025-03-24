@@ -26,7 +26,7 @@ public sealed record Aj5062Settings(
     bool ValueRequiredForParametersWithDefaultValue
 ) : IDiagnosticSettings<Aj5062Settings>
 {
-    public static Aj5062Settings Default { get; } = new(true, true);
+    public static Aj5062Settings Default { get; } = new(ValueRequiredForNullableParameters: true, ValueRequiredForParametersWithDefaultValue: true);
 
     public static string DiagnosticId => "AJ5062";
 }

@@ -30,7 +30,7 @@ public sealed class GenerateDiagnosticOverview
 
         var definitions = DiagnosticDefinitionProvider
             .GetDefinitionsFromAssemblies()
-            .OrderBy(a => a.DiagnosticId, StringComparer.OrdinalIgnoreCase);
+            .OrderBy(static a => a.DiagnosticId, StringComparer.OrdinalIgnoreCase);
 
         foreach (var definition in definitions)
         {
