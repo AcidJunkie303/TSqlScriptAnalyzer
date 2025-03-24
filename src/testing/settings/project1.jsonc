@@ -6,7 +6,8 @@
         ]
     },
     "ScriptSource": {
-        "ExclusionFilters": [],
+        "ExclusionFilters": [
+        ],
         "ScriptsRootDirectoryPath": "..\\..\\testing\\scripts\\",
         "DatabaseScriptsRootPathByDatabaseName": {
             "database-1": "..\\..\\..\\..\\testing\\scripts\\database-1",
@@ -18,6 +19,8 @@
     },
     "Diagnostics": {
         "DisabledDiagnostics": [
+            "AJ5066",
+            "AJ5003"
         ],
         "AJ5001": // Excessive string concatenation
         {
