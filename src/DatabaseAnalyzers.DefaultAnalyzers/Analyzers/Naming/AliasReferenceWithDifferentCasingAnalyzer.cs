@@ -28,9 +28,9 @@ public sealed class AliasReferenceWithDifferentCasingAnalyzer : IScriptAnalyzer
         }
     }
 
-    private void AnalyzeColumnReference(ColumnReferenceExpression columnReference)
+    private void AnalyzeColumnReference(ColumnReferenceExpression? columnReference)
     {
-        if (columnReference.MultiPartIdentifier.Identifiers is null || columnReference.MultiPartIdentifier.Identifiers.Count != 2)
+        if (columnReference?.MultiPartIdentifier?.Identifiers is null || columnReference.MultiPartIdentifier.Identifiers.Count != 2)
         {
             return;
         }
