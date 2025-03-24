@@ -1,7 +1,7 @@
 # Unit Testing Analyzers
 
 Unit testing analyzers is pretty simple thanks to the markup extensions.
-Based on the example in [Creating Analyzers](CreatingAnalyzers.md), let's create unit tests for this analyzer.
+Based on the example in [Creating Analyzers](Creating-Analyzers.md), let's create unit tests for this analyzer.
 
 ## Markup
 
@@ -184,7 +184,9 @@ When executing any unit test, the test output window will provide you with the a
 parsed tokens:
 
 ```
-Syntax Tree:
+==========================================
+= Syntax Tree of script script_0.sql
+==========================================
 +-------------------------------------+-----------------+---------------------------------------------------------+
 | Type                                | Region          | Contents                                                |
 +-------------------------------------+-----------------+---------------------------------------------------------+
@@ -202,34 +204,39 @@ Syntax Tree:
 |         StringLiteral               | (5,11) - (5,19) | 'tb-303'                                                |
 +-------------------------------------+-----------------+---------------------------------------------------------+
 
-Tokens:
-+--------------------+-----------------+----------+
-| Type               | Region          | Contents |
-+--------------------+-----------------+----------+
-| Use                | (1,1) - (1,4)   | USE      |
-| WhiteSpace         | (1,4) - (1,5)   | ¦ ¦      |
-| Identifier         | (1,5) - (1,9)   | MyDb     |
-| WhiteSpace         | (1,9) - (2,1)   | \r\n     |
-| Go                 | (2,1) - (2,3)   | GO       |
-| WhiteSpace         | (2,3) - (3,1)   | \r\n     |
-| WhiteSpace         | (3,1) - (4,1)   | \r\n     |
-| While              | (4,1) - (4,6)   | WHILE    |
-| WhiteSpace         | (4,6) - (4,7)   | ¦ ¦      |
-| LeftParenthesis    | (4,7) - (4,8)   | (        |
-| Integer            | (4,8) - (4,9)   | 1        |
-| EqualsSign         | (4,9) - (4,10)  | =        |
-| Integer            | (4,10) - (4,11) | 1        |
-| RightParenthesis   | (4,11) - (4,12) | )        |
-| WhiteSpace         | (4,12) - (5,1)  | \r\n     |
-| WhiteSpace         | (5,1) - (5,5)   | ¦    ¦   |
-| Print              | (5,5) - (5,10)  | PRINT    |
-| WhiteSpace         | (5,10) - (5,11) | ¦ ¦      |
-| AsciiStringLiteral | (5,11) - (5,19) | 'tb-303' |
-| EndOfFile          | (5,19) - (5,19) | ¦¦       |
-+--------------------+-----------------+----------+
+
+
+
+==========================================
+= Tokens of script script_0.sql
+==========================================
++-------+--------------------+-----------------+----------+
+| Index | Type               | Region          | Contents |
++-------+--------------------+-----------------+----------+
+|     0 | Use                | (1,1) - (1,4)   | USE      |
+|     1 | WhiteSpace         | (1,4) - (1,5)   | ¦ ¦      |
+|     2 | Identifier         | (1,5) - (1,9)   | MyDb     |
+|     3 | WhiteSpace         | (1,9) - (2,1)   | \r\n     |
+|     4 | Go                 | (2,1) - (2,3)   | GO       |
+|     5 | WhiteSpace         | (2,3) - (3,1)   | \r\n     |
+|     6 | WhiteSpace         | (3,1) - (4,1)   | \r\n     |
+|     7 | While              | (4,1) - (4,6)   | WHILE    |
+|     8 | WhiteSpace         | (4,6) - (4,7)   | ¦ ¦      |
+|     9 | LeftParenthesis    | (4,7) - (4,8)   | (        |
+|    10 | Integer            | (4,8) - (4,9)   | 1        |
+|    11 | EqualsSign         | (4,9) - (4,10)  | =        |
+|    12 | Integer            | (4,10) - (4,11) | 1        |
+|    13 | RightParenthesis   | (4,11) - (4,12) | )        |
+|    14 | WhiteSpace         | (4,12) - (5,1)  | \r\n     |
+|    15 | WhiteSpace         | (5,1) - (5,5)   | ¦    ¦   |
+|    16 | Print              | (5,5) - (5,10)  | PRINT    |
+|    17 | WhiteSpace         | (5,10) - (5,11) | ¦ ¦      |
+|    18 | AsciiStringLiteral | (5,11) - (5,19) | 'tb-303' |
+|    19 | EndOfFile          | (5,19) - (5,19) | ¦¦       |
++-------+--------------------+-----------------+----------+
 
 1 issue reported:
-AJ5022    CodeRegion="(5,5) - (5,19)"    Insertions="WHILE
+AJ5022    CodeRegion="(5,5) - (5,19)"    FullObjectName="script_0.sql"   Insertions="WHILE
 ```
 
 Therefore, before implementing any analyzer logic, it's worth creating the unit tests first and check the AST or token

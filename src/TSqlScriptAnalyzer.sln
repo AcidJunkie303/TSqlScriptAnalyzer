@@ -30,11 +30,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution 
 		.gitignore = .gitignore
 		Directory.Build.props = Directory.Build.props
 		TSqlScriptAnalyzer.sln.DotSettings = TSqlScriptAnalyzer.sln.DotSettings
-		..\CreatingAnalyzers.md = ..\CreatingAnalyzers.md
 		..\README.md = ..\README.md
-		..\STATUS.md = ..\STATUS.md
-		..\UnitTestingAnalyzers.md = ..\UnitTestingAnalyzers.md
 		testing\settings\project1.jsonc = testing\settings\project1.jsonc
+		..\Creating-Analyzers.md = ..\Creating-Analyzers.md
+		..\Issue-Suppression.md = ..\Issue-Suppression.md
+		..\Unit-Testing-Analyzers.md = ..\Unit-Testing-Analyzers.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{756EE255-D7F4-4CFE-8FAA-92A5C17E823B}"

@@ -320,7 +320,7 @@ context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script
 
 `WHILE` is the one and only insertion string we provide.
 
-Let's continue with [Unit Testing Analyzers](UnitTestingAnalyzers.md)
+Let's continue with [Unit Testing Analyzers](Unit-Testing-Analyzers.md)
 
 # Injectable Services
 
