@@ -1,7 +1,7 @@
 # Unit Testing Analyzers
 
 Unit testing analyzers is pretty simple thanks to the markup extensions.
-Based on the example in [Creating-Analyzers](Creating-Analyzers.md), let's create unit tests for this analyzer.
+Based on the example in [Creating Analyzers](Creating-Analyzers.md), let's create unit tests for this analyzer.
 
 ## Markup
 
