@@ -7,8 +7,8 @@ namespace DatabaseAnalyzer.Core.Plugins;
 internal sealed record PluginAssembly(
     string AssemblyFilePath,
     PluginLoadContext AssemblyLoadContext,
-    ImmutableArray<Type> ScriptAnalyzerTypes,
-    ImmutableArray<Type> GlobalAnalyzerTypes,
+    ImmutableArray<AnalyzerTypeAndDiagnostics> ScriptAnalyzerTypes,
+    ImmutableArray<AnalyzerTypeAndDiagnostics> GlobalAnalyzerTypes,
     ImmutableArray<SettingMetadata> CustomSettings,
     ImmutableArray<IDiagnosticDefinition> DiagnosticDefinitions
 ) : IDisposable

@@ -62,8 +62,8 @@ internal static class PluginAssemblyLoader
         try
         {
             var assembly = assemblyLoadContext.LoadFromAssemblyPath(assemblyFilePath);
-            var scriptAnalyzerTypes = GetPluginsOfType<IScriptAnalyzer>(assembly).ToImmutableArray();
-            var globalAnalyzerTypes = GetPluginsOfType<IGlobalAnalyzer>(assembly).ToImmutableArray();
+            var scriptAnalyzerTypes = GetAnalyzerPlugins<IScriptAnalyzer>(assembly).ToImmutableArray();
+            var globalAnalyzerTypes = GetAnalyzerPlugins<IGlobalAnalyzer>(assembly).ToImmutableArray();
             var serviceDeclarationTypes = GetInterfacesOfType<IService>(assembly).ToImmutableArray();
             var settingsPairTypes = GetSettingsMetadata(assembly).ToImmutableArray();
             var diagnosticDefinitions = GetDefinitionsFromAssembly(assembly).ToImmutableArray();
@@ -105,6 +105,15 @@ internal static class PluginAssemblyLoader
                     IsClass   : true,
                     IsPublic  : true
                 } && a.GetInterfaces().Any(static x => x == typeof(TPlugin));
+            });
+
+    private static IEnumerable<AnalyzerTypeAndDiagnostics> GetAnalyzerPlugins<TAnalyzer>(Assembly assembly)
+        where TAnalyzer : IObjectAnalyzer
+        => GetPluginsOfType<TAnalyzer>(assembly)
+            .Select(static a =>
+            {
+                var diagnostics = DiagnosticsAccessor.GetSupportedDiagnosticDefinitions(a);
+                return new AnalyzerTypeAndDiagnostics(a, diagnostics);
             });
 
     private static IEnumerable<Type> GetInterfacesOfType<TService>(Assembly assembly)

@@ -126,20 +126,42 @@ public sealed class AnalyzerFactory : IDisposable
             });
     }
 
-    private static void RegisterAnalyzers(IServiceCollection services, IReadOnlyList<PluginAssembly> pluginAssemblies)
+    private void RegisterAnalyzers(IServiceCollection services, IReadOnlyList<PluginAssembly> pluginAssemblies)
     {
         var scriptAnalyzerTypes = new List<Type>();
         var globalAnalyzerTypes = new List<Type>();
 
         foreach (var pluginAssembly in pluginAssemblies)
         {
-            scriptAnalyzerTypes.AddRange(pluginAssembly.ScriptAnalyzerTypes);
-            globalAnalyzerTypes.AddRange(pluginAssembly.GlobalAnalyzerTypes);
+            foreach (var (type, diagnosticDefinitions) in pluginAssembly.GlobalAnalyzerTypes)
+            {
+                if (AreAllDiagnosticIdsDisabled(diagnosticDefinitions))
+                {
+                    continue;
+                }
+
+                globalAnalyzerTypes.Add(type);
+            }
+
+            foreach (var (type, diagnosticDefinitions) in pluginAssembly.ScriptAnalyzerTypes)
+            {
+                if (AreAllDiagnosticIdsDisabled(diagnosticDefinitions))
+                {
+                    continue;
+                }
+
+                scriptAnalyzerTypes.Add(type);
+            }
         }
 
         var analyzerTypes = new AnalyzerTypes(scriptAnalyzerTypes, globalAnalyzerTypes);
         services.AddSingleton(analyzerTypes);
     }
+
+    private bool AreAllDiagnosticIdsDisabled(IReadOnlyList<IDiagnosticDefinition> diagnostics)
+        => diagnostics
+            .Select(a => a.DiagnosticId)
+            .All(a => _settings.Diagnostics.DisabledDiagnostics.Contains(a));
 
     private void RegisterSettings(IServiceCollection services, IReadOnlyList<PluginAssembly> pluginAssemblies)
     {

@@ -1,6 +1,5 @@
 using System.Collections.Frozen;
 using DatabaseAnalyzer.Common.Contracts;
-using DatabaseAnalyzer.Common.Contracts.Settings;
 using Microsoft.Extensions.Configuration;
 
 namespace DatabaseAnalyzer.Core.Configuration;
@@ -27,9 +26,7 @@ public static class CustomSettingsLoader
         var section = GetSection(configuration, metadata.SourceKind);
         dynamic rawSettings = section.GetSection(metadata.Name).Get(metadata.RawSettingsType) ?? Activator.CreateInstance(metadata.RawSettingsType)!;
 
-        var accessorType = typeof(SettingsAccessor<,>).MakeGenericType(metadata.RawSettingsType, metadata.FinalSettingsType);
-        var accessor = (ISettingsAccessor) Activator.CreateInstance(accessorType, (object[]) [rawSettings])!;
-        return accessor.GetSettings();
+        return SettingsAccessor.GetSettings(rawSettings, metadata.RawSettingsType, metadata.FinalSettingsType);
     }
 
     private static IConfigurationSection GetSection(IConfiguration configuration, SettingsSourceKind settingsSourceKind)
@@ -38,24 +35,5 @@ public static class CustomSettingsLoader
                           ?? throw new ArgumentException($"SourceKind {settingsSourceKind} is not handled", nameof(settingsSourceKind));
 
         return configuration.GetSection(sectionPath);
-    }
-
-    private interface ISettingsAccessor
-    {
-        object GetSettings();
-    }
-
-    private sealed class SettingsAccessor<TRaw, TFinal> : ISettingsAccessor
-        where TRaw : class, IRawSettings<TFinal>
-        where TFinal : class, ISettings<TFinal>
-    {
-        private readonly TRaw _rawSettings;
-#pragma warning disable S1144 // Unused private types or members should be removed -> ise used above through Activator.CreateInstance
-        public SettingsAccessor(TRaw rawSettings)
-        {
-            _rawSettings = rawSettings;
-        }
-#pragma warning restore S1144
-        public object GetSettings() => _rawSettings.ToSettings();
     }
 }
