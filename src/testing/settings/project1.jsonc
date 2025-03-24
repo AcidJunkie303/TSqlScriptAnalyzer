@@ -329,6 +329,11 @@
         {
             "ValueRequiredForNullableParameters": true,
             "ValueRequiredForParametersWithDefaultValue": true
+        },
+        "AJ5066": // Table reference without schema name
+        {
+            "ValueRequiredForNullableParameters": true,
+            "ValueRequiredForParametersWithDefaultValue": true
         }
     },
     "Services": {

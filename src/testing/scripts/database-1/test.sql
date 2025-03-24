@@ -108,3 +108,4 @@ BEGIN
   FROM a OPTION (MAXRECURSION 0);   -- AJ5044 raised for `a`
   RETURN;
 END
+GO
