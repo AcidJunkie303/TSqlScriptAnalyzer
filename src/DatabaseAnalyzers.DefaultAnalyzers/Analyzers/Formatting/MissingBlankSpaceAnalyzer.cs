@@ -5,9 +5,6 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 
-// TODO: remove
-#pragma warning disable
-
 public sealed class MissingBlankSpaceAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
