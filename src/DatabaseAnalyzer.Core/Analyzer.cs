@@ -72,11 +72,9 @@ internal sealed class Analyzer : IAnalyzer
 
         _logger.LogTrace("Starting analysis");
 
-        var stopwatch = Stopwatch.StartNew();
-        var scriptParseDuration = stopwatch.Elapsed;
         var analysisDuration = PerformAnalysis();
 
-        return CalculateAnalysisResult(_issueReporter.Issues, ref scriptParseDuration, ref analysisDuration);
+        return CalculateAnalysisResult(_issueReporter.Issues, ref analysisDuration);
     }
 
     private TimeSpan PerformAnalysis()
@@ -155,7 +153,7 @@ internal sealed class Analyzer : IAnalyzer
         });
     }
 
-    private AnalysisResult CalculateAnalysisResult(IReadOnlyList<IIssue> issues, ref readonly TimeSpan scriptParseDuration, ref readonly TimeSpan analysisDuration)
+    private AnalysisResult CalculateAnalysisResult(IReadOnlyList<IIssue> issues, ref readonly TimeSpan analysisDuration)
     {
         using var _ = _progressCallback.OnProgressWithAutoEndActionNotification("Calculating results");
 
@@ -185,7 +183,6 @@ internal sealed class Analyzer : IAnalyzer
             TotalSuppressedIssueCount: suppressedIssues.Count,
             TotalWarningCount: deduplicatedIssues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Warning),
             TotalScripts: _scripts.Count,
-            ScriptsParseDuration: scriptParseDuration,
             AnalysisDuration: analysisDuration
         );
 

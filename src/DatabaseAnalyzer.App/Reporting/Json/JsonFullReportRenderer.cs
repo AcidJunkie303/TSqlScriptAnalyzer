@@ -1,5 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Encodings.Web;
 using System.Text.Json;
+using DatabaseAnalyzer.App.Reporting.Json.Converters;
 using DatabaseAnalyzer.Core;
 
 namespace DatabaseAnalyzer.App.Reporting.Json;
@@ -12,6 +14,7 @@ internal sealed class JsonFullReportRenderer : IReportRenderer
         var report = new
         {
             CreatedAt = DateTimeOffset.UtcNow,
+            analysisResult.Statistics,
             analysisResult.DisabledDiagnostics,
             Issues = analysisResult.Issues
                 .OrderBy(static a => a.RelativeScriptFilePath, StringComparer.OrdinalIgnoreCase)
@@ -20,10 +23,12 @@ internal sealed class JsonFullReportRenderer : IReportRenderer
                 {
                     a.DiagnosticDefinition.DiagnosticId,
                     a.DiagnosticDefinition.Title,
+                    a.DiagnosticDefinition.MessageTemplate,
                     a.Message,
                     a.RelativeScriptFilePath,
                     a.CodeRegion,
-                    a.DiagnosticDefinition.HelpUrl
+                    a.DiagnosticDefinition.HelpUrl,
+                    a.MessageInsertions
                 }),
             SuppressedIssues = analysisResult.SuppressedIssues
                 .OrderBy(static a => a.Issue.RelativeScriptFilePath, StringComparer.OrdinalIgnoreCase)
@@ -31,15 +36,31 @@ internal sealed class JsonFullReportRenderer : IReportRenderer
                 .Select(static a => new
                 {
                     a.Issue.DiagnosticDefinition.DiagnosticId,
+                    a.Issue.DiagnosticDefinition.Title,
+                    a.Issue.DiagnosticDefinition.MessageTemplate,
                     a.Issue.Message,
-                    a.Reason,
                     a.Issue.RelativeScriptFilePath,
                     a.Issue.CodeRegion,
-                    a.Issue.DiagnosticDefinition.HelpUrl
+                    a.Issue.DiagnosticDefinition.HelpUrl,
+                    a.Issue.MessageInsertions,
+                    a.Reason
                 })
         };
 
-        var renderedReport = JsonSerializer.Serialize(report, JsonSerializationOptions.Default).Trim();
+        var options = CreateJsonSerializerOptions();
+        var renderedReport = JsonSerializer.Serialize(report, options).Trim();
         return Task.FromResult(renderedReport);
+    }
+
+    private static JsonSerializerOptions CreateJsonSerializerOptions()
+    {
+        var options = new JsonSerializerOptions(JsonSerializerDefaults.General)
+        {
+            WriteIndented = true,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        };
+        options.Converters.Add(new LocationConverter());
+
+        return options;
     }
 }
