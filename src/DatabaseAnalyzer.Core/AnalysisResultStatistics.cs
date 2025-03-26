@@ -10,6 +10,5 @@ public sealed record AnalysisResultStatistics(
     int TotalSuppressedIssueCount,
     int TotalWarningCount,
     int TotalScripts,
-    TimeSpan ScriptsParseDuration,
     TimeSpan AnalysisDuration
 );

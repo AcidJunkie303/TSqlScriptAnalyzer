@@ -44,19 +44,6 @@
                 <td>@Model.Statistics.TotalScripts</td>
             </tr>
             <tr>
-                <td>Scripts Parse Duration</td>
-                <td>
-                    @if (Model.Statistics.ScriptsParseDuration.TotalSeconds < 0.1)
-                    {
-                        @("< 0.1s")
-                    }
-                    else
-                    {
-                        @($"{Model.Statistics.ScriptsParseDuration.TotalSeconds:F1} s")
-                    }
-                </td>
-            </tr>
-            <tr>
                 <td>Scripts Analysis Duration</td>
                 <td>
                     @if (Model.Statistics.AnalysisDuration.TotalSeconds < 0.1)

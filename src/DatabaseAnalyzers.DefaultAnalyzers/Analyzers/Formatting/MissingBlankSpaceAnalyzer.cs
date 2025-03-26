@@ -9,7 +9,6 @@ public sealed class MissingBlankSpaceAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
     private readonly IScriptModel _script;
-
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
     public MissingBlankSpaceAnalyzer(IScriptAnalysisContext context)
