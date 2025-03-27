@@ -108,4 +108,17 @@ public sealed class TableReferenceWithoutSchemaAnalyzerTests(ITestOutputHelper t
 
         Verify(TableAbcIsIgnoredSettings, code);
     }
+
+    [Fact]
+    public void WhenTempTable_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            SELECT * FROM #temp
+                            """;
+
+        Verify(TableAbcIsIgnoredSettings, code);
+    }
 }
