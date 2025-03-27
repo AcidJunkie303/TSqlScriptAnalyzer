@@ -42,6 +42,11 @@ public sealed class TableReferenceWithoutSchemaAnalyzer : IScriptAnalyzer
             return;
         }
 
+        if (tableName.IsTempTableName())
+        {
+            return;
+        }
+
         var schemaName = tableReference.SchemaObject?.SchemaIdentifier?.Value;
         if (!schemaName.IsNullOrWhiteSpace())
         {
