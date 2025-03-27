@@ -5,8 +5,35 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 
+// TODO: remove
+#pragma warning disable
+
+internal static class MissingBlankSpaceAnalyzerEvaluators
+{
+    public static bool IsSpaceRequiredBeforeEqualSign(IList<TSqlParserToken> tokens, int currentTokenIndex)
+    {
+        var previousToken = tokens.GetPreviousToken(currentTokenIndex);
+        if (previousToken is null)
+        {
+            return false;
+        }
+
+        return previousToken.TokenType != TSqlTokenType.GreaterThan
+               && previousToken.TokenType != TSqlTokenType.LessThan
+               && previousToken.TokenType != TSqlTokenType.Bang; // exclamation mark
+    }
+}
+
 public sealed class MissingBlankSpaceAnalyzer : IScriptAnalyzer
 {
+    private static readonly IsSpaceRequired AlwaysTrue = (_, _) => true;
+
+    private static FrozenDictionary<TSqlTokenType, IsSpaceRequired> EvaluatorsForPrecedingWhiteSpaceTokenByTokenType = new Dictionary<TSqlTokenType, IsSpaceRequired>
+    {
+        { TSqlTokenType.Comma, AlwaysTrue },
+        { TSqlTokenType.EqualsSign, MissingBlankSpaceAnalyzerEvaluators.IsSpaceRequiredBeforeEqualSign }
+    }.ToFrozenDictionary();
+
     private readonly IScriptAnalysisContext _context;
     private readonly IScriptModel _script;
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
@@ -21,6 +48,12 @@ public sealed class MissingBlankSpaceAnalyzer : IScriptAnalyzer
     {
         var tokens = _script.ParsedScript.ScriptTokenStream;
 
+        var fragmentsByLocation = _script.ParsedScript
+            .GetChildren(recursive: true)
+            .GroupBy(a => a.GetCodeLocation())
+            .ToDictionary(a => a.Key, a => a.ToList().AsReadOnly());
+
+        /*
         // we skip the first and last since it doesn't make sense to check them, and it also makes the checking easier (out of bounds checking)
         for (var i = 1; i < tokens.Count - 1; i++)
         {
@@ -53,8 +86,25 @@ public sealed class MissingBlankSpaceAnalyzer : IScriptAnalyzer
             var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtToken(token) ?? DatabaseNames.Unknown;
             _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, token.GetCodeRegion(), beforeOrAfter, token.Text);
         }
+        */
     }
 
+    private delegate bool IsSpaceRequired(IList<TSqlParserToken> tokens, int currentTokenIndex);
+
+    private static class DiagnosticDefinitions
+    {
+        public static DiagnosticDefinition Default { get; } = new
+        (
+            "AJ5010",
+            IssueType.Formatting,
+            "Missing blank-space",
+            "Missing blank-space {0} `{1}`",
+            ["Before/after", "Statement"],
+            UrlPatterns.DefaultDiagnosticHelp
+        );
+    }
+
+/*
     private static bool RequiresSpaceBefore(TSqlParserToken token, int tokenIndex, IList<TSqlParserToken> tokens)
     {
         var previousToken = tokens[tokenIndex - 1];
@@ -154,17 +204,5 @@ public sealed class MissingBlankSpaceAnalyzer : IScriptAnalyzer
             }
             .ToFrozenSet();
     }
-
-    private static class DiagnosticDefinitions
-    {
-        public static DiagnosticDefinition Default { get; } = new
-        (
-            "AJ5010",
-            IssueType.Formatting,
-            "Missing blank-space",
-            "Missing blank-space {0} `{1}`",
-            ["Before/after", "Statement"],
-            UrlPatterns.DefaultDiagnosticHelp
-        );
-    }
+*/
 }

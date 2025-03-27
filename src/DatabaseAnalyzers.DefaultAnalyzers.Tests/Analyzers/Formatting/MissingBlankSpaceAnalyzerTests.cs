@@ -86,6 +86,7 @@ public sealed class MissingBlankSpaceAnalyzerTests(ITestOutputHelper testOutputH
     [InlineData(">=")]
     [InlineData("=")]
     [InlineData("<>")]
+    [InlineData("!=")]
     public void Theory_ComparisonWithNegativeValue(string comparisonOperator)
     {
         var code = $"""
