@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
@@ -6,8 +7,23 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 
 public sealed class UnnecessarySemicolonAnalyzer : IScriptAnalyzer
 {
+    private static readonly FrozenSet<TSqlTokenType> SkipTokens = new[]
+    {
+        TSqlTokenType.WhiteSpace,
+        TSqlTokenType.MultilineComment,
+        TSqlTokenType.SingleLineComment,
+        TSqlTokenType.EndOfFile
+    }.ToFrozenSet();
+
+    private static readonly FrozenSet<string> TokensContentsWhichRequirePrecedingSemiColon = new[]
+    {
+        "THROW",
+        "WITH"
+    }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
+
     private readonly IScriptAnalysisContext _context;
     private readonly IScriptModel _script;
+    private readonly IList<TSqlParserToken> _tokens;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
@@ -15,97 +31,74 @@ public sealed class UnnecessarySemicolonAnalyzer : IScriptAnalyzer
     {
         _context = context;
         _script = context.Script;
+        _tokens = context.Script.ParsedScript.ScriptTokenStream;
     }
 
     public void AnalyzeScript()
     {
-        for (var i = 0; i < _script.ParsedScript.ScriptTokenStream.Count; i++)
+        for (var i = 0; i < _tokens.Count; i++)
         {
-            var token = _script.ParsedScript.ScriptTokenStream[i];
+            var token = _tokens[i];
             if (token.TokenType != TSqlTokenType.Semicolon)
             {
                 continue;
             }
 
-            Analyze(token, i);
+            Analyze(i);
         }
     }
 
-    private void Analyze(TSqlParserToken semicolonToken, int tokenIndex)
+    private void Analyze(int tokenIndex)
     {
-        if (IsSemicolonRequired(tokenIndex))
+        if (DoesNextStatementRequirePrecedingSemiColon(tokenIndex))
         {
             return;
         }
 
-        var fragment = _script.ParsedScript.TryGetSqlFragmentAtPosition(semicolonToken.Line, semicolonToken.Column);
+        if (DoesPreviousStatementRequirePrecedingSemiColon(tokenIndex))
+        {
+            return;
+        }
+
+        var token = _tokens[tokenIndex];
+        var fragment = _script.ParsedScript.TryGetSqlFragmentAtPosition(token.Line, token.Column);
         var fullObjectName = fragment?.TryGetFirstClassObjectName(_context, _script);
         var databaseName = fragment is null
             ? _script.DatabaseName
             : _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(fragment) ?? _script.DatabaseName;
-        var codeRegion = CodeRegion.Create(semicolonToken.Line, semicolonToken.Column, semicolonToken.Line, semicolonToken.Column + 1);
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion);
+        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, token.GetCodeRegion());
     }
 
-    private bool IsSemicolonRequired(int semicolonTokenIndex)
+    private bool DoesNextStatementRequirePrecedingSemiColon(int tokenIndex)
     {
-        if (semicolonTokenIndex == 0)
+        foreach (var token in _tokens.Skip(tokenIndex + 1))
         {
-            return false;
-        }
+            if (SkipTokens.Contains(token.TokenType))
+            {
+                continue;
+            }
 
-        if (IsSemicolonRequiredForNextStatement(_script.ParsedScript.ScriptTokenStream, semicolonTokenIndex, _script.ParsedScript.LastTokenIndex))
-        {
-            return true;
-        }
-
-        if (IsSemicolonRequiredForPreviousStatement(semicolonTokenIndex))
-        {
-            return true;
+            return TokensContentsWhichRequirePrecedingSemiColon.Contains(token.Text);
         }
 
         return false;
     }
 
-    private static bool IsSemicolonRequiredForNextStatement(IList<TSqlParserToken> tokens, int semicolonTokenIndex, int lastTokenIndex)
+    private bool DoesPreviousStatementRequirePrecedingSemiColon(int tokenIndex)
     {
-        // check tokens after this one for CTEs (WITH)
-        for (var i = semicolonTokenIndex + 1; i <= lastTokenIndex; i++)
+        foreach (var token in _tokens.Take(tokenIndex - 1).Reverse())
         {
-            var token = tokens[i];
-            if (token.TokenType is TSqlTokenType.MultilineComment or TSqlTokenType.SingleLineComment or TSqlTokenType.WhiteSpace)
+            if (SkipTokens.Contains(token.TokenType))
             {
                 continue;
             }
 
-            return token.TokenType == TSqlTokenType.With;
-        }
+            var tokenLocation = token.GetCodeLocation();
+            var surroundingFragments = _script.ParsedScript
+                .GetChildren(recursive: true)
+                .Where(a => tokenLocation.IsInside(a.GetCodeRegion()));
 
-        return false;
-    }
-
-    private bool IsSemicolonRequiredForPreviousStatement(int semicolonTokenIndex)
-    {
-        // check tokens before this one for 'THROW' and 'MERGE'
-        for (var i = semicolonTokenIndex - 1; i >= 0; i--)
-        {
-            var token = _script.ParsedScript.ScriptTokenStream[i];
-            if (token.TokenType is TSqlTokenType.MultilineComment or TSqlTokenType.SingleLineComment or TSqlTokenType.WhiteSpace)
-            {
-                continue;
-            }
-
-            var fragment = _script.ParsedScript.TryGetSqlFragmentAtPosition(token.Line, token.Column);
-            var parentStatement = fragment?.GetParents(_script.ParentFragmentProvider)
-                .OfType<TSqlStatement>()
-                .FirstOrDefault();
-
-            if (parentStatement is null)
-            {
-                return true; // to be on the safe side
-            }
-
-            return parentStatement is MergeStatement or ThrowStatement; // merge statements must be terminated with a semicolon. throw statements should be terminated with a semicolon.
+            return surroundingFragments.OfType<MergeStatement>().Any();
         }
 
         return false;

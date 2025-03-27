@@ -30,4 +30,7 @@ public record struct CodeLocation(int Line, int Column) : IComparable<CodeLocati
     public override readonly int GetHashCode() => HashCode.Combine(Line, Column);
 
     public readonly bool Equals(CodeLocation other) => Line == other.Line && Column == other.Column;
+
+    public bool IsInside(CodeRegion codeRegion)
+        => this >= codeRegion.Begin && this <= codeRegion.End;
 }
