@@ -121,4 +121,19 @@ public sealed class TableReferenceWithoutSchemaAnalyzerTests(ITestOutputHelper t
 
         Verify(TableAbcIsIgnoredSettings, code);
     }
+
+    [Fact]
+    public void WhenUpdateWithAlias_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            UPDATE      l
+                            SET         l.IsActive = 0
+                            FROM        A_LOG.dbo.LogLevel l
+                            """;
+
+        Verify(TableAbcIsIgnoredSettings, code);
+    }
 }

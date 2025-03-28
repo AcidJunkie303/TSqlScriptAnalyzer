@@ -42,20 +42,26 @@ public sealed class TableReferenceWithoutSchemaAnalyzer : IScriptAnalyzer
             return;
         }
 
-        if (tableName.IsTempTableName())
-        {
-            return;
-        }
-
         var schemaName = tableReference.SchemaObject?.SchemaIdentifier?.Value;
         if (!schemaName.IsNullOrWhiteSpace())
         {
             return;
         }
 
+        if (tableName.IsTempTableName())
+        {
+            return;
+        }
+
         var tableResolver = _tableResolverFactory.CreateTableResolver(_context);
         var table = tableResolver.Resolve(tableReference);
-        if (table is null || table.SourceType == TableSourceType.Cte)
+        if (table.IsNullOrMissingAliasReference() || table.SourceType == TableSourceType.Cte)
+        {
+            return;
+        }
+
+        var isMostLikelyTableAlias = !table.ObjectName.EqualsOrdinalIgnoreCase(tableName);
+        if (isMostLikelyTableAlias)
         {
             return;
         }

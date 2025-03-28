@@ -50,7 +50,7 @@ public sealed class MissingTableOrViewAnalyzer : IGlobalAnalyzer
     {
         var tableResolver = _tableResolverFactory.CreateTableResolver(_context, script);
         var resolvedTable = tableResolver.Resolve(tableReference);
-        if (resolvedTable is null)
+        if (resolvedTable.IsNullOrMissingAliasReference())
         {
             return;
         }

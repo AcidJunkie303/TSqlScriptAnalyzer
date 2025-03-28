@@ -14,4 +14,16 @@ public sealed record ColumnReference(
 )
 {
     public string FullName { get; } = $"{DatabaseName}.{SchemaName}.{TableName}.{ColumnName}";
+
+    public static ColumnReference MissingAliasColumnReference { get; } = new
+    (
+        string.Empty,
+        string.Empty,
+        string.Empty,
+        string.Empty,
+        TableSourceType.Unknown,
+        new ColumnReferenceExpression(),
+        string.Empty,
+        string.Empty
+    );
 }

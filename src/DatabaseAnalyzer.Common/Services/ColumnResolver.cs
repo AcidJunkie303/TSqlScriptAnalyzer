@@ -59,13 +59,13 @@ public sealed class ColumnResolver : IColumnResolver
 
             var column = fragment switch
             {
-                QualifiedJoin qualifiedJoin             => Check(qualifiedJoin, parentCtesByName, columnReference),
+                QualifiedJoin qualifiedJoin => Check(qualifiedJoin, parentCtesByName, columnReference),
                 DeleteSpecification deleteSpecification => Check(deleteSpecification, parentCtesByName, columnReference),
-                FromClause fromClause                   => Check(fromClause, parentCtesByName, columnReference),
-                QuerySpecification querySpecification   => Check(querySpecification, parentCtesByName, columnReference),
+                FromClause fromClause => Check(fromClause, parentCtesByName, columnReference),
+                QuerySpecification querySpecification => Check(querySpecification, parentCtesByName, columnReference),
                 UpdateSpecification updateSpecification => Check(updateSpecification, parentCtesByName, columnReference),
-                MergeSpecification mergeSpecification   => Check(mergeSpecification, parentCtesByName, columnReference),
-                _                                       => null
+                MergeSpecification mergeSpecification => Check(mergeSpecification, parentCtesByName, columnReference),
+                _ => null
             };
 
             if (column is not null)
@@ -173,7 +173,7 @@ public sealed class ColumnResolver : IColumnResolver
         if (referenceToResolve.MultiPartIdentifier.Identifiers.Count < 2)
         {
             ReportMissingAlias(referenceToResolve);
-            return null;
+            return ColumnReference.MissingAliasColumnReference;
         }
 
         if (qualifiedJoin.FirstTableReference is QualifiedJoin firstJoin)

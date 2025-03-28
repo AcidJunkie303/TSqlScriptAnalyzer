@@ -12,4 +12,14 @@ public sealed record TableOrViewReference(
 )
 {
     public string FullName { get; } = $"{DatabaseName}.{SchemaName}.{ObjectName}";
+
+    public static TableOrViewReference MissingAliasTableReference { get; } = new
+    (
+        string.Empty,
+        string.Empty,
+        string.Empty,
+        TableSourceType.Unknown,
+        new NamedTableReference(),
+        string.Empty
+    );
 }
