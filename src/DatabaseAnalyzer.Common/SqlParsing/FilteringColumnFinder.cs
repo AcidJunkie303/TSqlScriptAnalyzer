@@ -42,7 +42,7 @@ public sealed class FilteringColumnFinder
             }
 
             var column = columnResolver.Resolve(columnReference);
-            if (column is null)
+            if (column.IsNullOrMissingAliasReference())
             {
                 continue;
             }
