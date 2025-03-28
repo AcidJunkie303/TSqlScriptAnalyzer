@@ -22,16 +22,36 @@ internal static class MissingBlankSpaceAnalyzerEvaluators
                && previousToken.TokenType != TSqlTokenType.LessThan
                && previousToken.TokenType != TSqlTokenType.Bang; // exclamation mark
     }
+
+    public static bool IsSpaceRequiredAfterEqualSign(IList<TSqlParserToken> tokens, int currentTokenIndex)
+    {
+        var previousToken = tokens.GetPreviousToken(currentTokenIndex);
+        if (previousToken is null)
+        {
+            return false;
+        }
+
+        return previousToken.TokenType != TSqlTokenType.GreaterThan
+               && previousToken.TokenType != TSqlTokenType.LessThan
+               && previousToken.TokenType != TSqlTokenType.Bang; // exclamation mark
+    }
 }
 
 public sealed class MissingBlankSpaceAnalyzer : IScriptAnalyzer
 {
-    private static readonly IsSpaceRequired AlwaysTrue = (_, _) => true;
+    private static readonly IsSpaceRequired SpaceIsNeverRequired = (_, _) => false;
+    private static readonly IsSpaceRequired SpaceIsAlwaysRequired = (_, _) => true;
 
-    private static FrozenDictionary<TSqlTokenType, IsSpaceRequired> EvaluatorsForPrecedingWhiteSpaceTokenByTokenType = new Dictionary<TSqlTokenType, IsSpaceRequired>
+    private static readonly FrozenDictionary<TSqlTokenType, IsSpaceRequired> EvaluatorsForPrecedingWhiteSpaceTokenByTokenType = new Dictionary<TSqlTokenType, IsSpaceRequired>
     {
-        { TSqlTokenType.Comma, AlwaysTrue },
+        { TSqlTokenType.Comma, SpaceIsNeverRequired },
         { TSqlTokenType.EqualsSign, MissingBlankSpaceAnalyzerEvaluators.IsSpaceRequiredBeforeEqualSign }
+    }.ToFrozenDictionary();
+
+    private static FrozenDictionary<TSqlTokenType, IsSpaceRequired> EvaluatorsForTrailingWhiteSpaceTokenByTokenType = new Dictionary<TSqlTokenType, IsSpaceRequired>
+    {
+        { TSqlTokenType.Comma, SpaceIsAlwaysRequired },
+        { TSqlTokenType.EqualsSign, MissingBlankSpaceAnalyzerEvaluators.IsSpaceRequiredAfterEqualSign }
     }.ToFrozenDictionary();
 
     private readonly IScriptAnalysisContext _context;
@@ -52,6 +72,21 @@ public sealed class MissingBlankSpaceAnalyzer : IScriptAnalyzer
             .GetChildren(recursive: true)
             .GroupBy(a => a.GetCodeLocation())
             .ToDictionary(a => a.Key, a => a.ToList().AsReadOnly());
+
+        // TODO: remoev
+        Console.WriteLine(Sets.TokenTypesWhichRequireSpaceAfter);
+        Console.WriteLine(Sets.TokenTypesWhichRequireSpaceBefore);
+
+        for (var i = 1; i < tokens.Count - 1; i++)
+        {
+            var token = tokens[i];
+            if (Sets.TokenTypesWhichRequireSpaceBefore.Contains(token.TokenType))
+            {
+                var evaluator = EvaluatorsForPrecedingWhiteSpaceTokenByTokenType.GetValueOrDefault(token.TokenType)
+                                ?? SpaceIsNeverRequired;
+                evaluator(tokens, i)
+            }
+        }
 
         /*
         // we skip the first and last since it doesn't make sense to check them, and it also makes the checking easier (out of bounds checking)
@@ -102,6 +137,60 @@ public sealed class MissingBlankSpaceAnalyzer : IScriptAnalyzer
             ["Before/after", "Statement"],
             UrlPatterns.DefaultDiagnosticHelp
         );
+    }
+
+    private static class Sets
+    {
+        public static readonly FrozenDictionary<TSqlTokenType, IsSpaceRequired> SpaceBeforeRequiredEvaluatorByTokenType = new Dictionary<TSqlTokenType, IsSpaceRequired>
+            {
+                { TSqlTokenType.Plus, SpaceIsAlwaysRequired },
+                { TSqlTokenType.Minus, SpaceIsAlwaysRequired },
+                { TSqlTokenType.Star, null }, // SELECT COUNT(*)
+                { TSqlTokenType.Divide, SpaceIsAlwaysRequired },
+                { TSqlTokenType.MultiplyEquals, SpaceIsAlwaysRequired },
+                { TSqlTokenType.EqualsSign, null },
+                { TSqlTokenType.AddEquals, SpaceIsAlwaysRequired },
+                { TSqlTokenType.SubtractEquals, SpaceIsAlwaysRequired },
+                { TSqlTokenType.DivideEquals, SpaceIsAlwaysRequired },
+                { TSqlTokenType.ModEquals, SpaceIsAlwaysRequired },
+                { TSqlTokenType.BitwiseAndEquals, SpaceIsAlwaysRequired },
+                { TSqlTokenType.BitwiseOrEquals, SpaceIsAlwaysRequired },
+                { TSqlTokenType.BitwiseXorEquals, SpaceIsAlwaysRequired },
+                { TSqlTokenType.ConcatEquals, SpaceIsAlwaysRequired },
+                { TSqlTokenType.PercentSign, SpaceIsAlwaysRequired },
+                { TSqlTokenType.LessThan, SpaceIsAlwaysRequired },
+                { TSqlTokenType.GreaterThan, SpaceIsAlwaysRequired },
+                { TSqlTokenType.Tilde, SpaceIsAlwaysRequired },
+                { TSqlTokenType.LeftShift, SpaceIsAlwaysRequired },
+                { TSqlTokenType.RightShift, SpaceIsAlwaysRequired }
+            }
+            .ToFrozenDictionary(a => a.Key, a => a.Value);
+
+        public static readonly FrozenDictionary<TSqlTokenType, IsSpaceRequired> TokenTypesWhichRequireSpaceAfter = new Dictionary<TSqlTokenType, IsSpaceRequired>
+            {
+                { TSqlTokenType.Plus, null },
+                { TSqlTokenType.Minus, null },
+                { TSqlTokenType.Star, null },
+                { TSqlTokenType.Divide, null },
+                { TSqlTokenType.MultiplyEquals, null },
+                { TSqlTokenType.EqualsSign, null },
+                { TSqlTokenType.AddEquals, null },
+                { TSqlTokenType.SubtractEquals, null },
+                { TSqlTokenType.DivideEquals, null },
+                { TSqlTokenType.ModEquals, null },
+                { TSqlTokenType.BitwiseAndEquals, null },
+                { TSqlTokenType.BitwiseOrEquals, null },
+                { TSqlTokenType.BitwiseXorEquals, null },
+                { TSqlTokenType.ConcatEquals, null },
+                { TSqlTokenType.PercentSign, null },
+                { TSqlTokenType.LessThan, null },
+                { TSqlTokenType.GreaterThan, null },
+                { TSqlTokenType.Tilde, null },
+                { TSqlTokenType.LeftShift, null },
+                { TSqlTokenType.RightShift, null },
+                { TSqlTokenType.Comma, null }
+            }
+            .ToFrozenDictionary(a => a.Key, a => a.Value);
     }
 
 /*
@@ -170,39 +259,6 @@ public sealed class MissingBlankSpaceAnalyzer : IScriptAnalyzer
             .SkipWhile(skipWhile)
             .FirstOrDefault();
 
-    private static class Sets
-    {
-        public static readonly FrozenSet<TSqlTokenType> TokenTypesWhichRequireSpaceBeforeAndAfter = new[]
-            {
-                TSqlTokenType.Plus,
-                TSqlTokenType.Minus,
-                TSqlTokenType.Star,
-                TSqlTokenType.Divide,
-                TSqlTokenType.TSEqual,
-                TSqlTokenType.MultiplyEquals,
-                TSqlTokenType.EqualsSign,
-                TSqlTokenType.AddEquals,
-                TSqlTokenType.SubtractEquals,
-                TSqlTokenType.DivideEquals,
-                TSqlTokenType.ModEquals,
-                TSqlTokenType.BitwiseAndEquals,
-                TSqlTokenType.BitwiseOrEquals,
-                TSqlTokenType.BitwiseXorEquals,
-                TSqlTokenType.ConcatEquals,
-                TSqlTokenType.PercentSign,
-                TSqlTokenType.LessThan,
-                TSqlTokenType.GreaterThan,
-                TSqlTokenType.Tilde,
-                TSqlTokenType.LeftShift,
-                TSqlTokenType.RightShift
-            }
-            .ToFrozenSet();
 
-        public static readonly FrozenSet<TSqlTokenType> TokenTypesWhichRequireSpaceAfter = new[]
-            {
-                TSqlTokenType.Comma
-            }
-            .ToFrozenSet();
-    }
 */
 }
