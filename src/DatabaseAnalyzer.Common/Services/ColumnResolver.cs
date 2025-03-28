@@ -208,7 +208,7 @@ public sealed class ColumnResolver : IColumnResolver
 
         var (tableNameOrAlias, columnName) = referenceToResolve.MultiPartIdentifier.GetColumnReferenceParts();
         var tableReferenceTableName = namedTableReference.SchemaObject.BaseIdentifier.Value;
-        var tableReferenceSchemaName = namedTableReference.SchemaObject.SchemaIdentifier?.Value ?? _defaultSchemaName;
+        var tableReferenceSchemaName = (namedTableReference.SchemaObject.SchemaIdentifier?.Value).NullIfEmptyOrWhiteSpace() ?? _defaultSchemaName;
         var currentDatabaseName = namedTableReference.SchemaObject.DatabaseIdentifier?.Value
                                   ?? _script.TryFindCurrentDatabaseNameAtFragment(referenceToResolve)
                                   ?? DatabaseNames.Unknown;
