@@ -120,8 +120,9 @@ public sealed class MissingFunctionAnalyzer : IGlobalAnalyzer
 
         var xmlFunctionAlias = multiPartIdentifierCallTarget.MultiPartIdentifier.Identifiers[0].Value;
         var xmlFunctionColumn = multiPartIdentifierCallTarget.MultiPartIdentifier.Identifiers[1].Value;
+        var tableReferences = GetAllTableReferencesRecursively(querySpecification.FromClause.TableReferences);
 
-        foreach (var methodCallTableReference in querySpecification.FromClause.TableReferences.OfType<VariableMethodCallTableReference>())
+        foreach (var methodCallTableReference in tableReferences.OfType<VariableMethodCallTableReference>())
         {
             if (methodCallTableReference.Columns.Count != 1)
             {
@@ -143,6 +144,24 @@ public sealed class MissingFunctionAnalyzer : IGlobalAnalyzer
         }
 
         return false;
+    }
+
+    private static IEnumerable<TableReference> GetAllTableReferencesRecursively(TableReference tableReference)
+    {
+        return tableReference is JoinTableReference join
+            ? [.. GetAllTableReferencesRecursively(join.FirstTableReference), .. GetAllTableReferencesRecursively(join.SecondTableReference)]
+            : [tableReference];
+    }
+
+    private static IEnumerable<TableReference> GetAllTableReferencesRecursively(IList<TableReference> tableReferences)
+    {
+        foreach (var reference in tableReferences)
+        {
+            foreach (var reference2 in GetAllTableReferencesRecursively(reference))
+            {
+                yield return reference2;
+            }
+        }
     }
 
     private static bool DoesFunctionOrSynonymExist(IReadOnlyDictionary<string, DatabaseInformation> databasesByName, string databaseName, string schemaName, string functionName)
