@@ -124,8 +124,7 @@ public sealed class ObjectNameReferenceNameCasingAnalyzer : IScriptAnalyzer
     {
         var columnResolver = _columnResolverFactory.CreateColumnResolver(_context);
         var column = columnResolver.Resolve(columnReference);
-
-        if (column is null)
+        if (column.IsNullOrMissingAliasReference())
         {
             return;
         }

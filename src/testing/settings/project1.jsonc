@@ -27,8 +27,8 @@
         "AJ5003": // Wrong USE DATABASE name statement
         {
             "ExcludedFilePathPatterns": [
-                "*\\0000 Create*.sql",
-                "*\\0001 Drop*.sql"
+                "*\\0000 Drop*.sql",
+                "*\\0001 Create*.sql"
             ]
         },
         "AJ5004": // open points / todo
@@ -293,13 +293,16 @@
         {
             "IgnoredProcedureNamePatterns": [
                 "*.sp_MSforeachDb",
-                "*.sp_ExecuteSql"
+                "*.sp_ExecuteSql",
+                "*.xp_FileExist"
             ]
         },
         "AJ5060": // Usage of reserved words or keywords for table, view, function and procedure names.
         {
             // An array of one or more words separated by a semicolon (;)
             "ReservedIdentifierNames": [
+                // removed values:
+                // - VALUE
                 "ABSOLUTE;ACTION;ADA;ADD;ALL;ALLOCATE;ALTER;AND;ANY;ARE;AS;ASC;ASSERTION;AT;AUTHORIZATION;AVG",
                 "BACKUP;BEGIN;BETWEEN;BIT;BIT_LENGTH;BOTH;BREAK;BROWSE;BULK;BY",
                 "CASCADE;CASCADED;CASE;CAST;CATALOG;CHAR;CHAR_LENGTH;CHARACTER;CHARACTER_LENGTH;CHECK;CHECKPOINT;CLOSE;CLUSTERED;COALESCE;COLLATE;COLLATION;COLUMN;COMMIT;COMPUTE;CONNECT;CONNECTION;CONSTRAINT;CONSTRAINTS;CONTAINS;CONTAINSTABLE;CONTINUE;CONVERT;CORRESPONDING;COUNT;CREATE;CROSS;CURRENT;CURRENT_DATE;CURRENT_TIME;CURRENT_TIMESTAMP;CURRENT_USER;CURSOR",
@@ -321,7 +324,7 @@
                 "SAVE;SCHEMA;SCROLL;SECOND;SECTION;SECURITYAUDIT;SELECT;SEMANTICKEYPHRASETABLE;SEMANTICSIMILARITYDETAILSTABLE;SEMANTICSIMILARITYTABLE;SESSION_USER;SET;SETUSER;SHUTDOWN;SIZE;SMALLINT;SOME;SPACE;SQLCA;SQLCODE;SQLERROR;SQLSTATE;SQLWARNING;STATISTICS;SUBSTRING;SUM;SYSTEM_USER",
                 "TABLE;TABLESAMPLE;TEMPORARY;TEXTSIZE;THEN;TIME;TIMESTAMP;TIMEZONE_HOUR;TIMEZONE_MINUTE;TO;TOP;TRAILING;TRANSACTION;TRANSLATE;TRANSLATION;TRIGGER;TRIM;TRUE;TRUNCATE;TRY_CONVERT;TSEQUAL",
                 "UNION;UNIQUE;UNKNOWN;UNPIVOT;UPDATE;UPDATETEXT;UPPER;USAGE;USE;USER;USING",
-                "VALUE;VALUES;VARCHAR;VARYING;VIEW",
+                "VALUES;VARCHAR;VARYING;VIEW",
                 "WAITFOR;WHEN;WHENEVER;WHERE;WHILE;WITH;WITHIN;WORK;WRITE;WRITETEXT",
                 "YEAR"
             ]
@@ -329,7 +332,7 @@
         "AJ5062": // Procedure invocation without explicit value for all parameters
         {
             "ValueRequiredForNullableParameters": true,
-            "ValueRequiredForParametersWithDefaultValue": true
+            "ValueRequiredForParametersWithDefaultValue": false
         },
         "AJ5066": // Table reference without schema name
         {

@@ -50,7 +50,7 @@ public sealed class MissingTableOrViewAnalyzer : IGlobalAnalyzer
     {
         var tableResolver = _tableResolverFactory.CreateTableResolver(_context, script);
         var resolvedTable = tableResolver.Resolve(tableReference);
-        if (resolvedTable is null)
+        if (resolvedTable.IsNullOrMissingAliasReference())
         {
             return;
         }
@@ -70,9 +70,16 @@ public sealed class MissingTableOrViewAnalyzer : IGlobalAnalyzer
             return;
         }
 
+        var isMostLikelyTableAlias = !tableReference.SchemaObject.BaseIdentifier.Value.EqualsOrdinalIgnoreCase(resolvedTable.ObjectName);
+        if (isMostLikelyTableAlias)
+        {
+            return;
+        }
+
+        var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(tableReference) ?? DatabaseNames.Unknown;
         var fullObjectName = tableReference.TryGetFirstClassObjectName(_context, script);
 
-        _context.IssueReporter.Report(SharedDiagnosticDefinitions.MissingObject, resolvedTable.DatabaseName, script.RelativeScriptFilePath, fullObjectName, tableReference.GetCodeRegion(), "table or view", resolvedTable.FullName);
+        _context.IssueReporter.Report(SharedDiagnosticDefinitions.MissingObject, databaseName, script.RelativeScriptFilePath, fullObjectName, tableReference.GetCodeRegion(), "table or view", resolvedTable.FullName);
     }
 
     private bool DoesTableOrViewExist(string databaseName, string schemaName, string tableOrViewName)

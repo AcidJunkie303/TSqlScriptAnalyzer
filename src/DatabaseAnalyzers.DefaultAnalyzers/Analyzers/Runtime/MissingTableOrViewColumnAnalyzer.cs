@@ -43,7 +43,7 @@ public sealed class MissingTableOrViewColumnAnalyzer : IGlobalAnalyzer
     {
         var columnResolver = _columnResolverFactory.CreateColumnResolver(_context, script);
         var resolvedColumn = columnResolver.Resolve(columnReference);
-        if (resolvedColumn is null)
+        if (resolvedColumn.IsNullOrMissingAliasReference())
         {
             return;
         }
