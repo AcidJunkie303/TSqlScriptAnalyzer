@@ -250,7 +250,7 @@ public sealed class TableResolver : ITableResolver
         var currentDatabaseName = namedTableReference.SchemaObject.DatabaseIdentifier?.Value
                                   ?? _script.TryFindCurrentDatabaseNameAtFragment(namedTableToResolve)
                                   ?? DatabaseNames.Unknown;
-        var tableSchemaName = namedTableReference.SchemaObject.SchemaIdentifier?.Value ?? _defaultSchemaName;
+        var tableSchemaName = (namedTableReference.SchemaObject.SchemaIdentifier?.Value).NullIfEmptyOrWhiteSpace() ?? _defaultSchemaName;
         var fullObjectName = namedTableToResolve.TryGetFirstClassObjectName(_defaultSchemaName, _script, _parentFragmentProvider) ?? _relativeScriptFilePath;
 
         return new TableOrViewReference(currentDatabaseName, tableSchemaName, tableName, sourceType, namedTableToResolve, fullObjectName);
