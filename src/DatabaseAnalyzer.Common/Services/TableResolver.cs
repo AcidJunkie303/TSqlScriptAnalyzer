@@ -63,14 +63,14 @@ public sealed class TableResolver : ITableResolver
 
             var source = fragment switch
             {
-                JoinTableReference join                 => Check(join, parentCtesByName, tableReference),
+                JoinTableReference join => Check(join, parentCtesByName, tableReference),
                 DeleteSpecification deleteSpecification => Check(deleteSpecification, parentCtesByName, tableReference),
-                FromClause fromClause                   => Check(fromClause, parentCtesByName, tableReference),
-                QuerySpecification querySpecification   => Check(querySpecification, parentCtesByName, tableReference),
+                FromClause fromClause => Check(fromClause, parentCtesByName, tableReference),
+                QuerySpecification querySpecification => Check(querySpecification, parentCtesByName, tableReference),
                 UpdateSpecification updateSpecification => Check(updateSpecification, parentCtesByName, tableReference),
-                MergeSpecification mergeSpecification   => Check(mergeSpecification, parentCtesByName, tableReference),
-                SelectStatement selectStatement         => Check(selectStatement, tableReference),
-                _                                       => null
+                MergeSpecification mergeSpecification => Check(mergeSpecification, parentCtesByName, tableReference),
+                SelectStatement selectStatement => Check(selectStatement, tableReference),
+                _ => null
             };
 
             if (source is not null)
@@ -188,7 +188,7 @@ public sealed class TableResolver : ITableResolver
         else if (joinTableReference.FirstTableReference is not TableReferenceWithAlias)
         {
             ReportMissingAlias(joinTableReference.FirstTableReference);
-            return null;
+            return TableOrViewReference.MissingAliasTableReference;
         }
 
         if (joinTableReference.SecondTableReference is JoinTableReference secondJoin)
@@ -202,7 +202,7 @@ public sealed class TableResolver : ITableResolver
         else if (joinTableReference.SecondTableReference is not TableReferenceWithAlias)
         {
             ReportMissingAlias(joinTableReference.SecondTableReference);
-            return null;
+            return TableOrViewReference.MissingAliasTableReference;
         }
 
         // joinTableReference.FirstTableReference can also be joins -> check previous joins too
