@@ -36,7 +36,7 @@ public sealed class AliasReferenceWithDifferentCasingAnalyzer : IScriptAnalyzer
         }
 
         var column = _columnResolver.Resolve(columnReference);
-        if (column?.SourceAliasName is null)
+        if (column.IsNullOrMissingAliasReference() || column.SourceAliasName is null)
         {
             return;
         }
