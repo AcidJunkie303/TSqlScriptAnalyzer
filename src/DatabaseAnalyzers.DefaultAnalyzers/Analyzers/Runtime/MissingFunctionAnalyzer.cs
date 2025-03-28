@@ -113,13 +113,13 @@ public sealed class MissingFunctionAnalyzer : IGlobalAnalyzer
             return false;
         }
 
-        if (multiPartIdentifierCallTarget.MultiPartIdentifier.Identifiers.Count != 2)
+        if (multiPartIdentifierCallTarget.MultiPartIdentifier.Identifiers.Count < 1 || multiPartIdentifierCallTarget.MultiPartIdentifier.Identifiers.Count > 2)
         {
             return false;
         }
 
-        var xmlFunctionAlias = multiPartIdentifierCallTarget.MultiPartIdentifier.Identifiers[0].Value;
-        var xmlFunctionColumn = multiPartIdentifierCallTarget.MultiPartIdentifier.Identifiers[1].Value;
+        var aliasAndFunction = GetFunctionColumnAndAliases(multiPartIdentifierCallTarget.MultiPartIdentifier);
+
         var tableReferences = GetAllTableReferencesRecursively(querySpecification.FromClause.TableReferences);
 
         foreach (var methodCallTableReference in tableReferences.OfType<VariableMethodCallTableReference>())
@@ -130,12 +130,8 @@ public sealed class MissingFunctionAnalyzer : IGlobalAnalyzer
             }
 
             var alias = methodCallTableReference.Alias.Value;
-            if (!xmlFunctionAlias.EqualsOrdinalIgnoreCase(alias))
-            {
-                continue;
-            }
 
-            if (!xmlFunctionColumn.EqualsOrdinalIgnoreCase(methodCallTableReference.Columns[0].Value))
+            if (!aliasAndFunction.Contains(alias) && !aliasAndFunction.Contains(methodCallTableReference.Columns[0].Value))
             {
                 continue;
             }
@@ -144,6 +140,21 @@ public sealed class MissingFunctionAnalyzer : IGlobalAnalyzer
         }
 
         return false;
+    }
+
+    private static HashSet<string> GetFunctionColumnAndAliases(MultiPartIdentifier identifier)
+    {
+        var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            identifier[0].Value
+        };
+
+        if (identifier.Count > 1)
+        {
+            result.Add(identifier[1].Value);
+        }
+
+        return result;
     }
 
     private static IEnumerable<TableReference> GetAllTableReferencesRecursively(TableReference tableReference)
