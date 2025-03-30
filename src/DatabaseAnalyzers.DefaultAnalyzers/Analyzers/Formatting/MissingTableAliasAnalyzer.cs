@@ -11,7 +11,7 @@ public sealed class MissingTableAliasAnalyzer : IScriptAnalyzer
     private readonly IScriptAnalysisContext _context;
     private readonly IScriptModel _script;
 
-    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
+    public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [WellKnownDiagnosticDefinitions.MissingAlias];
 
     public MissingTableAliasAnalyzer(IScriptAnalysisContext context, IAstService astService)
     {
@@ -59,19 +59,6 @@ public sealed class MissingTableAliasAnalyzer : IScriptAnalyzer
 
         var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(columnReference) ?? DatabaseNames.Unknown;
         var fullObjectName = columnReference.TryGetFirstClassObjectName(_context, _script);
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, columnReference.GetCodeRegion(), columnReference.GetSql());
-    }
-
-    private static class DiagnosticDefinitions
-    {
-        public static DiagnosticDefinition Default { get; } = new
-        (
-            "AJ5016",
-            IssueType.Warning,
-            "Missing table alias when more than one table is involved in a statement",
-            "Missing alias in expression `{0}`.",
-            ["Expression"],
-            UrlPatterns.DefaultDiagnosticHelp
-        );
+        _context.IssueReporter.Report(WellKnownDiagnosticDefinitions.MissingAlias, databaseName, _script.RelativeScriptFilePath, fullObjectName, columnReference.GetCodeRegion(), columnReference.GetSql());
     }
 }
