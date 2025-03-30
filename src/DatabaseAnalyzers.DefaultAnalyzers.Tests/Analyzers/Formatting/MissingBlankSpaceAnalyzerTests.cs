@@ -79,6 +79,18 @@ public sealed class MissingBlankSpaceAnalyzerTests(ITestOutputHelper testOutputH
         Verify(code);
     }
 
+    [Fact]
+    public void WhenNoBlankSpaceAfterEqualSign_ThenDiagnose()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+                            -- SET @a =1
+                            SET @a ▶️AJ5010💛script_0.sql💛💛after💛=✅=◀️1
+                            """;
+        Verify(code);
+    }
+
     [Theory]
     [InlineData("<")]
     [InlineData(">")]
