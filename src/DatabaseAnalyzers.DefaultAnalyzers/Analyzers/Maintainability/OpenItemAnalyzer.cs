@@ -22,6 +22,11 @@ public sealed class OpenItemAnalyzer : IScriptAnalyzer
 
     public void AnalyzeScript()
     {
+        if (IsScriptExcluded())
+        {
+            return;
+        }
+
         var commentTokens = _script.ParsedScript.ScriptTokenStream
             .Where(static a => a.TokenType is TSqlTokenType.SingleLineComment or TSqlTokenType.MultilineComment);
 
@@ -30,6 +35,8 @@ public sealed class OpenItemAnalyzer : IScriptAnalyzer
             AnalyzeToken(commentToken);
         }
     }
+
+    private bool IsScriptExcluded() => _settings.ExcludedFilePathPatterns.Any(pattern => pattern.IsMatch(_script.RelativeScriptFilePath));
 
     private void AnalyzeToken(TSqlParserToken commentToken)
     {
