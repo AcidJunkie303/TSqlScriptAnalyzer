@@ -74,8 +74,7 @@ INNER JOIN  Table2 t2 ON t2.Id = t1.Id
 
 SELECT CoLuMn5 FROM TaBlE1
 SELECT Column1, Columne2 FROM Table1
-SELECT Column1,
-       Columne2 
+SELECT Column1,Columne2 
 FROM Table1
 SELECT Column1,
         Columne2 
@@ -83,7 +82,12 @@ FROM Table1
 
 GO
 
-EXEC P2222 @Param1 = 303
+DECLARE @a INT = 303
+DECLARE @a INT= 303
+DECLARE @a INT =303
+DECLARE @a INT=303
+
+EXEC P2222 @Param1 =303
 EXEC P2222 303
 
 GO
