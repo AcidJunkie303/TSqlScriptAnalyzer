@@ -38,7 +38,8 @@
                     "Topic": "to do",
                     "Pattern": "TODO[\\s:]*(?<message>[^\r\n]+)"
                 }
-            ]
+            ],
+            "ExcludedFilePathPatterns": []
         },
         "AJ5006": // Banned data types
         {

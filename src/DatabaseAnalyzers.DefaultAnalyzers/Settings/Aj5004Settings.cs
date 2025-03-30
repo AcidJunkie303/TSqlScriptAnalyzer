@@ -16,6 +16,9 @@ internal sealed class Aj5004SettingsRaw : IRawDiagnosticSettings<Aj5004Settings>
     [Description("An array of objects containing `Topic` and `Pattern` properties.")]
     public IReadOnlyCollection<TopicAndPatternRaw?>? TopicsAndPatterns { get; set; }
 
+    [Description("An array of objects containing `Topic` and `Pattern` properties.")]
+    public IReadOnlyCollection<string?>? ExcludedFilePathPatterns { get; set; }
+
     public Aj5004Settings ToSettings() => new
     (
         TopicsAndPatterns
@@ -24,7 +27,12 @@ internal sealed class Aj5004SettingsRaw : IRawDiagnosticSettings<Aj5004Settings>
             .Where(static a => !a.Topic.IsNullOrWhiteSpace())
             .Where(static a => !a.Topic.IsNullOrWhiteSpace())
             .Select(static a => new TopicAndPattern(a.Topic!, new Regex(a.Pattern!, RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.NonBacktracking | RegexOptions.ExplicitCapture, TimeSpan.FromMilliseconds(100))))
-            .ToImmutableArray()
+            .ToImmutableArray(),
+        ExcludedFilePathPatterns
+            .EmptyIfNull()
+            .WhereNotNullOrWhiteSpaceOnly()
+            .Select(a => a.ToRegexWithSimpleWildcards(caseSensitive: false, compileRegex: true))
+            .ToList()
     );
 }
 
@@ -35,10 +43,11 @@ internal sealed class TopicAndPatternRaw
 }
 
 public sealed record Aj5004Settings(
-    IReadOnlyCollection<TopicAndPattern> TopicsAndPatterns
+    IReadOnlyCollection<TopicAndPattern> TopicsAndPatterns,
+    IReadOnlyList<Regex> ExcludedFilePathPatterns
 ) : IDiagnosticSettings<Aj5004Settings>
 {
-    public static Aj5004Settings Default { get; } = new([]);
+    public static Aj5004Settings Default { get; } = new([], []);
     public static string DiagnosticId => "AJ5004";
 }
 
