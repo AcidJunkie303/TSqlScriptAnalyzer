@@ -24,6 +24,7 @@
 | [AJ5013](diagnostics/AJ5013.md) | Parameter reference with different casing                     | Warning      |
 | [AJ5014](diagnostics/AJ5014.md) | Variable reference with different casing                      | Warning      |
 | [AJ5015](diagnostics/AJ5015.md) | Missing Index                                                 | MissingIndex |
+| [AJ5016](diagnostics/AJ5016.md) | Output parameter not assigned on all execution paths          | Warning      |
 | [AJ5017](diagnostics/AJ5017.md) | Missing Index on foreign key column                           | MissingIndex |
 | [AJ5018](diagnostics/AJ5018.md) | Null comparison                                               | Warning      |
 | [AJ5020](diagnostics/AJ5020.md) | Usage of weak hashing algorithm                               | Warning      |
