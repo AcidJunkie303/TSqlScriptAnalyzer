@@ -56,6 +56,7 @@ public sealed class MissingIndexAnalyzerTests(ITestOutputHelper testOutputHelper
         const string procedures = """
                                   USE MyDb
                                   GO
+
                                   CREATE PROCEDURE [dbo].[P1]
                                   AS
                                   BEGIN
