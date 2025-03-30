@@ -57,13 +57,13 @@ public sealed class OutputParameterNotAssignedOnAllExecutionPathsAnalyzer : IScr
     private sealed class Visitor : TSqlConcreteFragmentVisitor
     {
         private readonly string _variableName;
-        private readonly Stack<Container> _isAssignedOnBranchLevel = [];
+        private readonly Stack<ScopeData> _isAssignedOnBranchLevel = [];
         public bool IsSetOnAlExecutionPaths => _isAssignedOnBranchLevel.Peek().IsAssigned;
 
         public Visitor(string parameterName)
         {
             _variableName = parameterName;
-            _isAssignedOnBranchLevel.Push(new Container());
+            _isAssignedOnBranchLevel.Push(new ScopeData());
         }
 
         public override void ExplicitVisit(StatementList node)
@@ -161,11 +161,46 @@ public sealed class OutputParameterNotAssignedOnAllExecutionPathsAnalyzer : IScr
             base.Visit(node);
         }
 
+        public override void ExplicitVisit(BreakStatement node)
+        {
+            SetSkippedInCurrentScope();
+            base.Visit(node);
+        }
+
+        public override void ExplicitVisit(ContinueStatement node)
+        {
+            SetSkippedInCurrentScope();
+            base.Visit(node);
+        }
+
+        public override void ExplicitVisit(ThrowStatement node)
+        {
+            SetSkippedInCurrentScope();
+            base.Visit(node);
+        }
+
+        public override void ExplicitVisit(GoToStatement node)
+        {
+            SetSkippedInCurrentScope();
+            base.Visit(node);
+        }
+
         public override void Visit(TSqlFragment fragment) => fragment.AcceptChildren(this);
 
-        private void SetAssignedInCurrentScope() => _isAssignedOnBranchLevel.Peek().IsAssigned = true;
+        private void SetAssignedInCurrentScope()
+        {
+            if (IsSkippedInCurrentScope())
+            {
+                return;
+            }
+
+            _isAssignedOnBranchLevel.Peek().IsAssigned = true;
+        }
+
+        private void SetSkippedInCurrentScope() => _isAssignedOnBranchLevel.Peek().IsSkipped = true;
         private bool IsAssignedInCurrentScope() => _isAssignedOnBranchLevel.Peek().IsAssigned;
-        private void BeginScope() => _isAssignedOnBranchLevel.Push(new Container());
+        private bool IsSkippedInCurrentScope() => _isAssignedOnBranchLevel.Peek().IsSkipped;
+        private void BeginScope() => _isAssignedOnBranchLevel.Push(new ScopeData());
 
         private void EndScopeAndPropagateToParent()
         {
@@ -176,9 +211,10 @@ public sealed class OutputParameterNotAssignedOnAllExecutionPathsAnalyzer : IScr
             }
         }
 
-        private sealed class Container
+        private sealed class ScopeData
         {
             public bool IsAssigned { get; set; }
+            public bool IsSkipped { get; set; } // break or continue called
         }
     }
 
