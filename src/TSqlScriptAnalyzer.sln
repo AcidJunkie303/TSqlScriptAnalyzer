@@ -32,9 +32,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution 
 		TSqlScriptAnalyzer.sln.DotSettings = TSqlScriptAnalyzer.sln.DotSettings
 		..\README.md = ..\README.md
 		testing\settings\project1.jsonc = testing\settings\project1.jsonc
-		..\Creating-Analyzers.md = ..\Creating-Analyzers.md
-		..\Issue-Suppression.md = ..\Issue-Suppression.md
-		..\Unit-Testing-Analyzers.md = ..\Unit-Testing-Analyzers.md
+		..\1.Creating-Analyzers.md = ..\1.Creating-Analyzers.md
+		..\2.Unit-Testing-Analyzers.md = ..\2.Unit-Testing-Analyzers.md
+		..\3.Integrating-Analyzers.md = ..\3.Integrating-Analyzers.md
+		..\4.Project-File-Reference.md = ..\4.Project-File-Reference.md
+		..\5.Issue-Suppression.md = ..\5.Issue-Suppression.md
+		..\6.Injectable-Services.md = ..\6.Injectable-Services.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{756EE255-D7F4-4CFE-8FAA-92A5C17E823B}"
