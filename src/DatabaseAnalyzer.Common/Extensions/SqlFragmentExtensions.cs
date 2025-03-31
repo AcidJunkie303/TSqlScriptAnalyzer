@@ -19,6 +19,16 @@ public static class SqlFragmentExtensions
     {
         ArgumentNullException.ThrowIfNull(fragment);
 
+        if (fragment.StartLine < 0 || fragment.StartColumn < 0)
+        {
+            return CodeRegion.Unknown;
+        }
+
+        if (fragment.ScriptTokenStream.IsNullOrEmpty())
+        {
+            return CodeRegion.Unknown;
+        }
+
         var firstTokenRegion = fragment.ScriptTokenStream[fragment.FirstTokenIndex].GetCodeRegion();
         var lastTokenRegion = fragment.ScriptTokenStream[fragment.LastTokenIndex].GetCodeRegion();
 
@@ -105,19 +115,6 @@ public static class SqlFragmentExtensions
 
         return null;
     }
-
-    private static string? TryGetFirstClassObjectNameCore(TSqlFragment fragment, string defaultSchemaName)
-        => fragment switch
-        {
-            ProcedureStatementBody s => s.ProcedureReference.Name.GetConcatenatedTwoPartObjectName(defaultSchemaName),
-            FunctionStatementBody s  => s.Name.GetConcatenatedTwoPartObjectName(defaultSchemaName),
-            CreateTableStatement s   => s.IsTempTable() ? null : s.SchemaObjectName.GetConcatenatedTwoPartObjectName(defaultSchemaName),
-            AlterTableStatement s    => s.SchemaObjectName.GetConcatenatedTwoPartObjectName(defaultSchemaName),
-            CreateIndexStatement s   => s.Name.Value,
-            ViewStatementBody s      => s.SchemaObjectName.GetConcatenatedTwoPartObjectName(defaultSchemaName),
-            TriggerStatementBody s   => s.Name.GetConcatenatedTwoPartObjectName(defaultSchemaName),
-            _                        => null
-        };
 
     public static IEnumerable<TSqlFragment> GetParents(this TSqlFragment fragment, IScriptModel script)
     {
@@ -324,4 +321,17 @@ public static class SqlFragmentExtensions
             .Skip(fragment.FirstTokenIndex)
             .Take(fragment.LastTokenIndex - fragment.FirstTokenIndex + 1)
             .ToList();
+
+    private static string? TryGetFirstClassObjectNameCore(TSqlFragment fragment, string defaultSchemaName)
+        => fragment switch
+        {
+            ProcedureStatementBody s => s.ProcedureReference.Name.GetConcatenatedTwoPartObjectName(defaultSchemaName),
+            FunctionStatementBody s  => s.Name.GetConcatenatedTwoPartObjectName(defaultSchemaName),
+            CreateTableStatement s   => s.IsTempTable() ? null : s.SchemaObjectName.GetConcatenatedTwoPartObjectName(defaultSchemaName),
+            AlterTableStatement s    => s.SchemaObjectName.GetConcatenatedTwoPartObjectName(defaultSchemaName),
+            CreateIndexStatement s   => s.Name.Value,
+            ViewStatementBody s      => s.SchemaObjectName.GetConcatenatedTwoPartObjectName(defaultSchemaName),
+            TriggerStatementBody s   => s.Name.GetConcatenatedTwoPartObjectName(defaultSchemaName),
+            _                        => null
+        };
 }
