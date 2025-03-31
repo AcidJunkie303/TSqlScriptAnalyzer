@@ -240,4 +240,22 @@ public sealed class OutputParameterNotAssignedOnAllExecutionPathsAnalyzerTests(I
 
         Verify(code);
     }
+
+    [Fact]
+    public void WhenIsAssignedByResultOfProcedureCall_ThenOK()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            CREATE PROCEDURE [dbo].[P1]
+                                @Param1 INT OUTPUT
+                            AS
+                            BEGIN
+                                EXEC @Param1 = dbo.P2
+                            END
+                            """;
+
+        Verify(code);
+    }
 }

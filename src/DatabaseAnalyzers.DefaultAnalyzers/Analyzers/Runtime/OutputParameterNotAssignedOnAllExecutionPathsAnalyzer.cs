@@ -187,16 +187,20 @@ public sealed class OutputParameterNotAssignedOnAllExecutionPathsAnalyzer : IScr
 
         public override void ExplicitVisit(ExecuteStatement node)
         {
-            if (IsAssignedByOutputParameter())
+            if (IsAssignedByOutputParameter() || IsAssignedByResultOfProcedureCall())
             {
                 SetAssignedInCurrentScope();
             }
 
             base.Visit(node);
 
+            bool IsAssignedByResultOfProcedureCall()
+                => node.ExecuteSpecification?.Variable is not null
+                   && node.ExecuteSpecification.Variable.Name.EqualsOrdinalIgnoreCase(_variableName);
+
             bool IsAssignedByOutputParameter()
             {
-                foreach (var calledProcedureParameter in GetParameters())
+                foreach (var calledProcedureParameter in GetParameters(node))
                 {
                     if (!calledProcedureParameter.IsOutput)
                     {
@@ -216,14 +220,14 @@ public sealed class OutputParameterNotAssignedOnAllExecutionPathsAnalyzer : IScr
 
                 return false;
             }
-
-            IList<ExecuteParameter> GetParameters()
-                => node.ExecuteSpecification.ExecutableEntity is ExecutableProcedureReference procedureReference
-                    ? procedureReference.Parameters
-                    : [];
         }
 
         public override void Visit(TSqlFragment fragment) => fragment.AcceptChildren(this);
+
+        private static IList<ExecuteParameter> GetParameters(ExecuteStatement statement)
+            => statement.ExecuteSpecification.ExecutableEntity is ExecutableProcedureReference procedureReference
+                ? procedureReference.Parameters
+                : [];
 
         private void SetAssignedInCurrentScope()
         {
