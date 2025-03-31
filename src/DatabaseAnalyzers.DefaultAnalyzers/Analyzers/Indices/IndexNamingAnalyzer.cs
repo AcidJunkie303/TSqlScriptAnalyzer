@@ -1,7 +1,7 @@
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
-using DatabaseAnalyzers.DefaultAnalyzers.Settings;
 using DatabaseAnalyzers.DefaultAnalyzers.Model;
+using DatabaseAnalyzers.DefaultAnalyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
@@ -9,14 +9,16 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
 public sealed class IndexNamingAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
     private readonly Aj5052Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public IndexNamingAnalyzer(IScriptAnalysisContext context, Aj5052Settings settings)
+    public IndexNamingAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter, Aj5052Settings settings)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
         _settings = settings;
     }
@@ -52,114 +54,6 @@ public sealed class IndexNamingAnalyzer : IScriptAnalyzer
             or CreateColumnStoreIndexStatement
             or CreateFullTextIndexStatement;
 
-    private void AnalyzeCreateTableStatement(CreateTableStatement statement)
-    {
-        if (statement.IsTempTable())
-        {
-            return;
-        }
-
-        var primaryKeyDefinition = statement.Definition.TableConstraints
-            .OfType<UniqueConstraintDefinition>()
-            .FirstOrDefault(static a => a.IsPrimaryKey);
-
-        if (primaryKeyDefinition is null)
-        {
-            return;
-        }
-
-        var tableSchemaName = statement.SchemaObjectName?.SchemaIdentifier?.Value ?? _context.DefaultSchemaName;
-        var tableName = statement.SchemaObjectName?.BaseIdentifier.Value ?? Constants.UnknownObjectName;
-        AnalyzeUniqueConstraintDefinition(primaryKeyDefinition, tableSchemaName, tableName);
-    }
-
-    private void AnalyzeAlterTableStatement(AlterTableAddTableElementStatement statement)
-    {
-        var primaryKeyDefinition = statement.Definition.TableConstraints
-            .OfType<UniqueConstraintDefinition>()
-            .FirstOrDefault(static a => a.IsPrimaryKey);
-
-        if (primaryKeyDefinition is null)
-        {
-            return;
-        }
-
-        var tableSchemaName = statement.SchemaObjectName?.SchemaIdentifier?.Value ?? _context.DefaultSchemaName;
-        var tableName = statement.SchemaObjectName?.BaseIdentifier.Value ?? Constants.UnknownObjectName;
-
-        AnalyzeUniqueConstraintDefinition(primaryKeyDefinition, tableSchemaName, tableName);
-    }
-
-    private void AnalyzeUniqueConstraintDefinition(UniqueConstraintDefinition primaryKeyDefinition, string tableSchemaName, string tableName)
-    {
-        if (!primaryKeyDefinition.IsPrimaryKey)
-        {
-            return;
-        }
-
-        var indexProperties = primaryKeyDefinition.Clustered switch
-        {
-            true  => IndexProperties.PrimaryKey | IndexProperties.Clustered,
-            false => IndexProperties.PrimaryKey | IndexProperties.NonClustered,
-            _     => IndexProperties.PrimaryKey
-        };
-
-        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(primaryKeyDefinition) ?? Constants.UnknownObjectName;
-        var indexData = new IndexData
-        (
-            indexProperties,
-            primaryKeyDefinition.ConstraintIdentifier,
-            primaryKeyDefinition.ConstraintIdentifier.Value,
-            databaseName,
-            tableSchemaName,
-            tableName,
-            primaryKeyDefinition.Columns.Select(a => a.Column.MultiPartIdentifier.Identifiers.Select(x => x.Value).StringJoin(".").NullIfEmptyOrWhiteSpace() ?? Constants.UnknownObjectName).ToList()
-        );
-
-        var expectedIndexName = CreateIndexName(indexData);
-        if (indexData.Name.Equals(expectedIndexName, StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, indexData.DatabaseName, _script.RelativeScriptFilePath, indexData.FullObjectName, indexData.Identifier.GetCodeRegion(),
-            indexData.Name, expectedIndexName, indexData.IndexProperties);
-    }
-
-    private void AnalyzeCreateIndexStatement(TSqlFragment fragment)
-    {
-        if (fragment is CreateIndexStatement createIndexStatement)
-        {
-            var tableName = createIndexStatement.OnName?.BaseIdentifier?.Value;
-
-            if (tableName?.IsTempTableName() == true)
-            {
-                return;
-            }
-        }
-
-        var indexData = GetIndexProperties(_context.DefaultSchemaName, fragment);
-        if (indexData is null)
-        {
-            return;
-        }
-
-        var expectedIndexName = CreateIndexName(indexData);
-        if (indexData.Name.Equals(expectedIndexName, StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, indexData.DatabaseName, _script.RelativeScriptFilePath, indexData.FullObjectName, indexData.Identifier.GetCodeRegion(),
-            indexData.Name, expectedIndexName, indexData.IndexProperties);
-    }
-
-    private string CreateIndexName(IndexData indexData)
-    {
-        var pattern = GetPatternForIndexProperties(indexData.IndexProperties);
-        return PopulatePattern(pattern, indexData);
-    }
-
     private static string PopulatePattern(string pattern, IndexData indexData)
     {
         var result = pattern
@@ -175,31 +69,6 @@ public sealed class IndexNamingAnalyzer : IScriptAnalyzer
 
         return result;
     }
-
-    private string GetPatternForIndexProperties(IndexProperties indexProperties)
-    {
-        foreach (var (properties, pattern) in _settings.NamingPatterns)
-        {
-            if (indexProperties.HasFlag(properties))
-            {
-                return pattern;
-            }
-        }
-
-        return _settings.DefaultPattern;
-    }
-
-    private IndexData? GetIndexProperties(string defaultSchemaName, TSqlFragment fragment)
-        => fragment switch
-        {
-            CreateIndexStatement createIndexStatement                         => GetIndexProperties(_script, defaultSchemaName, createIndexStatement),
-            CreateSpatialIndexStatement createSpatialIndexStatement           => GetIndexProperties(_script, defaultSchemaName, createSpatialIndexStatement),
-            CreateXmlIndexStatement createXmlIndexStatement                   => GetIndexProperties(_script, defaultSchemaName, createXmlIndexStatement),
-            CreateSelectiveXmlIndexStatement createSelectiveXmlIndexStatement => GetIndexProperties(_script, defaultSchemaName, createSelectiveXmlIndexStatement),
-            CreateColumnStoreIndexStatement createColumnStoreIndexStatement   => GetIndexProperties(_script, defaultSchemaName, createColumnStoreIndexStatement),
-            CreateFullTextIndexStatement createFullTextIndexStatement         => GetIndexProperties(_script, defaultSchemaName, createFullTextIndexStatement),
-            _                                                                 => null
-        };
 
     private static IndexData GetIndexProperties(IScriptModel script, string defaultSchemaName, CreateIndexStatement statement)
     {
@@ -281,6 +150,139 @@ public sealed class IndexNamingAnalyzer : IScriptAnalyzer
             TableName: statement.OnName.BaseIdentifier?.Value ?? Constants.UnknownObjectName,
             ColumnNames: statement.FullTextIndexColumns.Select(static a => a.Name.Value).ToList()
         );
+
+    private void AnalyzeCreateTableStatement(CreateTableStatement statement)
+    {
+        if (statement.IsTempTable())
+        {
+            return;
+        }
+
+        var primaryKeyDefinition = statement.Definition.TableConstraints
+            .OfType<UniqueConstraintDefinition>()
+            .FirstOrDefault(static a => a.IsPrimaryKey);
+
+        if (primaryKeyDefinition is null)
+        {
+            return;
+        }
+
+        var tableSchemaName = statement.SchemaObjectName?.SchemaIdentifier?.Value ?? _context.DefaultSchemaName;
+        var tableName = statement.SchemaObjectName?.BaseIdentifier.Value ?? Constants.UnknownObjectName;
+        AnalyzeUniqueConstraintDefinition(primaryKeyDefinition, tableSchemaName, tableName);
+    }
+
+    private void AnalyzeAlterTableStatement(AlterTableAddTableElementStatement statement)
+    {
+        var primaryKeyDefinition = statement.Definition.TableConstraints
+            .OfType<UniqueConstraintDefinition>()
+            .FirstOrDefault(static a => a.IsPrimaryKey);
+
+        if (primaryKeyDefinition is null)
+        {
+            return;
+        }
+
+        var tableSchemaName = statement.SchemaObjectName?.SchemaIdentifier?.Value ?? _context.DefaultSchemaName;
+        var tableName = statement.SchemaObjectName?.BaseIdentifier.Value ?? Constants.UnknownObjectName;
+
+        AnalyzeUniqueConstraintDefinition(primaryKeyDefinition, tableSchemaName, tableName);
+    }
+
+    private void AnalyzeUniqueConstraintDefinition(UniqueConstraintDefinition primaryKeyDefinition, string tableSchemaName, string tableName)
+    {
+        if (!primaryKeyDefinition.IsPrimaryKey)
+        {
+            return;
+        }
+
+        var indexProperties = primaryKeyDefinition.Clustered switch
+        {
+            true  => IndexProperties.PrimaryKey | IndexProperties.Clustered,
+            false => IndexProperties.PrimaryKey | IndexProperties.NonClustered,
+            _     => IndexProperties.PrimaryKey
+        };
+
+        var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(primaryKeyDefinition) ?? Constants.UnknownObjectName;
+        var indexData = new IndexData
+        (
+            indexProperties,
+            primaryKeyDefinition.ConstraintIdentifier,
+            primaryKeyDefinition.ConstraintIdentifier.Value,
+            databaseName,
+            tableSchemaName,
+            tableName,
+            primaryKeyDefinition.Columns.Select(a => a.Column.MultiPartIdentifier.Identifiers.Select(x => x.Value).StringJoin(".").NullIfEmptyOrWhiteSpace() ?? Constants.UnknownObjectName).ToList()
+        );
+
+        var expectedIndexName = CreateIndexName(indexData);
+        if (indexData.Name.Equals(expectedIndexName, StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        _issueReporter.Report(DiagnosticDefinitions.Default, indexData.DatabaseName, _script.RelativeScriptFilePath, indexData.FullObjectName, indexData.Identifier.GetCodeRegion(),
+            indexData.Name, expectedIndexName, indexData.IndexProperties);
+    }
+
+    private void AnalyzeCreateIndexStatement(TSqlFragment fragment)
+    {
+        if (fragment is CreateIndexStatement createIndexStatement)
+        {
+            var tableName = createIndexStatement.OnName?.BaseIdentifier?.Value;
+
+            if (tableName?.IsTempTableName() == true)
+            {
+                return;
+            }
+        }
+
+        var indexData = GetIndexProperties(_context.DefaultSchemaName, fragment);
+        if (indexData is null)
+        {
+            return;
+        }
+
+        var expectedIndexName = CreateIndexName(indexData);
+        if (indexData.Name.Equals(expectedIndexName, StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        _issueReporter.Report(DiagnosticDefinitions.Default, indexData.DatabaseName, _script.RelativeScriptFilePath, indexData.FullObjectName, indexData.Identifier.GetCodeRegion(),
+            indexData.Name, expectedIndexName, indexData.IndexProperties);
+    }
+
+    private string CreateIndexName(IndexData indexData)
+    {
+        var pattern = GetPatternForIndexProperties(indexData.IndexProperties);
+        return PopulatePattern(pattern, indexData);
+    }
+
+    private string GetPatternForIndexProperties(IndexProperties indexProperties)
+    {
+        foreach (var (properties, pattern) in _settings.NamingPatterns)
+        {
+            if (indexProperties.HasFlag(properties))
+            {
+                return pattern;
+            }
+        }
+
+        return _settings.DefaultPattern;
+    }
+
+    private IndexData? GetIndexProperties(string defaultSchemaName, TSqlFragment fragment)
+        => fragment switch
+        {
+            CreateIndexStatement createIndexStatement                         => GetIndexProperties(_script, defaultSchemaName, createIndexStatement),
+            CreateSpatialIndexStatement createSpatialIndexStatement           => GetIndexProperties(_script, defaultSchemaName, createSpatialIndexStatement),
+            CreateXmlIndexStatement createXmlIndexStatement                   => GetIndexProperties(_script, defaultSchemaName, createXmlIndexStatement),
+            CreateSelectiveXmlIndexStatement createSelectiveXmlIndexStatement => GetIndexProperties(_script, defaultSchemaName, createSelectiveXmlIndexStatement),
+            CreateColumnStoreIndexStatement createColumnStoreIndexStatement   => GetIndexProperties(_script, defaultSchemaName, createColumnStoreIndexStatement),
+            CreateFullTextIndexStatement createFullTextIndexStatement         => GetIndexProperties(_script, defaultSchemaName, createFullTextIndexStatement),
+            _                                                                 => null
+        };
 
     private sealed record IndexData(
         IndexProperties IndexProperties,

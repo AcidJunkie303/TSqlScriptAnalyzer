@@ -1,7 +1,7 @@
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
-using DatabaseAnalyzers.DefaultAnalyzers.Settings;
 using DatabaseAnalyzers.DefaultAnalyzers.Services;
+using DatabaseAnalyzers.DefaultAnalyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Naming;
@@ -9,14 +9,16 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Naming;
 public sealed class KeywordCasingAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
     private readonly Aj5056Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public KeywordCasingAnalyzer(IScriptAnalysisContext context, Aj5056Settings settings)
+    public KeywordCasingAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter, Aj5056Settings settings)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
         _settings = settings;
     }
@@ -59,7 +61,7 @@ public sealed class KeywordCasingAnalyzer : IScriptAnalyzer
             .TryGetSqlFragmentAtPosition(token)
             ?.TryGetFirstClassObjectName(_context, _script);
 
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default,
+        _issueReporter.Report(DiagnosticDefinitions.Default,
             databaseName,
             _script.RelativeScriptFilePath,
             fullObjectName,

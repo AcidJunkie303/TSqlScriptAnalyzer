@@ -8,14 +8,16 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Banned;
 public sealed class BannedFunctionAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
     private readonly Aj5040Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public BannedFunctionAnalyzer(IScriptAnalysisContext context, Aj5040Settings settings)
+    public BannedFunctionAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter, Aj5040Settings settings)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
         _settings = settings;
     }
@@ -69,7 +71,7 @@ public sealed class BannedFunctionAnalyzer : IScriptAnalyzer
 
         var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(function) ?? DatabaseNames.Unknown;
         var fullObjectName = function.TryGetFirstClassObjectName(_context, _script);
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, nameLocationGetter(function), functionName, reason);
+        _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, nameLocationGetter(function), functionName, reason);
     }
 
     private static class DiagnosticDefinitions

@@ -8,14 +8,16 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Maintainability;
 public sealed class OpenItemAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
     private readonly Aj5004Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public OpenItemAnalyzer(IScriptAnalysisContext context, Aj5004Settings settings)
+    public OpenItemAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter, Aj5004Settings settings)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
         _settings = settings;
     }
@@ -57,7 +59,7 @@ public sealed class OpenItemAnalyzer : IScriptAnalyzer
                 .TryGetSqlFragmentAtPosition(commentToken)
                 ?.TryGetFirstClassObjectName(_context, _script);
 
-            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, commentToken.GetCodeRegion(), topic, message);
+            _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, commentToken.GetCodeRegion(), topic, message);
         }
     }
 

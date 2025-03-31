@@ -17,13 +17,15 @@ public sealed class WeakHashingAlgorithmAnalyzer : IScriptAnalyzer
     }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public WeakHashingAlgorithmAnalyzer(IScriptAnalysisContext context)
+    public WeakHashingAlgorithmAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
     }
 
@@ -57,7 +59,7 @@ public sealed class WeakHashingAlgorithmAnalyzer : IScriptAnalyzer
 
         var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(algorithmArgument) ?? DatabaseNames.Unknown;
         var fullObjectName = algorithmArgument.TryGetFirstClassObjectName(_context, _script);
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, algorithmArgument.GetCodeRegion(), hashAlgorithmName);
+        _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, algorithmArgument.GetCodeRegion(), hashAlgorithmName);
     }
 
     private static class DiagnosticDefinitions

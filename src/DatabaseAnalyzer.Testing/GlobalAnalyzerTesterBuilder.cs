@@ -96,26 +96,46 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
                 IReadOnlyList<IScriptModel> (a) => a.ToList(),
                 StringComparer.OrdinalIgnoreCase);
 
+        var issueReporter = new IssueReporter();
         var analysisContext = new GlobalAnalysisContext(
             _defaultSchemaName,
             allScripts,
             allScriptsByDatabaseName,
-            new IssueReporter(),
+            issueReporter,
             NullLogger.Instance,
             FrozenSet<string>.Empty);
 
-        var host = CreateHost(analysisContext);
+        var host = CreateHost(analysisContext, issueReporter);
         var analyzer = host.Services.GetRequiredService<IGlobalAnalyzer>();
 
         return new GlobalAnalyzerTester(
             analysisContext,
             analyzer,
             allScripts,
-            expectedIssues
+            expectedIssues,
+            issueReporter
         );
     }
 
-    private IHost CreateHost(GlobalAnalysisContext analysisContext)
+    private static ScriptModel ParseScript(string relativeScriptFilePath, string scriptContents, string databaseName)
+    {
+        var script = scriptContents.TryParseSqlScript(out var errors);
+        var diagnosticSuppressions = new DiagnosticSuppressionExtractor().ExtractSuppressions(script);
+        var parentFragmentProvider = script.CreateParentFragmentProvider();
+
+        return new ScriptModel
+        (
+            databaseName,
+            relativeScriptFilePath,
+            scriptContents,
+            script,
+            parentFragmentProvider,
+            errors,
+            diagnosticSuppressions.ToList()
+        );
+    }
+
+    private IHost CreateHost(GlobalAnalysisContext analysisContext, IIssueReporter issueReporter)
         => Host
             .CreateDefaultBuilder()
             .ConfigureServices((_, services) =>
@@ -131,6 +151,7 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
                 services.AddSingleton<ITableResolverFactory, TableResolverFactory>();
                 services.AddSingleton<IColumnResolverFactory, ColumnResolverFactory>();
                 services.AddSingleton<IAstService>(new AstService(AstServiceSettings.Default));
+                services.AddSingleton(issueReporter);
                 services.AddSingleton(new ParallelOptions
                 {
 #if DEBUG
@@ -150,22 +171,4 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
                 services.AddSingleton<IObjectProvider>(new ObjectProvider(databasesByName));
             })
             .Build();
-
-    private static ScriptModel ParseScript(string relativeScriptFilePath, string scriptContents, string databaseName)
-    {
-        var script = scriptContents.TryParseSqlScript(out var errors);
-        var diagnosticSuppressions = new DiagnosticSuppressionExtractor().ExtractSuppressions(script);
-        var parentFragmentProvider = script.CreateParentFragmentProvider();
-
-        return new ScriptModel
-        (
-            databaseName,
-            relativeScriptFilePath,
-            scriptContents,
-            script,
-            parentFragmentProvider,
-            errors,
-            diagnosticSuppressions.ToList()
-        );
-    }
 }

@@ -7,12 +7,14 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime;
 public sealed class OutputParameterNotAssignedOnAllExecutionPathsAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public OutputParameterNotAssignedOnAllExecutionPathsAnalyzer(IScriptAnalysisContext context)
+    public OutputParameterNotAssignedOnAllExecutionPathsAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
     }
 
@@ -50,7 +52,7 @@ public sealed class OutputParameterNotAssignedOnAllExecutionPathsAnalyzer : IScr
         var fullObjectName = parameter.TryGetFirstClassObjectName(_context, _script);
         var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(parameter) ?? _script.DatabaseName;
 
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, parameter.GetCodeRegion(),
+        _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, parameter.GetCodeRegion(),
             parameter.VariableName.Value);
     }
 

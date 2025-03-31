@@ -12,6 +12,7 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
 {
     private readonly IAstService _astService;
     private readonly IGlobalAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly Aj5017Settings _missingForeignKeyIndexSettings;
     private readonly Aj5015Settings _missingIndexSettings;
     private readonly IObjectProvider _objectProvider;
@@ -20,12 +21,14 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
 
     public MissingIndexAnalyzer(
         IGlobalAnalysisContext context,
+        IIssueReporter issueReporter,
         Aj5015Settings missingIndexSettings,
         Aj5017Settings missingForeignKeyIndexSettings,
         IAstService astService,
         IObjectProvider objectProvider)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _missingIndexSettings = missingIndexSettings;
         _missingForeignKeyIndexSettings = missingForeignKeyIndexSettings;
         _astService = astService;
@@ -41,11 +44,11 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
 
         if (!_context.DisabledDiagnosticIds.Contains(DiagnosticDefinitions.ForeignKeyColumnNotIndexed.DiagnosticId))
         {
-            AnalyzeForeignKeys(_context, _objectProvider.DatabasesByName);
+            AnalyzeForeignKeys(_objectProvider.DatabasesByName);
         }
     }
 
-    private void AnalyzeForeignKeys(IGlobalAnalysisContext context, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
+    private void AnalyzeForeignKeys(IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
     {
         var tables = databasesByName
             .SelectMany(db => db.Value.SchemasByName.Values)
@@ -71,7 +74,7 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
                     continue;
                 }
 
-                context.IssueReporter.Report(DiagnosticDefinitions.ForeignKeyColumnNotIndexed,
+                _issueReporter.Report(DiagnosticDefinitions.ForeignKeyColumnNotIndexed,
                     column.DatabaseName,
                     table.RelativeScriptFilePath,
                     table.FullName,
@@ -109,7 +112,7 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
 
     private void AnalyzeStatements(IScriptModel script, TSqlFragment fragment, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
     {
-        var finder = new FilteringColumnFinder(_context.IssueReporter, _astService, script.ParsedScript, script.RelativeScriptFilePath, _context.DefaultSchemaName, script.ParentFragmentProvider);
+        var finder = new FilteringColumnFinder(_issueReporter, _astService, script.ParsedScript, script.RelativeScriptFilePath, _context.DefaultSchemaName, script.ParentFragmentProvider);
 
         foreach (var filteringColumn in finder.Find(fragment))
         {
@@ -149,7 +152,7 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
                 : column.ColumnDefinition.GetCodeRegion();
 
             var fullObjectName = fragment.TryGetFirstClassObjectName(_context.DefaultSchemaName, script.ParsedScript, script.ParentFragmentProvider);
-            _context.IssueReporter.Report(DiagnosticDefinitions.FilteringColumnNotIndexed,
+            _issueReporter.Report(DiagnosticDefinitions.FilteringColumnNotIndexed,
                 filteringColumn.DatabaseName,
                 script.RelativeScriptFilePath,
                 fullObjectName,

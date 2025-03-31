@@ -7,13 +7,15 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Maintainability;
 public sealed partial class DefaultObjectCreationCommentsAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public DefaultObjectCreationCommentsAnalyzer(IScriptAnalysisContext context)
+    public DefaultObjectCreationCommentsAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
     }
 
@@ -32,7 +34,7 @@ public sealed partial class DefaultObjectCreationCommentsAnalyzer : IScriptAnaly
             var fullObjectName = _script.ParsedScript
                 .TryGetSqlFragmentAtPosition(match.Index)
                 ?.TryGetFirstClassObjectName(_context, _script);
-            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, region);
+            _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, region);
         }
     }
 

@@ -9,14 +9,16 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Banned;
 public sealed class BannedDataTypeAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
     private readonly Aj5006Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public BannedDataTypeAnalyzer(IScriptAnalysisContext context, Aj5006Settings settings)
+    public BannedDataTypeAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter, Aj5006Settings settings)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _settings = settings;
         _script = context.Script;
     }
@@ -91,7 +93,7 @@ public sealed class BannedDataTypeAnalyzer : IScriptAnalyzer
 
         var fullObjectName = parameter.TryGetFirstClassObjectName(_context.DefaultSchemaName, _script.ParsedScript, _script.ParentFragmentProvider);
         var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(parameter) ?? DatabaseNames.Unknown;
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, parameter.GetCodeRegion(), dataTypeName, pluralObjectType);
+        _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, parameter.GetCodeRegion(), dataTypeName, pluralObjectType);
     }
 
     private static class DiagnosticDefinitions

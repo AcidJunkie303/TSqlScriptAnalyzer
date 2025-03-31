@@ -7,13 +7,15 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 public sealed class IndentationAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public IndentationAnalyzer(IScriptAnalysisContext context)
+    public IndentationAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
     }
 
@@ -42,6 +44,26 @@ public sealed class IndentationAnalyzer : IScriptAnalyzer
                     continue;
             }
         }
+    }
+
+    private static bool HasMultipleItemsOnTheSameLine<T>(IList<T> fragments)
+        where T : TSqlFragment
+        => fragments
+            .Select(static a => a.StartLine)
+            .GroupBy(static a => a)
+            .Any(static a => a.Count() > 1);
+
+    private static bool AllHaveSameIndentation<T>(IList<T> fragments)
+        where T : TSqlFragment
+    {
+        if (fragments.Count == 0)
+        {
+            return true;
+        }
+
+        return fragments
+            .Select(static a => a.GetCodeLocation().Column)
+            .DistinctCount() == 1;
     }
 
     private void Analyze(SelectStatement selectStatement)
@@ -84,28 +106,8 @@ public sealed class IndentationAnalyzer : IScriptAnalyzer
         var codeRegion = fragments.CreateCodeRegionSpan();
         var fullObjectName = fragments[0].TryGetFirstClassObjectName(_context, _script);
         var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(fragments[0]) ?? DatabaseNames.Unknown;
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion,
+        _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion,
             objectTypeName);
-    }
-
-    private static bool HasMultipleItemsOnTheSameLine<T>(IList<T> fragments)
-        where T : TSqlFragment
-        => fragments
-            .Select(static a => a.StartLine)
-            .GroupBy(static a => a)
-            .Any(static a => a.Count() > 1);
-
-    private static bool AllHaveSameIndentation<T>(IList<T> fragments)
-        where T : TSqlFragment
-    {
-        if (fragments.Count == 0)
-        {
-            return true;
-        }
-
-        return fragments
-            .Select(static a => a.GetCodeLocation().Column)
-            .DistinctCount() == 1;
     }
 
     private static class DiagnosticDefinitions

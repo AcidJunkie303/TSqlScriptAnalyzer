@@ -8,14 +8,16 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.NonStandard;
 public sealed class ReservedWordUsageAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
     private readonly Aj5060Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public ReservedWordUsageAnalyzer(IScriptAnalysisContext context, Aj5060Settings settings)
+    public ReservedWordUsageAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter, Aj5060Settings settings)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
         _settings = settings;
     }
@@ -68,7 +70,7 @@ public sealed class ReservedWordUsageAnalyzer : IScriptAnalyzer
 
         var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(objectIdentifierFragment) ?? DatabaseNames.Unknown;
         var fullObjectName = objectIdentifierFragment.TryGetFirstClassObjectName(_context, _script);
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, objectIdentifierFragment.GetCodeRegion(),
+        _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, objectIdentifierFragment.GetCodeRegion(),
             objectTypeName, name);
     }
 

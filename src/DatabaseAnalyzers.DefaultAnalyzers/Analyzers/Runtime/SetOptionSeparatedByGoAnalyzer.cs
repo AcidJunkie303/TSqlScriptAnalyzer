@@ -7,13 +7,15 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime;
 public sealed class SetOptionSeparatedByGoAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public SetOptionSeparatedByGoAnalyzer(IScriptAnalysisContext context)
+    public SetOptionSeparatedByGoAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
     }
 
@@ -27,7 +29,7 @@ public sealed class SetOptionSeparatedByGoAnalyzer : IScriptAnalyzer
             var codeRegion = CodeRegion.CreateSpan(firstBatchCodeRegion, lastBatchCodeRegion);
             var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(group[0]) ?? DatabaseNames.Unknown;
             var fullObjectName = group[0].TryGetFirstClassObjectName(_context, _script);
-            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion);
+            _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion);
         }
     }
 

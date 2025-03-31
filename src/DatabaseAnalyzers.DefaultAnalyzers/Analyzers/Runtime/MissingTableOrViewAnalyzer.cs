@@ -10,6 +10,7 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime;
 public sealed class MissingTableOrViewAnalyzer : IGlobalAnalyzer
 {
     private readonly IGlobalAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IObjectProvider _objectProvider;
     private readonly ParallelOptions _parallelOptions;
     private readonly Aj5044Settings _settings;
@@ -17,9 +18,10 @@ public sealed class MissingTableOrViewAnalyzer : IGlobalAnalyzer
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [SharedDiagnosticDefinitions.MissingObject];
 
-    public MissingTableOrViewAnalyzer(IGlobalAnalysisContext context, Aj5044Settings settings, IObjectProvider objectProvider, ParallelOptions parallelOptions, ITableResolverFactory tableResolverFactory)
+    public MissingTableOrViewAnalyzer(IGlobalAnalysisContext context, IIssueReporter issueReporter, Aj5044Settings settings, IObjectProvider objectProvider, ParallelOptions parallelOptions, ITableResolverFactory tableResolverFactory)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _settings = settings;
         _objectProvider = objectProvider;
         _parallelOptions = parallelOptions;
@@ -79,7 +81,7 @@ public sealed class MissingTableOrViewAnalyzer : IGlobalAnalyzer
         var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(tableReference) ?? DatabaseNames.Unknown;
         var fullObjectName = tableReference.TryGetFirstClassObjectName(_context, script);
 
-        _context.IssueReporter.Report(SharedDiagnosticDefinitions.MissingObject, databaseName, script.RelativeScriptFilePath, fullObjectName, tableReference.GetCodeRegion(), "table or view", resolvedTable.FullName);
+        _issueReporter.Report(SharedDiagnosticDefinitions.MissingObject, databaseName, script.RelativeScriptFilePath, fullObjectName, tableReference.GetCodeRegion(), "table or view", resolvedTable.FullName);
     }
 
     private bool DoesTableOrViewExist(string databaseName, string schemaName, string tableOrViewName)

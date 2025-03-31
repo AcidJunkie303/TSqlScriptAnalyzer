@@ -8,14 +8,16 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Naming;
 public sealed class ShortLongKeywordAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
     private readonly Aj5048Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public ShortLongKeywordAnalyzer(IScriptAnalysisContext context, Aj5048Settings settings)
+    public ShortLongKeywordAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter, Aj5048Settings settings)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
         _settings = settings;
     }
@@ -88,7 +90,7 @@ public sealed class ShortLongKeywordAnalyzer : IScriptAnalyzer
             .TryGetSqlFragmentAtPosition(token)
             ?.TryGetFirstClassObjectName(_context, _script);
 
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default,
+        _issueReporter.Report(DiagnosticDefinitions.Default,
             databaseName,
             _script.RelativeScriptFilePath,
             fullObjectName,

@@ -9,13 +9,15 @@ public sealed class AliasReferenceWithDifferentCasingAnalyzer : IScriptAnalyzer
 {
     private readonly IColumnResolver _columnResolver;
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public AliasReferenceWithDifferentCasingAnalyzer(IScriptAnalysisContext context, IColumnResolverFactory columnResolverFactory)
+    public AliasReferenceWithDifferentCasingAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter, IColumnResolverFactory columnResolverFactory)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _columnResolver = columnResolverFactory.CreateColumnResolver(context);
         _script = context.Script;
     }
@@ -56,7 +58,7 @@ public sealed class AliasReferenceWithDifferentCasingAnalyzer : IScriptAnalyzer
         var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(columnReference) ?? _script.DatabaseName;
         var fullObjectName = columnReference.TryGetFirstClassObjectName(_context, _script);
 
-        _context.IssueReporter.Report(
+        _issueReporter.Report(
             DiagnosticDefinitions.Default,
             databaseName,
             _script.RelativeScriptFilePath,

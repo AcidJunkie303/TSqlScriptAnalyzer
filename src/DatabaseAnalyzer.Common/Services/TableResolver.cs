@@ -27,12 +27,6 @@ public sealed class TableResolver : ITableResolver
         _defaultSchemaName = defaultSchemaName;
     }
 
-    public static TableResolver Create(IScriptAnalysisContext context, IAstService astService)
-        => new(context.IssueReporter, astService, context.Script.ParsedScript, context.Script.RelativeScriptFilePath, context.Script.ParentFragmentProvider, context.DefaultSchemaName);
-
-    public static TableResolver Create(IGlobalAnalysisContext context, IAstService astService, IScriptModel script)
-        => new(context.IssueReporter, astService, script.ParsedScript, script.RelativeScriptFilePath, script.ParentFragmentProvider, context.DefaultSchemaName);
-
     public TableOrViewReference? Resolve(NamedTableReference tableReference)
     {
         var batch = (TSqlBatch?) tableReference
@@ -63,14 +57,14 @@ public sealed class TableResolver : ITableResolver
 
             var source = fragment switch
             {
-                JoinTableReference join => Check(join, parentCtesByName, tableReference),
+                JoinTableReference join                 => Check(join, parentCtesByName, tableReference),
                 DeleteSpecification deleteSpecification => Check(deleteSpecification, parentCtesByName, tableReference),
-                FromClause fromClause => Check(fromClause, parentCtesByName, tableReference),
-                QuerySpecification querySpecification => Check(querySpecification, parentCtesByName, tableReference),
+                FromClause fromClause                   => Check(fromClause, parentCtesByName, tableReference),
+                QuerySpecification querySpecification   => Check(querySpecification, parentCtesByName, tableReference),
                 UpdateSpecification updateSpecification => Check(updateSpecification, parentCtesByName, tableReference),
-                MergeSpecification mergeSpecification => Check(mergeSpecification, parentCtesByName, tableReference),
-                SelectStatement selectStatement => Check(selectStatement, tableReference),
-                _ => null
+                MergeSpecification mergeSpecification   => Check(mergeSpecification, parentCtesByName, tableReference),
+                SelectStatement selectStatement         => Check(selectStatement, tableReference),
+                _                                       => null
             };
 
             if (source is not null)
@@ -83,6 +77,38 @@ public sealed class TableResolver : ITableResolver
                 return null;
             }
         }
+    }
+
+    private static bool IsStatementTopmostFragment(TSqlFragment fragment)
+        => fragment
+            is SelectStatement
+            or DeleteStatement
+            or UpdateStatement
+            or InsertStatement
+            or MergeStatement;
+
+    private static Dictionary<string, CommonTableExpression> GetParentCtesByName(TSqlFragment fragement, IParentFragmentProvider parentFragmentProvider)
+    {
+        foreach (var parent in fragement.GetParents(parentFragmentProvider))
+        {
+            if (parent is not StatementWithCtesAndXmlNamespaces statementWithCtes)
+            {
+                continue;
+            }
+
+            if ((statementWithCtes.WithCtesAndXmlNamespaces?.CommonTableExpressions).IsNullOrEmpty())
+            {
+                return [];
+            }
+
+            return statementWithCtes.WithCtesAndXmlNamespaces.CommonTableExpressions
+                .ToDictionary(
+                    static a => a.ExpressionName.Value,
+                    static a => a,
+                    StringComparer.OrdinalIgnoreCase);
+        }
+
+        return [];
     }
 
     private TableOrViewReference? Check(MergeSpecification mergeSpecification, IReadOnlyDictionary<string, CommonTableExpression> parentCtesByName, NamedTableReference namedTableToResolve)
@@ -280,42 +306,10 @@ public sealed class TableResolver : ITableResolver
                || string.Equals(namedTableToResolve.Alias?.Value, table.SchemaObject.BaseIdentifier?.Value, StringComparison.OrdinalIgnoreCase);
     }
 
-    private static bool IsStatementTopmostFragment(TSqlFragment fragment)
-        => fragment
-            is SelectStatement
-            or DeleteStatement
-            or UpdateStatement
-            or InsertStatement
-            or MergeStatement;
-
     private void ReportMissingAlias(TableReference tableReference)
     {
         var currentDatabaseName = _script.TryFindCurrentDatabaseNameAtFragment(tableReference);
         var fullObjectName = tableReference.TryGetFirstClassObjectName(_defaultSchemaName, _script, _parentFragmentProvider);
         _issueReporter.Report(WellKnownDiagnosticDefinitions.MissingAlias, currentDatabaseName ?? DatabaseNames.Unknown, _relativeScriptFilePath, fullObjectName, tableReference.GetCodeRegion(), tableReference.GetSql());
-    }
-
-    private static Dictionary<string, CommonTableExpression> GetParentCtesByName(TSqlFragment fragement, IParentFragmentProvider parentFragmentProvider)
-    {
-        foreach (var parent in fragement.GetParents(parentFragmentProvider))
-        {
-            if (parent is not StatementWithCtesAndXmlNamespaces statementWithCtes)
-            {
-                continue;
-            }
-
-            if ((statementWithCtes.WithCtesAndXmlNamespaces?.CommonTableExpressions).IsNullOrEmpty())
-            {
-                return [];
-            }
-
-            return statementWithCtes.WithCtesAndXmlNamespaces.CommonTableExpressions
-                .ToDictionary(
-                    static a => a.ExpressionName.Value,
-                    static a => a,
-                    StringComparer.OrdinalIgnoreCase);
-        }
-
-        return [];
     }
 }

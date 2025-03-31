@@ -22,14 +22,16 @@ public sealed class UnnecessarySemicolonAnalyzer : IScriptAnalyzer
     }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
     private readonly IList<TSqlParserToken> _tokens;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public UnnecessarySemicolonAnalyzer(IScriptAnalysisContext context)
+    public UnnecessarySemicolonAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
         _tokens = context.Script.ParsedScript.ScriptTokenStream;
     }
@@ -66,7 +68,7 @@ public sealed class UnnecessarySemicolonAnalyzer : IScriptAnalyzer
         var databaseName = fragment is null
             ? _script.DatabaseName
             : _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(fragment) ?? _script.DatabaseName;
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, token.GetCodeRegion());
+        _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, token.GetCodeRegion());
     }
 
     private bool DoesNextStatementRequirePrecedingSemiColon(int tokenIndex)

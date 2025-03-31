@@ -8,14 +8,16 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Naming;
 public sealed class IdentifierCasingAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
     private readonly Aj5057Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public IdentifierCasingAnalyzer(IScriptAnalysisContext context, Aj5057Settings settings)
+    public IdentifierCasingAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter, Aj5057Settings settings)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
         _settings = settings;
     }
@@ -55,7 +57,7 @@ public sealed class IdentifierCasingAnalyzer : IScriptAnalyzer
             .TryGetSqlFragmentAtPosition(token)
             ?.TryGetFirstClassObjectName(_context, _script);
 
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default,
+        _issueReporter.Report(DiagnosticDefinitions.Default,
             databaseName,
             _script.RelativeScriptFilePath,
             fullObjectName,

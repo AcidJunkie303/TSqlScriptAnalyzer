@@ -98,54 +98,25 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
                 IReadOnlyList<IScriptModel> (a) => a.ToList(),
                 StringComparer.OrdinalIgnoreCase);
 
+        var issueReporter = new IssueReporter();
         var analysisContext = new ScriptAnalysisContext(
             _defaultSchemaName,
             allScripts,
             allScripts[0],
             allScriptsByDatabaseName,
-            new IssueReporter(),
-            NullLogger.Instance,
             FrozenSet<string>.Empty);
 
-        var host = CreateHost(analysisContext);
+        var host = CreateHost(analysisContext, issueReporter);
         var analyzer = host.Services.GetRequiredService<IScriptAnalyzer>();
 
         return new ScriptAnalyzerTester(
             analysisContext,
             analyzer,
             expectedIssues,
-            _testOutputHelper
+            _testOutputHelper,
+            issueReporter
         );
     }
-
-    private IHost CreateHost(ScriptAnalysisContext analysisContext)
-        => Host
-            .CreateDefaultBuilder()
-            .ConfigureServices((_, services) =>
-            {
-                foreach (var settings in _settings)
-                {
-                    services.AddSingleton(settings.GetType(), settings);
-                }
-
-                services.AddSingleton<IScriptAnalyzer>(sp => ActivatorUtilities.CreateInstance<TAnalyzer>(sp, analysisContext));
-                services.AddSingleton(typeof(ILogger<>), typeof(NullLogger<>));
-                services.AddSingleton<ILoggerFactory>(NullLoggerFactory.Instance);
-                services.AddSingleton<ITableResolverFactory, TableResolverFactory>();
-                services.AddSingleton<IColumnResolverFactory, ColumnResolverFactory>();
-                services.AddSingleton<IAstService>(new AstService(AstServiceSettings.Default));
-
-                foreach (var service in _services)
-                {
-                    services.AddSingleton(service.InterfaceType, service.Implementation);
-                }
-
-                var databasesByName = new DatabaseObjectExtractor(new IssueReporter())
-                    .Extract(analysisContext.Scripts, analysisContext.DefaultSchemaName);
-
-                services.AddSingleton<IObjectProvider>(new ObjectProvider(databasesByName));
-            })
-            .Build();
 
     private static ScriptModel ParseScript(string relativeScriptFilePath, string scriptContents, string databaseName)
     {
@@ -170,4 +141,34 @@ public sealed class ScriptAnalyzerTesterBuilder<TAnalyzer>
             diagnosticSuppressions.ToList()
         );
     }
+
+    private IHost CreateHost(ScriptAnalysisContext analysisContext, IIssueReporter issueReporter)
+        => Host
+            .CreateDefaultBuilder()
+            .ConfigureServices((_, services) =>
+            {
+                foreach (var settings in _settings)
+                {
+                    services.AddSingleton(settings.GetType(), settings);
+                }
+
+                services.AddSingleton<IScriptAnalyzer>(sp => ActivatorUtilities.CreateInstance<TAnalyzer>(sp, analysisContext));
+                services.AddSingleton(typeof(ILogger<>), typeof(NullLogger<>));
+                services.AddSingleton<ILoggerFactory>(NullLoggerFactory.Instance);
+                services.AddSingleton<ITableResolverFactory, TableResolverFactory>();
+                services.AddSingleton<IColumnResolverFactory, ColumnResolverFactory>();
+                services.AddSingleton<IAstService>(new AstService(AstServiceSettings.Default));
+                services.AddSingleton(issueReporter);
+
+                foreach (var service in _services)
+                {
+                    services.AddSingleton(service.InterfaceType, service.Implementation);
+                }
+
+                var databasesByName = new DatabaseObjectExtractor(new IssueReporter())
+                    .Extract(analysisContext.Scripts, analysisContext.DefaultSchemaName);
+
+                services.AddSingleton<IObjectProvider>(new ObjectProvider(databasesByName));
+            })
+            .Build();
 }

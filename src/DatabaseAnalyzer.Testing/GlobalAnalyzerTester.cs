@@ -9,6 +9,7 @@ public sealed class GlobalAnalyzerTester
 {
     private readonly IGlobalAnalysisContext _analysisContext;
     private readonly IGlobalAnalyzer _analyzer;
+    private readonly IIssueReporter _issueReporter;
 
     public IReadOnlyList<IScriptModel> Scripts { get; }
     public IReadOnlyList<IIssue> ExpectedIssues { get; }
@@ -17,10 +18,12 @@ public sealed class GlobalAnalyzerTester
         IGlobalAnalysisContext analysisContext,
         IGlobalAnalyzer analyzer,
         IReadOnlyList<IScriptModel> scripts,
-        IReadOnlyList<IIssue> expectedIssues)
+        IReadOnlyList<IIssue> expectedIssues,
+        IIssueReporter issueReporter)
     {
         _analysisContext = analysisContext;
         _analyzer = analyzer;
+        _issueReporter = issueReporter;
         Scripts = scripts;
         ExpectedIssues = expectedIssues;
     }
@@ -35,7 +38,7 @@ public sealed class GlobalAnalyzerTester
 
         _analyzer.Analyze();
 
-        var reportedIssues = _analysisContext.IssueReporter.Issues;
+        var reportedIssues = _issueReporter.Issues;
 
         // sometimes the order is not the same, therefore we cannot use BeEquivalentTo()
         reportedIssues.Should().HaveCount(ExpectedIssues.Count);

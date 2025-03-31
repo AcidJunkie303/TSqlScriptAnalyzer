@@ -8,14 +8,16 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 public sealed class MissingEmptyLineAroundGoStatementAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
     private readonly Aj5045Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public MissingEmptyLineAroundGoStatementAnalyzer(IScriptAnalysisContext context, Aj5045Settings settings)
+    public MissingEmptyLineAroundGoStatementAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter, Aj5045Settings settings)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
         _settings = settings;
     }
@@ -57,12 +59,12 @@ public sealed class MissingEmptyLineAroundGoStatementAnalyzer : IScriptAnalyzer
 
         if (missingBefore)
         {
-            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion, "before");
+            _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion, "before");
         }
 
         if (missingAfter)
         {
-            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion, "after");
+            _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion, "after");
         }
 
         bool IsMissingEmptyLineAfter()

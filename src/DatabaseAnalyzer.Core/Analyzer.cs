@@ -112,8 +112,6 @@ internal sealed class Analyzer : IAnalyzer
                         _applicationSettings.DefaultSchemaName,
                         _scripts,
                         _scriptsByDatabaseName,
-                        _issueReporter,
-                        _logger,
                         _applicationSettings.Diagnostics.DisabledDiagnostics
                     );
 
@@ -128,8 +126,6 @@ internal sealed class Analyzer : IAnalyzer
                         _scripts,
                         script,
                         _scriptsByDatabaseName,
-                        _issueReporter,
-                        _logger,
                         _applicationSettings.Diagnostics.DisabledDiagnostics
                     );
 

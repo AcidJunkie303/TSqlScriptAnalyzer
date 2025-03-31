@@ -5,14 +5,14 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 
 public sealed class FileMustEndWithEmptyLineAnalyzer : IScriptAnalyzer
 {
-    private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public FileMustEndWithEmptyLineAnalyzer(IScriptAnalysisContext context)
+    public FileMustEndWithEmptyLineAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter)
     {
-        _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
     }
 
@@ -31,7 +31,7 @@ public sealed class FileMustEndWithEmptyLineAnalyzer : IScriptAnalyzer
 
         var codeRegion = CodeRegion.Create(lastToken.GetCodeLocation(), lastToken.GetCodeRegion().End);
         var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtLocation(lastToken.Line, lastToken.Column) ?? DatabaseNames.Unknown;
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName: null, codeRegion);
+        _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName: null, codeRegion);
     }
 
     private static class DiagnosticDefinitions

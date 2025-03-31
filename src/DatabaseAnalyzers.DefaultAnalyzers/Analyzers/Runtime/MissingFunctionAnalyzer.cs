@@ -11,14 +11,16 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime;
 public sealed class MissingFunctionAnalyzer : IGlobalAnalyzer
 {
     private readonly IGlobalAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IObjectProvider _objectProvider;
     private readonly Aj5044Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [SharedDiagnosticDefinitions.MissingObject];
 
-    public MissingFunctionAnalyzer(IGlobalAnalysisContext context, Aj5044Settings settings, IObjectProvider objectProvider)
+    public MissingFunctionAnalyzer(IGlobalAnalysisContext context, IIssueReporter issueReporter, Aj5044Settings settings, IObjectProvider objectProvider)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _settings = settings;
         _objectProvider = objectProvider;
     }
@@ -37,62 +39,6 @@ public sealed class MissingFunctionAnalyzer : IGlobalAnalyzer
                 AnalyzeCall(script, _objectProvider.DatabasesByName, reference);
             }
         }
-    }
-
-    private void AnalyzeCall(IScriptModel script, IReadOnlyDictionary<string, DatabaseInformation> databasesByName, FunctionCall call)
-    {
-        if (call.CallTarget is not MultiPartIdentifierCallTarget multiPartIdentifierCallTarget)
-        {
-            return;
-        }
-
-        var (_, _, databaseName, schemaName) = multiPartIdentifierCallTarget.MultiPartIdentifier.GetParts();
-
-        databaseName ??= script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(call) ?? DatabaseNames.Unknown;
-        schemaName ??= _context.DefaultSchemaName;
-
-        var functionName = call.FunctionName.Value;
-        AnalyzeCall(script, databasesByName, databaseName, schemaName, functionName, call);
-    }
-
-    private void AnalyzeCall(IScriptModel script, IReadOnlyDictionary<string, DatabaseInformation> databasesByName, SchemaObjectFunctionTableReference reference)
-    {
-        var databaseName = reference.SchemaObject?.DatabaseIdentifier?.Value;
-        var schemaName = reference.SchemaObject?.SchemaIdentifier?.Value ?? _context.DefaultSchemaName;
-        var objectName = reference.SchemaObject?.BaseIdentifier?.Value;
-
-        if (objectName.IsNullOrWhiteSpace())
-        {
-            return;
-        }
-
-        AnalyzeCall(script, databasesByName, databaseName, schemaName, objectName, reference);
-    }
-
-    [SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "private method")]
-    private void AnalyzeCall(IScriptModel script, IReadOnlyDictionary<string, DatabaseInformation> databasesByName, string? databaseName, string schemaName, string functionName, TSqlFragment reference)
-    {
-        databaseName ??= script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(reference) ?? DatabaseNames.Unknown;
-
-        if (DoesFunctionOrSynonymExist(databasesByName, databaseName, schemaName, functionName))
-        {
-            return;
-        }
-
-        var fullFunctionName = $"{databaseName}.{schemaName}.{functionName}";
-        if (IsIgnored(fullFunctionName))
-        {
-            return;
-        }
-
-        if (IsXmlQuery(script, reference))
-        {
-            return;
-        }
-
-        var fullObjectName = reference.TryGetFirstClassObjectName(_context, script);
-        _context.IssueReporter.Report(SharedDiagnosticDefinitions.MissingObject, databaseName, script.RelativeScriptFilePath, fullObjectName, reference.GetCodeRegion(),
-            "function", fullFunctionName);
     }
 
     private static bool IsXmlQuery(IScriptModel script, TSqlFragment fragment)
@@ -186,6 +132,62 @@ public sealed class MissingFunctionAnalyzer : IGlobalAnalyzer
 
         return schema.FunctionsByName.ContainsKey(functionName)
                || schema.SynonymsByName.ContainsKey(functionName);
+    }
+
+    private void AnalyzeCall(IScriptModel script, IReadOnlyDictionary<string, DatabaseInformation> databasesByName, FunctionCall call)
+    {
+        if (call.CallTarget is not MultiPartIdentifierCallTarget multiPartIdentifierCallTarget)
+        {
+            return;
+        }
+
+        var (_, _, databaseName, schemaName) = multiPartIdentifierCallTarget.MultiPartIdentifier.GetParts();
+
+        databaseName ??= script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(call) ?? DatabaseNames.Unknown;
+        schemaName ??= _context.DefaultSchemaName;
+
+        var functionName = call.FunctionName.Value;
+        AnalyzeCall(script, databasesByName, databaseName, schemaName, functionName, call);
+    }
+
+    private void AnalyzeCall(IScriptModel script, IReadOnlyDictionary<string, DatabaseInformation> databasesByName, SchemaObjectFunctionTableReference reference)
+    {
+        var databaseName = reference.SchemaObject?.DatabaseIdentifier?.Value;
+        var schemaName = reference.SchemaObject?.SchemaIdentifier?.Value ?? _context.DefaultSchemaName;
+        var objectName = reference.SchemaObject?.BaseIdentifier?.Value;
+
+        if (objectName.IsNullOrWhiteSpace())
+        {
+            return;
+        }
+
+        AnalyzeCall(script, databasesByName, databaseName, schemaName, objectName, reference);
+    }
+
+    [SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "private method")]
+    private void AnalyzeCall(IScriptModel script, IReadOnlyDictionary<string, DatabaseInformation> databasesByName, string? databaseName, string schemaName, string functionName, TSqlFragment reference)
+    {
+        databaseName ??= script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(reference) ?? DatabaseNames.Unknown;
+
+        if (DoesFunctionOrSynonymExist(databasesByName, databaseName, schemaName, functionName))
+        {
+            return;
+        }
+
+        var fullFunctionName = $"{databaseName}.{schemaName}.{functionName}";
+        if (IsIgnored(fullFunctionName))
+        {
+            return;
+        }
+
+        if (IsXmlQuery(script, reference))
+        {
+            return;
+        }
+
+        var fullObjectName = reference.TryGetFirstClassObjectName(_context, script);
+        _issueReporter.Report(SharedDiagnosticDefinitions.MissingObject, databaseName, script.RelativeScriptFilePath, fullObjectName, reference.GetCodeRegion(),
+            "function", fullFunctionName);
     }
 
     private bool IsIgnored(string fullObjectName) => _settings.IgnoredObjectNamePatterns.Count != 0 && _settings.IgnoredObjectNamePatterns.Any(a => a.IsMatch(fullObjectName));

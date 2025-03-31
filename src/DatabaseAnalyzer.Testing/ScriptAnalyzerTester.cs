@@ -11,6 +11,7 @@ public sealed class ScriptAnalyzerTester
 {
     private readonly IScriptAnalyzer _analyzer;
     private readonly ITestOutputHelper? _testOutputHelper;
+    private readonly IIssueReporter _issueReporter;
     public IScriptAnalysisContext AnalysisContext { get; }
     public IScriptModel MainScript { get; }
     public IReadOnlyList<IIssue> ExpectedIssues { get; }
@@ -19,11 +20,13 @@ public sealed class ScriptAnalyzerTester
         IScriptAnalysisContext analysisContext,
         IScriptAnalyzer analyzer,
         IReadOnlyList<IIssue> expectedIssues,
-        ITestOutputHelper? testOutputHelper)
+        ITestOutputHelper? testOutputHelper,
+        IIssueReporter issueReporter)
     {
         AnalysisContext = analysisContext;
         _analyzer = analyzer;
         _testOutputHelper = testOutputHelper;
+        _issueReporter = issueReporter;
         MainScript = analysisContext.Scripts[0];
         ExpectedIssues = expectedIssues;
     }
@@ -38,7 +41,7 @@ public sealed class ScriptAnalyzerTester
 
         _analyzer.AnalyzeScript();
 
-        var reportedIssues = AnalysisContext.IssueReporter.Issues;
+        var reportedIssues = _issueReporter.Issues;
         WriteIssues(reportedIssues);
 
         // sometimes the order is not the same, therefore we cannot use BeEquivalentTo()
