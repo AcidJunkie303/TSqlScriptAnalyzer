@@ -9,13 +9,15 @@ public sealed class ObjectNameReferenceNameCasingAnalyzer : IScriptAnalyzer
 {
     private readonly IColumnResolverFactory _columnResolverFactory;
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IObjectProvider _objectProvider;
     private readonly IScriptModel _script;
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public ObjectNameReferenceNameCasingAnalyzer(IScriptAnalysisContext context, IObjectProvider objectProvider, IColumnResolverFactory columnResolverFactory)
+    public ObjectNameReferenceNameCasingAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter, IObjectProvider objectProvider, IColumnResolverFactory columnResolverFactory)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _objectProvider = objectProvider;
         _columnResolverFactory = columnResolverFactory;
         _script = context.Script;
@@ -147,7 +149,7 @@ public sealed class ObjectNameReferenceNameCasingAnalyzer : IScriptAnalyzer
 
         var currentDatabaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(fragment);
         var fullObjectName = fragment.TryGetFirstClassObjectName(_context.DefaultSchemaName, _script.ParsedScript, _script.ParentFragmentProvider);
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, currentDatabaseName ?? DatabaseNames.Unknown, _script.RelativeScriptFilePath, fullObjectName, fragment.GetCodeRegion(),
+        _issueReporter.Report(DiagnosticDefinitions.Default, currentDatabaseName ?? DatabaseNames.Unknown, _script.RelativeScriptFilePath, fullObjectName, fragment.GetCodeRegion(),
             objectTypeName, usedName, realName, fullNameGetter());
     }
 

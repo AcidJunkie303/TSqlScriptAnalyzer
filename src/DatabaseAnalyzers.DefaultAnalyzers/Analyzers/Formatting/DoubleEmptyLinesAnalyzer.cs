@@ -7,13 +7,15 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 public sealed class DoubleEmptyLinesAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public DoubleEmptyLinesAnalyzer(IScriptAnalysisContext context)
+    public DoubleEmptyLinesAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
     }
 
@@ -49,7 +51,7 @@ public sealed class DoubleEmptyLinesAnalyzer : IScriptAnalyzer
                 ?.TryGetFirstClassObjectName(_context, _script);
 
             var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtLocation(block[0].Line, block[0].Column) ?? DatabaseNames.Unknown;
-            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion);
+            _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion);
         }
     }
 

@@ -8,15 +8,15 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
 
 public sealed class MissingPrimaryKeyAnalyzer : IGlobalAnalyzer
 {
-    private readonly IGlobalAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IObjectProvider _objectProvider;
     private readonly Aj5026Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public MissingPrimaryKeyAnalyzer(IGlobalAnalysisContext context, Aj5026Settings settings, IObjectProvider objectProvider)
+    public MissingPrimaryKeyAnalyzer(IGlobalAnalysisContext _, IIssueReporter issueReporter, Aj5026Settings settings, IObjectProvider objectProvider)
     {
-        _context = context;
+        _issueReporter = issueReporter;
         _settings = settings;
         _objectProvider = objectProvider;
     }
@@ -51,7 +51,7 @@ public sealed class MissingPrimaryKeyAnalyzer : IGlobalAnalyzer
         }
 
         var databaseName = table.ScriptModel.ParsedScript.TryFindCurrentDatabaseNameAtFragment(table.CreationStatement) ?? DatabaseNames.Unknown;
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, table.ScriptModel.RelativeScriptFilePath, table.FullName, table.CreationStatement.GetCodeRegion(), table.FullName);
+        _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, table.ScriptModel.RelativeScriptFilePath, table.FullName, table.CreationStatement.GetCodeRegion(), table.FullName);
     }
 
     private bool IsTableIgnored(TableInformation table)

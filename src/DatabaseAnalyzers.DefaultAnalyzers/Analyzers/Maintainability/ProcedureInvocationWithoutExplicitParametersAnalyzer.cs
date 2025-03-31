@@ -8,14 +8,16 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Maintainability;
 public sealed class ProcedureInvocationWithoutExplicitParametersAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
     private readonly Aj5059Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public ProcedureInvocationWithoutExplicitParametersAnalyzer(IScriptAnalysisContext context, Aj5059Settings settings)
+    public ProcedureInvocationWithoutExplicitParametersAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter, Aj5059Settings settings)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
         _settings = settings;
     }
@@ -27,6 +29,11 @@ public sealed class ProcedureInvocationWithoutExplicitParametersAnalyzer : IScri
             AnalyzeProcedureCall(procedureCall);
         }
     }
+
+    private static bool IsObjectNameIgnored(Aj5059Settings settings, string objectName)
+        => settings
+            .IgnoredProcedureNamePatterns
+            .Any(a => a.IsMatch(objectName));
 
     private void AnalyzeProcedureCall(ExecutableProcedureReference procedureCall)
     {
@@ -61,13 +68,8 @@ public sealed class ProcedureInvocationWithoutExplicitParametersAnalyzer : IScri
 
         var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(procedureCall) ?? DatabaseNames.Unknown;
         var fullObjectName = procedureCall.TryGetFirstClassObjectName(_context, _script);
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, procedureCall.GetCodeRegion(), twoPartProcedureName);
+        _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, procedureCall.GetCodeRegion(), twoPartProcedureName);
     }
-
-    private static bool IsObjectNameIgnored(Aj5059Settings settings, string objectName)
-        => settings
-            .IgnoredProcedureNamePatterns
-            .Any(a => a.IsMatch(objectName));
 
     private static class DiagnosticDefinitions
     {

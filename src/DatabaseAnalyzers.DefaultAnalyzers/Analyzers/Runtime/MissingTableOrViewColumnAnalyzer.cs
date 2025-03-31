@@ -12,15 +12,17 @@ public sealed class MissingTableOrViewColumnAnalyzer : IGlobalAnalyzer
     private readonly IAstService _astService;
     private readonly IColumnResolverFactory _columnResolverFactory;
     private readonly IGlobalAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IObjectProvider _objectProvider;
     private readonly ParallelOptions _parallelOptions;
     private readonly Aj5044Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [SharedDiagnosticDefinitions.MissingObject];
 
-    public MissingTableOrViewColumnAnalyzer(IGlobalAnalysisContext context, Aj5044Settings settings, IAstService astService, IObjectProvider objectProvider, IColumnResolverFactory columnResolverFactory, ParallelOptions parallelOptions)
+    public MissingTableOrViewColumnAnalyzer(IGlobalAnalysisContext context, IIssueReporter issueReporter, Aj5044Settings settings, IAstService astService, IObjectProvider objectProvider, IColumnResolverFactory columnResolverFactory, ParallelOptions parallelOptions)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _settings = settings;
         _astService = astService;
         _objectProvider = objectProvider;
@@ -81,7 +83,7 @@ public sealed class MissingTableOrViewColumnAnalyzer : IGlobalAnalyzer
 
         var fullObjectName = columnReference.TryGetFirstClassObjectName(_context, script);
 
-        _context.IssueReporter.Report(SharedDiagnosticDefinitions.MissingObject, resolvedColumn.DatabaseName, script.RelativeScriptFilePath, fullObjectName, columnReference.GetCodeRegion(), "column", resolvedColumn.FullName);
+        _issueReporter.Report(SharedDiagnosticDefinitions.MissingObject, resolvedColumn.DatabaseName, script.RelativeScriptFilePath, fullObjectName, columnReference.GetCodeRegion(), "column", resolvedColumn.FullName);
     }
 
     private bool DoesColumnExist(string databaseName, string schemaName, string tableOrViewName, string columnName)

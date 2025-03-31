@@ -8,14 +8,16 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Naming;
 public sealed class NameQuotingAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
     private readonly Aj5038Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public NameQuotingAnalyzer(IScriptAnalysisContext context, Aj5038Settings settings)
+    public NameQuotingAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter, Aj5038Settings settings)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
         _settings = settings;
     }
@@ -30,6 +32,24 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
 
         // TODO: Identifiers in object creation (lots of types to check)
         // TODO: Schema name references. Kinda hard...
+    }
+
+    private static string? GetPolicyCompliantIdentifier(Identifier identifier, Aj5038SettingsNameQuotingPolicy quotingPolicy)
+    {
+        if (identifier.Value.IsNullOrWhiteSpace())
+        {
+            return null;
+        }
+
+        return quotingPolicy switch
+        {
+            Aj5038SettingsNameQuotingPolicy.Undefined              => null,
+            Aj5038SettingsNameQuotingPolicy.Required               => identifier.QuoteType is QuoteType.DoubleQuote or QuoteType.SquareBracket ? null : $"[{identifier.Value}]",
+            Aj5038SettingsNameQuotingPolicy.DoubleQuotesRequired   => identifier.QuoteType == QuoteType.DoubleQuote ? null : $"\"{identifier.Value}\"",
+            Aj5038SettingsNameQuotingPolicy.SquareBracketsRequired => identifier.QuoteType == QuoteType.SquareBracket ? null : $"[{identifier.Value}]",
+            Aj5038SettingsNameQuotingPolicy.NotAllowed             => identifier.QuoteType == QuoteType.NotQuoted ? null : identifier.Value,
+            _                                                      => throw new ArgumentOutOfRangeException(nameof(quotingPolicy), quotingPolicy, $"{nameof(Aj5038SettingsNameQuotingPolicy)}.{quotingPolicy} is not handled")
+        };
     }
 
     private void AnalyzeDataTypeReferences(Aj5038SettingsNameQuotingPolicy policy, string configurationKeyName)
@@ -174,31 +194,13 @@ public sealed class NameQuotingAnalyzer : IScriptAnalyzer
 
             var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(statement) ?? DatabaseNames.Unknown;
             var fullObjectName = statement.TryGetFirstClassObjectName(_context, _script);
-            _context.IssueReporter.Report(DiagnosticDefinitions.Default,
+            _issueReporter.Report(DiagnosticDefinitions.Default,
                 databaseName,
                 _script.RelativeScriptFilePath,
                 fullObjectName,
                 identifier.GetCodeRegion(),
                 typeName, identifier.GetSql(), shouldBeWrittenAs, configurationKeyName);
         }
-    }
-
-    private static string? GetPolicyCompliantIdentifier(Identifier identifier, Aj5038SettingsNameQuotingPolicy quotingPolicy)
-    {
-        if (identifier.Value.IsNullOrWhiteSpace())
-        {
-            return null;
-        }
-
-        return quotingPolicy switch
-        {
-            Aj5038SettingsNameQuotingPolicy.Undefined              => null,
-            Aj5038SettingsNameQuotingPolicy.Required               => identifier.QuoteType is QuoteType.DoubleQuote or QuoteType.SquareBracket ? null : $"[{identifier.Value}]",
-            Aj5038SettingsNameQuotingPolicy.DoubleQuotesRequired   => identifier.QuoteType == QuoteType.DoubleQuote ? null : $"\"{identifier.Value}\"",
-            Aj5038SettingsNameQuotingPolicy.SquareBracketsRequired => identifier.QuoteType == QuoteType.SquareBracket ? null : $"[{identifier.Value}]",
-            Aj5038SettingsNameQuotingPolicy.NotAllowed             => identifier.QuoteType == QuoteType.NotQuoted ? null : identifier.Value,
-            _                                                      => throw new ArgumentOutOfRangeException(nameof(quotingPolicy), quotingPolicy, $"{nameof(Aj5038SettingsNameQuotingPolicy)}.{quotingPolicy} is not handled")
-        };
     }
 
     private static class DiagnosticDefinitions

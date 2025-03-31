@@ -105,7 +105,7 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
             NullLogger.Instance,
             FrozenSet<string>.Empty);
 
-        var host = CreateHost(analysisContext);
+        var host = CreateHost(analysisContext, issueReporter);
         var analyzer = host.Services.GetRequiredService<IGlobalAnalyzer>();
 
         return new GlobalAnalyzerTester(
@@ -135,7 +135,7 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
         );
     }
 
-    private IHost CreateHost(GlobalAnalysisContext analysisContext)
+    private IHost CreateHost(GlobalAnalysisContext analysisContext, IIssueReporter issueReporter)
         => Host
             .CreateDefaultBuilder()
             .ConfigureServices((_, services) =>
@@ -151,6 +151,7 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
                 services.AddSingleton<ITableResolverFactory, TableResolverFactory>();
                 services.AddSingleton<IColumnResolverFactory, ColumnResolverFactory>();
                 services.AddSingleton<IAstService>(new AstService(AstServiceSettings.Default));
+                services.AddSingleton(issueReporter);
                 services.AddSingleton(new ParallelOptions
                 {
 #if DEBUG

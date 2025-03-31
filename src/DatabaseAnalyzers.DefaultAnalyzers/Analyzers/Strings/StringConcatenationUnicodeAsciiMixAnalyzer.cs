@@ -7,13 +7,15 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Strings;
 public sealed class StringConcatenationUnicodeAsciiMixAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public StringConcatenationUnicodeAsciiMixAnalyzer(IScriptAnalysisContext context)
+    public StringConcatenationUnicodeAsciiMixAnalyzer(IScriptAnalysisContext context,IIssueReporter issueReporter)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
     }
 
@@ -37,7 +39,7 @@ public sealed class StringConcatenationUnicodeAsciiMixAnalyzer : IScriptAnalyzer
 
         var fullObjectName = expression.TryGetFirstClassObjectName(_context, _script);
         var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(expression) ?? DatabaseNames.Unknown;
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, expression.GetCodeRegion());
+        _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, expression.GetCodeRegion());
     }
 
     private sealed class Visitor : TSqlFragmentVisitor
@@ -56,6 +58,18 @@ public sealed class StringConcatenationUnicodeAsciiMixAnalyzer : IScriptAnalyzer
             StringTypesesFound |= GetStringTypeFromExpression(node.FirstExpression) | GetStringTypeFromExpression(node.SecondExpression);
 
             base.Visit(node);
+        }
+
+        private static StringTypes GetStringType(DataTypeReference dataType)
+        {
+            if (dataType.IsUnicodeCharOrString())
+            {
+                return StringTypes.Unicode;
+            }
+
+            return dataType.IsAsciiCharOrString()
+                ? StringTypes.Ascii
+                : StringTypes.None;
         }
 
         private StringTypes GetStringTypeFromExpression(ScalarExpression expression)
@@ -77,26 +91,6 @@ public sealed class StringConcatenationUnicodeAsciiMixAnalyzer : IScriptAnalyzer
                 ? StringTypes.None
                 : GetStringType(dataType);
         }
-
-        private static StringTypes GetStringType(DataTypeReference dataType)
-        {
-            if (dataType.IsUnicodeCharOrString())
-            {
-                return StringTypes.Unicode;
-            }
-
-            return dataType.IsAsciiCharOrString()
-                ? StringTypes.Ascii
-                : StringTypes.None;
-        }
-    }
-
-    [Flags]
-    private enum StringTypes
-    {
-        None = 0,
-        Unicode = 1,
-        Ascii = 2
     }
 
     private static class DiagnosticDefinitions
@@ -110,5 +104,13 @@ public sealed class StringConcatenationUnicodeAsciiMixAnalyzer : IScriptAnalyzer
             [],
             UrlPatterns.DefaultDiagnosticHelp
         );
+    }
+
+    [Flags]
+    private enum StringTypes
+    {
+        None = 0,
+        Unicode = 1,
+        Ascii = 2
     }
 }

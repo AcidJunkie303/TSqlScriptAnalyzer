@@ -7,13 +7,15 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 public sealed class IntoSingleLineSqueezingAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public IntoSingleLineSqueezingAnalyzer(IScriptAnalysisContext context)
+    public IntoSingleLineSqueezingAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
     }
 
@@ -43,6 +45,17 @@ public sealed class IntoSingleLineSqueezingAnalyzer : IScriptAnalyzer
             }
         }
     }
+
+    private static bool ContainsMultipleItemsOnTheSameLine<T>(IList<T> fragments)
+        where T : TSqlFragment
+        => fragments
+#if NET_9
+            .CountBy(static a => a.StartLine)
+            .Any(static a => a.Value > 1);
+#else
+            .GroupBy(static a => a.StartLine)
+            .Any(static a => a.Count() > 1);
+#endif
 
     private void Analyze(SelectStatement selectStatement)
     {
@@ -78,20 +91,9 @@ public sealed class IntoSingleLineSqueezingAnalyzer : IScriptAnalyzer
         var codeRegion = fragments.CreateCodeRegionSpan();
         var fullObjectName = fragments[0].TryGetFirstClassObjectName(_context, _script);
         var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(fragments[0]) ?? DatabaseNames.Unknown;
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion,
+        _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion,
             objectTypeName);
     }
-
-    private static bool ContainsMultipleItemsOnTheSameLine<T>(IList<T> fragments)
-        where T : TSqlFragment
-        => fragments
-#if NET_9
-            .CountBy(static a => a.StartLine)
-            .Any(static a => a.Value > 1);
-#else
-            .GroupBy(static a => a.StartLine)
-            .Any(static a => a.Count() > 1);
-#endif
 
     private static class DiagnosticDefinitions
     {

@@ -10,15 +10,17 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Maintainability;
 public sealed class ProcedureInvocationWithMissingParameterValuesAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IObjectProvider _objectProvider;
     private readonly IScriptModel _script;
     private readonly Aj5062Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public ProcedureInvocationWithMissingParameterValuesAnalyzer(IScriptAnalysisContext context, IObjectProvider objectProvider, Aj5062Settings settings)
+    public ProcedureInvocationWithMissingParameterValuesAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter, IObjectProvider objectProvider, Aj5062Settings settings)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _objectProvider = objectProvider;
         _script = context.Script;
         _settings = settings;
@@ -99,7 +101,7 @@ public sealed class ProcedureInvocationWithMissingParameterValuesAnalyzer : IScr
         }
 
         var fullObjectName = procedureCall.TryGetFirstClassObjectName(_context, _script);
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, procedureCall.GetCodeRegion(),
+        _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, procedureCall.GetCodeRegion(),
             $"{databaseName}.{schemaName}.{pureProcedureName}", parametersToReport.StringJoin(", "));
     }
 

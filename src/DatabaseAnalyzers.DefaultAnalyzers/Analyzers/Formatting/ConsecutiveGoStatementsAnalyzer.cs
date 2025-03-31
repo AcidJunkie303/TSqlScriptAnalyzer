@@ -7,13 +7,15 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 public sealed class ConsecutiveGoStatementsAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public ConsecutiveGoStatementsAnalyzer(IScriptAnalysisContext context)
+    public ConsecutiveGoStatementsAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
     }
 
@@ -30,6 +32,9 @@ public sealed class ConsecutiveGoStatementsAnalyzer : IScriptAnalyzer
             AnalyzeToken(token, i);
         }
     }
+
+    private static bool IsGoOrWhiteSpaceOrCommentToken(TSqlParserToken token)
+        => token.TokenType is TSqlTokenType.Go or TSqlTokenType.WhiteSpace or TSqlTokenType.MultilineComment or TSqlTokenType.SingleLineComment;
 
     private void AnalyzeToken(TSqlParserToken goStatementToken, int tokenIndex)
     {
@@ -56,11 +61,8 @@ public sealed class ConsecutiveGoStatementsAnalyzer : IScriptAnalyzer
             .TryGetSqlFragmentAtPosition(goStatementToken)
             ?.TryGetFirstClassObjectName(_context, _script);
 
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion);
+        _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion);
     }
-
-    private static bool IsGoOrWhiteSpaceOrCommentToken(TSqlParserToken token)
-        => token.TokenType is TSqlTokenType.Go or TSqlTokenType.WhiteSpace or TSqlTokenType.MultilineComment or TSqlTokenType.SingleLineComment;
 
     private static class DiagnosticDefinitions
     {

@@ -8,14 +8,16 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Maintainability;
 public sealed class ObjectInvocationWithoutSchemaNameAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
     private readonly Aj5049Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public ObjectInvocationWithoutSchemaNameAnalyzer(IScriptAnalysisContext context, Aj5049Settings settings)
+    public ObjectInvocationWithoutSchemaNameAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter, Aj5049Settings settings)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
         _settings = settings;
     }
@@ -101,7 +103,7 @@ public sealed class ObjectInvocationWithoutSchemaNameAnalyzer : IScriptAnalyzer
     {
         var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(invocation) ?? DatabaseNames.Unknown;
         var fullObjectName = invocation.TryGetFirstClassObjectName(_context, _script);
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, invocation.GetCodeRegion(), objectTypeName, objectName);
+        _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, invocation.GetCodeRegion(), objectTypeName, objectName);
     }
 
     private static class DiagnosticDefinitions

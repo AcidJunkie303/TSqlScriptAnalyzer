@@ -8,14 +8,16 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 public sealed class StatementsMustBeginOnNewLineAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
     private readonly Aj5023Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public StatementsMustBeginOnNewLineAnalyzer(IScriptAnalysisContext context, Aj5023Settings settings)
+    public StatementsMustBeginOnNewLineAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter, Aj5023Settings settings)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
         _settings = settings;
     }
@@ -62,7 +64,7 @@ public sealed class StatementsMustBeginOnNewLineAnalyzer : IScriptAnalyzer
 
             var fullObjectName = statement.TryGetFirstClassObjectName(_context, _script);
             var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(statement) ?? DatabaseNames.Unknown;
-            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, statement.GetCodeRegion());
+            _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, statement.GetCodeRegion());
 
             return;
         }

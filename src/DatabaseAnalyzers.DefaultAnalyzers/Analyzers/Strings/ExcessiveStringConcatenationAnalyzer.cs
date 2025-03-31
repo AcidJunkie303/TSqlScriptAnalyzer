@@ -8,14 +8,16 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Strings;
 public sealed class ExcessiveStringConcatenationAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
     private readonly Aj5001Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public ExcessiveStringConcatenationAnalyzer(IScriptAnalysisContext context, Aj5001Settings settings)
+    public ExcessiveStringConcatenationAnalyzer(IScriptAnalysisContext context,IIssueReporter issueReporter, Aj5001Settings settings)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
         _settings = settings;
     }
@@ -45,7 +47,7 @@ public sealed class ExcessiveStringConcatenationAnalyzer : IScriptAnalyzer
 
         var fullObjectName = expression.TryGetFirstClassObjectName(_context, _script);
         var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(expression) ?? DatabaseNames.Unknown;
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, expression.GetCodeRegion(), _settings.MaxAllowedConcatenations);
+        _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, expression.GetCodeRegion(), _settings.MaxAllowedConcatenations);
     }
 
     private sealed class Visitor : TSqlFragmentVisitor

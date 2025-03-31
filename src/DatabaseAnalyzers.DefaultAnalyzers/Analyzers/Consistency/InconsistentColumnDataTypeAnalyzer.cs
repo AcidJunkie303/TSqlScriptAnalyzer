@@ -8,14 +8,16 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Consistency;
 public sealed class InconsistentColumnDataTypeAnalyzer : IGlobalAnalyzer
 {
     private readonly IGlobalAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IObjectProvider _objectProvider;
     private readonly Aj5054Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public InconsistentColumnDataTypeAnalyzer(IGlobalAnalysisContext context, Aj5054Settings settings, IObjectProvider objectProvider)
+    public InconsistentColumnDataTypeAnalyzer(IGlobalAnalysisContext context, IIssueReporter issueReporter, Aj5054Settings settings, IObjectProvider objectProvider)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _settings = settings;
         _objectProvider = objectProvider;
     }
@@ -65,7 +67,7 @@ public sealed class InconsistentColumnDataTypeAnalyzer : IGlobalAnalyzer
 
             var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(column.CreationStatement) ?? DatabaseNames.Unknown;
             var fullObjectName = column.CreationStatement.TryGetFirstClassObjectName(_context, script);
-            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, column.CreationStatement.GetCodeRegion(),
+            _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, column.CreationStatement.GetCodeRegion(),
                 column.ObjectName, dataTypeNames, objectNames);
         }
     }

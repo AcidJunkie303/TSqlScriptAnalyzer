@@ -7,13 +7,15 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime;
 public sealed class SelectStarAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.SelectStar, DiagnosticDefinitions.SelectStarForExistenceCheck];
 
-    public SelectStarAnalyzer(IScriptAnalysisContext context)
+    public SelectStarAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
     }
 
@@ -23,6 +25,20 @@ public sealed class SelectStarAnalyzer : IScriptAnalyzer
         {
             Analyze(expression);
         }
+    }
+
+    private static bool IsExistenceCheck(IScriptModel script, SelectStarExpression expression)
+    {
+        var parents = expression.GetParents(script)
+            .Take(3)
+            .ToList();
+
+        return parents is
+        [
+            QuerySpecification,
+            ScalarSubquery,
+            ExistsPredicate
+        ];
     }
 
     private void Analyze(SelectStarExpression expression)
@@ -39,7 +55,7 @@ public sealed class SelectStarAnalyzer : IScriptAnalyzer
             ? DiagnosticDefinitions.SelectStarForExistenceCheck
             : DiagnosticDefinitions.SelectStar;
 
-        _context.IssueReporter.Report(diagnosticDefinition, databaseName, _script.RelativeScriptFilePath, fullObjectName, expression.GetCodeRegion());
+        _issueReporter.Report(diagnosticDefinition, databaseName, _script.RelativeScriptFilePath, fullObjectName, expression.GetCodeRegion());
 
         bool IsSafeSelectStar()
         {
@@ -78,20 +94,6 @@ public sealed class SelectStarAnalyzer : IScriptAnalyzer
                 InlineDerivedTable inlineDerivedTable => alias.EqualsOrdinalIgnoreCase(inlineDerivedTable.Alias.Value),
                 _                                     => false
             };
-    }
-
-    private static bool IsExistenceCheck(IScriptModel script, SelectStarExpression expression)
-    {
-        var parents = expression.GetParents(script)
-            .Take(3)
-            .ToList();
-
-        return parents is
-        [
-            QuerySpecification,
-            ScalarSubquery,
-            ExistsPredicate
-        ];
     }
 
     private static class DiagnosticDefinitions

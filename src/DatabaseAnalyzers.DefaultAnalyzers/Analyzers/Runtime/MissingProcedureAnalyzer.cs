@@ -10,14 +10,16 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime;
 public sealed class MissingProcedureAnalyzer : IGlobalAnalyzer
 {
     private readonly IGlobalAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IObjectProvider _objectProvider;
     private readonly Aj5044Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [SharedDiagnosticDefinitions.MissingObject];
 
-    public MissingProcedureAnalyzer(IGlobalAnalysisContext context, Aj5044Settings settings, IObjectProvider objectProvider)
+    public MissingProcedureAnalyzer(IGlobalAnalysisContext context, IIssueReporter issueReporter, Aj5044Settings settings, IObjectProvider objectProvider)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _settings = settings;
         _objectProvider = objectProvider;
     }
@@ -81,7 +83,7 @@ public sealed class MissingProcedureAnalyzer : IGlobalAnalyzer
             return;
         }
 
-        _context.IssueReporter.Report(SharedDiagnosticDefinitions.MissingObject, databaseName, callingProcedure.RelativeScriptFilePath, callingProcedure.FullName, procedureObjectName.GetCodeRegion(),
+        _issueReporter.Report(SharedDiagnosticDefinitions.MissingObject, databaseName, callingProcedure.RelativeScriptFilePath, callingProcedure.FullName, procedureObjectName.GetCodeRegion(),
             "procedure", fullStoredProcedureName);
     }
 

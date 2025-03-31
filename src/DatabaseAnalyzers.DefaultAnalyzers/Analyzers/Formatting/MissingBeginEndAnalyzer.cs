@@ -8,14 +8,16 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 public sealed class MissingBeginEndAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
     private readonly Aj5022Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public MissingBeginEndAnalyzer(IScriptAnalysisContext context, Aj5022Settings settings)
+    public MissingBeginEndAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter, Aj5022Settings settings)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
         _settings = settings;
     }
@@ -67,7 +69,7 @@ public sealed class MissingBeginEndAnalyzer : IScriptAnalyzer
     {
         var fullObjectName = fragmentToReport.TryGetFirstClassObjectName(_context, _script);
         var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(fragmentToReport) ?? DatabaseNames.Unknown;
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, fragmentToReport.GetCodeRegion(), statementName);
+        _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, fragmentToReport.GetCodeRegion(), statementName);
     }
 
     private static class DiagnosticDefinitions

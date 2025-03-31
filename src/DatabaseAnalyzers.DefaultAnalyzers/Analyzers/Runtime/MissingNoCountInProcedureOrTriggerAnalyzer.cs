@@ -7,13 +7,15 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Runtime;
 public sealed class MissingNoCountInProcedureOrTriggerAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public MissingNoCountInProcedureOrTriggerAnalyzer(IScriptAnalysisContext context)
+    public MissingNoCountInProcedureOrTriggerAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
     }
 
@@ -29,6 +31,26 @@ public sealed class MissingNoCountInProcedureOrTriggerAnalyzer : IScriptAnalyzer
         {
             var bodyStatements = GetStatements(creationStatement.StatementList);
             Analyze(creationStatement, bodyStatements);
+        }
+    }
+
+    private static IList<TSqlStatement> GetStatements(StatementList? statementList)
+    {
+        while (true)
+        {
+            var statements = statementList?.Statements;
+            if (statements.IsNullOrEmpty())
+            {
+                return [];
+            }
+
+            if (statements is [BeginEndBlockStatement beginEndBlockStatement])
+            {
+                statementList = beginEndBlockStatement.StatementList;
+                continue;
+            }
+
+            return statements;
         }
     }
 
@@ -52,27 +74,7 @@ public sealed class MissingNoCountInProcedureOrTriggerAnalyzer : IScriptAnalyzer
         var firstStatement = bodyStatements[0];
         var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(creationStatement) ?? DatabaseNames.Unknown;
         var fullObjectName = creationStatement.TryGetFirstClassObjectName(_context, _script);
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, firstStatement.GetCodeRegion());
-    }
-
-    private static IList<TSqlStatement> GetStatements(StatementList? statementList)
-    {
-        while (true)
-        {
-            var statements = statementList?.Statements;
-            if (statements.IsNullOrEmpty())
-            {
-                return [];
-            }
-
-            if (statements is [BeginEndBlockStatement beginEndBlockStatement])
-            {
-                statementList = beginEndBlockStatement.StatementList;
-                continue;
-            }
-
-            return statements;
-        }
+        _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, firstStatement.GetCodeRegion());
     }
 
     private static class DiagnosticDefinitions

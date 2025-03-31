@@ -9,13 +9,15 @@ public sealed class MissingTableAliasAnalyzer : IScriptAnalyzer
 {
     private readonly IAstService _astService;
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [WellKnownDiagnosticDefinitions.MissingAlias];
 
-    public MissingTableAliasAnalyzer(IScriptAnalysisContext context, IAstService astService)
+    public MissingTableAliasAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter, IAstService astService)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _astService = astService;
         _script = context.Script;
     }
@@ -59,6 +61,6 @@ public sealed class MissingTableAliasAnalyzer : IScriptAnalyzer
 
         var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(columnReference) ?? DatabaseNames.Unknown;
         var fullObjectName = columnReference.TryGetFirstClassObjectName(_context, _script);
-        _context.IssueReporter.Report(WellKnownDiagnosticDefinitions.MissingAlias, databaseName, _script.RelativeScriptFilePath, fullObjectName, columnReference.GetCodeRegion(), columnReference.GetSql());
+        _issueReporter.Report(WellKnownDiagnosticDefinitions.MissingAlias, databaseName, _script.RelativeScriptFilePath, fullObjectName, columnReference.GetCodeRegion(), columnReference.GetSql());
     }
 }

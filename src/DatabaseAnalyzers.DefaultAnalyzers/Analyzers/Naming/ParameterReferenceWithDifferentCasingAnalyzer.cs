@@ -7,13 +7,15 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Naming;
 public sealed class ParameterReferenceWithDifferentCasingAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public ParameterReferenceWithDifferentCasingAnalyzer(IScriptAnalysisContext context)
+    public ParameterReferenceWithDifferentCasingAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
     }
 
@@ -81,7 +83,7 @@ public sealed class ParameterReferenceWithDifferentCasingAnalyzer : IScriptAnaly
         foreach (var reference in variableReferencesWithDifferentCasing)
         {
             var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(reference) ?? DatabaseNames.Unknown;
-            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, lazyFullObjectName.Value, reference.GetCodeRegion(), reference.Name, parameter.VariableName.Value);
+            _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, lazyFullObjectName.Value, reference.GetCodeRegion(), reference.Name, parameter.VariableName.Value);
         }
     }
 

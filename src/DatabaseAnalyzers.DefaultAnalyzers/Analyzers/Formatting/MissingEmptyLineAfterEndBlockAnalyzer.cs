@@ -7,13 +7,15 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 public sealed class MissingEmptyLineAfterEndBlockAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public MissingEmptyLineAfterEndBlockAnalyzer(IScriptAnalysisContext context)
+    public MissingEmptyLineAfterEndBlockAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
     }
 
@@ -82,6 +84,20 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzer : IScriptAnalyzer
             : -1;
     }
 
+    private static bool IsIgnoredStatement(TSqlFragment? fragment) => fragment is SearchedCaseExpression or SimpleCaseExpression;
+
+    private static bool IsSkipToken(TSqlParserToken token)
+        => token.TokenType is TSqlTokenType.WhiteSpace or TSqlTokenType.SingleLineComment or TSqlTokenType.MultilineComment or TSqlTokenType.Semicolon;
+
+    private static bool IsCatch(TSqlParserToken? token)
+        => token is not null && token.TokenType == TSqlTokenType.Identifier && string.Equals(token.Text, "CATCH", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsTry(TSqlParserToken? token)
+        => token is not null && token.TokenType == TSqlTokenType.Identifier && string.Equals(token.Text, "TRY", StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsEnd(TSqlParserToken? token)
+        => token is not null && token.TokenType == TSqlTokenType.End;
+
     private void AnalyzeEndToken(TSqlParserToken endToken, int tokenIndex)
     {
         if (IsNextTokenOfAnyType(TSqlTokenType.Else, TSqlTokenType.RightParenthesis, TSqlTokenType.Go, TSqlTokenType.EndOfFile))
@@ -113,7 +129,7 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzer : IScriptAnalyzer
             .TryGetSqlFragmentAtPosition(endToken)
             ?.TryGetFirstClassObjectName(_context, _script);
 
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion);
+        _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion);
 
         bool IsMissingEmptyLineAfter() => GetNewLineCountAfterToken() < 2;
 
@@ -138,20 +154,6 @@ public sealed class MissingEmptyLineAfterEndBlockAnalyzer : IScriptAnalyzer
                 .TakeWhile(IsSkipToken)
                 .Sum(a => a.Text.Count(c => c == '\n'));
     }
-
-    private static bool IsIgnoredStatement(TSqlFragment? fragment) => fragment is SearchedCaseExpression or SimpleCaseExpression;
-
-    private static bool IsSkipToken(TSqlParserToken token)
-        => token.TokenType is TSqlTokenType.WhiteSpace or TSqlTokenType.SingleLineComment or TSqlTokenType.MultilineComment or TSqlTokenType.Semicolon;
-
-    private static bool IsCatch(TSqlParserToken? token)
-        => token is not null && token.TokenType == TSqlTokenType.Identifier && string.Equals(token.Text, "CATCH", StringComparison.OrdinalIgnoreCase);
-
-    private static bool IsTry(TSqlParserToken? token)
-        => token is not null && token.TokenType == TSqlTokenType.Identifier && string.Equals(token.Text, "TRY", StringComparison.OrdinalIgnoreCase);
-
-    private static bool IsEnd(TSqlParserToken? token)
-        => token is not null && token.TokenType == TSqlTokenType.End;
 
     private bool IsWithinDmlStatement(TSqlParserToken token)
     {
