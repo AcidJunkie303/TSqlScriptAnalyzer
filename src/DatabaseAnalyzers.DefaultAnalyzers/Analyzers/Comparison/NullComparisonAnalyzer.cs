@@ -7,13 +7,15 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Comparison;
 public sealed class NullComparisonAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public NullComparisonAnalyzer(IScriptAnalysisContext context)
+    public NullComparisonAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
     }
 
@@ -40,7 +42,7 @@ public sealed class NullComparisonAnalyzer : IScriptAnalyzer
 
         var fullObjectName = expression.TryGetFirstClassObjectName(_context.DefaultSchemaName, _script.ParsedScript, _script.ParentFragmentProvider);
         var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(expression) ?? DatabaseNames.Unknown;
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, expression.GetCodeRegion());
+        _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, expression.GetCodeRegion());
     }
 
     private static class DiagnosticDefinitions

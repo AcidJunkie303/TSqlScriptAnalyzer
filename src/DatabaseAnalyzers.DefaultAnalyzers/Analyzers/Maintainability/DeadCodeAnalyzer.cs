@@ -7,13 +7,15 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Maintainability;
 public sealed class DeadCodeAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public DeadCodeAnalyzer(IScriptAnalysisContext context)
+    public DeadCodeAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
     }
 
@@ -45,7 +47,7 @@ public sealed class DeadCodeAnalyzer : IScriptAnalyzer
 
         var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(branchExecutionTerminatorStatement) ?? DatabaseNames.Unknown;
         var fullObjectName = branchExecutionTerminatorStatement.TryGetFirstClassObjectName(_context, _script);
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, branchExecutionTerminatorStatement.GetCodeRegion(), statementName);
+        _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, branchExecutionTerminatorStatement.GetCodeRegion(), statementName);
 
         static bool HasSucceedingSiblings(TSqlFragment fragment, IParentFragmentProvider parentFragmentProvider)
             => fragment.GetSucceedingSiblings(parentFragmentProvider).Any();
@@ -76,7 +78,7 @@ public sealed class DeadCodeAnalyzer : IScriptAnalyzer
 
         var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(goToStatement) ?? DatabaseNames.Unknown;
         var fullObjectName = goToStatement.TryGetFirstClassObjectName(_context, _script);
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, goToStatement.GetCodeRegion(), "GOTO");
+        _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, goToStatement.GetCodeRegion(), "GOTO");
     }
 
     private bool IsCodeAfterGotoDead(TSqlBatch batch, GoToStatement goToStatement)

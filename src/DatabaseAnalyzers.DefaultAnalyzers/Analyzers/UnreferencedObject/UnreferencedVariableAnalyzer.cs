@@ -7,13 +7,15 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.UnreferencedObject;
 public sealed class UnreferencedVariableAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public UnreferencedVariableAnalyzer(IScriptAnalysisContext context)
+    public UnreferencedVariableAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
     }
 
@@ -45,7 +47,7 @@ public sealed class UnreferencedVariableAnalyzer : IScriptAnalyzer
 
             var fullObjectName = variableDeclaration.TryGetFirstClassObjectName(_context, _script);
             var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(variableDeclaration) ?? DatabaseNames.Unknown;
-            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, variableDeclaration.GetCodeRegion(), variableDeclaration.VariableName.Value);
+            _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, variableDeclaration.GetCodeRegion(), variableDeclaration.VariableName.Value);
         }
     }
 

@@ -7,13 +7,15 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.ObjectCreation;
 public sealed class ObjectCreationWithoutSchemaNameAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public ObjectCreationWithoutSchemaNameAnalyzer(IScriptAnalysisContext context)
+    public ObjectCreationWithoutSchemaNameAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
     }
 
@@ -72,7 +74,7 @@ public sealed class ObjectCreationWithoutSchemaNameAnalyzer : IScriptAnalyzer
 
         var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(statement) ?? DatabaseNames.Unknown;
         var fullObjectName = statement.TryGetFirstClassObjectName(_context, _script);
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, nameLocationGetter(statement), typeName, fullObjectName ?? "Unknown");
+        _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, nameLocationGetter(statement), typeName, fullObjectName ?? "Unknown");
     }
 
     private static class DiagnosticDefinitions

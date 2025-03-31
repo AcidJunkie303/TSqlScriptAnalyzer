@@ -96,11 +96,12 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
                 IReadOnlyList<IScriptModel> (a) => a.ToList(),
                 StringComparer.OrdinalIgnoreCase);
 
+        var issueReporter = new IssueReporter();
         var analysisContext = new GlobalAnalysisContext(
             _defaultSchemaName,
             allScripts,
             allScriptsByDatabaseName,
-            new IssueReporter(),
+            issueReporter,
             NullLogger.Instance,
             FrozenSet<string>.Empty);
 
@@ -111,7 +112,26 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
             analysisContext,
             analyzer,
             allScripts,
-            expectedIssues
+            expectedIssues,
+            issueReporter
+        );
+    }
+
+    private static ScriptModel ParseScript(string relativeScriptFilePath, string scriptContents, string databaseName)
+    {
+        var script = scriptContents.TryParseSqlScript(out var errors);
+        var diagnosticSuppressions = new DiagnosticSuppressionExtractor().ExtractSuppressions(script);
+        var parentFragmentProvider = script.CreateParentFragmentProvider();
+
+        return new ScriptModel
+        (
+            databaseName,
+            relativeScriptFilePath,
+            scriptContents,
+            script,
+            parentFragmentProvider,
+            errors,
+            diagnosticSuppressions.ToList()
         );
     }
 
@@ -150,22 +170,4 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
                 services.AddSingleton<IObjectProvider>(new ObjectProvider(databasesByName));
             })
             .Build();
-
-    private static ScriptModel ParseScript(string relativeScriptFilePath, string scriptContents, string databaseName)
-    {
-        var script = scriptContents.TryParseSqlScript(out var errors);
-        var diagnosticSuppressions = new DiagnosticSuppressionExtractor().ExtractSuppressions(script);
-        var parentFragmentProvider = script.CreateParentFragmentProvider();
-
-        return new ScriptModel
-        (
-            databaseName,
-            relativeScriptFilePath,
-            scriptContents,
-            script,
-            parentFragmentProvider,
-            errors,
-            diagnosticSuppressions.ToList()
-        );
-    }
 }

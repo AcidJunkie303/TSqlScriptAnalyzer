@@ -6,13 +6,15 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Formatting;
 public sealed class TabCharacterAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public TabCharacterAnalyzer(IScriptAnalysisContext context)
+    public TabCharacterAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
     }
 
@@ -35,7 +37,7 @@ public sealed class TabCharacterAnalyzer : IScriptAnalyzer
                 .TryGetSqlFragmentAtPosition(i)
                 ?.TryGetFirstClassObjectName(_context, _script);
             var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtLocation(codeRegion.Begin) ?? DatabaseNames.Unknown;
-            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion);
+            _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion);
         }
     }
 

@@ -14,13 +14,15 @@ public sealed class SetOptionWhichShouldNotBeTurnedOffAnalyzer : IScriptAnalyzer
     }.ToImmutableArray();
 
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public SetOptionWhichShouldNotBeTurnedOffAnalyzer(IScriptAnalysisContext context)
+    public SetOptionWhichShouldNotBeTurnedOffAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
     }
 
@@ -29,6 +31,17 @@ public sealed class SetOptionWhichShouldNotBeTurnedOffAnalyzer : IScriptAnalyzer
         foreach (var predicateStatement in _script.ParsedScript.GetChildren<PredicateSetStatement>(recursive: true))
         {
             Analyze(predicateStatement);
+        }
+    }
+
+    private static IEnumerable<string> GetSqlRepresentationOfOptionsWhichShouldNotBeTurnedOff(SetOptions setOptions)
+    {
+        foreach (var (setOption, sqlRepresentation) in SetOptionsWhichShouldNotBeTurnedOff)
+        {
+            if (setOptions.HasFlag(setOption))
+            {
+                yield return sqlRepresentation;
+            }
         }
     }
 
@@ -47,18 +60,7 @@ public sealed class SetOptionWhichShouldNotBeTurnedOffAnalyzer : IScriptAnalyzer
 
         var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(predicateStatement) ?? DatabaseNames.Unknown;
         var fullObjectName = predicateStatement.TryGetFirstClassObjectName(_context, _script);
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, predicateStatement.GetCodeRegion(), sqlRepresentationOfOptionsWhichShouldNotBeTurnedOff);
-    }
-
-    private static IEnumerable<string> GetSqlRepresentationOfOptionsWhichShouldNotBeTurnedOff(SetOptions setOptions)
-    {
-        foreach (var (setOption, sqlRepresentation) in SetOptionsWhichShouldNotBeTurnedOff)
-        {
-            if (setOptions.HasFlag(setOption))
-            {
-                yield return sqlRepresentation;
-            }
-        }
+        _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, predicateStatement.GetCodeRegion(), sqlRepresentationOfOptionsWhichShouldNotBeTurnedOff);
     }
 
     private static class DiagnosticDefinitions

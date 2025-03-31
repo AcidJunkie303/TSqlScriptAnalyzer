@@ -8,14 +8,16 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Consistency;
 public sealed class InconsistentColumnNameCasingAnalyzer : IGlobalAnalyzer
 {
     private readonly IGlobalAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly Aj5055Settings _settings;
     private readonly IObjectProvider _objectProvider;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public InconsistentColumnNameCasingAnalyzer(IGlobalAnalysisContext context, Aj5055Settings settings, IObjectProvider  objectProvider)
+    public InconsistentColumnNameCasingAnalyzer(IGlobalAnalysisContext context, IIssueReporter issueReporter, Aj5055Settings settings, IObjectProvider  objectProvider)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _settings = settings;
         _objectProvider = objectProvider;
     }
@@ -55,7 +57,7 @@ public sealed class InconsistentColumnNameCasingAnalyzer : IGlobalAnalyzer
 
             var databaseName = script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(column.CreationStatement) ?? DatabaseNames.Unknown;
             var fullObjectName = column.CreationStatement.TryGetFirstClassObjectName(_context, script);
-            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, column.CreationStatement.GetCodeRegion(),
+            _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, script.RelativeScriptFilePath, fullObjectName, column.CreationStatement.GetCodeRegion(),
                 column.ObjectName, flatCasingVariations, objectNames);
         }
     }

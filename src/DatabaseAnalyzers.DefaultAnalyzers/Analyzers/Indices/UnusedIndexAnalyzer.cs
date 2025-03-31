@@ -15,15 +15,17 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
 {
     private readonly IAstService _astService;
     private readonly IGlobalAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IObjectProvider _objectProvider;
     private readonly ParallelOptions _parallelOptions;
     private readonly Aj5051Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public UnusedIndexAnalyzer(IGlobalAnalysisContext context, Aj5051Settings settings, IAstService astService, IObjectProvider objectProvider, ParallelOptions parallelOptions)
+    public UnusedIndexAnalyzer(IGlobalAnalysisContext context, IIssueReporter issueReporter, Aj5051Settings settings, IAstService astService, IObjectProvider objectProvider, ParallelOptions parallelOptions)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _settings = settings;
         _astService = astService;
         _objectProvider = objectProvider;
@@ -58,7 +60,7 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
                     continue;
                 }
 
-                _context.IssueReporter.Report(DiagnosticDefinitions.Default, index.DatabaseName, index.RelativeScriptFilePath, index.IndexName, index.CreationStatement.GetCodeRegion(),
+                _issueReporter.Report(DiagnosticDefinitions.Default, index.DatabaseName, index.RelativeScriptFilePath, index.IndexName, index.CreationStatement.GetCodeRegion(),
                     index.DatabaseName, index.SchemaName, index.TableName, column, index.IndexName ?? Constants.UnknownObjectName);
             }
         });
@@ -96,7 +98,7 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
 
     private IEnumerable<ColumnReference> GetFilteringColumnFromStatement(IScriptModel script, TSqlFragment fragment)
     {
-        var finder = new FilteringColumnFinder(_context.IssueReporter, _astService, script.ParsedScript, script.RelativeScriptFilePath, _context.DefaultSchemaName, script.ParentFragmentProvider);
+        var finder = new FilteringColumnFinder(_issueReporter, _astService, script.ParsedScript, script.RelativeScriptFilePath, _context.DefaultSchemaName, script.ParentFragmentProvider);
 
         foreach (var filteringColumn in finder.Find(fragment))
         {

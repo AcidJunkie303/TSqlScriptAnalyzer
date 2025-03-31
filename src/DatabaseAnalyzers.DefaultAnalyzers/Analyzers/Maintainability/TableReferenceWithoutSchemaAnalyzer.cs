@@ -11,15 +11,17 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Maintainability;
 public sealed class TableReferenceWithoutSchemaAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
     private readonly Aj5066Settings _settings;
     private readonly ITableResolverFactory _tableResolverFactory;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public TableReferenceWithoutSchemaAnalyzer(IScriptAnalysisContext context, Aj5066Settings settings, ITableResolverFactory tableResolverFactory)
+    public TableReferenceWithoutSchemaAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter, Aj5066Settings settings, ITableResolverFactory tableResolverFactory)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
         _settings = settings;
         _tableResolverFactory = tableResolverFactory;
@@ -73,7 +75,7 @@ public sealed class TableReferenceWithoutSchemaAnalyzer : IScriptAnalyzer
 
         var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(tableReference) ?? DatabaseNames.Unknown;
         var fullObjectName = tableReference.TryGetFirstClassObjectName(_context, _script);
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, tableReference.GetCodeRegion(), tableName);
+        _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, tableReference.GetCodeRegion(), tableName);
     }
 
     private bool IsTableNameIgnored(string objectName)

@@ -7,13 +7,15 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.NonStandard;
 public sealed class NonStandardComparisonOperatorAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public NonStandardComparisonOperatorAnalyzer(IScriptAnalysisContext context)
+    public NonStandardComparisonOperatorAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
     }
 
@@ -35,7 +37,7 @@ public sealed class NonStandardComparisonOperatorAnalyzer : IScriptAnalyzer
         var codeRegion = GetOperatorCodeRegion(_script.ParsedScript.ScriptTokenStream, expression);
         var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(expression) ?? DatabaseNames.Unknown;
         var fullObjectName = expression.TryGetFirstClassObjectName(_context, _script);
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion, "!=", "<>");
+        _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, codeRegion, "!=", "<>");
     }
 
     private static CodeRegion GetOperatorCodeRegion(IList<TSqlParserToken> scriptTokens, BooleanComparisonExpression expression)

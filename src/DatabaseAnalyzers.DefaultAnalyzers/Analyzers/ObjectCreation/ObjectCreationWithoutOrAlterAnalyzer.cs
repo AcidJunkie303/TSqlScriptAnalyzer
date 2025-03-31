@@ -7,13 +7,15 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.ObjectCreation;
 public sealed class ObjectCreationWithoutOrAlterAnalyzer : IScriptAnalyzer
 {
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public ObjectCreationWithoutOrAlterAnalyzer(IScriptAnalysisContext context)
+    public ObjectCreationWithoutOrAlterAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
     }
 
@@ -31,12 +33,12 @@ public sealed class ObjectCreationWithoutOrAlterAnalyzer : IScriptAnalyzer
         {
             var fullObjectName = fragment.TryGetFirstClassObjectName(_context, _script);
             var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(fragment) ?? DatabaseNames.Unknown;
-            Report(_context.IssueReporter, databaseName, _script.RelativeScriptFilePath, fullObjectName, fragment);
+            Report(databaseName, _script.RelativeScriptFilePath, fullObjectName, fragment);
         }
     }
 
-    private static void Report(IIssueReporter issueReporter, string databaseName, string relativeScriptFilePath, string? fullObjectName, TSqlFragment fragment)
-        => issueReporter.Report(DiagnosticDefinitions.Default, databaseName, relativeScriptFilePath, fullObjectName, fragment.GetCodeRegion());
+    private void Report(string databaseName, string relativeScriptFilePath, string? fullObjectName, TSqlFragment fragment)
+        => _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, relativeScriptFilePath, fullObjectName, fragment.GetCodeRegion());
 
     private static class DiagnosticDefinitions
     {

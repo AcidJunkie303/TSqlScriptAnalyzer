@@ -9,14 +9,16 @@ public sealed class ObjectCreationNotEmbeddedInExistenceCheckAnalyzer : IScriptA
 {
     // IF NOT EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[dbo].[V1]'))
     private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
     private readonly Aj5025Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public ObjectCreationNotEmbeddedInExistenceCheckAnalyzer(IScriptAnalysisContext context, Aj5025Settings settings)
+    public ObjectCreationNotEmbeddedInExistenceCheckAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter, Aj5025Settings settings)
     {
         _context = context;
+        _issueReporter = issueReporter;
         _script = context.Script;
         _settings = settings;
     }
@@ -28,6 +30,14 @@ public sealed class ObjectCreationNotEmbeddedInExistenceCheckAnalyzer : IScriptA
             AnalyzeTableCreation(statement);
         }
     }
+
+    private static string CreateTableExistenceCheckCode(string pattern, string tableSchemaName, string tableName)
+        => pattern
+            .Replace(Placeholders.TableSchemaName, tableSchemaName, StringComparison.OrdinalIgnoreCase)
+            .Replace(Placeholders.TableName, tableName, StringComparison.OrdinalIgnoreCase);
+
+    private static (string TableSchemaName, string TableName) GetTableNames(CreateTableStatement statement, string defaultSchemaName)
+        => (statement.SchemaObjectName.GetSchemaName(defaultSchemaName), statement.SchemaObjectName.BaseIdentifier.Value);
 
     private void AnalyzeTableCreation(CreateTableStatement statement)
     {
@@ -53,7 +63,7 @@ public sealed class ObjectCreationNotEmbeddedInExistenceCheckAnalyzer : IScriptA
 
         var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(statement) ?? DatabaseNames.Unknown;
         var fullObjectName = statement.TryGetFirstClassObjectName(_context, _script);
-        _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, statement.GetCodeRegion(), expectedExistenceCheckCode);
+        _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName, statement.GetCodeRegion(), expectedExistenceCheckCode);
 
         string? GetParentStatementCode() =>
             parentStatement is null
@@ -65,14 +75,6 @@ public sealed class ObjectCreationNotEmbeddedInExistenceCheckAnalyzer : IScriptA
                     .StringJoin(string.Empty)
                     .Trim();
     }
-
-    private static string CreateTableExistenceCheckCode(string pattern, string tableSchemaName, string tableName)
-        => pattern
-            .Replace(Placeholders.TableSchemaName, tableSchemaName, StringComparison.OrdinalIgnoreCase)
-            .Replace(Placeholders.TableName, tableName, StringComparison.OrdinalIgnoreCase);
-
-    private static (string TableSchemaName, string TableName) GetTableNames(CreateTableStatement statement, string defaultSchemaName)
-        => (statement.SchemaObjectName.GetSchemaName(defaultSchemaName), statement.SchemaObjectName.BaseIdentifier.Value);
 
     private static class Placeholders
     {

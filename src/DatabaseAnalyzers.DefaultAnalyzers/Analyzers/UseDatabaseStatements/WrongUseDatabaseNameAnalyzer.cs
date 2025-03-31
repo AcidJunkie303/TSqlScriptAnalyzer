@@ -7,15 +7,15 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.UseDatabaseStatements;
 
 public sealed class WrongUseDatabaseNameAnalyzer : IScriptAnalyzer
 {
-    private readonly IScriptAnalysisContext _context;
+    private readonly IIssueReporter _issueReporter;
     private readonly IScriptModel _script;
     private readonly Aj5003Settings _settings;
 
     public static IReadOnlyList<IDiagnosticDefinition> SupportedDiagnostics { get; } = [DiagnosticDefinitions.Default];
 
-    public WrongUseDatabaseNameAnalyzer(IScriptAnalysisContext context, Aj5003Settings settings)
+    public WrongUseDatabaseNameAnalyzer(IScriptAnalysisContext context, IIssueReporter issueReporter, Aj5003Settings settings)
     {
-        _context = context;
+        _issueReporter = issueReporter;
         _settings = settings;
         _script = context.Script;
     }
@@ -42,7 +42,7 @@ public sealed class WrongUseDatabaseNameAnalyzer : IScriptAnalyzer
             }
 
             var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(useStatement) ?? DatabaseNames.Unknown;
-            _context.IssueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName: null, useStatement.GetCodeRegion(), useStatement.DatabaseName.Value, _script.DatabaseName);
+            _issueReporter.Report(DiagnosticDefinitions.Default, databaseName, _script.RelativeScriptFilePath, fullObjectName: null, useStatement.GetCodeRegion(), useStatement.DatabaseName.Value, _script.DatabaseName);
         }
     }
 

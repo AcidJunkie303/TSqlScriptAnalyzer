@@ -27,12 +27,6 @@ public sealed class ColumnResolver : IColumnResolver
         _defaultSchemaName = defaultSchemaName;
     }
 
-    public static ColumnResolver Create(IScriptAnalysisContext context, IAstService astService)
-        => new(context.IssueReporter, astService, context.Script.ParsedScript, context.Script.RelativeScriptFilePath, context.Script.ParentFragmentProvider, context.DefaultSchemaName);
-
-    public static ColumnResolver Create(IGlobalAnalysisContext context, IAstService astService, IScriptModel script)
-        => new(context.IssueReporter, astService, script.ParsedScript, script.RelativeScriptFilePath, script.ParentFragmentProvider, context.DefaultSchemaName);
-
     public ColumnReference? Resolve(ColumnReferenceExpression columnReference)
     {
         if (columnReference.MultiPartIdentifier?.Identifiers is null)
@@ -59,13 +53,13 @@ public sealed class ColumnResolver : IColumnResolver
 
             var column = fragment switch
             {
-                QualifiedJoin qualifiedJoin => Check(qualifiedJoin, parentCtesByName, columnReference),
+                QualifiedJoin qualifiedJoin             => Check(qualifiedJoin, parentCtesByName, columnReference),
                 DeleteSpecification deleteSpecification => Check(deleteSpecification, parentCtesByName, columnReference),
-                FromClause fromClause => Check(fromClause, parentCtesByName, columnReference),
-                QuerySpecification querySpecification => Check(querySpecification, parentCtesByName, columnReference),
+                FromClause fromClause                   => Check(fromClause, parentCtesByName, columnReference),
+                QuerySpecification querySpecification   => Check(querySpecification, parentCtesByName, columnReference),
                 UpdateSpecification updateSpecification => Check(updateSpecification, parentCtesByName, columnReference),
-                MergeSpecification mergeSpecification => Check(mergeSpecification, parentCtesByName, columnReference),
-                _ => null
+                MergeSpecification mergeSpecification   => Check(mergeSpecification, parentCtesByName, columnReference),
+                _                                       => null
             };
 
             if (column is not null)
@@ -78,6 +72,40 @@ public sealed class ColumnResolver : IColumnResolver
                 return null;
             }
         }
+    }
+
+    private static bool IsStatementTopmostFragment(TSqlFragment fragment)
+        => fragment
+            is SelectStatement
+            or DeleteStatement
+            or UpdateStatement
+            or InsertStatement
+            or MergeStatement
+            or TSqlBatch
+            or TSqlScript;
+
+    private static Dictionary<string, CommonTableExpression> GetParentCtesByName(TSqlFragment fragment, IParentFragmentProvider parentFragmentProvider)
+    {
+        foreach (var parent in fragment.GetParents(parentFragmentProvider))
+        {
+            if (parent is not StatementWithCtesAndXmlNamespaces statementWithCtes)
+            {
+                continue;
+            }
+
+            if ((statementWithCtes.WithCtesAndXmlNamespaces?.CommonTableExpressions).IsNullOrEmpty())
+            {
+                return [];
+            }
+
+            return statementWithCtes.WithCtesAndXmlNamespaces.CommonTableExpressions
+                .ToDictionary(
+                    static a => a.ExpressionName.Value,
+                    static a => a,
+                    StringComparer.OrdinalIgnoreCase);
+        }
+
+        return [];
     }
 
     private ColumnReference? Check(MergeSpecification mergeSpecification, IReadOnlyDictionary<string, CommonTableExpression> parentCtesByName, ColumnReferenceExpression referenceToResolve)
@@ -245,45 +273,11 @@ public sealed class ColumnResolver : IColumnResolver
             => referenceToResolve.TryGetFirstClassObjectName(_defaultSchemaName, _script, _parentFragmentProvider) ?? _relativeScriptFilePath;
     }
 
-    private static bool IsStatementTopmostFragment(TSqlFragment fragment)
-        => fragment
-            is SelectStatement
-            or DeleteStatement
-            or UpdateStatement
-            or InsertStatement
-            or MergeStatement
-            or TSqlBatch
-            or TSqlScript;
-
     private void ReportMissingAlias(ColumnReferenceExpression columnReference)
     {
         var currentDatabaseName = _script.TryFindCurrentDatabaseNameAtFragment(columnReference);
         var fullObjectName = columnReference.TryGetFirstClassObjectName(_defaultSchemaName, _script, _parentFragmentProvider);
 
         _issueReporter.Report(WellKnownDiagnosticDefinitions.MissingAlias, currentDatabaseName ?? DatabaseNames.Unknown, _relativeScriptFilePath, fullObjectName, columnReference.GetCodeRegion(), columnReference.GetSql());
-    }
-
-    private static Dictionary<string, CommonTableExpression> GetParentCtesByName(TSqlFragment fragment, IParentFragmentProvider parentFragmentProvider)
-    {
-        foreach (var parent in fragment.GetParents(parentFragmentProvider))
-        {
-            if (parent is not StatementWithCtesAndXmlNamespaces statementWithCtes)
-            {
-                continue;
-            }
-
-            if ((statementWithCtes.WithCtesAndXmlNamespaces?.CommonTableExpressions).IsNullOrEmpty())
-            {
-                return [];
-            }
-
-            return statementWithCtes.WithCtesAndXmlNamespaces.CommonTableExpressions
-                .ToDictionary(
-                    static a => a.ExpressionName.Value,
-                    static a => a,
-                    StringComparer.OrdinalIgnoreCase);
-        }
-
-        return [];
     }
 }
