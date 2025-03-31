@@ -25,7 +25,11 @@ internal static class BlankSpaceComplianceEvaluators
         TSqlTokenType.BitwiseAndEquals,
         TSqlTokenType.BitwiseOrEquals,
         TSqlTokenType.BitwiseXorEquals,
-        TSqlTokenType.Bang
+        TSqlTokenType.Bang,
+        TSqlTokenType.LeftParenthesis,
+        TSqlTokenType.RightParenthesis,
+        TSqlTokenType.Comma,
+
     }.ToFrozenSet();
 
     internal static class Before
