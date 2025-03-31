@@ -202,4 +202,42 @@ public sealed class OutputParameterNotAssignedOnAllExecutionPathsAnalyzerTests(I
 
         Verify(code);
     }
+
+    [Fact]
+    public void WhenIsOutputParameterOfAnotherProcedure_WithoutParameterName_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            CREATE PROCEDURE [dbo].[P1]
+                                @Param1 INT OUTPUT
+                            AS
+                            BEGIN
+
+                                EXEC dbo.P2 @Param1 OUTPUT
+                            END
+                            """;
+
+        Verify(code);
+    }
+
+    [Fact]
+    public void WhenIsOutputParameterOfAnotherProcedure_WithParameterName_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            CREATE PROCEDURE [dbo].[P1]
+                                @Param1 INT OUTPUT
+                            AS
+                            BEGIN
+
+                                EXEC dbo.P2 @Name = @Param1 OUTPUT
+                            END
+                            """;
+
+        Verify(code);
+    }
 }
