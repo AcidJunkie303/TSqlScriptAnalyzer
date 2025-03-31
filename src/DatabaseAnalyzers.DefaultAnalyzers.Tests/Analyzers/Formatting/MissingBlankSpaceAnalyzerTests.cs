@@ -110,4 +110,19 @@ public sealed class MissingBlankSpaceAnalyzerTests(ITestOutputHelper testOutputH
                     """;
         Verify(code);
     }
+
+    [Fact]
+    public void WhenNegativeValueAsArgument_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            CREATE TABLE Table1
+                            (
+                                Id  INT NOT NULL IDENTITY(-1, -1)
+                            )
+                            """;
+        Verify(code);
+    }
 }
