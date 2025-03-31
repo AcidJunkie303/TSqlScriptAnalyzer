@@ -72,60 +72,69 @@ public sealed class OutputParameterNotAssignedOnAllExecutionPathsAnalyzer : IScr
 
             base.Visit(node);
 
-            EndScopeAndPropagateToParent();
+            EndScopeAndPropagateToParent(propagateToParent: true);
         }
 
         public override void ExplicitVisit(IfStatement node)
         {
-            Handle(node.ThenStatement);
-
-            if (!IsAssignedInCurrentScope())
+            if (IsAssignedInCurrentScope())
             {
-                // no point of checking the else branch
+                // no point of checking the 'then branch' when the parameter was assigned a value already in the current level
+                return;
+            }
+
+            var isAssignedInThenBranch = Handle(node.ThenStatement);
+            if (!isAssignedInThenBranch)
+            {
+                // no point of checking the else branch since it was not assigned in the 'then branch'
                 return;
             }
 
             if (node.ElseStatement is null)
             {
+                SetAssignedInCurrentScope();
                 return;
             }
 
-            Handle(node.ElseStatement);
+            var isAssignedInElseBranch = Handle(node.ElseStatement);
+            if (isAssignedInElseBranch)
+            {
+                SetAssignedInCurrentScope();
+            }
 
-            void Handle(TSqlStatement statement)
+            bool Handle(TSqlStatement statement)
             {
                 BeginScope();
 
                 ExplicitVisit(statement);
 
-                EndScopeAndPropagateToParent();
+                return EndScopeAndPropagateToParent(propagateToParent: false);
             }
         }
 
         public override void ExplicitVisit(TryCatchStatement node)
         {
-            Handle(node.TryStatements);
-
-            if (!IsAssignedInCurrentScope())
+            if (IsAssignedInCurrentScope())
             {
-                // no point of checking the else branch
+                // if already assigned, no point of checking the try/catch block
                 return;
             }
 
-            if (node.CatchStatements is null)
+            var isAssignedInTryBranch = Handle(node.TryStatements);
+            var isAssignedInCatchBranch = Handle(node.CatchStatements);
+
+            if (isAssignedInTryBranch && isAssignedInCatchBranch)
             {
-                return;
+                SetAssignedInCurrentScope();
             }
 
-            Handle(node.CatchStatements);
-
-            void Handle(StatementList statements)
+            bool Handle(StatementList statements)
             {
                 BeginScope();
 
                 ExplicitVisit(statements);
 
-                EndScopeAndPropagateToParent();
+                return EndScopeAndPropagateToParent(false);
             }
         }
 
@@ -244,13 +253,15 @@ public sealed class OutputParameterNotAssignedOnAllExecutionPathsAnalyzer : IScr
         private bool IsSkippedInCurrentScope() => _isAssignedOnBranchLevel.Peek().IsSkipped;
         private void BeginScope() => _isAssignedOnBranchLevel.Push(new ScopeData());
 
-        private void EndScopeAndPropagateToParent()
+        private bool EndScopeAndPropagateToParent(bool propagateToParent)
         {
-            var isAssigned = _isAssignedOnBranchLevel.Peek().IsAssigned;
-            if (isAssigned)
+            var isAssigned = _isAssignedOnBranchLevel.Pop().IsAssigned;
+            if (isAssigned && propagateToParent)
             {
                 _isAssignedOnBranchLevel.Peek().IsAssigned = true;
             }
+
+            return isAssigned;
         }
 
         private sealed class ScopeData
