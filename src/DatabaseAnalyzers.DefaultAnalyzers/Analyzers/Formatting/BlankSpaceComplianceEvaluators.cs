@@ -29,7 +29,7 @@ internal static class BlankSpaceComplianceEvaluators
         TSqlTokenType.LeftParenthesis,
         TSqlTokenType.RightParenthesis,
         TSqlTokenType.Comma,
-
+        TSqlTokenType.Select
     }.ToFrozenSet();
 
     internal static class Before

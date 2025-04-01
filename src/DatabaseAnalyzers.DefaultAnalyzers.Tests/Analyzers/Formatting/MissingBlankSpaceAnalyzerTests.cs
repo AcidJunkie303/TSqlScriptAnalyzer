@@ -125,4 +125,30 @@ public sealed class MissingBlankSpaceAnalyzerTests(ITestOutputHelper testOutputH
                             """;
         Verify(code);
     }
+
+    [Fact]
+    public void WhenStartAfterAlias_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            SELECT  t.*,
+                                    1
+                            FROM    Table1 t
+                            """;
+        Verify(code);
+    }
+
+    [Fact]
+    public void WhenSelectingNegativeValue_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            SELECT  -1 AS Id
+                            """;
+        Verify(code);
+    }
 }
