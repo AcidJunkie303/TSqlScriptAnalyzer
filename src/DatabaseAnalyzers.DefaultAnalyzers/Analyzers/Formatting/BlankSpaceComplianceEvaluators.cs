@@ -63,6 +63,11 @@ internal static class BlankSpaceComplianceEvaluators
                 return true;
             }
 
+            if (previousToken.TokenType is TSqlTokenType.Dot) // SELECT t.* FROM Table1 t
+            {
+                return true;
+            }
+
             return IsPreviousNonWhiteSpaceTokenAnyKindOfOperationToken(tokens, currentTokenIndex);
         }
     }
@@ -114,6 +119,12 @@ internal static class BlankSpaceComplianceEvaluators
 
         public static bool Star(IList<TSqlParserToken> tokens, int currentTokenIndex)
         {
+            var previousToken = tokens.GetPreviousToken(currentTokenIndex);
+            if (previousToken is not null && previousToken.TokenType == TSqlTokenType.Dot)
+            {
+                return true;
+            }
+
             var nextToken = tokens.GetNextToken(currentTokenIndex);
             if (nextToken is null)
             {
