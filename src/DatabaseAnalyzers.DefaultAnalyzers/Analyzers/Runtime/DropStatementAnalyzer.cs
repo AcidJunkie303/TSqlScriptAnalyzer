@@ -32,6 +32,14 @@ public sealed class DropStatementAnalyzer : IScriptAnalyzer
 
     private void AnalyzeStatement(TSqlStatement statement)
     {
+        if (statement is DropTableStatement dropTableStatement)
+        {
+            if (dropTableStatement.Objects.Any(a => (a.BaseIdentifier?.Value).IsTempTableName()))
+            {
+                return;
+            }
+        }
+
         var expressionsAndPatterns = _settings.AllowedInFilesByDropStatementType.GetValueOrDefault(statement.GetType());
         if (expressionsAndPatterns is null)
         {
