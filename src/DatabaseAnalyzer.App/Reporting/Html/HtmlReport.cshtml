@@ -177,6 +177,36 @@
             </table>
         }
     </div>
+
+    <div>
+        <h2>Issues by Database</h2>
+        @{
+            var issueCountByDatabaseName = GetIssueCountByDatabase(Model);
+        }
+        @if (issueCountByDatabaseName.Count == 0)
+        {
+            <i>None</i>
+        }
+        else
+        {
+            <table class="data-table right-align-3rd-column">
+                <tbody>
+                @foreach (var (databaseName, issueCount) in issueCountByDatabaseName)
+                {
+                    <tr>
+                        <td>
+                            @databaseName
+                        </td>
+                        <td>
+                            @issueCount
+                        </td>
+                    </tr>
+                }
+
+                </tbody>
+            </table>
+        }
+    </div>
 </div>
 
 <h2>Issues</h2>
@@ -287,6 +317,13 @@ else
             .OrderByDescending(a => a.Count)
             .ThenBy(a => a.DiagnosticDefinition.DiagnosticId, StringComparer.OrdinalIgnoreCase)
             .Take(topCount)
+            .ToList();
+
+    static IReadOnlyList<KeyValuePair<string, int>> GetIssueCountByDatabase(AnalysisResult analysisResult)
+        => analysisResult.Issues
+            .GroupBy(a => a.DatabaseName, StringComparer.OrdinalIgnoreCase)
+            .Select(a => new KeyValuePair<string, int>(a.Key, a.Count()))
+            .OrderByDescending(a=>a.Value)
             .ToList();
 
     static readonly Regex CodeBlockFinder = new("`(?<content>[^`]*)`", RegexOptions.Compiled | RegexOptions.NonBacktracking, TimeSpan.FromMilliseconds(100));
