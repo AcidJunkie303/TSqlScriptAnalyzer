@@ -12,6 +12,7 @@ public sealed record TableInformation(
     IReadOnlyDictionary<string, ColumnInformation> ColumnsByName,
     IReadOnlyList<IndexInformation> Indices,
     IReadOnlyList<ForeignKeyConstraintInformation> ForeignKeys,
+    IReadOnlyDictionary<string, ForeignKeyConstraintInformation> ForeignKeysByColumnName,
     TSqlFragment CreationStatement,
     string RelativeScriptFilePath
 ) : ISchemaBoundObject
@@ -25,4 +26,6 @@ public sealed record TableInformation(
         SchemaName,
         ObjectName
     }.ToImmutableArray();
+
+    public bool IsColumnForeignKey(string columnName) => ForeignKeysByColumnName.ContainsKey(columnName);
 }

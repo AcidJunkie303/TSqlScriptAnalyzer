@@ -23,110 +23,11 @@ public sealed class TableExtractor : Extractor<TableInformation>
             .ToList();
     }
 
-    private TableInformation GetTable(CreateTableStatement statement, string? databaseName, IScriptModel script)
-    {
-        var tableSchemaName = statement.SchemaObjectName.SchemaIdentifier?.Value ?? DefaultSchemaName;
-        var tableName = statement.SchemaObjectName.BaseIdentifier.Value!;
-        var calculatedDatabaseName = statement.SchemaObjectName.DatabaseIdentifier?.Value ?? databaseName ?? throw CreateUnableToDetermineTheDatabaseNameException("table", $"{tableSchemaName}.{tableName}", statement.GetCodeRegion());
-        var columns = statement.Definition.ColumnDefinitions
-            .Select(a => GetColumn(a, calculatedDatabaseName, tableSchemaName, tableName, script.RelativeScriptFilePath))
-            .ToList();
-
-        var directColumnIndices = columns
-            .Where(a => a.IsUnique)
-            .Select(a =>
-            {
-                var isPrimaryKey = a.ColumnDefinition.Constraints.Any(b => b is UniqueConstraintDefinition { IsPrimaryKey: true });
-                var isClustered = a.ColumnDefinition.Constraints.Any(b => b is UniqueConstraintDefinition { Clustered    : true });
-                var indexType = TableColumnIndexTypes.None;
-
-                if (isPrimaryKey)
-                {
-                    indexType |= TableColumnIndexTypes.PrimaryKey | TableColumnIndexTypes.Unique;
-                }
-
-                if (isClustered)
-                {
-                    indexType |= TableColumnIndexTypes.Clustered;
-                }
-
-                if (a.IsUnique)
-                {
-                    indexType |= TableColumnIndexTypes.Unique;
-                }
-
-                return new IndexInformation
-                (
-                    calculatedDatabaseName,
-                    tableSchemaName,
-                    tableName,
-                    IndexName: null,
-                    indexType,
-                    a.ObjectName.ToSingleItemFrozenSet(StringComparer.Ordinal),
-                    FrozenSet<string>.Empty,
-                    a.ColumnDefinition,
-                    script.RelativeScriptFilePath
-                );
-            });
-
-        var allForeignKeyConstraints = GetForeignKeyConstraints(statement, calculatedDatabaseName, tableSchemaName, tableName, script.RelativeScriptFilePath).ToList();
-        var allIndices = GetIndices(statement, calculatedDatabaseName, tableSchemaName, tableName, script.RelativeScriptFilePath)
-            .Concat(directColumnIndices)
-            .ToList();
-        var allColumns = statement.Definition.ColumnDefinitions
-            .Select(a => GetColumn(a, calculatedDatabaseName, tableSchemaName, tableName, script.RelativeScriptFilePath))
-            .ToList();
-        var columnsByName = allColumns
-            .ToFrozenDictionary(
-                a => a.ObjectName,
-                a => a,
-                StringComparer.OrdinalIgnoreCase);
-
-        return new TableInformation
-        (
-            calculatedDatabaseName,
-            tableSchemaName,
-            tableName,
-            allColumns,
-            columnsByName,
-            allIndices,
-            allForeignKeyConstraints,
-            statement,
-            script.RelativeScriptFilePath
-        )
-        {
-            ScriptModel = script
-        };
-    }
-
     private static IEnumerable<IndexInformation> GetIndices(CreateTableStatement statement, string databaseName, string tableSchemaName, string tableName, string relativeScriptFilePath)
     {
         return statement.Definition.TableConstraints
             .OfType<UniqueConstraintDefinition>()
             .Select(a => GetIndex(a, databaseName, tableSchemaName, tableName, relativeScriptFilePath));
-    }
-
-    private IEnumerable<ForeignKeyConstraintInformation> GetForeignKeyConstraints(CreateTableStatement statement, string databaseName, string tableSchemaName, string tableName, string relativeScriptFilePath)
-        => statement.Definition.TableConstraints
-            .OfType<ForeignKeyConstraintDefinition>()
-            .Select(a => GetForeignKeyConstraint(a, databaseName, tableSchemaName, tableName, relativeScriptFilePath));
-
-    private ForeignKeyConstraintInformation GetForeignKeyConstraint(ForeignKeyConstraintDefinition constraint, string databaseName, string tableSchemaName, string tableName, string relativeScriptFilePath)
-    {
-        var name = constraint.ConstraintIdentifier?.Value ?? "Unknown"; // Unique key constraints don't have a name
-
-        return new ForeignKeyConstraintInformation(
-            databaseName,
-            tableSchemaName,
-            tableName,
-            constraint.Columns[0].Value,
-            name,
-            constraint.ReferenceTableName.SchemaIdentifier?.Value ?? DefaultSchemaName,
-            constraint.ReferenceTableName.BaseIdentifier.Value!,
-            constraint.ReferencedTableColumns[0].Value,
-            constraint,
-            relativeScriptFilePath
-        );
     }
 
     private static IndexInformation GetIndex(UniqueConstraintDefinition constraint, string databaseName, string tableSchemaName, string tableName, string relativeScriptFilePath)
@@ -178,6 +79,107 @@ public sealed class TableExtractor : Extractor<TableInformation>
             isUnique,
             column,
             column,
+            relativeScriptFilePath
+        );
+    }
+
+    private TableInformation GetTable(CreateTableStatement statement, string? databaseName, IScriptModel script)
+    {
+        var tableSchemaName = statement.SchemaObjectName.SchemaIdentifier?.Value ?? DefaultSchemaName;
+        var tableName = statement.SchemaObjectName.BaseIdentifier.Value!;
+        var calculatedDatabaseName = statement.SchemaObjectName.DatabaseIdentifier?.Value ?? databaseName ?? throw CreateUnableToDetermineTheDatabaseNameException("table", $"{tableSchemaName}.{tableName}", statement.GetCodeRegion());
+        var columns = statement.Definition.ColumnDefinitions
+            .Select(a => GetColumn(a, calculatedDatabaseName, tableSchemaName, tableName, script.RelativeScriptFilePath))
+            .ToList();
+
+        var directColumnIndices = columns
+            .Where(a => a.IsUnique)
+            .Select(a =>
+            {
+                var isPrimaryKey = a.ColumnDefinition.Constraints.Any(b => b is UniqueConstraintDefinition { IsPrimaryKey: true });
+                var isClustered = a.ColumnDefinition.Constraints.Any(b => b is UniqueConstraintDefinition { Clustered    : true });
+                var indexType = TableColumnIndexTypes.None;
+
+                if (isPrimaryKey)
+                {
+                    indexType |= TableColumnIndexTypes.PrimaryKey | TableColumnIndexTypes.Unique;
+                }
+
+                if (isClustered)
+                {
+                    indexType |= TableColumnIndexTypes.Clustered;
+                }
+
+                if (a.IsUnique)
+                {
+                    indexType |= TableColumnIndexTypes.Unique;
+                }
+
+                return new IndexInformation
+                (
+                    calculatedDatabaseName,
+                    tableSchemaName,
+                    tableName,
+                    IndexName: null,
+                    indexType,
+                    a.ObjectName.ToSingleItemFrozenSet(StringComparer.Ordinal),
+                    FrozenSet<string>.Empty,
+                    a.ColumnDefinition,
+                    script.RelativeScriptFilePath
+                );
+            });
+
+        var allForeignKeyConstraints = GetForeignKeyConstraints(statement, calculatedDatabaseName, tableSchemaName, tableName, script.RelativeScriptFilePath).ToList();
+        var foreignKeysByColumnName = allForeignKeyConstraints.ToFrozenDictionary(a => a.ColumnName, a => a, StringComparer.OrdinalIgnoreCase);
+        var allIndices = GetIndices(statement, calculatedDatabaseName, tableSchemaName, tableName, script.RelativeScriptFilePath)
+            .Concat(directColumnIndices)
+            .ToList();
+        var allColumns = statement.Definition.ColumnDefinitions
+            .Select(a => GetColumn(a, calculatedDatabaseName, tableSchemaName, tableName, script.RelativeScriptFilePath))
+            .ToList();
+        var columnsByName = allColumns
+            .ToFrozenDictionary(
+                a => a.ObjectName,
+                a => a,
+                StringComparer.OrdinalIgnoreCase);
+
+        return new TableInformation
+        (
+            calculatedDatabaseName,
+            tableSchemaName,
+            tableName,
+            allColumns,
+            columnsByName,
+            allIndices,
+            allForeignKeyConstraints,
+            foreignKeysByColumnName,
+            statement,
+            script.RelativeScriptFilePath
+        )
+        {
+            ScriptModel = script
+        };
+    }
+
+    private IEnumerable<ForeignKeyConstraintInformation> GetForeignKeyConstraints(CreateTableStatement statement, string databaseName, string tableSchemaName, string tableName, string relativeScriptFilePath)
+        => statement.Definition.TableConstraints
+            .OfType<ForeignKeyConstraintDefinition>()
+            .Select(a => GetForeignKeyConstraint(a, databaseName, tableSchemaName, tableName, relativeScriptFilePath));
+
+    private ForeignKeyConstraintInformation GetForeignKeyConstraint(ForeignKeyConstraintDefinition constraint, string databaseName, string tableSchemaName, string tableName, string relativeScriptFilePath)
+    {
+        var name = constraint.ConstraintIdentifier?.Value ?? "Unknown"; // Unique key constraints don't have a name
+
+        return new ForeignKeyConstraintInformation(
+            databaseName,
+            tableSchemaName,
+            tableName,
+            constraint.Columns[0].Value,
+            name,
+            constraint.ReferenceTableName.SchemaIdentifier?.Value ?? DefaultSchemaName,
+            constraint.ReferenceTableName.BaseIdentifier.Value!,
+            constraint.ReferencedTableColumns[0].Value,
+            constraint,
             relativeScriptFilePath
         );
     }
