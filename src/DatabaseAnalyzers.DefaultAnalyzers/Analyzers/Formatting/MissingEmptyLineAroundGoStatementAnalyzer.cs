@@ -43,9 +43,8 @@ public sealed class MissingEmptyLineAroundGoStatementAnalyzer : IScriptAnalyzer
 
     private void AnalyzeToken(TSqlParserToken goStatementToken, int tokenIndex)
     {
-        var missingBefore = IsMissingEmptyLineBefore();
-        var missingAfter = IsMissingEmptyLineAfter();
-
+        var missingBefore = _settings.RequireEmptyLineBeforeGo && IsMissingEmptyLineBefore();
+        var missingAfter = _settings.RequireEmptyLineAfterGo && IsMissingEmptyLineAfter();
         if (!missingBefore && !missingAfter)
         {
             return;
@@ -74,7 +73,7 @@ public sealed class MissingEmptyLineAroundGoStatementAnalyzer : IScriptAnalyzer
                 return false;
             }
 
-            return GetNewLineCountAfterToken() < 2;
+            return GetNewLineCountAfterToken(tokenIndex) < 2;
         }
 
         bool IsMissingEmptyLineBefore()
@@ -84,22 +83,25 @@ public sealed class MissingEmptyLineAroundGoStatementAnalyzer : IScriptAnalyzer
                 return false;
             }
 
-            return GetNewLineCountBeforeToken() < 2;
+            return GetNewLineCountBeforeToken(tokenIndex) < 2;
         }
-
-        int GetNewLineCountAfterToken()
-            => _script.ParsedScript.ScriptTokenStream
-                .Skip(tokenIndex + 1)
-                .TakeWhile(t => t.TokenType == TSqlTokenType.WhiteSpace)
-                .Sum(a => a.Text.Count(c => c == '\n'));
-
-        int GetNewLineCountBeforeToken()
-            => _script.ParsedScript.ScriptTokenStream
-                .Take(tokenIndex)
-                .Reverse()
-                .TakeWhile(t => t.TokenType == TSqlTokenType.WhiteSpace)
-                .Sum(a => a.Text.Count(c => c == '\n'));
     }
+
+    private int GetNewLineCountAfterToken(int tokenIndex)
+        => _script.ParsedScript.ScriptTokenStream
+            .Skip(tokenIndex + 1)
+            .TakeWhile(t => t.TokenType is TSqlTokenType.WhiteSpace or TSqlTokenType.EndOfFile)
+            .Sum(a =>
+                (a.Text?.Count(c => c == '\n') ?? 0)
+                + (a.TokenType == TSqlTokenType.EndOfFile ? 1 : 0)
+            );
+
+    private int GetNewLineCountBeforeToken(int tokenIndex)
+        => _script.ParsedScript.ScriptTokenStream
+            .Take(tokenIndex)
+            .Reverse()
+            .TakeWhile(t => t.TokenType == TSqlTokenType.WhiteSpace)
+            .Sum(a => a.Text.Count(c => c == '\n'));
 
     private static class DiagnosticDefinitions
     {
@@ -108,8 +110,8 @@ public sealed class MissingEmptyLineAroundGoStatementAnalyzer : IScriptAnalyzer
             "AJ5045",
             IssueType.Formatting,
             "Missing empty line before/after GO batch separators",
-            "Missing empty line {0} GO statement.",
-            ["Before/after"],
+            "Missing empty line `{0}` GO statement.",
+            ["before/after"],
             UrlPatterns.DefaultDiagnosticHelp
         );
     }

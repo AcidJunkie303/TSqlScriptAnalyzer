@@ -8,8 +8,8 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Formatting;
 public sealed class MissingEmptyLineAroundGoStatementAnalyzerTests(ITestOutputHelper testOutputHelper)
     : ScriptAnalyzerTestsBase<MissingEmptyLineAroundGoStatementAnalyzer>(testOutputHelper)
 {
-    private static readonly Aj5045Settings RequiredBeforeSettings = new(RequireEmptyLineBeforeGo: true, RequireEmptyLineAfterGo: false);
-    private static readonly Aj5045Settings RequiredAfterSettings = new(RequireEmptyLineBeforeGo: false, RequireEmptyLineAfterGo: true);
+    private static readonly Aj5045Settings RequiredBeforeSettings = new Aj5045SettingsRaw { RequireEmptyLineBeforeGo = true, RequireEmptyLineAfterGo = false }.ToSettings();
+    private static readonly Aj5045Settings RequiredAfterSettings = new Aj5045SettingsRaw { RequireEmptyLineBeforeGo = false, RequireEmptyLineAfterGo = true }.ToSettings();
 
     [Fact]
     public void WithDefaultSettings_WhenNoEmptyLinesAfterAndBefore_ThenOk()
@@ -83,6 +83,18 @@ public sealed class MissingEmptyLineAroundGoStatementAnalyzerTests(ITestOutputHe
                             ▶️AJ5045💛script_0.sql💛💛after✅GO◀️
                             -- some comments
                             PRINT 303
+                            """;
+
+        Verify(RequiredAfterSettings, code);
+    }
+
+    [Fact]
+    public void WithRequiredNewLineAfter_WhenSingleLineAfterGoAndThenEof_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
                             """;
 
         Verify(RequiredAfterSettings, code);

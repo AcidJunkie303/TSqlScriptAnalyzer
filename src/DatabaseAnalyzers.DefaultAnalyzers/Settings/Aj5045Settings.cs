@@ -16,8 +16,8 @@ internal sealed class Aj5045SettingsRaw : IRawDiagnosticSettings<Aj5045Settings>
 
     public Aj5045Settings ToSettings() => new
     (
-        RequireEmptyLineBeforeGo,
-        RequireEmptyLineAfterGo
+        RequireEmptyLineBeforeGo: RequireEmptyLineBeforeGo,
+        RequireEmptyLineAfterGo: RequireEmptyLineAfterGo
     );
 }
 
