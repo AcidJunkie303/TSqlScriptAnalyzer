@@ -47,21 +47,27 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
 
         Parallel.ForEach(allIndices, _parallelOptions, index =>
         {
-            foreach (var column in index.ColumnNames)
+            foreach (var columnName in index.ColumnNames)
             {
                 if (_settings.IgnoreUnusedPrimaryKeyIndices && index.IndexType.HasFlag(TableColumnIndexTypes.PrimaryKey))
                 {
                     continue;
                 }
 
-                var key = new Key(index.DatabaseName, index.SchemaName, index.TableName, column);
+                var key = new Key(index.DatabaseName, index.SchemaName, index.TableName, columnName);
                 if (filteringColumnsByName.ContainsKey(key))
                 {
                     continue;
                 }
 
+                var table = _objectProvider.GetTable(index.DatabaseName, index.SchemaName, index.TableName);
+                if (table?.ForeignKeysByColumnName.ContainsKey(columnName) == true)
+                {
+                    continue;
+                }
+
                 _issueReporter.Report(DiagnosticDefinitions.Default, index.DatabaseName, index.RelativeScriptFilePath, index.IndexName, index.CreationStatement.GetCodeRegion(),
-                    index.DatabaseName, index.SchemaName, index.TableName, column, index.IndexName ?? Constants.UnknownObjectName);
+                    index.DatabaseName, index.SchemaName, index.TableName, columnName, index.IndexName ?? Constants.UnknownObjectName);
             }
         });
     }

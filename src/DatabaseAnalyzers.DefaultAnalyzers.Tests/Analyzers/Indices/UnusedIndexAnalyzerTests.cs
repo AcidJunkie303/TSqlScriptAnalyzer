@@ -125,6 +125,46 @@ public sealed class UnusedIndexAnalyzerTests(ITestOutputHelper testOutputHelper)
         VerifyLocal(settings, code);
     }
 
+    [Fact]
+    public void WhenUnusedIndexOnForeignKeyColumn_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            CREATE TABLE A
+                            (
+                                Id                  INT NOT NULL PRIMARY KEY,
+                                OtherId             NVARCHAR(250) NOT NULL
+                            )
+                            GO
+
+                            CREATE TABLE B
+                            (
+                                Id                  INT NOT NULL PRIMARY KEY,
+                                OtherIdFromTableA   INT NOT NULL,
+                                CONSTRAINT          [FK_B_A] FOREIGN KEY( [OtherIdFromTableA]) REFERENCES [dbo].[A] ([OtherId])
+                            )
+                            GO
+
+                            CREATE NONCLUSTERED INDEX [IX_B_OtherIdFromTableA] ON [dbo].[B]
+                            (
+                                [OtherIdFromTableA] ASC
+                            )
+                            GO
+
+                            CREATE PROCEDURE [dbo].[P1]
+                            AS
+                            BEGIN
+                                SELECT    *
+                                FROM      dbo.B
+                            END
+                            """;
+
+        var settings = new Aj5051Settings(IgnoreUnusedPrimaryKeyIndices: true);
+        VerifyLocal(settings, code);
+    }
+
     private void VerifyLocal(object settings, params string[] scripts)
     {
         var tester = GetDefaultTesterBuilder(scripts)
