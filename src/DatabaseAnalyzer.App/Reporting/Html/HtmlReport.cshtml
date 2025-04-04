@@ -181,7 +181,7 @@
     <div>
         <h2>Issues by Database</h2>
         @{
-            var issueCountByDatabaseName = GetIssueCountByDatabase(Model);
+            var issueCountByDatabaseName = GetIssueCountByDatabase(Model, 8);
         }
         @if (issueCountByDatabaseName.Count == 0)
         {
@@ -319,11 +319,12 @@ else
             .Take(topCount)
             .ToList();
 
-    static IReadOnlyList<KeyValuePair<string, int>> GetIssueCountByDatabase(AnalysisResult analysisResult)
+    static IReadOnlyList<KeyValuePair<string, int>> GetIssueCountByDatabase(AnalysisResult analysisResult, int topCount)
         => analysisResult.Issues
             .GroupBy(a => a.DatabaseName, StringComparer.OrdinalIgnoreCase)
             .Select(a => new KeyValuePair<string, int>(a.Key, a.Count()))
-            .OrderByDescending(a=>a.Value)
+            .OrderByDescending(a => a.Value)
+            .Take(topCount)
             .ToList();
 
     static readonly Regex CodeBlockFinder = new("`(?<content>[^`]*)`", RegexOptions.Compiled | RegexOptions.NonBacktracking, TimeSpan.FromMilliseconds(100));
