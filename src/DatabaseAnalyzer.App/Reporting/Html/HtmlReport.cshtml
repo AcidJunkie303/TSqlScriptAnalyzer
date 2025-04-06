@@ -25,6 +25,7 @@
 </head>
 <body>
 
+</div>
 <div class="statistics-container">
 
     <div>
@@ -245,7 +246,11 @@ else
                 <td>@issue.DatabaseName</td>
                 <td>
                     <a href="@MakeFullPath(issue.RelativeScriptFilePath)@CreateJumpToFragmentUrlSuffix(issue)"
-                       target="_blank">@issue.FullObjectNameOrFileName</a></td>
+                       target="_blank">@issue.FullObjectNameOrFileName</a>
+                    <div class="float-right">
+                        <div class="copy-icon"></div>
+                    </div>
+                </td>
                 <td>@issue.CodeRegion.ToString().Replace("(", "").Replace(")", "")</td>
                 <td>@HighLightCodeParts(issue.Message)</td>
             </tr>
