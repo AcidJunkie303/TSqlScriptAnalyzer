@@ -5,7 +5,7 @@ using Xunit.Abstractions;
 namespace DatabaseAnalyzers.DefaultAnalyzers.Tests.Analyzers.Maintainability;
 
 public sealed class AliasNameIsNameOfTableOrColumnTests(ITestOutputHelper testOutputHelper)
-    : GlobalAnalyzerTestsBase<AliasNameIsNameOfTableOrColumn>(testOutputHelper)
+    : ScriptAnalyzerTestsBase<AliasNameIsNameOfTableOrColumn>(testOutputHelper)
 {
     [Theory]
     [InlineData("xyz", "xyz")]
