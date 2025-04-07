@@ -47,6 +47,11 @@ public sealed class FilteringColumnFinder
                 continue;
             }
 
+            if (IsChildOfFunctionCall(columnReference))
+            {
+                continue;
+            }
+
             var fullObjectName = columnReference.TryGetFirstClassObjectName(_defaultSchemaName, _script, _parentFragmentProvider) ?? _relativeScriptFilePath;
 
             yield return new ColumnReference(column.DatabaseName, column.SchemaName, column.TableName, column.ColumnName, TableSourceType.NotDetermined, columnReference, fullObjectName, null);
@@ -57,4 +62,11 @@ public sealed class FilteringColumnFinder
         => column
             .GetParents(_parentFragmentProvider)
             .Any(a => a is BooleanComparisonExpression or InPredicate);
+
+
+    private bool IsChildOfFunctionCall(TSqlFragment fragment)
+        => fragment
+            .GetParents(_parentFragmentProvider)
+            .Where(a => a is FunctionCall or LeftFunctionCall or RightFunctionCall)
+            .Any();
 }
