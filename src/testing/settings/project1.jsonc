@@ -252,7 +252,8 @@
             "DatabasesToExclude": [],
             "ColumnNamesToExclude": [
                 "Id",
-                "Name"
+                "Name",
+                "Value"
             ]
         },
         "AJ5055": {
