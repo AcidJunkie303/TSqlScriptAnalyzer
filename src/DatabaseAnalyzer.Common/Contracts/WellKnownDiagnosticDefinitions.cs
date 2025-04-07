@@ -21,7 +21,7 @@ public static class WellKnownDiagnosticDefinitions
         IssueType.Warning,
         "Missing table alias",
         "The column expression `{0}` cannot be resolved when more than one data source (table, view, etc.) is involved in the statement. " +
-        "To solve this issue, make sure that all data sources are using an alias.",
+        "To solve this issue, make sure that all columns are referenced using an alias.",
         ["Column reference expression"],
         new Uri("https://github.com/AcidJunkie303/TSqlScriptAnalyzer/blob/main/docs/diagnostics/AJ9001.md")
     );
