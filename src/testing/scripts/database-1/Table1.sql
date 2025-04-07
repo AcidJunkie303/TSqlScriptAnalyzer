@@ -16,4 +16,17 @@ CREATE INDEX IX_Table1_Column2_Column3 ON dbo.Table1 (Column2, Column3)
 
 -- Create an individual index on Column4
 CREATE INDEX IX_Table1_Column4 ON dbo.Table1 (Column4)
+GO
 
+CREATE TABLE ️AJ5054Test1
+(
+    Id INT IDENTITY(1, 1) PRIMARY KEY,
+    MyColumn1 NVARCHAR(100) NOT NULL
+);
+GO
+
+CREATE TABLE ️AJ5054Test2
+(
+    Id INT IDENTITY(1, 1) PRIMARY KEY,
+    MyColumn1 INT NOT NULL
+);

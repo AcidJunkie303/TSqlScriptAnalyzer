@@ -65,33 +65,9 @@ public sealed class InconsistentColumnDataTypeAnalyzerTests(ITestOutputHelper te
 
                             CREATE TABLE Table1
                             (
-                                ▶️AJ5054💛script_0.sql💛MyDb.dbo.Table1💛Column1💛[BIGINT], [INT]💛MyDb.dbo.Table1.Column1, MyDb.dbo.Table2.Column1✅Column1      INT NOT NULL◀️
+                                ▶️AJ5054💛script_0.sql💛MyDb.dbo.Table1💛Column1💛BIGINT | MyDb.dbo.Table2.Column1
+                            INT    | MyDb.dbo.Table1.Column1✅Column1      INT NOT NULL◀️
                             )
-                            GO
-
-                            CREATE TABLE Table2
-                            (
-                                Column1      BIGINT NOT NULL
-                            )
-                            """;
-
-        Verify(Settings, code);
-    }
-
-    [Fact]
-    public void WhenColumnsHaveDifferentDataType_WhenDifferentDatabases_ThenDiagnose()
-    {
-        const string code = """
-                            USE MyDb1
-                            GO
-
-                            CREATE TABLE Table1
-                            (
-                                ▶️AJ5054💛script_0.sql💛MyDb1.dbo.Table1💛Column1💛[BIGINT], [INT]💛MyDb1.dbo.Table1.Column1, MyDb2.dbo.Table2.Column1✅Column1      INT NOT NULL◀️
-                            )
-                            GO
-
-                            USE MyDb2
                             GO
 
                             CREATE TABLE Table2

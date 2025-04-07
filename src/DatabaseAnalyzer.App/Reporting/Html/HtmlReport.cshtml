@@ -327,7 +327,8 @@ else
             .Take(topCount)
             .ToList();
 
-    static readonly Regex CodeBlockFinder = new("`(?<content>[^`]*)`", RegexOptions.Compiled | RegexOptions.NonBacktracking, TimeSpan.FromMilliseconds(100));
+    static readonly Regex CodeFragmentFinder = new("`(?<content>[^`]*)`", RegexOptions.Compiled | RegexOptions.NonBacktracking, TimeSpan.FromMilliseconds(100));
+    static readonly Regex CodeBlockFinder = new("```(?<content>[^`]*)```", RegexOptions.Compiled | RegexOptions.NonBacktracking, TimeSpan.FromMilliseconds(100));
 
     string MakeFullPath(string relativeFilePath) => System.IO.Path.Combine(Model.ScriptsRootDirectoryPath, relativeFilePath);
 
@@ -335,18 +336,32 @@ else
 
     static HtmlString HighLightCodeParts(string message)
     {
-        var markup = CodeBlockFinder.Replace(
+        var data = CodeBlockFinder.Replace(
             HttpUtility.HtmlEncode(message),
             match =>
             {
                 var content = match.Groups["content"].Value;
                 var encodedContent = HttpUtility.HtmlEncode(content)
-                    .Replace("&amp;#39;", "'"); // allow single-quotes
+                    .Replace("&amp;#39;", "'") // allow single-quotes
+                    .Replace("\r\n", "<br/>")
+                    .Replace("\n", "<br/>");
+
+                return $"<br/><pre class=\"code\">{encodedContent}</pre>";
+            });
+
+        data = CodeFragmentFinder.Replace(
+            data,
+            match =>
+            {
+                var content = match.Groups["content"].Value;
+                var encodedContent = HttpUtility.HtmlEncode(content)
+                    .Replace("&amp;#39;", "'") // allow single-quotes
+                    .Replace("\r\n", "<br/>")
+                    .Replace("\n", "<br/>");
 
                 return $"<pre class=\"code\">{encodedContent}</pre>";
             });
-
-        return new HtmlString(markup);
+        return new HtmlString(data);
     }
 
     string? GetIssueLineContent(IIssue issue)
