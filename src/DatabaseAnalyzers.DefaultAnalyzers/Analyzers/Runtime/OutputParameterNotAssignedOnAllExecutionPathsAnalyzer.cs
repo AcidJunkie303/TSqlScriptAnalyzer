@@ -72,7 +72,7 @@ public sealed class OutputParameterNotAssignedOnAllExecutionPathsAnalyzer : IScr
         {
             BeginScope();
 
-            base.Visit(node);
+            Visit(node);
 
             EndScopeAndPropagateToParent(propagateToParent: true);
         }
@@ -146,19 +146,20 @@ public sealed class OutputParameterNotAssignedOnAllExecutionPathsAnalyzer : IScr
             // that it is never executed (worst case)
             if (node.Predicate.IsAlwaysTruePredicate())
             {
-                base.Visit(node);
+                Visit(node);
             }
         }
 
         public override void ExplicitVisit(AssignmentSetClause node)
         {
-            var isSearchedParameter = node.Variable.Name.EqualsOrdinalIgnoreCase(_variableName);
+            var variableName = node.Variable?.Name;
+            var isSearchedParameter = variableName.EqualsOrdinalIgnoreCase(_variableName);
             if (isSearchedParameter)
             {
                 SetAssignedInCurrentScope();
             }
 
-            base.Visit(node);
+            Visit(node);
         }
 
         public override void ExplicitVisit(SetVariableStatement node)
@@ -169,31 +170,31 @@ public sealed class OutputParameterNotAssignedOnAllExecutionPathsAnalyzer : IScr
                 SetAssignedInCurrentScope();
             }
 
-            base.Visit(node);
+            Visit(node);
         }
 
         public override void ExplicitVisit(BreakStatement node)
         {
             SetSkippedInCurrentScope();
-            base.Visit(node);
+            Visit(node);
         }
 
         public override void ExplicitVisit(ContinueStatement node)
         {
             SetSkippedInCurrentScope();
-            base.Visit(node);
+            Visit(node);
         }
 
         public override void ExplicitVisit(ThrowStatement node)
         {
             SetSkippedInCurrentScope();
-            base.Visit(node);
+            Visit(node);
         }
 
         public override void ExplicitVisit(GoToStatement node)
         {
             SetSkippedInCurrentScope();
-            base.Visit(node);
+            Visit(node);
         }
 
         public override void ExplicitVisit(ExecuteStatement node)
@@ -203,7 +204,7 @@ public sealed class OutputParameterNotAssignedOnAllExecutionPathsAnalyzer : IScr
                 SetAssignedInCurrentScope();
             }
 
-            base.Visit(node);
+            Visit(node);
 
             bool IsAssignedByResultOfProcedureCall()
                 => node.ExecuteSpecification?.Variable is not null
