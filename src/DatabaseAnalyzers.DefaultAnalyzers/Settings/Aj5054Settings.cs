@@ -17,10 +17,13 @@ internal sealed class Aj5054SettingsRaw : IRawDiagnosticSettings<Aj5054Settings>
     [Description("Column names to ignore.")]
     public IReadOnlyCollection<string?>? ColumnNamesToExclude { get; set; }
 
+    public Aj5054LayoutType? LayoutType { get; set; }
+
     public Aj5054Settings ToSettings() => new
     (
         ToFrozenSet(DatabasesToExclude),
-        ToFrozenSet(ColumnNamesToExclude)
+        ToFrozenSet(ColumnNamesToExclude),
+        LayoutType ?? Aj5054LayoutType.DataTypeThenFullColumnName
     );
 
     private static FrozenSet<string> ToFrozenSet(IReadOnlyCollection<string?>? values)
@@ -32,7 +35,8 @@ internal sealed class Aj5054SettingsRaw : IRawDiagnosticSettings<Aj5054Settings>
 
 public sealed record Aj5054Settings(
     FrozenSet<string> DatabasesToExclude,
-    FrozenSet<string> ColumnNamesToExclude
+    FrozenSet<string> ColumnNamesToExclude,
+    Aj5054LayoutType LayoutType
 ) : IDiagnosticSettings<Aj5054Settings>
 {
     public static string DiagnosticId => "AJ5054";

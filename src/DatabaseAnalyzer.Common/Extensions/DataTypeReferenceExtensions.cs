@@ -26,11 +26,14 @@ public static class DataTypeReferenceExtensions
     }
 
     public static string ToDataTypeString(this DataTypeReference dataTypeReference)
+        => ToDataTypeString(dataTypeReference, true);
+
+    public static string ToDataTypeString(this DataTypeReference dataTypeReference, bool quote)
     {
         var builder = StringBuilderPool.Get();
         using var _ = DisposeActionFactory.Create(() => StringBuilderPool.Return(builder));
 
-        AppendDataType(builder, dataTypeReference);
+        AppendDataType(builder, dataTypeReference, quote);
         if (dataTypeReference is ParameterizedDataTypeReference parameterizedDataTypeReference)
         {
             AppendParameters(builder, parameterizedDataTypeReference);
@@ -38,7 +41,7 @@ public static class DataTypeReferenceExtensions
 
         return builder.ToString();
 
-        static void AppendDataType(StringBuilder builder, DataTypeReference? sqlDataTypeReference)
+        static void AppendDataType(StringBuilder builder, DataTypeReference? sqlDataTypeReference, bool quote)
         {
             if (sqlDataTypeReference?.Name?.Identifiers is null)
             {
@@ -52,10 +55,17 @@ public static class DataTypeReferenceExtensions
                     builder.Append('.');
                 }
 
-                builder
-                    .Append('[')
-                    .Append(part.Value)
-                    .Append(']');
+                if (quote)
+                {
+                    builder.Append('[');
+                }
+
+                builder.Append(part.Value);
+
+                if (quote)
+                {
+                    builder.Append(']');
+                }
             }
         }
 
