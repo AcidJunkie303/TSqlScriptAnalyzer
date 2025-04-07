@@ -1,7 +1,6 @@
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
-using DatabaseAnalyzer.Common.Models;
 using DatabaseAnalyzer.Common.SqlParsing;
 using DatabaseAnalyzers.DefaultAnalyzers.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
@@ -39,19 +38,19 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
     {
         if (!_context.DisabledDiagnosticIds.Contains(DiagnosticDefinitions.FilteringColumnNotIndexed.DiagnosticId))
         {
-            AnalyzeModules(_context, _objectProvider.DatabasesByName);
+            AnalyzeModules(_context);
         }
 
         if (!_context.DisabledDiagnosticIds.Contains(DiagnosticDefinitions.ForeignKeyColumnNotIndexed.DiagnosticId))
         {
-            AnalyzeForeignKeys(_objectProvider.DatabasesByName);
+            AnalyzeForeignKeys();
         }
     }
 
-    private void AnalyzeForeignKeys(IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
+    private void AnalyzeForeignKeys()
     {
-        var tables = databasesByName
-            .SelectMany(db => db.Value.SchemasByName.Values)
+        var tables = _objectProvider.DatabasesByName.Values
+            .SelectMany(db => db.SchemasByName.Values)
             .SelectMany(schema => schema.TablesByName.Values);
 
         foreach (var table in tables)
@@ -88,7 +87,7 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
         }
     }
 
-    private void AnalyzeModules(IGlobalAnalysisContext context, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
+    private void AnalyzeModules(IGlobalAnalysisContext context)
     {
         foreach (var script in context.ErrorFreeScripts)
         {
@@ -105,22 +104,18 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
                     continue;
                 }
 
-                AnalyzeStatements(script, statementList, databasesByName);
+                AnalyzeStatements(script, statementList);
             }
         }
     }
 
-    private void AnalyzeStatements(IScriptModel script, TSqlFragment fragment, IReadOnlyDictionary<string, DatabaseInformation> databasesByName)
+    private void AnalyzeStatements(IScriptModel script, TSqlFragment fragment)
     {
         var finder = new FilteringColumnFinder(_issueReporter, _astService, script.ParsedScript, script.RelativeScriptFilePath, _context.DefaultSchemaName, script.ParentFragmentProvider);
 
         foreach (var filteringColumn in finder.Find(fragment))
         {
-            var table = databasesByName
-                .GetValueOrDefault(filteringColumn.DatabaseName)
-                ?.SchemasByName.GetValueOrDefault(filteringColumn.SchemaName)
-                ?.TablesByName.GetValueOrDefault(filteringColumn.TableName);
-
+            var table = _objectProvider.GetTable(filteringColumn.DatabaseName, filteringColumn.SchemaName, filteringColumn.TableName);
             if (table is null)
             {
                 continue;
@@ -133,17 +128,17 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
 
             if (table.Indices.Any(a => a.ColumnNames.Contains(filteringColumn.ColumnName)))
             {
-                return;
+                continue;
             }
 
             if (_missingIndexSettings.MissingIndexSuppressions.Any(a => a.FullColumnNamePattern.IsMatch(filteringColumn.FullName)))
             {
-                return;
+                continue;
             }
 
             if (_astService.IsChildOfFunctionEnumParameter(filteringColumn.Fragment, script.ParentFragmentProvider))
             {
-                return;
+                continue;
             }
 
             var column = table.Columns.FirstOrDefault(a => a.ObjectName.EqualsOrdinalIgnoreCase(filteringColumn.ColumnName));
