@@ -166,7 +166,7 @@
             },
             "TableAliasName": {
                 "Pattern": "\\A[a-z0-9_]+",
-                "Description": "View names must start with a lower case letter and followed by underscores, lower case letters or numbers only"
+                "Description": "Table aliases must start with a lower case letter and followed by underscores, lower case letters or numbers only"
             },
             "IgnoredObjectNamePatterns": [
                 "MyDb.MySchema.*"
