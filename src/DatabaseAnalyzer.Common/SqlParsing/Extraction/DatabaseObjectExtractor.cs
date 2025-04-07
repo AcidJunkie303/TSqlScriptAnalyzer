@@ -88,6 +88,27 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
             );
     }
 
+    private static IReadOnlyDictionary<string, IReadOnlyDictionary<string, List<T>>>
+        GroupByDatabaseNameBySchemaName<T>(IReadOnlyList<T> items, Func<T, string> schemaNameGetter)
+        where T : IDatabaseObject
+    {
+        return items
+            .GroupBy(x => x.DatabaseName, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary
+            (
+                comparer: StringComparer.OrdinalIgnoreCase,
+                keySelector: a => a.Key,
+                elementSelector: a => a
+                    .GroupBy(schemaNameGetter, StringComparer.OrdinalIgnoreCase)
+                    .ToDictionary
+                    (
+                        comparer: StringComparer.OrdinalIgnoreCase,
+                        keySelector: b => b.Key,
+                        elementSelector: b => b.ToList()
+                    ).AsIReadOnlyDictionary()
+            ).AsIReadOnlyDictionary();
+    }
+
     private List<T> Deduplicate<T>(IEnumerable<T> source) where T : IDatabaseObject
     {
         var grouped = source
@@ -99,23 +120,33 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
             if (group.Count > 1)
             {
                 var databaseObject = group[0];
-                var scriptFilePaths = group
-                    .Select(static a => a.RelativeScriptFilePath)
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .StringJoin("\n");
-
-                _issueReporter.Report(WellKnownDiagnosticDefinitions.DuplicateObjectCreationStatement,
+                Report(
                     databaseObject.DatabaseName,
                     databaseObject.RelativeScriptFilePath,
                     databaseObject.FullNameParts.StringJoin('.'),
                     databaseObject.CreationStatement.GetCodeRegion(),
-                    databaseObject.FullNameParts.StringJoin('.'),
-                    scriptFilePaths
+                    group.Select(static a => a.RelativeScriptFilePath)
                 );
             }
         }
 
         return grouped.ConvertAll(static a => a[0]);
+    }
+
+    private void Report(string databaseName, string relativeScriptFilePath, string fullObjectName, CodeRegion codeRegion, IEnumerable<string> scriptFilePaths)
+    {
+        var concatenatedScriptFilePaths = scriptFilePaths
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .StringJoin("\n");
+
+        _issueReporter.Report(WellKnownDiagnosticDefinitions.DuplicateObjectCreationStatement,
+            databaseName,
+            relativeScriptFilePath,
+            fullObjectName,
+            codeRegion,
+            fullObjectName,
+            concatenatedScriptFilePaths
+        );
     }
 
     private ISchemaBoundObject[] RemoveAndReportDuplicates(ISchemaBoundObject[] objects)
@@ -136,18 +167,12 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
             if (databaseObjects.Count > 1)
             {
                 var databaseObject = databaseObjects[0];
-                var scriptFilePaths = databaseObjects
-                    .Select(static a => a.RelativeScriptFilePath)
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .StringJoin("\n");
 
-                _issueReporter.Report(WellKnownDiagnosticDefinitions.DuplicateObjectCreationStatement,
-                    databaseObject.DatabaseName,
+                Report(databaseObject.DatabaseName,
                     databaseObject.RelativeScriptFilePath,
                     databaseObject.FullNameParts.StringJoin('.'),
                     databaseObject.CreationStatement.GetCodeRegion(),
-                    databaseObject.FullNameParts.StringJoin('.'),
-                    scriptFilePaths
+                    databaseObjects.Select(static a => a.RelativeScriptFilePath)
                 );
             }
         }
@@ -186,13 +211,12 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
                 var table = matchingTables[0];
                 if (matchingTables.Count > 1)
                 {
-                    _issueReporter.Report(WellKnownDiagnosticDefinitions.DuplicateObjectCreationStatement,
+                    Report(
                         table.DatabaseName,
                         table.RelativeScriptFilePath,
-                        table.FullNameParts.StringJoin('.'),
-                        table.CreationStatement.GetCodeRegion(),
                         table.FullName,
-                        matchingTables.Select(x => x.RelativeScriptFilePath).Distinct(StringComparer.OrdinalIgnoreCase).StringJoin("\n")
+                        table.CreationStatement.GetCodeRegion(),
+                        matchingTables.Select(x => x.RelativeScriptFilePath)
                     );
                 }
 
@@ -207,26 +231,5 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
                 };
             })
             .ToList();
-    }
-
-    private static IReadOnlyDictionary<string, IReadOnlyDictionary<string, List<T>>>
-        GroupByDatabaseNameBySchemaName<T>(IReadOnlyList<T> items, Func<T, string> schemaNameGetter)
-        where T : IDatabaseObject
-    {
-        return items
-            .GroupBy(x => x.DatabaseName, StringComparer.OrdinalIgnoreCase)
-            .ToDictionary
-            (
-                comparer: StringComparer.OrdinalIgnoreCase,
-                keySelector: a => a.Key,
-                elementSelector: a => a
-                    .GroupBy(schemaNameGetter, StringComparer.OrdinalIgnoreCase)
-                    .ToDictionary
-                    (
-                        comparer: StringComparer.OrdinalIgnoreCase,
-                        keySelector: b => b.Key,
-                        elementSelector: b => b.ToList()
-                    ).AsIReadOnlyDictionary()
-            ).AsIReadOnlyDictionary();
     }
 }
