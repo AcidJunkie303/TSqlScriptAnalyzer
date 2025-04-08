@@ -341,6 +341,12 @@
         {
             "ValueRequiredForNullableParameters": true,
             "ValueRequiredForParametersWithDefaultValue": true
+        },
+        "AJ9002": // Duplicate object creation
+        {
+            "ExcludedFilePathPatterns": [
+                "*__alter__*.sql"
+            ]
         }
     },
     "Services": {
