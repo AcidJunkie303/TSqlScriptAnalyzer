@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.Models;
+using DatabaseAnalyzer.Common.Settings;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace DatabaseAnalyzer.Common.SqlParsing.Extraction;
@@ -11,10 +12,12 @@ namespace DatabaseAnalyzer.Common.SqlParsing.Extraction;
 public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
 {
     private readonly IIssueReporter _issueReporter;
+    private readonly Aj9002Settings _aj9002Settings;
 
-    public DatabaseObjectExtractor(IIssueReporter issueReporter)
+    public DatabaseObjectExtractor(IIssueReporter issueReporter, Aj9002Settings aj9002Settings)
     {
         _issueReporter = issueReporter;
+        _aj9002Settings = aj9002Settings;
     }
 
     [SuppressMessage("Design", "MA0051:Method is too long")]
@@ -135,10 +138,17 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
 
     private void Report(string databaseName, string relativeScriptFilePath, string fullObjectName, CodeRegion codeRegion, IEnumerable<string> scriptFilePaths)
     {
-        var concatenatedScriptFilePaths = scriptFilePaths
+        var filteredScriptFilePaths = scriptFilePaths
+            .Where(a => !IsScriptExcluded(a, _aj9002Settings))
             .Distinct(StringComparer.OrdinalIgnoreCase)
-            .StringJoin("\n");
+            .ToList();
 
+        if (filteredScriptFilePaths.Count < 2)
+        {
+            return;
+        }
+
+        var concatenatedScriptFilePaths = filteredScriptFilePaths.StringJoin("\n");
         _issueReporter.Report(WellKnownDiagnosticDefinitions.DuplicateObjectCreationStatement,
             databaseName,
             relativeScriptFilePath,
@@ -147,6 +157,10 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
             fullObjectName,
             concatenatedScriptFilePaths
         );
+
+        static bool IsScriptExcluded(string relativeScriptFilePath, Aj9002Settings settings)
+            => settings.ExcludedFilePathPatterns.Count != 0 && settings.ExcludedFilePathPatterns.Any(pattern => pattern.IsMatch(relativeScriptFilePath));
+
     }
 
     private ISchemaBoundObject[] RemoveAndReportDuplicates(ISchemaBoundObject[] objects)

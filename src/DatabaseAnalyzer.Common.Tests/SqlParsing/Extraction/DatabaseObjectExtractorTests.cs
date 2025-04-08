@@ -1,6 +1,7 @@
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Common.Models;
+using DatabaseAnalyzer.Common.Settings;
 using DatabaseAnalyzer.Common.SqlParsing.Extraction;
 using DatabaseAnalyzer.Common.Tests.Fakes;
 using FluentAssertions;
@@ -61,7 +62,7 @@ public sealed class DatabaseObjectExtractorTests
 
                             """;
         // arrange
-        var sut = new DatabaseObjectExtractor(new FakeIssueReporter());
+        var sut = new DatabaseObjectExtractor(new FakeIssueReporter(), Aj9002Settings.Default);
         var script = ParseScript("DB-1", code);
 
         // act
@@ -135,7 +136,7 @@ public sealed class DatabaseObjectExtractorTests
                             """;
         // arrange
         var issueReporter = new FakeIssueReporter();
-        var sut = new DatabaseObjectExtractor(issueReporter);
+        var sut = new DatabaseObjectExtractor(issueReporter, Aj9002Settings.Default);
         var script = ParseScript("DB-1", code);
 
         // act

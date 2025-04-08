@@ -101,9 +101,10 @@ public sealed class AnalyzerFactory : IDisposable
                 services.AddSingleton<IAstService, AstService>();
                 services.AddSingleton<ITableResolverFactory, TableResolverFactory>();
                 services.AddSingleton<IColumnResolverFactory, ColumnResolverFactory>();
-                services.AddSingleton<IObjectProvider>(_ =>
+                services.AddSingleton<IObjectProvider>(sp =>
                 {
-                    var databasesByName = new DatabaseObjectExtractor(_issueReporter)
+                    var settings = sp.GetRequiredService<Aj9002Settings>();
+                    var databasesByName = new DatabaseObjectExtractor(_issueReporter, settings)
                         .Extract(_scripts, _settings.DefaultSchemaName);
                     return new ObjectProvider(databasesByName);
                 });
@@ -178,9 +179,8 @@ public sealed class AnalyzerFactory : IDisposable
 
     private static void RegisterInternalSettings(IServiceCollection services, IConfiguration configuration)
     {
-        var section = configuration.GetSection("Services:AstService");
-
-        services.AddSingleton(section.Get<AstServiceSettingsRaw>()?.ToSettings() ?? AstServiceSettings.Default);
+        services.AddSingleton(configuration.GetSection("Services:AstService").Get<AstServiceSettingsRaw>()?.ToSettings() ?? AstServiceSettings.Default);
+        services.AddSingleton(configuration.GetSection("Diagnostics:AJ9002").Get<Aj9002SettingsRaw>()?.ToSettings() ?? Aj9002Settings.Default);
     }
 
     private static void RegisterDiagnosticDefinitions(IServiceCollection services, IReadOnlyList<PluginAssembly> pluginAssemblies)
