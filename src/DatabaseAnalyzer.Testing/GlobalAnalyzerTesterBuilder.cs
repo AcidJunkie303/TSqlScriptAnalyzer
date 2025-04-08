@@ -165,7 +165,7 @@ public sealed class GlobalAnalyzerTesterBuilder<TAnalyzer>
                     services.AddSingleton(service.InterfaceType, service.Implementation);
                 }
 
-                var databasesByName = new DatabaseObjectExtractor(new IssueReporter())
+                var databasesByName = new DatabaseObjectExtractor(new IssueReporter(), Aj9002Settings.Default)
                     .Extract(analysisContext.Scripts, analysisContext.DefaultSchemaName);
 
                 services.AddSingleton<IObjectProvider>(new ObjectProvider(databasesByName));
