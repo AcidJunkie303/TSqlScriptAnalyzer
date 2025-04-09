@@ -90,6 +90,9 @@
         <None Update="docs\source\AJ5067.main.md">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
+        <None Update="docs\source\AJ9002.settings.md">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
     <ItemGroup>

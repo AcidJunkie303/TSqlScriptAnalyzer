@@ -52,6 +52,11 @@ public sealed class StatementsMustBeginOnNewLineAnalyzer : IScriptAnalyzer
                 continue;
             }
 
+            if (token.TokenType == TSqlTokenType.Else)
+            {
+                continue;
+            }
+
             if (token.TokenType == TSqlTokenType.WhiteSpace)
             {
                 if (token.Text.Contains('\n', StringComparison.Ordinal))
