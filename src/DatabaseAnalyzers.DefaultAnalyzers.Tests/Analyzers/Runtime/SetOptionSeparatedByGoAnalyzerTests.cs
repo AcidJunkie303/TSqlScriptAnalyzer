@@ -66,4 +66,28 @@ public sealed class SetOptionSeparatedByGoAnalyzerTests(ITestOutputHelper testOu
                             """;
         Verify(code);
     }
+
+    [Fact]
+    public void WhenStatementsBetweenSetOption_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            SET ANSI_NULLS ON
+                            SET ANSI_PADDING ON
+                            SET QUOTED_IDENTIFIER ON
+                            GO
+
+                            CREATE TABLE T1
+                            (
+                                Id INT
+                            )
+                            GO
+
+                            SET ANSI_PADDING OFF
+                            GO
+                            """;
+        Verify(code);
+    }
 }
