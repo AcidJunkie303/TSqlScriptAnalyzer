@@ -21,7 +21,7 @@ public sealed class SetOptionSeparatedByGoAnalyzer : IScriptAnalyzer
 
     public void AnalyzeScript()
     {
-        foreach (var group in GetBatchGroupsWhichCanbeCombined(_script.ParsedScript))
+        foreach (var group in GetBatchGroupsWhichCanBeCombined(_script.ParsedScript))
         {
             var firstBatchCodeRegion = group[0].GetCodeRegion();
             var lastBatchCodeRegion = group[^1].GetCodeRegion();
@@ -33,7 +33,7 @@ public sealed class SetOptionSeparatedByGoAnalyzer : IScriptAnalyzer
         }
     }
 
-    private static IEnumerable<List<TSqlBatch>> GetBatchGroupsWhichCanbeCombined(TSqlScript script)
+    private static IEnumerable<List<TSqlBatch>> GetBatchGroupsWhichCanBeCombined(TSqlScript script)
     {
         var groups = new List<List<TSqlBatch>>(10);
         var currentGroup = new List<TSqlBatch>();
@@ -46,7 +46,7 @@ public sealed class SetOptionSeparatedByGoAnalyzer : IScriptAnalyzer
             {
                 currentGroup.Add(batch);
             }
-            else if (currentGroup.Count > 1)
+            else
             {
                 currentGroup = [];
                 groups.Add(currentGroup);
