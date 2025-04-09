@@ -1,4 +1,5 @@
 // TODO: remove when on .NET 9.0 only
+
 #if NET8_0
 using System.Collections.Frozen;
 #endif
@@ -96,10 +97,46 @@ public sealed class StatementsMustBeginOnNewLineAnalyzerTests(ITestOutputHelper 
                             """;
 // TODO: remove when on .NET 9.0 only
 #if NET8_0
-        var settings = new Aj5023Settings(new[]{TSqlTokenType.Semicolon}.ToFrozenSet());
+        var settings = new Aj5023Settings(new[] { TSqlTokenType.Semicolon }.ToFrozenSet());
 #else
         var settings = new Aj5023Settings([TSqlTokenType.Semicolon]);
 #endif
         Verify(settings, code);
+    }
+
+    [Fact]
+    public void WhenIfElseIf_WithoutBeginEnd_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            IF (1=1)
+                                PRINT 'tb'
+                            ELSE IF (2=2)
+                                PRINT '303'
+                            """;
+
+        Verify(Aj5023Settings.Default, code);
+    }
+
+    [Fact]
+    public void WhenIfElseIf_WithBeginEnd_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            IF (1=1)
+                            BEGIN
+                                PRINT 'tb'
+                            END
+                            ELSE IF (2=2)
+                            BEGIN
+                                PRINT '303'
+                            END
+                            """;
+
+        Verify(Aj5023Settings.Default, code);
     }
 }

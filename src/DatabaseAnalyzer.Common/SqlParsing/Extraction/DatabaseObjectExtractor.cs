@@ -112,57 +112,6 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
             ).AsIReadOnlyDictionary();
     }
 
-    private List<T> Deduplicate<T>(IEnumerable<T> source) where T : IDatabaseObject
-    {
-        var grouped = source
-            .GroupBy(static a => a.FullName, static (_, objects) => objects.ToList(), StringComparer.OrdinalIgnoreCase)
-            .ToList();
-
-        foreach (var group in grouped)
-        {
-            if (group.Count > 1)
-            {
-                var databaseObject = group[0];
-                Report(
-                    databaseObject.DatabaseName,
-                    databaseObject.RelativeScriptFilePath,
-                    databaseObject.FullNameParts.StringJoin('.'),
-                    databaseObject.CreationStatement.GetCodeRegion(),
-                    group.Select(static a => a.RelativeScriptFilePath)
-                );
-            }
-        }
-
-        return grouped.ConvertAll(static a => a[0]);
-    }
-
-    private void Report(string databaseName, string relativeScriptFilePath, string fullObjectName, CodeRegion codeRegion, IEnumerable<string> scriptFilePaths)
-    {
-        var filteredScriptFilePaths = scriptFilePaths
-            .Where(a => !IsScriptExcluded(a, _aj9002Settings))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToList();
-
-        if (filteredScriptFilePaths.Count < 2)
-        {
-            return;
-        }
-
-        var concatenatedScriptFilePaths = filteredScriptFilePaths.StringJoin("\n");
-        _issueReporter.Report(WellKnownDiagnosticDefinitions.DuplicateObjectCreationStatement,
-            databaseName,
-            relativeScriptFilePath,
-            fullObjectName,
-            codeRegion,
-            fullObjectName,
-            concatenatedScriptFilePaths
-        );
-
-        static bool IsScriptExcluded(string relativeScriptFilePath, Aj9002Settings settings)
-            => settings.ExcludedFilePathPatterns.Count != 0 && settings.ExcludedFilePathPatterns.Any(pattern => pattern.IsMatch(relativeScriptFilePath));
-
-    }
-
     private ISchemaBoundObject[] RemoveAndReportDuplicates(ISchemaBoundObject[] objects)
     {
         var indicesWithoutName = objects
@@ -180,14 +129,7 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
         {
             if (databaseObjects.Count > 1)
             {
-                var databaseObject = databaseObjects[0];
-
-                Report(databaseObject.DatabaseName,
-                    databaseObject.RelativeScriptFilePath,
-                    databaseObject.FullNameParts.StringJoin('.'),
-                    databaseObject.CreationStatement.GetCodeRegion(),
-                    databaseObjects.Select(static a => a.RelativeScriptFilePath)
-                );
+                CheckAndReportDuplicates(databaseObjects);
             }
         }
 
@@ -195,6 +137,55 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
             .Select(static a => a[0])
             .Concat(indicesWithoutName)
             .ToArray();
+    }
+
+    private List<T> Deduplicate<T>(IEnumerable<T> source)
+        where T : IDatabaseObject
+    {
+        var grouped = source
+            .GroupBy(static a => a.FullName, static (_, objects) => objects.ToList(), StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        foreach (var group in grouped)
+        {
+            if (group.Count > 1)
+            {
+                CheckAndReportDuplicates(group);
+            }
+        }
+
+        return grouped.ConvertAll(static a => a[0]);
+    }
+
+    private void CheckAndReportDuplicates<T>(IReadOnlyList<T> duplicateDatabaseObjects)
+        where T : IDatabaseObject
+    {
+        var filteredDatabaseObjects = duplicateDatabaseObjects
+            .Where(a => !IsScriptExcluded(a.RelativeScriptFilePath, _aj9002Settings))
+            .ToList();
+
+        if (filteredDatabaseObjects.Count < 2)
+        {
+            return;
+        }
+
+        Report(filteredDatabaseObjects);
+
+        static bool IsScriptExcluded(string relativeScriptFilePath, Aj9002Settings settings)
+            => settings.ExcludedFilePathPatterns.Count != 0 && settings.ExcludedFilePathPatterns.Any(pattern => pattern.IsMatch(relativeScriptFilePath));
+    }
+
+    private void Report<T>(IReadOnlyList<T> duplicateDatabaseObjects)
+        where T : IDatabaseObject
+    {
+        _issueReporter.Report(WellKnownDiagnosticDefinitions.DuplicateObjectCreationStatement,
+            duplicateDatabaseObjects[0].DatabaseName,
+            duplicateDatabaseObjects[0].RelativeScriptFilePath,
+            duplicateDatabaseObjects[0].FullName,
+            duplicateDatabaseObjects[0].CreationStatement.GetCodeRegion(),
+            duplicateDatabaseObjects[0].FullName,
+            duplicateDatabaseObjects.Select(a => a.RelativeScriptFilePath).StringJoin("\n")
+        );
     }
 
     private List<TableInformation> AggregateTables(IReadOnlyList<TableInformation> tables, IReadOnlyList<ForeignKeyConstraintInformation> foreignKeyConstraints, IReadOnlyList<IndexInformation> indices)
@@ -225,13 +216,7 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
                 var table = matchingTables[0];
                 if (matchingTables.Count > 1)
                 {
-                    Report(
-                        table.DatabaseName,
-                        table.RelativeScriptFilePath,
-                        table.FullName,
-                        table.CreationStatement.GetCodeRegion(),
-                        matchingTables.Select(x => x.RelativeScriptFilePath)
-                    );
+                    Report(matchingTables);
                 }
 
                 var key = a.Key;
