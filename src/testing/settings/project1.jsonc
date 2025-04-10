@@ -22,7 +22,7 @@
         ],
         "AJ5001": // Excessive string concatenation
         {
-            "MaxAllowedConcatenations": 2
+            "MaxAllowedConcatenations": 5
         },
         "AJ5003": // Wrong USE DATABASE name statement
         {
