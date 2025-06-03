@@ -258,4 +258,24 @@ public sealed class OutputParameterNotAssignedOnAllExecutionPathsAnalyzerTests(I
 
         Verify(code);
     }
+
+    [Theory]
+    [InlineData("NULL")]
+    [InlineData("303")]
+    public void WhenHasDefaultValue_ThenOk(string defaultValue)
+    {
+        var code = $"""
+                    USE MyDb
+                    GO
+
+                    CREATE PROCEDURE [dbo].[P1]
+                        @Param1 INT = {defaultValue} OUTPUT
+                    AS
+                    BEGIN
+                        SELECT 1
+                    END
+                    """;
+
+        Verify(code);
+    }
 }
