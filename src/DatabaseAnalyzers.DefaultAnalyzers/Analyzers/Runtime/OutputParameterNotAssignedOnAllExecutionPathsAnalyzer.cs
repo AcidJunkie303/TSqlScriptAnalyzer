@@ -26,6 +26,8 @@ public sealed class OutputParameterNotAssignedOnAllExecutionPathsAnalyzer : IScr
         }
     }
 
+    private static bool HasDefaultValue(ProcedureParameter parameter) => parameter.Value is not null;
+
     private void AnalyzeProcedureStatementBody(ProcedureStatementBody procedure)
     {
         if ((procedure.StatementList?.Statements).IsNullOrEmpty())
@@ -41,6 +43,11 @@ public sealed class OutputParameterNotAssignedOnAllExecutionPathsAnalyzer : IScr
 
     private void AnalyzerParameterUsage(ProcedureParameter parameter, StatementList statements)
     {
+        if (HasDefaultValue(parameter))
+        {
+            return;
+        }
+
         var visitor = new Visitor(parameter.VariableName.Value);
         statements.Accept(visitor);
 
