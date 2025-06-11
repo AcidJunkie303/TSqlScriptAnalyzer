@@ -136,4 +136,21 @@ public sealed class TableReferenceWithoutSchemaAnalyzerTests(ITestOutputHelper t
 
         Verify(TableAbcIsIgnoredSettings, code);
     }
+
+    [Fact]
+    public void WhenDeletingFromSubQuery_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            DELETE FROM a
+                            FROM
+                            (
+                                SELECT * FROM dbo.Table1
+                            ) AS a
+                            """;
+
+        Verify(TableAbcIsIgnoredSettings, code);
+    }
 }

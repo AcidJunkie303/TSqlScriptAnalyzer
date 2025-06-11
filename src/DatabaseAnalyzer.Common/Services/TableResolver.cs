@@ -152,6 +152,7 @@ public sealed class TableResolver : ITableResolver
     private TableOrViewReference? Check(QuerySpecification querySpecification, IReadOnlyDictionary<string, CommonTableExpression> parentCtesByName, NamedTableReference namedTableToResolve)
         => querySpecification.FromClause is null ? null : Check(querySpecification.FromClause, parentCtesByName, namedTableToResolve);
 
+    [SuppressMessage("Critical Code Smell", "S3776:Cognitive Complexity of methods should not be too high")]
     private TableOrViewReference? Check(FromClause fromClause, IReadOnlyDictionary<string, CommonTableExpression> parentCtesByName, NamedTableReference namedTableToResolve)
     {
         var selectStatement = (SelectStatement?) fromClause.GetParents(_parentFragmentProvider).FirstOrDefault(static a => a is SelectStatement);
@@ -166,6 +167,15 @@ public sealed class TableResolver : ITableResolver
 
         foreach (var reference in fromClause.TableReferences ?? [])
         {
+            if (reference is QueryDerivedTable queryDerivedTable)
+            {
+                var table = CheckTableReference(queryDerivedTable, namedTableToResolve);
+                if (table is not null)
+                {
+                    return table;
+                }
+            }
+
             if (reference is JoinTableReference joinTableReference)
             {
                 var table = Check(joinTableReference, parentCtesByName, namedTableToResolve);
@@ -280,6 +290,24 @@ public sealed class TableResolver : ITableResolver
         var fullObjectName = namedTableToResolve.TryGetFirstClassObjectName(_defaultSchemaName, _script, _parentFragmentProvider) ?? _relativeScriptFilePath;
 
         return new TableOrViewReference(currentDatabaseName, tableSchemaName, tableName, sourceType, namedTableToResolve, fullObjectName);
+    }
+
+    private static TableOrViewReference? CheckTableReference(QueryDerivedTable? queryDerivedTable, NamedTableReference namedTableToResolve)
+    {
+        if (queryDerivedTable?.Alias?.Value is null)
+        {
+            return null;
+        }
+
+        if (namedTableToResolve.SchemaObject.SchemaIdentifier?.Value is not null)
+        {
+            return null;
+        }
+
+        var isSearchedTable = queryDerivedTable.Alias.Value.EqualsOrdinalIgnoreCase(namedTableToResolve.SchemaObject.BaseIdentifier.Value);
+        return isSearchedTable
+            ? new TableOrViewReference(string.Empty, string.Empty, queryDerivedTable.Alias.Value, TableSourceType.DerivedTable, namedTableToResolve, queryDerivedTable.Alias.Value)
+            : null;
     }
 
     private bool IsSearchedTable(NamedTableReference table, NamedTableReference namedTableToResolve)

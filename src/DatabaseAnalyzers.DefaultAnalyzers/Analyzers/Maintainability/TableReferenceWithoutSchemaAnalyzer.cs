@@ -57,7 +57,7 @@ public sealed class TableReferenceWithoutSchemaAnalyzer : IScriptAnalyzer
 
         var tableResolver = _tableResolverFactory.CreateTableResolver(_context);
         var table = tableResolver.Resolve(tableReference);
-        if (table.IsNullOrMissingAliasReference() || table.SourceType == TableSourceType.Cte)
+        if (table.IsNullOrMissingAliasReference() || table.SourceType is TableSourceType.Cte or TableSourceType.DerivedTable)
         {
             return;
         }
