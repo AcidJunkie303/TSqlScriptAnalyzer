@@ -194,6 +194,7 @@ internal sealed class Analyzer : IAnalyzer
         );
     }
 
+    [SuppressMessage("Performance", "CA1873:Avoid potentially expensive logging")]
     private void LogExecutionDurations()
     {
         var analyzerNameAndDurations = _analysisDurationsByAnalyzerType
