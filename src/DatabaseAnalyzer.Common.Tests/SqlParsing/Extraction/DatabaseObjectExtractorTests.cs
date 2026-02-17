@@ -59,6 +59,16 @@ public sealed class DatabaseObjectExtractorTests
                             BEGIN PRINT @Param1 END
 
                             CREATE SYNONYM dbo.MySynonym FOR MyServer.MyDatabase.MySchema.MyProc
+                            GO
+
+                            USE [DB-2]
+                            GO
+
+                            CREATE VIEW dbo.V1
+                            AS
+                                SELECT Id, Name
+                                FROM [dbo].[T2]
+                            GO
 
                             """;
         // arrange
@@ -70,7 +80,7 @@ public sealed class DatabaseObjectExtractorTests
 
         // assert
         objects.Should().NotBeNull();
-        objects.Should().HaveCount(1);
+        objects.Should().HaveCount(2);
 
         var db = objects["DB-1"];
         db.DatabaseName.Should().Be("DB-1");
@@ -114,6 +124,8 @@ public sealed class DatabaseObjectExtractorTests
         synonym.TargetDatabaseName.Should().Be("MyDatabase");
         synonym.TargetSchemaName.Should().Be("MySchema");
         synonym.TargetObjectName.Should().Be("MyProc");
+
+        objects["DB-2"].SchemasByName["dbo"].ViewsByName["V1"].ObjectName.Should().Be("V1");
     }
 
     [Fact]

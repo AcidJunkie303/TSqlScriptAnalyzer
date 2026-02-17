@@ -20,6 +20,7 @@ public sealed class MissingTableOrViewAnalyzerTests(ITestOutputHelper testOutput
                                                    Id       INT NOT NULL,
                                                    Column1  INT
                                                )
+                                               GO
 
                                                CREATE TABLE [dbo].[Table2]
                                                (
@@ -27,6 +28,18 @@ public sealed class MissingTableOrViewAnalyzerTests(ITestOutputHelper testOutput
                                                    Column2  INT
                                                )
 
+                                               USE MyDb2
+                                               GO
+
+                                               CREATE VIEW [dbo].[View1]
+                                               AS
+                                                  SELECT    Id, Column1
+                                                  FROM      MyDb.dbo.Table1
+
+                                               GO
+
+                                               USE MyDb
+                                               GO
                                                """;
 
     private static readonly Aj5044Settings Settings = new Aj5044SettingsRaw
@@ -92,6 +105,20 @@ public sealed class MissingTableOrViewAnalyzerTests(ITestOutputHelper testOutput
                             FROM        Table1 t1
                             INNER JOIN  ▶️AJ5044💛script_1.sql💛💛table or view💛MyDb.dbo.Table3✅Table3 t3◀️ ON t1.Id = t3.Id -- Table3 does not exist
                             WHERE       t3.Column3 = 1
+                            """;
+
+        VerifyLocal(Settings, SharedCodeForTables, code);
+    }
+
+    [Fact]
+    public void WhenJoin_WhenViewExists_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            SELECT 1 FROM MyDb2.dbo.View1
+
                             """;
 
         VerifyLocal(Settings, SharedCodeForTables, code);

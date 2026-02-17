@@ -4,10 +4,7 @@ namespace DatabaseAnalyzer.Common.Contracts;
 
 public static partial class InsertionStringHelpers
 {
-    [GeneratedRegex(@"\{\s*\d+\s*\}", RegexOptions.None, matchTimeoutMilliseconds: 100)]
-    private static partial Regex InsertionStringsFinder();
-
-    public static int CountInsertionStringPlaceholders(string messageTemplate) => InsertionStringsFinder().Matches(messageTemplate).Count;
+    public static int CountInsertionStringPlaceholders(string messageTemplate) => InsertionStringsFinder().Count(messageTemplate);
 
     public static string FormatMessage(string messageTemplate, IReadOnlyList<string> insertionStrings)
     {
@@ -25,4 +22,7 @@ public static partial class InsertionStringHelpers
 
         return message;
     }
+
+    [GeneratedRegex(@"\{\s*\d+\s*\}", RegexOptions.None, matchTimeoutMilliseconds: 100)]
+    private static partial Regex InsertionStringsFinder();
 }

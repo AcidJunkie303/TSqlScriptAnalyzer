@@ -32,7 +32,7 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
         var foreignKeyConstraints = Deduplicate(new ForeignKeyConstraintExtractor(defaultSchemaName).Extract(scripts));
         var aggregatedTables = Deduplicate(AggregateTables(tables, foreignKeyConstraints, indices));
         var views = Deduplicate(new ViewExtractor(defaultSchemaName).Extract(scripts));
-        ISchemaBoundObject[] allObjects = [.. schemas, .. aggregatedTables, .. functions, .. procedures, .. synonyms];
+        ISchemaBoundObject[] allObjects = [.. schemas, .. aggregatedTables, ..views, .. functions, .. procedures, .. synonyms];
         allObjects = RemoveAndReportDuplicates(allObjects);
 
         var synonymsByDatabaseNameBySchemaName = GroupByDatabaseNameBySchemaName(synonyms, a => a.SchemaName);
