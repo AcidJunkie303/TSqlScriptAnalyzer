@@ -151,4 +151,20 @@ public sealed class MissingBlankSpaceAnalyzerTests(ITestOutputHelper testOutputH
                             """;
         Verify(code);
     }
+
+    [Fact]
+    public void WhenNegativeValueAfterThenOrElse_ThenOk()
+    {
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            DECLARE @a INT =
+                                CASE
+                                    WHEN 1 = 1 THEN -1
+                                    ELSE -2
+                                END
+                            """;
+        Verify(code);
+    }
 }

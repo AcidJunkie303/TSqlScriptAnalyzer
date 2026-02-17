@@ -8,29 +8,41 @@ internal static class BlankSpaceComplianceEvaluators
 {
     private static readonly FrozenSet<TSqlTokenType> OperationTokens = new[]
     {
-        TSqlTokenType.EqualsSign,
-        TSqlTokenType.Minus,
         TSqlTokenType.Add,
-        TSqlTokenType.Star,
-        TSqlTokenType.Divide,
-        TSqlTokenType.PercentSign,
-        TSqlTokenType.GreaterThan,
-        TSqlTokenType.LessThan,
         TSqlTokenType.AddEquals,
-        TSqlTokenType.ConcatEquals,
-        TSqlTokenType.DivideEquals,
-        TSqlTokenType.ModEquals,
-        TSqlTokenType.MultiplyEquals,
-        TSqlTokenType.SubtractEquals,
+        TSqlTokenType.Bang,
         TSqlTokenType.BitwiseAndEquals,
         TSqlTokenType.BitwiseOrEquals,
         TSqlTokenType.BitwiseXorEquals,
-        TSqlTokenType.Bang,
-        TSqlTokenType.LeftParenthesis,
-        TSqlTokenType.RightParenthesis,
         TSqlTokenType.Comma,
-        TSqlTokenType.Select
+        TSqlTokenType.ConcatEquals,
+        TSqlTokenType.Divide,
+        TSqlTokenType.DivideEquals,
+        TSqlTokenType.Else,
+        TSqlTokenType.EqualsSign,
+        TSqlTokenType.GreaterThan,
+        TSqlTokenType.LeftParenthesis,
+        TSqlTokenType.LessThan,
+        TSqlTokenType.Minus,
+        TSqlTokenType.ModEquals,
+        TSqlTokenType.MultiplyEquals,
+        TSqlTokenType.PercentSign,
+        TSqlTokenType.RightParenthesis,
+        TSqlTokenType.Select,
+        TSqlTokenType.Star,
+        TSqlTokenType.SubtractEquals,
+        TSqlTokenType.Then
     }.ToFrozenSet();
+
+    private static bool IsPreviousNonWhiteSpaceTokenAnyKindOfOperationToken(IList<TSqlParserToken> tokens, int currentTokenIndex)
+    {
+        var firstPreviousNonBlankSpaceToken = tokens
+            .GetPreviousTokensReversed(currentTokenIndex)
+            .SkipWhiteSpaceTokens()
+            .FirstOrDefault();
+
+        return firstPreviousNonBlankSpaceToken is not null && OperationTokens.Contains(firstPreviousNonBlankSpaceToken.TokenType);
+    }
 
     internal static class Before
     {
@@ -156,15 +168,5 @@ internal static class BlankSpaceComplianceEvaluators
 
             return firstNextNonBlankSpaceToken is not null && OperationTokens.Contains(firstNextNonBlankSpaceToken.TokenType);
         }
-    }
-
-    private static bool IsPreviousNonWhiteSpaceTokenAnyKindOfOperationToken(IList<TSqlParserToken> tokens, int currentTokenIndex)
-    {
-        var firstPreviousNonBlankSpaceToken = tokens
-            .GetPreviousTokensReversed(currentTokenIndex)
-            .SkipWhiteSpaceTokens()
-            .FirstOrDefault();
-
-        return firstPreviousNonBlankSpaceToken is not null && OperationTokens.Contains(firstPreviousNonBlankSpaceToken.TokenType);
     }
 }
