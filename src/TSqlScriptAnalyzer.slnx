@@ -1,29 +1,35 @@
 ﻿<Solution>
   <Folder Name="/Infra Tasks/">
-    <Project Path="DatabaseAnalyzers.DefaultAnalyzers.InfrastructureTasks\DatabaseAnalyzers.DefaultAnalyzers.InfrastructureTasks.csproj" Type="Classic C#" />
+    <Project Path="DatabaseAnalyzers.DefaultAnalyzers.InfrastructureTasks\DatabaseAnalyzers.DefaultAnalyzers.InfrastructureTasks.csproj" />
   </Folder>
   <Folder Name="/Solution Files/">
     <File Path=".editorconfig" />
     <File Path="Directory.Build.props" />
     <File Path=".gitignore" />
-    <File Path="..\README.md" />
-    <File Path="..\STATUS.md" />
-    <File Path="..\CreatingAnalyzers.md" />
-    <File Path="..\UnitTestingAnalyzers.md" />
     <File Path="TSqlScriptAnalyzer.sln.DotSettings" />
+    <File Path="Directory.Packages.props" />
     <File Path="testing\settings\project1.jsonc" />
   </Folder>
-  <Folder Name="/Tests/">
-    <Project Path="DatabaseAnalyzer.Common.Tests\DatabaseAnalyzer.Common.Tests.csproj" Type="Classic C#" />
-    <Project Path="DatabaseAnalyzer.Core.Tests\DatabaseAnalyzer.Core.Tests.csproj" Type="Classic C#" />
-    <Project Path="DatabaseAnalyzer.Testing.Tests\DatabaseAnalyzer.Testing.Tests.csproj" Type="Classic C#" />
-    <Project Path="DatabaseAnalyzer.Testing\DatabaseAnalyzer.Testing.csproj" Type="Classic C#" />
-    <Project Path="DatabaseAnalyzers.DefaultAnalyzers.Tests\DatabaseAnalyzers.DefaultAnalyzers.Tests.csproj" Type="Classic C#" />
+  <Folder Name="/Solution Files/docs/">
+    <File Path="../1.Creating-Analyzers.md" />
+    <File Path="../2.Unit-Testing-Analyzers.md" />
+    <File Path="../3.Integrating-Analyzers.md" />
+    <File Path="../4.Project-File-Reference.md" />
+    <File Path="../5.Issue-Suppression.md" />
+    <File Path="../6.Injectable-Services.md" />
+    <File Path="../docs/diagnostics.md" />
+    <File Path="..\README.md" />
   </Folder>
-  <Project Path="DatabaseAnalyzer.App\DatabaseAnalyzer.App.csproj" Type="Classic C#" />
-  <Project Path="DatabaseAnalyzer.Common\DatabaseAnalyzer.Common.csproj" Type="Classic C#" />
-  <Project Path="DatabaseAnalyzer.Contracts\DatabaseAnalyzer.Contracts.csproj" Type="Classic C#" />
-  <Project Path="DatabaseAnalyzer.Core\DatabaseAnalyzer.Core.csproj" Type="Classic C#" />
-  <Project Path="DatabaseAnalyzers.DefaultAnalyzers\DatabaseAnalyzers.DefaultAnalyzers.csproj" Type="Classic C#" />
-  <Project Path="Playground\Playground.csproj" Type="Classic C#" />
+  <Folder Name="/Tests/">
+    <Project Path="DatabaseAnalyzer.Common.Tests\DatabaseAnalyzer.Common.Tests.csproj" />
+    <Project Path="DatabaseAnalyzer.Core.Tests\DatabaseAnalyzer.Core.Tests.csproj" />
+    <Project Path="DatabaseAnalyzer.Testing.Tests\DatabaseAnalyzer.Testing.Tests.csproj" />
+    <Project Path="DatabaseAnalyzer.Testing\DatabaseAnalyzer.Testing.csproj" />
+    <Project Path="DatabaseAnalyzers.DefaultAnalyzers.Tests\DatabaseAnalyzers.DefaultAnalyzers.Tests.csproj" />
+  </Folder>
+  <Project Path="DatabaseAnalyzer.App\DatabaseAnalyzer.App.csproj" />
+  <Project Path="DatabaseAnalyzer.Common\DatabaseAnalyzer.Common.csproj" />
+  <Project Path="DatabaseAnalyzer.Core\DatabaseAnalyzer.Core.csproj" />
+  <Project Path="DatabaseAnalyzers.DefaultAnalyzers\DatabaseAnalyzers.DefaultAnalyzers.csproj" />
+  <Project Path="Playground\Playground.csproj" />
 </Solution>

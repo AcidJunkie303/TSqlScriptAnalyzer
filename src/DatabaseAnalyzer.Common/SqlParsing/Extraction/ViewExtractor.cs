@@ -19,6 +19,23 @@ public sealed class ViewExtractor : Extractor<ViewInformation>
         return visitor.Objects.ConvertAll(a => GetView(a.Object, a.DatabaseName, script));
     }
 
+    private static string? GetColumnName(SelectScalarExpression expression)
+    {
+        if (expression.ColumnName?.Value is not null)
+        {
+            return expression.ColumnName.Value;
+        }
+
+        if (expression.Expression is ColumnReferenceExpression columnReferenceExpression)
+        {
+            return (columnReferenceExpression.MultiPartIdentifier?.Identifiers).IsNullOrEmpty()
+                ? null
+                : columnReferenceExpression.MultiPartIdentifier?.Identifiers[^1].Value;
+        }
+
+        return null;
+    }
+
     private ViewInformation GetView(ViewStatementBody statement, string? databaseName, IScriptModel script)
     {
         var viewSchemaName = statement.SchemaObjectName.SchemaIdentifier?.Value ?? DefaultSchemaName;
@@ -41,34 +58,24 @@ public sealed class ViewExtractor : Extractor<ViewInformation>
 
         IReadOnlyList<ViewColumnInformation> GetColumns()
         {
-            if (statement.SelectStatement.QueryExpression is not QuerySpecification querySpecification)
+            var querySpecification = GetQuerySpecification(statement.SelectStatement);
+
+            return querySpecification?.SelectElements
+                       .OfType<SelectScalarExpression>()
+                       .Select(a => (Statement: a, Name: GetColumnName(a)))
+                       .Where(a => !a.Name.IsNullOrWhiteSpace())
+                       .Select(a => new ViewColumnInformation(calculatedDatabaseName, viewSchemaName, viewName, a.Name!, a.Statement, script.RelativeScriptFilePath))
+                       .ToList()
+                   ?? [];
+        }
+
+        static QuerySpecification? GetQuerySpecification(SelectStatement selectStatement)
+            => selectStatement.QueryExpression switch
             {
-                return [];
-            }
-
-            return querySpecification.SelectElements
-                .OfType<SelectScalarExpression>()
-                .Select(a => (Statement: a, Name: GetColumnName(a)))
-                .Where(a => !a.Name.IsNullOrWhiteSpace())
-                .Select(a => new ViewColumnInformation(calculatedDatabaseName, viewSchemaName, viewName, a.Name!, a.Statement, script.RelativeScriptFilePath))
-                .ToList();
-        }
-    }
-
-    private static string? GetColumnName(SelectScalarExpression expression)
-    {
-        if (expression.ColumnName?.Value is not null)
-        {
-            return expression.ColumnName.Value;
-        }
-
-        if (expression.Expression is ColumnReferenceExpression columnReferenceExpression)
-        {
-            return (columnReferenceExpression.MultiPartIdentifier?.Identifiers).IsNullOrEmpty()
-                ? null
-                : columnReferenceExpression.MultiPartIdentifier?.Identifiers[^1].Value;
-        }
-
-        return null;
+                QuerySpecification querySpecification => querySpecification,
+                // In case of UNION/UNION ALL, we take the left side of the expression, which should contain the column definitions.
+                BinaryQueryExpression { FirstQueryExpression: QuerySpecification leftQuerySpecification } => leftQuerySpecification,
+                _                                                                                         => null
+            };
     }
 }
