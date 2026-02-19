@@ -122,7 +122,7 @@ public sealed class TableExtractor : Extractor<TableInformation>
                     tableName,
                     IndexName: null,
                     indexType,
-                    a.ObjectName.ToSingleItemFrozenSet(StringComparer.Ordinal),
+                    [a.ObjectName],
                     FrozenSet<string>.Empty,
                     a.ColumnDefinition,
                     script.RelativeScriptFilePath

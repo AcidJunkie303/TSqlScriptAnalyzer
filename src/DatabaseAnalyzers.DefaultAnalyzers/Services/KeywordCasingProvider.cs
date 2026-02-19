@@ -193,10 +193,10 @@ internal static class KeywordCasingProvider
         { (TSqlTokenType.Cross, Aj5056SKeywordNamingPolicy.CamelCase), "cross" },
         { (TSqlTokenType.Cross, Aj5056SKeywordNamingPolicy.PascalCase), "Cross" },
         { (TSqlTokenType.Cross, Aj5056SKeywordNamingPolicy.UpperCase), "CROSS" },
-        { (TSqlTokenType.Current, Aj5056SKeywordNamingPolicy.LowerCase), "current" }, // TODO: is there a such keyword?
-        { (TSqlTokenType.Current, Aj5056SKeywordNamingPolicy.CamelCase), "current" }, // TODO: is there a such keyword?
-        { (TSqlTokenType.Current, Aj5056SKeywordNamingPolicy.PascalCase), "Current" }, // TODO: is there a such keyword?
-        { (TSqlTokenType.Current, Aj5056SKeywordNamingPolicy.UpperCase), "CURRENT" }, // TODO: is there a such keyword?
+        { (TSqlTokenType.Current, Aj5056SKeywordNamingPolicy.LowerCase), "current" },
+        { (TSqlTokenType.Current, Aj5056SKeywordNamingPolicy.CamelCase), "current" },
+        { (TSqlTokenType.Current, Aj5056SKeywordNamingPolicy.PascalCase), "Current" },
+        { (TSqlTokenType.Current, Aj5056SKeywordNamingPolicy.UpperCase), "CURRENT" },
         { (TSqlTokenType.CurrentDate, Aj5056SKeywordNamingPolicy.LowerCase), "current_date" },
         { (TSqlTokenType.CurrentDate, Aj5056SKeywordNamingPolicy.CamelCase), "current_Date" },
         { (TSqlTokenType.CurrentDate, Aj5056SKeywordNamingPolicy.PascalCase), "Current_Date" },
