@@ -1,4 +1,3 @@
-using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using DatabaseAnalyzer.Common.Contracts;
@@ -137,7 +136,8 @@ public static class StringExtensions
            && !string.Equals(value, other, StringComparison.Ordinal);
 
     public static IEnumerable<string> Split(string input, string delimiter)
-        => Split(input, delimiter, StringComparison.Ordinal);
+        =>
+            input.Split(delimiter, StringComparison.Ordinal);
 
     public static IEnumerable<string> Split(this string input, string delimiter, StringComparison comparisonType)
     {
@@ -212,10 +212,6 @@ public static class StringExtensions
             }
         }
     }
-
-    // TODO: remove this and replace its usages with the new collection initializers for .net 9.0
-    public static FrozenSet<string> ToSingleItemFrozenSet(this string value, StringComparer comparer)
-        => new[] { value }.ToFrozenSet(comparer);
 
     public static bool IsTempTableName(this string? value) => value?.StartsWith('#') == true;
 }

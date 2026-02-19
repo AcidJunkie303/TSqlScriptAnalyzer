@@ -70,6 +70,17 @@ public sealed class DatabaseObjectExtractorTests
                                 FROM [dbo].[T2]
                             GO
 
+                            CREATE VIEW dbo.ViewWithUnion
+                            AS
+                                SELECT Id, Name
+                                FROM [dbo].[T2]
+
+                                UNION
+
+                                SELECT Id, Name
+                                FROM [dbo].[T2]
+                            GO
+
                             """;
         // arrange
         var sut = new DatabaseObjectExtractor(new FakeIssueReporter(), Aj9002Settings.Default);
@@ -125,7 +136,17 @@ public sealed class DatabaseObjectExtractorTests
         synonym.TargetSchemaName.Should().Be("MySchema");
         synonym.TargetObjectName.Should().Be("MyProc");
 
-        objects["DB-2"].SchemasByName["dbo"].ViewsByName["V1"].ObjectName.Should().Be("V1");
+        var view1 = objects["DB-2"].SchemasByName["dbo"].ViewsByName["V1"];
+        view1.ObjectName.Should().Be("V1");
+        view1.Columns.Count.Should().Be(2);
+        view1.Columns.Any(a => a.ObjectName.EqualsOrdinal("Id")).Should().BeTrue();
+        view1.Columns.Any(a => a.ObjectName.EqualsOrdinal("Name")).Should().BeTrue();
+
+        var viewWithUnion = objects["DB-2"].SchemasByName["dbo"].ViewsByName["ViewWithUnion"];
+        viewWithUnion.ObjectName.Should().Be("ViewWithUnion");
+        viewWithUnion.Columns.Count.Should().Be(2);
+        viewWithUnion.Columns.Any(a => a.ObjectName.EqualsOrdinal("Id")).Should().BeTrue();
+        viewWithUnion.Columns.Any(a => a.ObjectName.EqualsOrdinal("Name")).Should().BeTrue();
     }
 
     [Fact]

@@ -26,7 +26,6 @@ public sealed class MissingTableOrViewColumnAnalyzerTests(ITestOutputHelper test
                                           Id       INT NOT NULL,
                                           Column2  INT
                                       )
-
                                       """;
 
     private static readonly Aj5044Settings Settings = new Aj5044SettingsRaw
@@ -103,6 +102,72 @@ public sealed class MissingTableOrViewColumnAnalyzerTests(ITestOutputHelper test
                             """;
 
         var tester = GetDefaultTesterBuilder(SharedCode, code)
+            .WithSettings(Settings)
+            .WithService<IAstService>(AstService)
+            .Build();
+        Verify(tester);
+    }
+
+    [Fact]
+    public void WhenView_WhenColumnsExist_ThenOk()
+    {
+        const string local = """
+                             USE MyDb
+                             GO
+
+                             CREATE VIEW [dbo].[View1]
+                             AS
+                                 SELECT Id, Column1 AS Name
+                                 FROM Table1
+
+                                 UNION ALL
+
+                                 SELECT Id, Column2 AS Name
+                                 FROM Table2
+
+                             GO
+                             """;
+
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            SELECT      Id, Name
+                            FROM        View1
+                            """;
+
+        var tester = GetDefaultTesterBuilder(SharedCode, local, code)
+            .WithSettings(Settings)
+            .WithService<IAstService>(AstService)
+            .Build();
+
+        Verify(tester);
+    }
+
+    [Fact]
+    public void WhenView_WhenColumnsDoNotExist_ThenDiagnose()
+    {
+        const string local = """
+                             USE MyDb
+                             GO
+
+                             CREATE VIEW [dbo].[View1]
+                             AS
+                                 SELECT Id, Column1 AS Name
+                                 FROM Table1
+
+                             GO
+                             """;
+
+        const string code = """
+                            USE MyDb
+                            GO
+
+                            SELECT      Id, ▶️AJ5044💛script_2.sql💛💛column💛MyDb.dbo.View1.Name2✅Name2◀️
+                            FROM        View1
+                            """;
+
+        var tester = GetDefaultTesterBuilder(SharedCode, local, code)
             .WithSettings(Settings)
             .WithService<IAstService>(AstService)
             .Build();

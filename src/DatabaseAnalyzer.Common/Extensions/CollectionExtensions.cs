@@ -43,7 +43,6 @@ public static class CollectionExtensions
         return items.Count == 0;
     }
 
-#if NET9_0_OR_GREATER
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [OverloadResolutionPriority(1)]
     public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T>? items)
@@ -53,13 +52,7 @@ public static class CollectionExtensions
     [OverloadResolutionPriority(2)]
     public static IReadOnlyCollection<T> EmptyIfNull<T>(this IReadOnlyCollection<T>? items)
         => items ?? [];
-#else
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T>? items)
-        => items ?? [];
-#endif
 
-#if NET9_0_OR_GREATER
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [OverloadResolutionPriority(3)]
     public static IReadOnlyList<T>? NullIfEmpty<T>(this IReadOnlyList<T>? items)
@@ -72,17 +65,10 @@ public static class CollectionExtensions
 
     [OverloadResolutionPriority(1)]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
     public static IEnumerable<T>? NullIfEmpty<T>(this IEnumerable<T>? items)
         => items?.Any() ?? false ? items : null;
-#else
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static IEnumerable<T>? NullIfEmpty<T>(this IEnumerable<T>? items)
-        // ReSharper disable PossibleMultipleEnumeration
-        => items?.Any() ?? false ? items : null;
-    // ReSharper restore PossibleMultipleEnumeration
-#endif
 
-#if NET9_0_OR_GREATER
     [OverloadResolutionPriority(2)]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsNullOrEmpty<T>([NotNullWhen(false)] this IReadOnlyCollection<T>? items)
@@ -92,22 +78,7 @@ public static class CollectionExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsNullOrEmpty<T>([NotNullWhen(false)] this ICollection<T>? items)
         => items is null || items.Count == 0;
-#else
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsNullOrEmpty<T>([NotNullWhen(false)] this IReadOnlyCollection<T>? items)
-        => items is null || items.Count == 0;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsNullOrEmpty<T>([NotNullWhen(false)] this ICollection<T>? items)
-        => items is null || items.Count == 0;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#pragma warning disable S3956, MA0016
-    public static bool IsNullOrEmpty<T>([NotNullWhen(false)] this List<T>? items)
-        => items is null || items.Count == 0;
-#pragma warning restore MA0016, S3956
-
-#endif
     public static string StringJoin<T>(this IEnumerable<T> items, string separator)
         => string.Join(separator, items);
 
@@ -125,7 +96,8 @@ public static class CollectionExtensions
     }
 
     public static IEnumerable<T> Deduplicate<T, TKey>(this IEnumerable<T> items, Func<T, TKey> keySelector)
-        => Deduplicate(items, keySelector, EqualityComparer<TKey>.Default);
+        =>
+            items.Deduplicate(keySelector, EqualityComparer<TKey>.Default);
 
     public static IEnumerable<T> Deduplicate<T, TKey>(this IEnumerable<T> items, Func<T, TKey> keySelector, IEqualityComparer<TKey> comparer)
     {
