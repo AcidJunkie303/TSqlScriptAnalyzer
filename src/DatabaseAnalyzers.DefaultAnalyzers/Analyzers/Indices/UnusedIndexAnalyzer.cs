@@ -61,7 +61,12 @@ public sealed class UnusedIndexAnalyzer : IGlobalAnalyzer
                 }
 
                 var table = _objectProvider.GetTable(index.DatabaseName, index.SchemaName, index.TableName);
-                if (table?.ForeignKeysByColumnName.ContainsKey(columnName) == true)
+                if (table is null)
+                {
+                    continue;
+                }
+
+                if (table.ForeignKeysByColumnName.ContainsKey(columnName))
                 {
                     continue;
                 }

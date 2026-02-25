@@ -132,24 +132,24 @@ public sealed class UnusedIndexAnalyzerTests(ITestOutputHelper testOutputHelper)
                             USE MyDb
                             GO
 
-                            CREATE TABLE A
+                            CREATE TABLE Genre
                             (
                                 Id                  INT NOT NULL PRIMARY KEY,
-                                OtherId             NVARCHAR(250) NOT NULL
+                                Name                NVARCHAR(250) NOT NULL
                             )
                             GO
 
-                            CREATE TABLE B
+                            CREATE TABLE Book
                             (
                                 Id                  INT NOT NULL PRIMARY KEY,
-                                OtherIdFromTableA   INT NOT NULL,
-                                CONSTRAINT          [FK_B_A] FOREIGN KEY( [OtherIdFromTableA]) REFERENCES [dbo].[A] ([OtherId])
+                                GenreId             INT NOT NULL,
+                                CONSTRAINT          [FK_Book_Genre] FOREIGN KEY( [GenreId]) REFERENCES [dbo].[Genre] ([Id])
                             )
                             GO
 
-                            CREATE NONCLUSTERED INDEX [IX_B_OtherIdFromTableA] ON [dbo].[B]
+                            CREATE NONCLUSTERED INDEX [IX_Book_GenreId] ON [dbo].[Book]
                             (
-                                [OtherIdFromTableA] ASC
+                                [GenreId] ASC
                             )
                             GO
 
@@ -157,7 +157,7 @@ public sealed class UnusedIndexAnalyzerTests(ITestOutputHelper testOutputHelper)
                             AS
                             BEGIN
                                 SELECT    *
-                                FROM      dbo.B
+                                FROM      dbo.Book
                             END
                             """;
 
