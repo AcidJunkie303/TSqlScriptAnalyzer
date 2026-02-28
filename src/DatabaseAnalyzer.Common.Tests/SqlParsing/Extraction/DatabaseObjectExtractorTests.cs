@@ -18,45 +18,78 @@ public sealed class DatabaseObjectExtractorTests
         const string code = """
                             USE [DB-1]
                             GO
-                            CREATE TABLE [dbo].[T2]
+
+                            CREATE TABLE [dbo].[Genre]
                             (
-                               [Id] [int] NOT NULL,
-                               [Name] [nvarchar](50) NOT NULL
+                                [Id]        [INT] NOT NULL,
+                                [Name]      [NVARCHAR](50) NOT NULL,
+                                CONSTRAINT  [PK_Genre] PRIMARY KEY CLUSTERED
+                                (
+                                    [Id] ASC
+                                )
                             )
                             GO
-                            CREATE TABLE [dbo].[T1]
+
+                            CREATE TABLE [dbo].[Book]
                             (
-                                [Id] [int] NOT NULL,
-                                [Status] [int] NOT NULL,
-                                CONSTRAINT [PK_T1] PRIMARY KEY CLUSTERED
+                                [Id]        [INT] NOT NULL,
+                                [GenreId]   [INT] NOT NULL,
+                                [Name]      [NVARCHAR](250) NOT NULL,
+                                CONSTRAINT  [PK_Book] PRIMARY KEY CLUSTERED
                                 (
                                     [Id] ASC
                                 ),
-                                CONSTRAINT [FK_T1_T2] FOREIGN KEY( [OtherId]) REFERENCES [dbo].[T2] ([T2_Id])
+                                CONSTRAINT  [FK_Book_Genre] FOREIGN KEY ( [GenreId] ) REFERENCES [dbo].[Genre] ( [Id] )
                             )
                             GO
 
-                            CREATE NONCLUSTERED INDEX [IX_T1_Status] ON [dbo].[T1]
+                            CREATE TABLE [dbo].[Book2]
                             (
-                                [Status] ASC
+                                [Id]        [INT] NOT NULL,
+                                [GenreId]   [INT] NOT NULL,
+                                CONSTRAINT  [PK_Book2] PRIMARY KEY CLUSTERED
+                                (
+                                    [Id] ASC
+                                )
                             )
                             GO
 
-                            CREATE NONCLUSTERED INDEX [IX_T2_Name] ON [dbo].[T2]
+
+                            ALTER TABLE [dbo].[Book2] WITH CHECK ADD CONSTRAINT [FK_Book2_Genre] FOREIGN KEY([GenreId])
+                            REFERENCES [dbo].[Genre] ([Id])
+                            GO
+
+                            CREATE NONCLUSTERED INDEX [IX_Book_Name] ON [dbo].[Book]
                             (
                                 [Name] ASC
                             )
                             GO
 
-                            CREATE FUNCTION F1
-                            ( @Param1 INT ) RETURNS INT AS
-                            BEGIN RETURN @Param1 * @Param1 END
+                            CREATE NONCLUSTERED INDEX [IX_Book_GenreId] ON [dbo].[Book]
+                            (
+                                [GenreId] ASC
+                            )
+                            GO
+
+                            CREATE NONCLUSTERED INDEX [IX_Genre_Name] ON [dbo].[Genre]
+                            (
+                                [Name] ASC
+                            )
+                            GO
+
+                            CREATE FUNCTION F1 ( @Param1 INT ) RETURNS INT AS
+                            BEGIN
+                                RETURN @Param1 * @Param1
+                            END
                             GO
 
                             CREATE PROCEDURE [dbo].[P1]
                             @Param1 VARCHAR(MAX)
                             AS
-                            BEGIN PRINT @Param1 END
+                            BEGIN
+                                PRINT @Param1
+                            END
+                            GO
 
                             CREATE SYNONYM dbo.MySynonym FOR MyServer.MyDatabase.MySchema.MyProc
                             GO
@@ -66,19 +99,19 @@ public sealed class DatabaseObjectExtractorTests
 
                             CREATE VIEW dbo.V1
                             AS
-                                SELECT Id, Name
-                                FROM [dbo].[T2]
+                                SELECT      Id, Name
+                                FROM        [dbo].[Book]
                             GO
 
                             CREATE VIEW dbo.ViewWithUnion
                             AS
-                                SELECT Id, Name
-                                FROM [dbo].[T2]
+                                SELECT      Id, Name
+                                FROM        [dbo].[Book]
 
                                 UNION
 
-                                SELECT Id, Name
-                                FROM [dbo].[T2]
+                                SELECT      Id, Name
+                                FROM        [dbo].[Book2]
                             GO
 
                             """;
@@ -87,13 +120,13 @@ public sealed class DatabaseObjectExtractorTests
         var script = ParseScript("DB-1", code);
 
         // act
-        var objects = sut.Extract([script], "dbo");
+        var databasesByName = sut.Extract([script], "dbo");
 
         // assert
-        objects.Should().NotBeNull();
-        objects.Should().HaveCount(2);
+        databasesByName.Should().NotBeNull();
+        databasesByName.Should().HaveCount(2);
 
-        var db = objects["DB-1"];
+        var db = databasesByName["DB-1"];
         db.DatabaseName.Should().Be("DB-1");
         db.SchemasByName.Should().HaveCount(1);
 
@@ -107,20 +140,21 @@ public sealed class DatabaseObjectExtractorTests
         function.SchemaName.Should().Be("dbo");
         function.ObjectName.Should().Be("F1");
 
-        dboSchema.TablesByName.Should().HaveCount(2);
+        dboSchema.TablesByName.Should().HaveCount(3);
 
-        var t1 = dboSchema.TablesByName["T1"];
-        t1.DatabaseName.Should().Be("DB-1");
-        t1.SchemaName.Should().Be("dbo");
-        t1.ObjectName.Should().Be("T1");
-        t1.Indices.Should().HaveCount(2); // Id & Status
-        t1.ForeignKeys.Should().HaveCount(1);
+        var book = dboSchema.TablesByName["Book"];
+        book.DatabaseName.Should().Be("DB-1");
+        book.SchemaName.Should().Be("dbo");
+        book.ObjectName.Should().Be("Book");
+        book.Indices.Should().HaveCount(3); // Id, GenreId, Name
+        book.ForeignKeys.Should().HaveCount(1);
 
-        var t2 = dboSchema.TablesByName["T2"];
-        t2.DatabaseName.Should().Be("DB-1");
-        t2.SchemaName.Should().Be("dbo");
-        t2.ObjectName.Should().Be("T2");
-        t2.Indices.Should().HaveCount(1); // Name
+        var genre = dboSchema.TablesByName["Genre"];
+        genre.DatabaseName.Should().Be("DB-1");
+        genre.SchemaName.Should().Be("dbo");
+        genre.ObjectName.Should().Be("Genre");
+        genre.Indices.Should().HaveCount(2); //  Id, Name
+        genre.ForeignKeys.Should().BeEmpty();
 
         dboSchema.ProceduresByName.Should().HaveCount(1);
         var p1 = dboSchema.ProceduresByName["P1"];
@@ -136,13 +170,13 @@ public sealed class DatabaseObjectExtractorTests
         synonym.TargetSchemaName.Should().Be("MySchema");
         synonym.TargetObjectName.Should().Be("MyProc");
 
-        var view1 = objects["DB-2"].SchemasByName["dbo"].ViewsByName["V1"];
+        var view1 = databasesByName["DB-2"].SchemasByName["dbo"].ViewsByName["V1"];
         view1.ObjectName.Should().Be("V1");
         view1.Columns.Count.Should().Be(2);
         view1.Columns.Any(a => a.ObjectName.EqualsOrdinal("Id")).Should().BeTrue();
         view1.Columns.Any(a => a.ObjectName.EqualsOrdinal("Name")).Should().BeTrue();
 
-        var viewWithUnion = objects["DB-2"].SchemasByName["dbo"].ViewsByName["ViewWithUnion"];
+        var viewWithUnion = databasesByName["DB-2"].SchemasByName["dbo"].ViewsByName["ViewWithUnion"];
         viewWithUnion.ObjectName.Should().Be("ViewWithUnion");
         viewWithUnion.Columns.Count.Should().Be(2);
         viewWithUnion.Columns.Any(a => a.ObjectName.EqualsOrdinal("Id")).Should().BeTrue();

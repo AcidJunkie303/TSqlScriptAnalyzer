@@ -221,12 +221,13 @@ public sealed class DatabaseObjectExtractor : IDatabaseObjectExtractor
 
                 var key = a.Key;
                 var tableIndices = indicesByFullTableName.GetValueOrDefault(key, []);
-                var tableForeignKeyConstraints = foreignKeyConstraintsByTableFullName.GetValueOrDefault(key, []);
+                IReadOnlyList<ForeignKeyConstraintInformation> mergedForeignKeys = [.. table.ForeignKeys, .. foreignKeyConstraintsByTableFullName.GetValueOrDefault(key, [])];
 
                 return table with
                 {
-                    ForeignKeys = [.. table.ForeignKeys, .. tableForeignKeyConstraints],
-                    Indices = [.. table.Indices, .. tableIndices]
+                    ForeignKeys = mergedForeignKeys,
+                    Indices = [.. table.Indices, .. tableIndices],
+                    ForeignKeysByColumnName = mergedForeignKeys.ToDictionary(x => x.ColumnName, x => x, StringComparer.OrdinalIgnoreCase)
                 };
             })
             .ToList();
