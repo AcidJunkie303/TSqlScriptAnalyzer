@@ -230,7 +230,7 @@ public sealed class MissingIndexAnalyzerTests(ITestOutputHelper testOutputHelper
                             (
                                 Id              INT NOT NULL,
                                 FirstName       NVARCHAR(250)  NOT NULL,
-                                DepartmentId INT NOT NULL,                           -- foreign key, not indexed, ignored
+                                DepartmentId    INT NOT NULL,                           -- foreign key, not indexed, ignored
                                 CONSTRAINT      PK_Employee PRIMARY KEY CLUSTERED
                                 (
                                     Id ASC
