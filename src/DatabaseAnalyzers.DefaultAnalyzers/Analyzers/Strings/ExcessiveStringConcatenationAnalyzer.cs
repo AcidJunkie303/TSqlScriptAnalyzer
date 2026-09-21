@@ -113,7 +113,7 @@ public sealed class ExcessiveStringConcatenationAnalyzer : IScriptAnalyzer
             "AJ5001",
             IssueType.Warning,
             "Excessive consecutive string concatenations",
-            "More than `{0}` allowed consecutive string concatenations. Consider using `FORMATMESSAGE()`.",
+            "More than `{0}` allowed consecutive string concatenations. Consider using `FORMATMESSAGE()` or `CONCAT()`.",
             ["Maximum allowed consecutive string concatenations"],
             UrlPatterns.DefaultDiagnosticHelp
         );
