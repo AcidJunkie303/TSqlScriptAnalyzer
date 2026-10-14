@@ -6,6 +6,7 @@ public sealed record AnalysisResultStatistics(
     int TotalFormattingIssueCount,
     int TotalInformationIssueCount,
     int TotalIssueCount,
+    int TotalUnsuppressedIssueCount,
     int TotalMissingIndexIssueCount,
     int TotalSuppressedIssueCount,
     int TotalWarningCount,
