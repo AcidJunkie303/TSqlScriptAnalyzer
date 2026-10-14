@@ -171,13 +171,14 @@ internal sealed class Analyzer : IAnalyzer
 
         var statistics = new AnalysisResultStatistics(
             TotalDisabledDiagnosticCount: _applicationSettings.Diagnostics.DisabledDiagnostics.Count,
-            TotalErrorCount: deduplicatedIssues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Error),
-            TotalFormattingIssueCount: deduplicatedIssues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Formatting),
-            TotalInformationIssueCount: deduplicatedIssues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Information),
+            TotalErrorCount: unsuppressedIssues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Error),
+            TotalFormattingIssueCount: unsuppressedIssues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Formatting),
+            TotalInformationIssueCount: unsuppressedIssues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Information),
             TotalIssueCount: deduplicatedIssues.Count,
-            TotalMissingIndexIssueCount: deduplicatedIssues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.MissingIndex),
+            TotalUnsuppressedIssueCount: unsuppressedIssues.Count,
+            TotalMissingIndexIssueCount: unsuppressedIssues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.MissingIndex),
             TotalSuppressedIssueCount: suppressedIssues.Count,
-            TotalWarningCount: deduplicatedIssues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Warning),
+            TotalWarningCount: unsuppressedIssues.Count(a => a.DiagnosticDefinition.IssueType == IssueType.Warning),
             TotalScripts: _scripts.Count,
             AnalysisDuration: analysisDuration
         );
