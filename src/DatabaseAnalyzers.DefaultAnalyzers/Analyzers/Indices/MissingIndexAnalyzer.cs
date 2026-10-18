@@ -1,3 +1,5 @@
+using System.Collections.Frozen;
+using System.Globalization;
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Contracts.Services;
 using DatabaseAnalyzer.Common.Extensions;
@@ -9,6 +11,16 @@ namespace DatabaseAnalyzers.DefaultAnalyzers.Analyzers.Indices;
 
 public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
 {
+    private static readonly FrozenDictionary<string, int> DataTypeWidthByDataTypeName = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
+    {
+        ["VARCHAR"] = 1,
+        ["NVARCHAR"] = 2,
+        ["CHAR"] = 1,
+        ["NCHAR"] = 2,
+        ["BINARY"] = 1,
+        ["VARBINARY"] = 1
+    }.ToFrozenDictionary();
+
     private readonly IAstService _astService;
     private readonly IGlobalAnalysisContext _context;
     private readonly IIssueReporter _issueReporter;
@@ -45,6 +57,33 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
         {
             AnalyzeForeignKeys();
         }
+    }
+
+    private static int? GetColumnSizeInBytes(SqlDataTypeReference sqlDataTypeReference)
+    {
+        if (sqlDataTypeReference.Parameters.Count == 0)
+        {
+            return null;
+        }
+
+        var countAsString = sqlDataTypeReference.Parameters[0].Value;
+        var isMax = countAsString.EqualsOrdinalIgnoreCase("MAX") || countAsString.Replace(" ", "", StringComparison.Ordinal).EqualsOrdinalIgnoreCase("-1");
+        if (isMax)
+        {
+            return int.MaxValue;
+        }
+
+        if (!int.TryParse(countAsString, NumberFormatInfo.InvariantInfo, out var count))
+        {
+            return null;
+        }
+
+        if (!DataTypeWidthByDataTypeName.TryGetValue(sqlDataTypeReference.Name.BaseIdentifier.Value, out var dataTypeWidth))
+        {
+            return null;
+        }
+
+        return count * dataTypeWidth;
     }
 
     private void AnalyzeForeignKeys()
@@ -115,51 +154,84 @@ public sealed class MissingIndexAnalyzer : IGlobalAnalyzer
 
         foreach (var filteringColumn in finder.Find(fragment))
         {
-            var table = _objectProvider.GetTable(filteringColumn.DatabaseName, filteringColumn.SchemaName, filteringColumn.TableName);
-            if (table is null)
-            {
-                continue;
-            }
-
-            if (table.ObjectName.IsTempTableName())
-            {
-                continue;
-            }
-
-            if (table.Indices.Any(a => a.ColumnNames.Contains(filteringColumn.ColumnName)))
-            {
-                continue;
-            }
-
-            if (_missingIndexSettings.MissingIndexSuppressions.Any(a => a.FullColumnNamePattern.IsMatch(filteringColumn.FullName)))
-            {
-                continue;
-            }
-
-            if (_astService.IsChildOfFunctionEnumParameter(filteringColumn.Fragment, script.ParentFragmentProvider))
-            {
-                continue;
-            }
-
-            var column = table.Columns.FirstOrDefault(a => a.ObjectName.EqualsOrdinalIgnoreCase(filteringColumn.ColumnName));
-            var columnDefinitionCodeRegion = column is null
-                ? CodeRegion.Unknown
-                : column.ColumnDefinition.GetCodeRegion();
-
-            var fullObjectName = fragment.TryGetFirstClassObjectName(_context.DefaultSchemaName, script.ParsedScript, script.ParentFragmentProvider);
-            _issueReporter.Report(DiagnosticDefinitions.FilteringColumnNotIndexed,
-                filteringColumn.DatabaseName,
-                script.RelativeScriptFilePath,
-                fullObjectName,
-                filteringColumn.Fragment.GetCodeRegion(),
-                filteringColumn.DatabaseName,
-                filteringColumn.SchemaName,
-                filteringColumn.TableName,
-                filteringColumn.ColumnName,
-                table.RelativeScriptFilePath,
-                columnDefinitionCodeRegion
-            );
+            AnalyzeFilteringColumnOfFilterStatement(script, fragment, filteringColumn);
         }
+    }
+
+    private void AnalyzeFilteringColumnOfFilterStatement(IScriptModel script, TSqlFragment fragment, ColumnReference filteringColumn)
+    {
+        var table = _objectProvider.GetTable(filteringColumn.DatabaseName, filteringColumn.SchemaName, filteringColumn.TableName);
+        if (table is null)
+        {
+            return;
+        }
+
+        if (table.ObjectName.IsTempTableName())
+        {
+            return;
+        }
+
+        if (table.Indices.Any(a => a.ColumnNames.Contains(filteringColumn.ColumnName)))
+        {
+            return;
+        }
+
+        if (_missingIndexSettings.MissingIndexSuppressions.Any(a => a.FullColumnNamePattern.IsMatch(filteringColumn.FullName)))
+        {
+            return;
+        }
+
+        if (_astService.IsChildOfFunctionEnumParameter(filteringColumn.Fragment, script.ParentFragmentProvider))
+        {
+            return;
+        }
+
+        var column = table.Columns.FirstOrDefault(a => a.ObjectName.EqualsOrdinalIgnoreCase(filteringColumn.ColumnName));
+        if (column is not null)
+        {
+            if (IsColumnDataTypeIgnored(column.ColumnDefinition))
+            {
+                return;
+            }
+
+            if (ExceedsMaxIndexableColumnSize(column.ColumnDefinition))
+            {
+                return;
+            }
+        }
+
+        var columnDefinitionCodeRegion = column is null
+            ? CodeRegion.Unknown
+            : column.ColumnDefinition.GetCodeRegion();
+
+        var fullObjectName = fragment.TryGetFirstClassObjectName(_context.DefaultSchemaName, script.ParsedScript, script.ParentFragmentProvider);
+        _issueReporter.Report(DiagnosticDefinitions.FilteringColumnNotIndexed,
+            filteringColumn.DatabaseName,
+            script.RelativeScriptFilePath,
+            fullObjectName,
+            filteringColumn.Fragment.GetCodeRegion(),
+            filteringColumn.DatabaseName,
+            filteringColumn.SchemaName,
+            filteringColumn.TableName,
+            filteringColumn.ColumnName,
+            table.RelativeScriptFilePath,
+            columnDefinitionCodeRegion
+        );
+    }
+
+    private bool IsColumnDataTypeIgnored(ColumnDefinition columnDefinition)
+        => columnDefinition.DataType is SqlDataTypeReference sqlDataTypeReference
+           && _missingIndexSettings.IgnoredDataTypeNames.Contains(sqlDataTypeReference.Name.BaseIdentifier.Value);
+
+    private bool ExceedsMaxIndexableColumnSize(ColumnDefinition columnDefinition)
+    {
+        if (columnDefinition.DataType is not SqlDataTypeReference sqlDataTypeReference)
+        {
+            return false;
+        }
+
+        var columnSizeInBytes = GetColumnSizeInBytes(sqlDataTypeReference);
+        return columnSizeInBytes > _missingIndexSettings.MaximumIndexSizeInBytes;
     }
 
     private static class DiagnosticDefinitions
