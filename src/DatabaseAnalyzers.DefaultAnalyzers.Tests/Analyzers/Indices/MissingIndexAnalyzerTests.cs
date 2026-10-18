@@ -31,10 +31,14 @@ public sealed class MissingIndexAnalyzerTests(ITestOutputHelper testOutputHelper
         CREATE TABLE Employee
         (
             Id            INT NOT NULL,                           -- indexed
-            Email         NVARCHAR(250)  NOT NULL,                -- NOT indexed
-            FirstName     NVARCHAR(250)  NOT NULL,                -- indexed
-            DepartmentId  INT NOT NULL,                           -- indexed, foreign key
-            RankId        INT NOT NULL                            -- NOT indexed, foreign key
+            Email         NVARCHAR(250)     NOT NULL,             -- NOT indexed
+            FirstName     NVARCHAR(250)     NOT NULL,             -- indexed
+            DepartmentId  INT               NOT NULL,             -- indexed, foreign key
+            RankId        INT               NOT NULL,             -- NOT indexed, foreign key
+            LargeString1  NVARCHAR(900)     NOT NULL,             -- NOT indexed, too large for index (1700 bytes is max)
+            LargeString2  NCHAR(900)        NOT NULL,             -- NOT indexed, too large for index (1700 bytes is max)
+            LargeString3  BINARY(1800)      NOT NULL,             -- NOT indexed, too large for index (1700 bytes is max)
+            SqlVariant    SQL_VARIANT       NOT NULL              -- NOT indexed, too large for index (1700 bytes is max)
         );
 
         CREATE NONCLUSTERED INDEX IX_Employee_FirstName ON dbo.Employee
@@ -85,7 +89,7 @@ public sealed class MissingIndexAnalyzerTests(ITestOutputHelper testOutputHelper
                                   BEGIN
                                       SELECT    *
                                       FROM      dbo.Employee
-                                      WHERE     ▶️AJ5015💛script_1.sql💛MyDb.dbo.P1💛MyDb💛dbo💛Employee💛Email💛script_0.sql💛(19,5) - (19,42)✅Email◀️ = 'tb@303.com'
+                                      WHERE     ▶️AJ5015💛script_1.sql💛MyDb.dbo.P1💛MyDb💛dbo💛Employee💛Email💛script_0.sql💛(19,5) - (19,45)✅Email◀️ = 'tb@303.com'
                                   END
                                   """;
 
@@ -298,6 +302,34 @@ public sealed class MissingIndexAnalyzerTests(ITestOutputHelper testOutputHelper
                             """;
 
         var tester = GetDefaultTesterBuilder(code)
+            .WithSettings(Aj5015Settings.Default)
+            .WithSettings(Aj5017Settings.Default)
+            .WithService<IAstService>(AstService)
+            .Build();
+        Verify(tester);
+    }
+
+    [Theory]
+    [InlineData("/* 01 */ LargeString1 = 'tb@303.com'")]
+    [InlineData("/* 02 */ LargeString2 = 'tb@303.com'")]
+    [InlineData("/* 03 */ LargeString3 = 'tb@303.com'")]
+    [InlineData("/* 04 */ FirstName = 'tb@303.com'")]
+    [InlineData("/* 05 */ SqlVariant = 'tb@303.com'")] // SQL variant can be indexed, but it depends on the data which is inserted at runtime. It cain fail. Therefore, we ignore SqlLVariant
+    public void TheoryForFilteringOnNonIndexableColumnsDueToMaxIndexSize(string predicate)
+    {
+        var procedures = $"""
+                          USE MyDb
+                          GO
+                          CREATE PROCEDURE [dbo].[P1]
+                          AS
+                          BEGIN
+                              SELECT    *
+                              FROM      dbo.Employee
+                              WHERE     {predicate}
+                          END
+                          """;
+
+        var tester = GetDefaultTesterBuilder(ObjectsForMissingIndexOnFilteringColumnTests, procedures)
             .WithSettings(Aj5015Settings.Default)
             .WithSettings(Aj5017Settings.Default)
             .WithService<IAstService>(AstService)
