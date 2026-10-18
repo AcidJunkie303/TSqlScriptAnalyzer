@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using DatabaseAnalyzer.Common.Contracts;
 using DatabaseAnalyzer.Common.Extensions;
 using DatabaseAnalyzer.Core.Extensions;
@@ -6,6 +7,7 @@ namespace DatabaseAnalyzer.Core.Services;
 
 internal sealed class SuppressionMap
 {
+    [SuppressMessage("Performance", "CA1859:Use concrete types when possible for improved performance", Justification = "No, we want to bu immutable")]
     private readonly IReadOnlyList<SuppressionEntry> _suppressions;
 
     public SuppressionMap(IReadOnlyList<DiagnosticSuppression> suppressions)
@@ -15,9 +17,17 @@ internal sealed class SuppressionMap
 
     public IReadOnlyList<DiagnosticSuppression> GetActiveSuppressionsAtLocation(int lineNumber, int columnNumber)
     {
-        return _suppressions
-            .FirstOrDefault(a => (a.LineNumber == lineNumber && a.ColumnNumber <= columnNumber) || a.LineNumber < lineNumber)
-            ?.DisabledDiagnostics ?? [];
+        // get the currently active suppression at the given line and column number
+        for (var i = 0; i < _suppressions.Count; i++)
+        {
+            var entry = _suppressions[i];
+            if (entry.LineNumber > lineNumber || (entry.LineNumber == lineNumber && entry.ColumnNumber > columnNumber))
+            {
+                return i == 0 ? [] : _suppressions[i - 1].DisabledDiagnostics;
+            }
+        }
+
+        return [];
     }
 
     private static List<SuppressionEntry> CreateSuppressionMap(IEnumerable<DiagnosticSuppression> suppressions)
