@@ -204,11 +204,24 @@ public sealed class IndexNamingAnalyzer : IScriptAnalyzer
         };
 
         var databaseName = _script.ParsedScript.TryFindCurrentDatabaseNameAtFragment(primaryKeyDefinition) ?? Constants.UnknownObjectName;
+
+        var ident = primaryKeyDefinition.ConstraintIdentifier;
+
+        if (primaryKeyDefinition.ConstraintIdentifier == null)
+        {
+            ident = primaryKeyDefinition.Columns.FirstOrDefault()?.Column.MultiPartIdentifier.Identifiers.FirstOrDefault();
+        }
+
+        if (ident == null)
+        {
+            return;
+        }
+        
         var indexData = new IndexData
         (
             indexProperties,
-            primaryKeyDefinition.ConstraintIdentifier,
-            primaryKeyDefinition.ConstraintIdentifier.Value,
+            ident,
+            ident.Value,
             databaseName,
             tableSchemaName,
             tableName,
