@@ -57,10 +57,13 @@ public sealed class DynamicSqlAnalyzer : IScriptAnalyzer
                 return false;
             }
 
-            var procedureName = procedureReference.ProcedureReference.Name?.BaseIdentifier?.Value;
-            if (!procedureName.EqualsOrdinalIgnoreCase("sp_executeSql"))
+            var procedureName = procedureReference.ProcedureReference?.Name?.BaseIdentifier?.Value;
+            if (!string.IsNullOrEmpty(procedureName))
             {
-                return false;
+                if (!procedureName.EqualsOrdinalIgnoreCase("sp_executeSql"))
+                {
+                    return false;
+                }
             }
 
             var firstParameter = executableProcedureReference.Parameters.FirstOrDefault();
